@@ -1,0 +1,29 @@
+{
+  "name": "@your-org/your-org",
+  "description": "TODO",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspaces --if-present",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "typecheck": "vue-tsc -b"
+  },
+  "author": "TODO",
+  "workspaces": [
+    "deploy/**",
+    "saflib/**"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@saflib/monorepo": "*"
+  },
+  "dependencies": {
+    "prettier": "^3.6.2"
+  }
+}
