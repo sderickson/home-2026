@@ -1,6 +1,6 @@
 {
-  "name": "@your-org/your-org",
-  "description": "TODO",
+  "name": "@sderickson/home-2026",
+  "description": "My Home App Made in 2026",
   "type": "module",
   "scripts": {
     "test": "vitest run",
@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "typecheck": "vue-tsc -b"
   },
-  "author": "TODO",
+  "author": "Scott Erickson <sderickson@gmail.com>",
   "workspaces": [
     "deploy/**",
     "saflib/**"
