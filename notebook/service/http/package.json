@@ -1,0 +1,24 @@
+{
+  "name": "@sderickson/notebook-http",
+  "description": "HTTP server for the notebook service",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@saflib/express": "*",
+    "@saflib/monorepo": "*",
+    "@sderickson/notebook-db": "*",
+    "@sderickson/notebook-service-common": "*",
+    "@sderickson/notebook-spec": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
+  }
+}
