@@ -15,6 +15,7 @@
   "author": "Scott Erickson <sderickson@gmail.com>",
   "workspaces": [
     "deploy/**",
+    "notebook/**",
     "recipes/**",
     "saflib/**"
   ],
