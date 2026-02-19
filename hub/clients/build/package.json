@@ -13,6 +13,7 @@
     "@saflib/vite": "*",
     "@sderickson/hub-admin-spa": "*",
     "@sderickson/hub-app-spa": "*",
+    "@sderickson/hub-auth-spa": "*",
     "@sderickson/hub-root-spa": "*",
     "@vue/tsconfig": "^0.8.1"
   },
