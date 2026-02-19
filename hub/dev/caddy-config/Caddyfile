@@ -1,0 +1,48 @@
+import common.Caddyfile
+
+# Curried snippets
+
+(hub-api-proxy) {
+	import api-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(hub-admin-proxy) {
+	import admin-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Subdomains
+
+{$PROTOCOL}://{$HUB_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://auth.{$HUB_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://app.{$HUB_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://account.{$HUB_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://admin.{$HUB_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://hub.{$HUB_DOMAIN} {
+	import hub-api-proxy {$HUB_SERVICE_HTTP_HOST}
+}
+
+{$PROTOCOL}://azurite.{$HUB_DOMAIN} {
+	reverse_proxy azurite:10000 {
+		header_up Host azurite:10000
+		header_up X-Forwarded-Host {host}
+	}
+}
+
+{$PROTOCOL}://identity.{$HUB_DOMAIN} {
+	import identity {$HUB_DOMAIN} {$HUB_IDENTITY_SERVICE_HTTP_HOST}
+}

@@ -2,4 +2,5 @@ import common.Caddyfile
 # BEGIN WORKFLOW AREA import-product-caddy FOR product/init
 import recipes.Caddyfile
 import notebook.Caddyfile
+import hub.Caddyfile
 # END WORKFLOW AREA

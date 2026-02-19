@@ -1,0 +1,17 @@
+{
+  "name": "@sderickson/hub-monolith",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types ./run.ts"
+  },
+  "exports": {},
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/sentry": "*",
+    "@sderickson/hub-db": "*",
+    "@sderickson/hub-http": "*",
+    "@sderickson/hub-identity": "*",
+    "@sderickson/hub-service-common": "*"
+  }
+}

@@ -9,6 +9,11 @@ FROM sderickson-notebook-clients:latest AS notebook-builder
 COPY ./deploy/env.notebook.prod-local /app/env.notebook.prod-local
 RUN export $(grep -v "^#" /app/env.notebook.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
 
+FROM sderickson-hub-clients:latest AS hub-builder
+
+COPY ./deploy/env.hub.prod-local /app/env.hub.prod-local
+RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
+
 # END WORKFLOW AREA
 
 FROM caddy:2.9.1
@@ -16,6 +21,7 @@ FROM caddy:2.9.1
 # BEGIN WORKFLOW AREA copy-product-assets FOR product/init
 COPY --from=recipes-builder /app/recipes/clients/build/dist /srv/recipes-clients
 COPY --from=notebook-builder /app/notebook/clients/build/dist /srv/notebook-clients
+COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients
 # END WORKFLOW AREA
 
 COPY ./deploy/remote-assets/config /etc/caddy/

@@ -1,0 +1,55 @@
+# Curried snippets
+
+(hub-spa) {
+	import spa /hub-clients {args[0]}
+}
+
+(hub-api-proxy) {
+	import api-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(hub-admin-proxy) {
+	import admin-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Subdomains
+
+{$HUB_PROTOCOL}://{$HUB_DOMAIN} {
+	import hub-spa /root/index.html
+}
+
+{$HUB_PROTOCOL}://auth.{$HUB_DOMAIN} {
+	import hub-spa /auth/index.html
+}
+
+{$HUB_PROTOCOL}://app.{$HUB_DOMAIN} {
+	import hub-spa /app/index.html
+}
+
+{$HUB_PROTOCOL}://admin.{$HUB_DOMAIN} {
+	import hub-spa /admin/index.html
+}
+
+{$HUB_PROTOCOL}://account.{$HUB_DOMAIN} {
+	import hub-spa /account/index.html
+}
+
+{$HUB_PROTOCOL}://hub.{$HUB_DOMAIN} {
+	import hub-api-proxy {$HUB_SERVICE_HTTP_HOST}
+}
+
+{$HUB_PROTOCOL}://grafana.{$HUB_DOMAIN} {
+	import hub-admin-proxy grafana:3000
+}
+
+{$HUB_PROTOCOL}://prometheus.{$HUB_DOMAIN} {
+	import hub-admin-proxy prometheus:9090
+}
+
+{$HUB_PROTOCOL}://identity.{$HUB_DOMAIN} {
+	import identity {$HUB_DOMAIN} {$HUB_IDENTITY_SERVICE_HTTP_HOST}
+}
+
+{$HUB_DOMAIN_REDIRECTS} {
+	import redirect {$HUB_DOMAIN}
+}

@@ -1,0 +1,66 @@
+# common elements between dev and test
+services:
+  caddy:
+    image: caddy:2.9.1
+    ports:
+      - 80:80
+    volumes:
+      - ./caddy-config:/etc/caddy/
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - HUB_DOMAIN=${HUB_DOMAIN}
+      - PROTOCOL=${PROTOCOL}
+      - HUB_IDENTITY_SERVICE_HTTP_HOST=${HUB_IDENTITY_SERVICE_HTTP_HOST}
+      - HUB_SERVICE_HTTP_HOST=${HUB_SERVICE_HTTP_HOST}
+    depends_on:
+      - clients
+
+  clients:
+    # Named for local dev, but doesn't get published; not needed for prod
+    image: sderickson-hub-clients:latest
+    build:
+      context: ../..
+      dockerfile: ./hub/clients/build/Dockerfile
+    environment:
+      - CLIENT_SUBDOMAINS=${HUB_CLIENT_SUBDOMAINS}
+      - DOMAIN=${HUB_DOMAIN}
+      - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
+      - PROTOCOL=${PROTOCOL}
+      - SERVICE_SUBDOMAINS=${HUB_SERVICE_SUBDOMAINS}
+      - TZ=${TZ}
+    volumes:
+      - ../../hub/clients/:/app/hub/clients/
+      - ../../saflib/:/app/saflib/
+      - ../../hub/service/sdk/:/app/hub/service/sdk/
+    command: npm run dev
+
+  hub-monolith:
+    image: ghcr.io/sderickson/sderickson-hub-monolith:latest
+    volumes:
+      - ../../hub/service/db/data:/app/hub/service/db/data
+      - ../../hub/service/cron/data:/app/hub/service/cron/data
+      - ../../hub/service/identity/data:/app/hub/service/identity/data
+      - hub_identity_http_cache:/app/saflib/identity/identity-http/data
+
+    build:
+      context: ../..
+      dockerfile: hub/service/monolith/Dockerfile
+
+    env_file:
+      - ./.env
+      - ./env.dev
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    hostname: azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    command: "azurite-blob --blobHost 0.0.0.0 --loose"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  hub_identity_http_cache:

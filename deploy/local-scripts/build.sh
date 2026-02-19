@@ -12,6 +12,9 @@ docker build -t $CONTAINER_REGISTRY/sderickson-recipes-monolith:latest -f ./reci
 docker build -t sderickson-notebook-clients:latest -f ./notebook/clients/build/Dockerfile . --platform linux/amd64
 docker build -t $CONTAINER_REGISTRY/sderickson-notebook-monolith:latest -f ./notebook/service/monolith/Dockerfile . --platform linux/amd64
 
+docker build -t sderickson-hub-clients:latest -f ./hub/clients/build/Dockerfile . --platform linux/amd64
+docker build -t $CONTAINER_REGISTRY/sderickson-hub-monolith:latest -f ./hub/service/monolith/Dockerfile . --platform linux/amd64
+
 # END WORKFLOW AREA
 
 # Build reverse proxy image

@@ -16,6 +16,7 @@ jobs:
           # BEGIN WORKFLOW AREA test-product-dependencies FOR product/init
           - recipes
           - notebook
+          - hub
           # END WORKFLOW AREA
     steps:
       - uses: actions/checkout@v4
