@@ -19,12 +19,14 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@saflib/account-sdk": "*",
+    "@saflib/auth": "*",
+    "@saflib/auth-links": "*",
+    "@saflib/links": "*",
+    "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",
     "@sderickson/hub-sdk": "*",
-    "@saflib/vue": "*",
-    "@saflib/auth": "*",
-    "@saflib/links": "*",
     "vue-router": "*"
   }
 }
