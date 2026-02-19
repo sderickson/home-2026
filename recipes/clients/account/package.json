@@ -1,0 +1,30 @@
+{
+  "name": "@sderickson/recipes-account-spa",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./main.ts",
+    "./fixtures": "./fixtures.ts",
+    "./strings": "./strings.ts",
+    "./i18n": "./i18n.ts",
+    "./test-app": "./test-app.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "typecheck": "vue-tsc -b"
+  },
+  "dependencies": {
+    "@sderickson/recipes-clients-common": "*",
+    "@sderickson/recipes-links": "*",
+    "@sderickson/recipes-sdk": "*",
+    "@saflib/vue": "*",
+    "@saflib/auth": "*",
+    "@saflib/links": "*",
+    "vue-router": "*"
+  }
+}

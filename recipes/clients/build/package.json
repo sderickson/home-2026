@@ -11,6 +11,7 @@
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/vite": "*",
+    "@sderickson/recipes-account-spa": "*",
     "@sderickson/recipes-admin-spa": "*",
     "@sderickson/recipes-app-spa": "*",
     "@sderickson/recipes-auth-spa": "*",
