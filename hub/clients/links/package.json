@@ -1,0 +1,12 @@
+{
+  "name": "@sderickson/hub-links",
+  "description": "Links for the hub root client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@saflib/links": "*"
+  }
+}
