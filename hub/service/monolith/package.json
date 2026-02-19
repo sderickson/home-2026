@@ -12,6 +12,7 @@
     "@sderickson/hub-db": "*",
     "@sderickson/hub-http": "*",
     "@sderickson/hub-identity": "*",
+    "@sderickson/hub-service": "*",
     "@sderickson/hub-service-common": "*"
   }
 }

@@ -12,6 +12,7 @@
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
     "@sderickson/recipes-identity": "*",
+    "@sderickson/recipes-service": "*",
     "@sderickson/recipes-service-common": "*"
   }
 }
