@@ -6,7 +6,7 @@ import { PageNotFound } from "@saflib/vue/components";
 console.log("adminLinks:", adminLinks);
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
-
+import AdminAsync from "./pages/admin/AdminAsync.vue";
 // END WORKFLOW AREA
 
 export const createAdminRouter = () => {
@@ -16,6 +16,10 @@ export const createAdminRouter = () => {
 
 
 
+    {
+      path: adminLinks.admin.path,
+      component: AdminAsync,
+    },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
   ];
