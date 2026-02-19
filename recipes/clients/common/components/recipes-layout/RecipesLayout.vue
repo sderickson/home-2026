@@ -66,22 +66,21 @@ import { useRoute } from "vue-router";
 import { TopLevelContainer } from "@saflib/vue/components";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
+import { authLinks } from "@saflib/auth-links";
 import { linkToHrefWithHost, type Link } from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
-
-// import other subdomain links here as needed
-// import { rootLinks } from "@sderickson/recipes-links";
-
-// Use this for choosing what links to display
-// import { getProfile } from "@saflib/auth";
-// import { useQuery } from "@tanstack/vue-query";
-// const { data: profile } = useQuery(getProfile());
-// const isAdmin = computed(() => profile.value?.isAdmin ?? false);
+import {
+  accountLinks,
+  adminLinks,
+  appLinks,
+  rootLinks,
+} from "@sderickson/recipes-links";
 
 const props = defineProps<{
   loggedIn?: boolean;
+  isAdmin?: boolean;
 }>();
 
 const { t } = useReverseT();
@@ -96,20 +95,17 @@ const drawer = ref(false);
 type LinkWithName = Link & { name: string };
 
 const links = computed<LinkWithName[]>(() => {
-  return props.loggedIn
-    ? [
-        // Add links here for when logged in
-        // Example:
-        // { ...appLinks.home, name: "App" },
-        // { ...accountLinks.home, name: "Account" },
-        // { ...authLinks.logout, name: "Logout" },
-        // ...(isAdmin.value ? [{ ...adminLinks.home, name: "Admin" }] : []),
-      ]
-    : [
-        // Add links here for when not logged in
-        // Example:
-        // { ...authLinks.login, name: "Login" },
-        // { ...authLinks.register, name: "Sign Up" },
-      ];
+  if (props.loggedIn) {
+    return [
+      { ...appLinks.home, name: "App" },
+      { ...accountLinks.home, name: "Account" },
+      { ...authLinks.logout, name: "Logout" },
+      ...(props.isAdmin ? [{ ...adminLinks.admin, name: "Admin" }] : []),
+    ];
+  }
+  return [
+    { ...rootLinks.home, name: "Home" },
+    { ...authLinks.register, name: "Sign Up" },
+  ];
 });
 </script>

@@ -5,10 +5,11 @@ import { useProfile } from "@saflib/auth";
 
 const profileQuery = useProfile();
 const loggedIn = computed(() => !!profileQuery.data?.value);
+const isAdmin = computed(() => profileQuery.data?.value?.isAdmin ?? false);
 </script>
 
 <template>
-  <RecipesLayout :logged-in="loggedIn">
+  <RecipesLayout :logged-in="loggedIn" :is-admin="isAdmin">
     <router-view />
   </RecipesLayout>
 </template>
