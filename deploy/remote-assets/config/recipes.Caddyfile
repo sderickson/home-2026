@@ -1,0 +1,55 @@
+# Curried snippets
+
+(recipes-spa) {
+	import spa /recipes-clients {args[0]}
+}
+
+(recipes-api-proxy) {
+	import api-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(recipes-admin-proxy) {
+	import admin-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Subdomains
+
+{$RECIPES_PROTOCOL}://{$RECIPES_DOMAIN} {
+	import recipes-spa /root/index.html
+}
+
+{$RECIPES_PROTOCOL}://auth.{$RECIPES_DOMAIN} {
+	import recipes-spa /auth/index.html
+}
+
+{$RECIPES_PROTOCOL}://app.{$RECIPES_DOMAIN} {
+	import recipes-spa /app/index.html
+}
+
+{$RECIPES_PROTOCOL}://admin.{$RECIPES_DOMAIN} {
+	import recipes-spa /admin/index.html
+}
+
+{$RECIPES_PROTOCOL}://account.{$RECIPES_DOMAIN} {
+	import recipes-spa /account/index.html
+}
+
+{$RECIPES_PROTOCOL}://recipes.{$RECIPES_DOMAIN} {
+	import recipes-api-proxy {$RECIPES_SERVICE_HTTP_HOST}
+}
+
+{$RECIPES_PROTOCOL}://grafana.{$RECIPES_DOMAIN} {
+	import recipes-admin-proxy grafana:3000
+}
+
+{$RECIPES_PROTOCOL}://prometheus.{$RECIPES_DOMAIN} {
+	import recipes-admin-proxy prometheus:9090
+}
+
+{$RECIPES_PROTOCOL}://identity.{$RECIPES_DOMAIN} {
+	import identity {$RECIPES_DOMAIN} {$RECIPES_IDENTITY_SERVICE_HTTP_HOST}
+}
+
+{$RECIPES_DOMAIN_REDIRECTS} {
+	import redirect {$RECIPES_DOMAIN}
+}

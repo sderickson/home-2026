@@ -1,0 +1,3 @@
+# BEGIN WORKFLOW AREA env-secrets FOR product/init
+.env.recipes.secrets
+# END WORKFLOW AREA
