@@ -1,0 +1,12 @@
+{
+  "name": "@sderickson/notebook-links",
+  "description": "Links for the notebook root client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@saflib/links": "*"
+  }
+}
