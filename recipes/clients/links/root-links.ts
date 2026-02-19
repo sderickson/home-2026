@@ -13,5 +13,9 @@ export const rootLinks: LinkMap = {
 
 
 
+  home: {
+    subdomain,
+    path: "/",
+  },
   // END WORKFLOW AREA
 };
