@@ -11,6 +11,7 @@
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/vite": "*",
+    "@sderickson/hub-account-spa": "*",
     "@sderickson/hub-admin-spa": "*",
     "@sderickson/hub-app-spa": "*",
     "@sderickson/hub-auth-spa": "*",
