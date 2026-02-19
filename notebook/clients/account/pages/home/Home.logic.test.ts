@@ -14,7 +14,7 @@ beforeEach(() => {
       protocol: "http:",
     },
   } as unknown as Document;
-  setClientName("account");
+  setClientName("account.notebook");
 });
 
 describe("assertProfileLoaded", () => {

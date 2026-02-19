@@ -5,7 +5,7 @@ import { createAccountRouter } from "./router.ts";
 import { account_strings } from "./strings.ts";
 
 export const main = () => {
-  setClientName("account");
+  setClientName("account.recipes");
   const router = createAccountRouter();
   createVueApp(Spa, {
     router,

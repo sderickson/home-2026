@@ -5,7 +5,7 @@ import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
 
 export const main = () => {
-  setClientName("app");
+  setClientName("app.notebook");
   const router = createAppRouter();
   createVueApp(Spa, {
     router,
