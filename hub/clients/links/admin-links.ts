@@ -13,5 +13,9 @@ export const adminLinks: LinkMap = {
 
 
 
+  admin: {
+    subdomain,
+    path: "/admin",
+  },
   // END WORKFLOW AREA
 };
