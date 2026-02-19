@@ -12,6 +12,7 @@
     "@saflib/monorepo": "*",
     "@saflib/vite": "*",
     "@sderickson/recipes-admin-spa": "*",
+    "@sderickson/recipes-app-spa": "*",
     "@sderickson/recipes-root-spa": "*",
     "@vue/tsconfig": "^0.8.1"
   },
