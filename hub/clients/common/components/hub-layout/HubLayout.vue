@@ -71,17 +71,17 @@ import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
 
-// import other subdomain links here as needed
-// import { rootLinks } from "@sderickson/hub-links";
-
-// Use this for choosing what links to display
-// import { getProfile } from "@saflib/auth";
-// import { useQuery } from "@tanstack/vue-query";
-// const { data: profile } = useQuery(getProfile());
-// const isAdmin = computed(() => profile.value?.isAdmin ?? false);
+import {
+  rootLinks,
+  appLinks,
+  accountLinks,
+  authLinks,
+  adminLinks,
+} from "@sderickson/hub-links";
 
 const props = defineProps<{
   loggedIn?: boolean;
+  isAdmin?: boolean;
 }>();
 
 const { t } = useReverseT();
@@ -96,20 +96,17 @@ const drawer = ref(false);
 type LinkWithName = Link & { name: string };
 
 const links = computed<LinkWithName[]>(() => {
-  return props.loggedIn
-    ? [
-        // Add links here for when logged in
-        // Example:
-        // { ...appLinks.home, name: "App" },
-        // { ...accountLinks.home, name: "Account" },
-        // { ...authLinks.logout, name: "Logout" },
-        // ...(isAdmin.value ? [{ ...adminLinks.home, name: "Admin" }] : []),
-      ]
-    : [
-        // Add links here for when not logged in
-        // Example:
-        // { ...authLinks.login, name: "Login" },
-        // { ...authLinks.register, name: "Sign Up" },
-      ];
+  if (props.loggedIn) {
+    return [
+      { ...appLinks.home, name: t(hub_layout.nav_app) },
+      { ...accountLinks.home, name: t(hub_layout.nav_account) },
+      { ...authLinks.logout, name: t(hub_layout.nav_logout) },
+      ...(props.isAdmin ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }] : []),
+    ];
+  }
+  return [
+    { ...rootLinks.home, name: t(hub_layout.nav_home) },
+    { ...authLinks.register, name: t(hub_layout.nav_sign_up) },
+  ];
 });
 </script>
