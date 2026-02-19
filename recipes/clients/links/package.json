@@ -1,0 +1,12 @@
+{
+  "name": "@sderickson/recipes-links",
+  "description": "Links for the recipes root client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@saflib/links": "*"
+  }
+}
