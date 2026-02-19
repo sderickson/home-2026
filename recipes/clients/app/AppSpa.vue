@@ -3,7 +3,7 @@ import { RecipesLayout } from "@sderickson/recipes-clients-common";
 </script>
 
 <template>
-  <RecipesLayout>
+  <RecipesLayout :logged-in="true">
     <router-view />
   </RecipesLayout>
 </template>
