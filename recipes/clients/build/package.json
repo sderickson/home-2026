@@ -1,0 +1,24 @@
+{
+  "name": "@sderickson/recipes-root-clients",
+  "description": "Vite setup to build all recipes clients",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/vite": "*",
+    "@sderickson/recipes-account-spa": "*",
+    "@sderickson/recipes-admin-spa": "*",
+    "@sderickson/recipes-app-spa": "*",
+    "@sderickson/recipes-auth-spa": "*",
+    "@sderickson/recipes-root-spa": "*",
+    "@vue/tsconfig": "^0.8.1"
+  },
+  "workspaces": [
+    "clients/*"
+  ]
+}

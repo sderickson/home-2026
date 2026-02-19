@@ -1,0 +1,24 @@
+{
+  "name": "@sderickson/hub-root-clients",
+  "description": "Vite setup to build all hub clients",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/vite": "*",
+    "@sderickson/hub-account-spa": "*",
+    "@sderickson/hub-admin-spa": "*",
+    "@sderickson/hub-app-spa": "*",
+    "@sderickson/hub-auth-spa": "*",
+    "@sderickson/hub-root-spa": "*",
+    "@vue/tsconfig": "^0.8.1"
+  },
+  "workspaces": [
+    "clients/*"
+  ]
+}

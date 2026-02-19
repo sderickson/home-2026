@@ -1,0 +1,17 @@
+{
+  "name": "@sderickson/notebook-monolith",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types ./run.ts"
+  },
+  "exports": {},
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/sentry": "*",
+    "@sderickson/notebook-db": "*",
+    "@sderickson/notebook-http": "*",
+    "@sderickson/notebook-identity": "*",
+    "@sderickson/notebook-service-common": "*"
+  }
+}

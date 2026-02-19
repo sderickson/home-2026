@@ -1,0 +1,24 @@
+{
+  "name": "@sderickson/hub-http",
+  "description": "HTTP server for the hub service",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@saflib/express": "*",
+    "@saflib/monorepo": "*",
+    "@sderickson/hub-db": "*",
+    "@sderickson/hub-service-common": "*",
+    "@sderickson/hub-spec": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
+  }
+}

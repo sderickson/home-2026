@@ -1,0 +1,66 @@
+# common elements between dev and test
+services:
+  caddy:
+    image: caddy:2.9.1
+    ports:
+      - 80:80
+    volumes:
+      - ./caddy-config:/etc/caddy/
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - RECIPES_DOMAIN=${RECIPES_DOMAIN}
+      - PROTOCOL=${PROTOCOL}
+      - RECIPES_IDENTITY_SERVICE_HTTP_HOST=${RECIPES_IDENTITY_SERVICE_HTTP_HOST}
+      - RECIPES_SERVICE_HTTP_HOST=${RECIPES_SERVICE_HTTP_HOST}
+    depends_on:
+      - clients
+
+  clients:
+    # Named for local dev, but doesn't get published; not needed for prod
+    image: sderickson-recipes-clients:latest
+    build:
+      context: ../..
+      dockerfile: ./recipes/clients/build/Dockerfile
+    environment:
+      - CLIENT_SUBDOMAINS=${RECIPES_CLIENT_SUBDOMAINS}
+      - DOMAIN=${RECIPES_DOMAIN}
+      - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
+      - PROTOCOL=${PROTOCOL}
+      - SERVICE_SUBDOMAINS=${RECIPES_SERVICE_SUBDOMAINS}
+      - TZ=${TZ}
+    volumes:
+      - ../../recipes/clients/:/app/recipes/clients/
+      - ../../saflib/:/app/saflib/
+      - ../../recipes/service/sdk/:/app/recipes/service/sdk/
+    command: npm run dev
+
+  recipes-monolith:
+    image: ghcr.io/sderickson/sderickson-recipes-monolith:latest
+    volumes:
+      - ../../recipes/service/db/data:/app/recipes/service/db/data
+      - ../../recipes/service/cron/data:/app/recipes/service/cron/data
+      - ../../recipes/service/identity/data:/app/recipes/service/identity/data
+      - recipes_identity_http_cache:/app/saflib/identity/identity-http/data
+
+    build:
+      context: ../..
+      dockerfile: recipes/service/monolith/Dockerfile
+
+    env_file:
+      - ./.env
+      - ./env.dev
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    hostname: azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    command: "azurite-blob --blobHost 0.0.0.0 --loose"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  recipes_identity_http_cache:

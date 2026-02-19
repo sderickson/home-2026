@@ -1,0 +1,14 @@
+{
+  "name": "@sderickson/recipes-spec",
+  "description": "API specs for the recipes service",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@saflib/openapi": "*"
+  }
+}

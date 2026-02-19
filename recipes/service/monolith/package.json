@@ -1,0 +1,17 @@
+{
+  "name": "@sderickson/recipes-monolith",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types ./run.ts"
+  },
+  "exports": {},
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/sentry": "*",
+    "@sderickson/recipes-db": "*",
+    "@sderickson/recipes-http": "*",
+    "@sderickson/recipes-identity": "*",
+    "@sderickson/recipes-service-common": "*"
+  }
+}

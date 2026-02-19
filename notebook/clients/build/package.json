@@ -1,0 +1,24 @@
+{
+  "name": "@sderickson/notebook-root-clients",
+  "description": "Vite setup to build all notebook clients",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/vite": "*",
+    "@sderickson/notebook-account-spa": "*",
+    "@sderickson/notebook-admin-spa": "*",
+    "@sderickson/notebook-app-spa": "*",
+    "@sderickson/notebook-auth-spa": "*",
+    "@sderickson/notebook-root-spa": "*",
+    "@vue/tsconfig": "^0.8.1"
+  },
+  "workspaces": [
+    "clients/*"
+  ]
+}

@@ -1,0 +1,55 @@
+# Curried snippets
+
+(notebook-spa) {
+	import spa /notebook-clients {args[0]}
+}
+
+(notebook-api-proxy) {
+	import api-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(notebook-admin-proxy) {
+	import admin-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Subdomains
+
+{$NOTEBOOK_PROTOCOL}://{$NOTEBOOK_DOMAIN} {
+	import notebook-spa /root/index.html
+}
+
+{$NOTEBOOK_PROTOCOL}://auth.{$NOTEBOOK_DOMAIN} {
+	import notebook-spa /auth/index.html
+}
+
+{$NOTEBOOK_PROTOCOL}://app.{$NOTEBOOK_DOMAIN} {
+	import notebook-spa /app/index.html
+}
+
+{$NOTEBOOK_PROTOCOL}://admin.{$NOTEBOOK_DOMAIN} {
+	import notebook-spa /admin/index.html
+}
+
+{$NOTEBOOK_PROTOCOL}://account.{$NOTEBOOK_DOMAIN} {
+	import notebook-spa /account/index.html
+}
+
+{$NOTEBOOK_PROTOCOL}://notebook.{$NOTEBOOK_DOMAIN} {
+	import notebook-api-proxy {$NOTEBOOK_SERVICE_HTTP_HOST}
+}
+
+{$NOTEBOOK_PROTOCOL}://grafana.{$NOTEBOOK_DOMAIN} {
+	import notebook-admin-proxy grafana:3000
+}
+
+{$NOTEBOOK_PROTOCOL}://prometheus.{$NOTEBOOK_DOMAIN} {
+	import notebook-admin-proxy prometheus:9090
+}
+
+{$NOTEBOOK_PROTOCOL}://identity.{$NOTEBOOK_DOMAIN} {
+	import identity {$NOTEBOOK_DOMAIN} {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST}
+}
+
+{$NOTEBOOK_DOMAIN_REDIRECTS} {
+	import redirect {$NOTEBOOK_DOMAIN}
+}
