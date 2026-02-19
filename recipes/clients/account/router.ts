@@ -1,21 +1,31 @@
+import {
+  AccountPasswordPageAsync,
+  AccountProfilePageAsync,
+} from "@saflib/account-sdk/pages";
 import { createRouter, createWebHistory } from "vue-router";
 import { accountLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
-// TODO: remove this log once accountLinks is being used by the routes
-console.log("accountLinks:", accountLinks);
-
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
-
+import HomeAsync from "./pages/home/HomeAsync.vue";
 // END WORKFLOW AREA
 
 export const createAccountRouter = () => {
   const routes = [
-    // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
+    // BEGIN SORTED WORKFLOW AREA page-routes FOR vue/add-view
 
-
-
-
+    {
+      path: accountLinks.home.path,
+      component: HomeAsync,
+    },
+    {
+      path: accountLinks.password.path,
+      component: AccountPasswordPageAsync,
+    },
+    {
+      path: accountLinks.profile.path,
+      component: AccountProfilePageAsync,
+    },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
   ];
