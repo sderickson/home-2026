@@ -1,0 +1,26 @@
+{
+  "name": "@sderickson/notebook-service",
+  "description": "Service package for notebook",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "start": "node --experimental-strip-types ./run.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "healthcheck": "node --experimental-strip-types ./bin/healthcheck",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@sderickson/notebook-db": "*",
+    "@sderickson/notebook-http": "*",
+    "@sderickson/notebook-service-common": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
+  }
+}
