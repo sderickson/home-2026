@@ -3,7 +3,7 @@ import { NotebookLayout } from "@sderickson/notebook-clients-common";
 </script>
 
 <template>
-  <NotebookLayout>
+  <NotebookLayout :logged-in="true">
     <router-view />
   </NotebookLayout>
 </template>
