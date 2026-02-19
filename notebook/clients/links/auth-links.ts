@@ -10,8 +10,13 @@ console.log(
 export const authLinks: LinkMap = {
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
 
-
-
-
+  logout: {
+    subdomain,
+    path: "/logout",
+  },
+  register: {
+    subdomain,
+    path: "/register",
+  },
   // END WORKFLOW AREA
 };

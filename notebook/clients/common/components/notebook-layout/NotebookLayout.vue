@@ -70,21 +70,22 @@ import { linkToHrefWithHost, type Link } from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
-
-// import other subdomain links here as needed
-// import { rootLinks } from "@sderickson/notebook-links";
-
-// Use this for choosing what links to display
-// import { getProfile } from "@saflib/auth";
-// import { useQuery } from "@tanstack/vue-query";
-// const { data: profile } = useQuery(getProfile());
-// const isAdmin = computed(() => profile.value?.isAdmin ?? false);
+import { useProfile } from "@saflib/auth";
+import {
+  accountLinks,
+  adminLinks,
+  appLinks,
+  authLinks,
+  rootLinks,
+} from "@sderickson/notebook-links";
 
 const props = defineProps<{
   loggedIn?: boolean;
 }>();
 
 const { t } = useReverseT();
+const profileQuery = useProfile();
+const isAdmin = computed(() => profileQuery.data?.value?.isAdmin ?? false);
 
 const route = useRoute();
 const disableContainer = computed(() => {
@@ -98,18 +99,14 @@ type LinkWithName = Link & { name: string };
 const links = computed<LinkWithName[]>(() => {
   return props.loggedIn
     ? [
-        // Add links here for when logged in
-        // Example:
-        // { ...appLinks.home, name: "App" },
-        // { ...accountLinks.home, name: "Account" },
-        // { ...authLinks.logout, name: "Logout" },
-        // ...(isAdmin.value ? [{ ...adminLinks.home, name: "Admin" }] : []),
+        { ...appLinks.home, name: "App" },
+        { ...accountLinks.home, name: "Account" },
+        ...(isAdmin.value ? [{ ...adminLinks.admin, name: "Admin" }] : []),
+        { ...authLinks.logout, name: "Logout" },
       ]
     : [
-        // Add links here for when not logged in
-        // Example:
-        // { ...authLinks.login, name: "Login" },
-        // { ...authLinks.register, name: "Sign Up" },
+        { ...rootLinks.home, name: "Home" },
+        { ...authLinks.register, name: "Sign Up" },
       ];
 });
 </script>
