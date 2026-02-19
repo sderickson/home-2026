@@ -6,7 +6,7 @@ import { PageNotFound } from "@saflib/vue/components";
 console.log("rootLinks:", rootLinks);
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
-
+import HomeAsync from "./pages/home/HomeAsync.vue";
 // END WORKFLOW AREA
 
 export const createRootRouter = () => {
@@ -16,6 +16,10 @@ export const createRootRouter = () => {
 
 
 
+    {
+      path: rootLinks.home.path,
+      component: HomeAsync,
+    },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
   ];
