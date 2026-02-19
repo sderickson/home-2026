@@ -1,0 +1,14 @@
+{
+  "name": "@sderickson/notebook-spec",
+  "description": "API specs for the notebook service",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@saflib/openapi": "*"
+  }
+}
