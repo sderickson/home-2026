@@ -11,6 +11,7 @@
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/vite": "*",
+    "@sderickson/notebook-account-spa": "*",
     "@sderickson/notebook-admin-spa": "*",
     "@sderickson/notebook-app-spa": "*",
     "@sderickson/notebook-auth-spa": "*",
