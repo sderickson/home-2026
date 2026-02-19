@@ -16,6 +16,14 @@ services:
     env_file: !override
       - ./env.recipes.prod-local
   
+  notebook-monolith:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: notebook-monolith
+    volumes: !override []
+    env_file: !override
+      - ./env.notebook.prod-local
+  
   # END WORKFLOW AREA
 
   loki:

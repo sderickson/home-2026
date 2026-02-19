@@ -1,0 +1,48 @@
+import common.Caddyfile
+
+# Curried snippets
+
+(notebook-api-proxy) {
+	import api-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(notebook-admin-proxy) {
+	import admin-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Subdomains
+
+{$PROTOCOL}://{$NOTEBOOK_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://auth.{$NOTEBOOK_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://app.{$NOTEBOOK_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://account.{$NOTEBOOK_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://admin.{$NOTEBOOK_DOMAIN} {
+	reverse_proxy clients:5173
+}
+
+{$PROTOCOL}://notebook.{$NOTEBOOK_DOMAIN} {
+	import notebook-api-proxy {$NOTEBOOK_SERVICE_HTTP_HOST}
+}
+
+{$PROTOCOL}://azurite.{$NOTEBOOK_DOMAIN} {
+	reverse_proxy azurite:10000 {
+		header_up Host azurite:10000
+		header_up X-Forwarded-Host {host}
+	}
+}
+
+{$PROTOCOL}://identity.{$NOTEBOOK_DOMAIN} {
+	import identity {$NOTEBOOK_DOMAIN} {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST}
+}

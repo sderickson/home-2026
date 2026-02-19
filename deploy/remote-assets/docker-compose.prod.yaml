@@ -10,6 +10,7 @@ services:
     env_file:
       # BEGIN WORKFLOW AREA env-caddy FOR product/init
       - ./env.recipes.caddy
+      - ./env.notebook.caddy
       # END WORKFLOW AREA
     environment:
       - DISABLE_VITE_DEV_SERVER=#
@@ -43,6 +44,30 @@ services:
     env_file:
       - ./env.recipes.config
       - ./.env.recipes.secrets
+    
+  notebook-monolith:
+    image: $CONTAINER_REGISTRY/sderickson-notebook-monolith:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    memswap_limit: 2G
+    volumes:
+      - /opt/notebook/cron:/app/notebook/service/cron/data
+      - /opt/notebook/db:/app/notebook/service/db/data
+      - /opt/notebook/identity:/app/notebook/service/identity/data
+      - /opt/notebook/identity-http:/app/saflib/identity/identity-http/data
+
+    build:
+      context: ../..
+      dockerfile: notebook/service/monolith/Dockerfile
+
+    env_file:
+      - ./env.notebook.config
+      - ./.env.notebook.secrets
     
   # END WORKFLOW AREA
 

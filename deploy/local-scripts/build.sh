@@ -9,6 +9,9 @@ echo "Container registry: $CONTAINER_REGISTRY"
 docker build -t sderickson-recipes-clients:latest -f ./recipes/clients/build/Dockerfile . --platform linux/amd64
 docker build -t $CONTAINER_REGISTRY/sderickson-recipes-monolith:latest -f ./recipes/service/monolith/Dockerfile . --platform linux/amd64
 
+docker build -t sderickson-notebook-clients:latest -f ./notebook/clients/build/Dockerfile . --platform linux/amd64
+docker build -t $CONTAINER_REGISTRY/sderickson-notebook-monolith:latest -f ./notebook/service/monolith/Dockerfile . --platform linux/amd64
+
 # END WORKFLOW AREA
 
 # Build reverse proxy image
