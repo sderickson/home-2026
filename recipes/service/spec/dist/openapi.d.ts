@@ -3,7 +3,25 @@
  * Do not make direct changes to the file.
  */
 
-export type paths = Record<string, never>;
+export interface paths {
+    "/recipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recipes. Public-only for non-admin; admins see private too. */
+        get: operations["listRecipes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
@@ -11,48 +29,6 @@ export interface components {
         ProductEvent: components["schemas"]["index"];
         Recipe: components["schemas"]["recipe"];
         RecipeVersion: components["schemas"]["recipe-version"];
-        error: {
-            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
-            code?: string;
-            /**
-             * @description A human-readable description of the error.
-             * @example The requested resource could not be found.
-             */
-            message?: string;
-        };
-        login: {
-            /** @enum {string} */
-            event: "login";
-            context: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup: {
-            /** @enum {string} */
-            event?: "signup";
-            context?: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup_view: {
-            /** @enum {string} */
-            event?: "signup_view";
-        };
-        verify_email: {
-            /** @enum {string} */
-            event?: "verify_email";
-        };
-        index: {
-            event: string;
-            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
-            client?: string;
-            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
-            view?: string;
-            /** @description The component that triggered the event. For vue, it should be the component name. */
-            component?: string;
-        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
         recipe: {
             /**
              * Format: uuid
@@ -111,6 +87,48 @@ export interface components {
              */
             currentVersionId?: string;
         };
+        error: {
+            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
+            code?: string;
+            /**
+             * @description A human-readable description of the error.
+             * @example The requested resource could not be found.
+             */
+            message?: string;
+        };
+        login: {
+            /** @enum {string} */
+            event: "login";
+            context: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup: {
+            /** @enum {string} */
+            event?: "signup";
+            context?: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup_view: {
+            /** @enum {string} */
+            event?: "signup_view";
+        };
+        verify_email: {
+            /** @enum {string} */
+            event?: "verify_email";
+        };
+        index: {
+            event: string;
+            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
+            client?: string;
+            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
+            view?: string;
+            /** @description The component that triggered the event. For vue, it should be the component name. */
+            component?: string;
+        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
         "recipe-version": {
             /**
              * Format: uuid
@@ -203,4 +221,43 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    listRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of recipes (public only for non-admin, includes private for admins). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe"][];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+}

@@ -5,7 +5,49 @@
     "version": "1.0.0",
     "description": "API specification for the recipes service"
   },
-  "paths": null,
+  "paths": {
+    "/recipes": {
+      "get": {
+        "summary": "List recipes. Public-only for non-admin; admins see private too.",
+        "operationId": "listRecipes",
+        "responses": {
+          "200": {
+            "description": "List of recipes (public only for non-admin, includes private for admins).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
       "Error": {
@@ -19,6 +61,78 @@
       },
       "RecipeVersion": {
         "$ref": "#/components/schemas/recipe-version"
+      },
+      "recipe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the recipe",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Recipe title",
+            "example": "Classic Chocolate Chip Cookies"
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Short description shown on menus and list views",
+            "example": "Crispy edges, chewy centers"
+          },
+          "longDescription": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional longer description shown on recipe detail (not on menu)",
+            "example": "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether the recipe is visible to non-admin users",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the creator",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the last updater",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "currentVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional id of the current/latest version for display",
+            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "shortDescription",
+          "isPublic",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt"
+        ]
       },
       "error": {
         "type": "object",
@@ -139,78 +253,6 @@
         },
         "required": [
           "event"
-        ]
-      },
-      "recipe": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier for the recipe",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "title": {
-            "type": "string",
-            "description": "Recipe title",
-            "example": "Classic Chocolate Chip Cookies"
-          },
-          "shortDescription": {
-            "type": "string",
-            "description": "Short description shown on menus and list views",
-            "example": "Crispy edges, chewy centers"
-          },
-          "longDescription": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional longer description shown on recipe detail (not on menu)",
-            "example": "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
-          },
-          "isPublic": {
-            "type": "boolean",
-            "description": "Whether the recipe is visible to non-admin users",
-            "example": true
-          },
-          "createdBy": {
-            "type": "string",
-            "format": "uuid",
-            "description": "User id of the creator",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the recipe was created",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedBy": {
-            "type": "string",
-            "format": "uuid",
-            "description": "User id of the last updater",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the recipe was last updated",
-            "example": "2023-02-01T09:00:00Z"
-          },
-          "currentVersionId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Optional id of the current/latest version for display",
-            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
-          }
-        },
-        "required": [
-          "id",
-          "title",
-          "shortDescription",
-          "isPublic",
-          "createdBy",
-          "createdAt",
-          "updatedBy",
-          "updatedAt"
         ]
       },
       "recipe-version": {
