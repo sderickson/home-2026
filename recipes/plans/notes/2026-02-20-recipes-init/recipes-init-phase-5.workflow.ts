@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -69,7 +70,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/menu.ts",
-      prompt: `Add table menu: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON). Queries list, get, create, update, delete. On update append user id to edited_by_user_ids.`,
+      prompt: `Add table menu: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON).`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
       path: "./queries/menu/list.ts",
@@ -113,6 +114,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       path: "./routes/menus/delete.ts",
       prompt: `Handler DELETE /menus/:id. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

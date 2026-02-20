@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -63,7 +64,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/recipe-file.ts",
       file: true,
-      prompt: `Add table recipe_file: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by. Add queries list, insert, delete.`,
+      prompt: `Add table recipe_file: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
       path: "./queries/recipe-file/list.ts",
@@ -92,6 +93,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/files-delete.ts",
       prompt: `Handler DELETE /recipes/:id/files/:fileId. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

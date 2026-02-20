@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -19,7 +19,8 @@ export const RecipesInitPhase7WorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/recipes-init-phase-7",
-  description: "Root client: public recipe list, recipe detail, menu list, menu detail; refactor into SDK after each.",
+  description:
+    "Root client: public recipe list, recipe detail, menu list, menu detail; refactor into SDK after each.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -49,6 +50,7 @@ export const RecipesInitPhase7WorkflowDefinition = defineWorkflow<
       path: "./pages/menus/detail",
       prompt: `Add public menu detail page (groupings, recipe ids, short descriptions from recipe). Refactor into SDK if reusable. See plan Phase 7.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

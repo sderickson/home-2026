@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -19,7 +19,8 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/recipes-init-phase-8b",
-  description: "App client: recipe detail — version history, notes, recipe files, note files (admin only).",
+  description:
+    "App client: recipe detail — version history, notes, recipe files, note files (admin only).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -49,6 +50,7 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
       path: "./pages/recipes/detail-note-files",
       prompt: `Update recipe detail: add managing files per note (list, upload, delete per note). Admin only. See plan Phase 8.7.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

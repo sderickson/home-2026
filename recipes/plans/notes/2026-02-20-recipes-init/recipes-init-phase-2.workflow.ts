@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -101,6 +102,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/notes-delete.ts",
       prompt: `Handler DELETE /recipes/:id/notes/:noteId. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

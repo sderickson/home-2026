@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -41,6 +41,7 @@ export const RecipesInitPhase8cWorkflowDefinition = defineWorkflow<
       path: "./pages/menus/edit",
       prompt: `Menu create/edit: name, is_public, groupings (name + ordered recipe ids). Admin only. See plan Phase 8.9.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

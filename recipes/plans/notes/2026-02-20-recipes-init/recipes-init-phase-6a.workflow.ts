@@ -10,6 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSdkQueryWorkflowDefinition } from "@saflib/sdk/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -65,6 +66,7 @@ export const RecipesInitPhase6aWorkflowDefinition = defineWorkflow<
       path: "./requests/menus/get.ts",
       prompt: `Add query for GET /menus/:id.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

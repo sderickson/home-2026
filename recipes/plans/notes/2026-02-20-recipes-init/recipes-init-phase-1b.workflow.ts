@@ -13,13 +13,12 @@ import {
   UpdateSchemaWorkflowDefinition,
   AddDrizzleQueryWorkflowDefinition,
 } from "@saflib/drizzle/workflows";
-import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
 
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
+export const RecipesInitPhase1bWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
@@ -80,4 +79,4 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase1WorkflowDefinition;
+export default RecipesInitPhase1bWorkflowDefinition;

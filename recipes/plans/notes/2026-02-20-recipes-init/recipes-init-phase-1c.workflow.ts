@@ -9,17 +9,14 @@ import {
   makeWorkflowMachine,
   CdStepMachine,
 } from "@saflib/workflows";
-import {
-  UpdateSchemaWorkflowDefinition,
-  AddDrizzleQueryWorkflowDefinition,
-} from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
+export const RecipesInitPhase1cWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
@@ -70,7 +67,8 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/delete.ts",
       prompt: `Handler for DELETE /recipes/:id. Admin only; use delete query.`,
     })),
+    GetFeedbackStep,
   ],
 });
 
-export default RecipesInitPhase1WorkflowDefinition;
+export default RecipesInitPhase1cWorkflowDefinition;
