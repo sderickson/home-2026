@@ -1,4 +1,5 @@
 // BEGIN SORTED WORKFLOW AREA query-exports FOR drizzle/add-query
+import { createVersionRecipe } from "./create-version.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { getByIdRecipe } from "./get-by-id.ts";
 import { listRecipes } from "./list.ts";
@@ -8,6 +9,7 @@ import { updateMetadataRecipe } from "./update-metadata.ts";
 
 export const recipeQueries = {
   // BEGIN SORTED WORKFLOW AREA query-object FOR drizzle/add-query
+  createVersionRecipe,
   createWithVersionRecipe,
   getByIdRecipe,
   listRecipes,
