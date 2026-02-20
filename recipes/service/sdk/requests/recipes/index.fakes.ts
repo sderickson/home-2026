@@ -5,7 +5,7 @@ import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // END WORKFLOW AREA
 
 // BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
-
+import { createRecipesHandler } from "./create.fake.ts";
 // END WORKFLOW AREA
 
 // export all fake handlers for this group
@@ -17,6 +17,6 @@ export const recipesFakeHandlers = [
   // END WORKFLOW AREA
 
   // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
-
+  createRecipesHandler,
   // END WORKFLOW AREA
 ];
