@@ -9,6 +9,7 @@ Personal recipe site for storing, sharing, updating, and tracking changes to rec
 ### Recipe versioning and notes (personal flow)
 
 - As the recipe owner, I want to edit a recipe and have changes versioned so that I can see what changed over time.
+- As the recipe owner, I want the choice to either update the latest version in place (e.g. fix a typo) or create a new version, so that small corrections don’t clutter history.
 - As the recipe owner, I want to add a note to a recipe (with or without changing the recipe) so that I can record how it went and what to try next.
 - As the recipe owner, I want to optionally associate a note with the latest recipe change so that the note is tied to that version.
 - As the recipe owner, I want to view a recipe and see my last note(s) so that I can pick up where I left off on my next attempt.
@@ -106,103 +107,109 @@ Appropriate indexes and foreign keys for listing by owner, by public, and for ve
    - Authorization: Admin only.
 
 5. **PUT /recipes/:id**
-   - Purpose: Update recipe metadata (title, descriptions, isPublic). Recipe content changes go through new version.
+   - Purpose: Update recipe metadata (title, descriptions, isPublic) only. Content changes use “update latest” or “new version” below.
    - Request body: fields to update.
    - Response: Updated Recipe.
    - Authorization: Admin only.
 
-6. **POST /recipes/:id/versions**
-   - Purpose: Create a new recipe version (content change).
+6. **PUT /recipes/:id/versions/latest**
+   - Purpose: Update the latest version in place (e.g. typo, small fix). No new version created; the current version row is updated.
+   - Request body: content (full or partial; same shape as version content).
+   - Response: Updated RecipeVersion (the latest).
+   - Authorization: Admin only.
+
+7. **POST /recipes/:id/versions**
+   - Purpose: Create a new recipe version (recorded history entry). Inserts new row, sets is_latest on new row and clears on previous.
    - Request body: content for new version.
    - Response: New RecipeVersion.
    - Authorization: Admin only.
 
-7. **DELETE /recipes/:id**
+8. **DELETE /recipes/:id**
    - Purpose: Soft or hard delete recipe (and handle versions/notes/files per policy).
    - Authorization: Admin only.
 
 ### Recipe notes
 
-8. **GET /recipes/:id/notes**
+9. **GET /recipes/:id/notes**
    - Purpose: List notes for a recipe (e.g. chronological).
    - Response: Array of RecipeNote (with optional file info).
    - Authorization: Same as GET /recipes/:id.
 
-9. **POST /recipes/:id/notes**
+10. **POST /recipes/:id/notes**
    - Purpose: Create a note; optionally link to a recipe version (e.g. current at time of note).
    - Request body: body, recipeVersionId (optional).
    - Response: RecipeNote.
    - Authorization: Admin only.
 
-10. **PUT /recipes/:id/notes/:noteId**
+11. **PUT /recipes/:id/notes/:noteId**
     - Purpose: Edit a note; set everEdited to true when applied.
     - Request body: body (and any other editable fields).
     - Response: Updated RecipeNote.
     - Authorization: Admin only.
 
-11. **DELETE /recipes/:id/notes/:noteId**
+12. **DELETE /recipes/:id/notes/:noteId**
     - Purpose: Delete a note (and its files).
     - Authorization: Admin only.
 
 ### Recipe files
 
-12. **GET /recipes/:id/files**
+13. **GET /recipes/:id/files**
     - Purpose: List all files for a recipe.
     - Response: Array of RecipeFileInfo.
     - Authorization: Same as GET /recipes/:id.
 
-13. **POST /recipes/:id/files**
+14. **POST /recipes/:id/files**
     - Purpose: Upload a new file for a recipe (multiple files allowed).
     - Request: multipart or binary; store in Azure via workflow; associate with recipe.
     - Response: RecipeFileInfo.
     - Authorization: Admin only.
 
-14. **DELETE /recipes/:id/files/:fileId**
+15. **DELETE /recipes/:id/files/:fileId**
     - Purpose: Remove one file from a recipe.
     - Authorization: Admin only.
 
 ### Note files
 
-15. **GET /recipes/:id/notes/:noteId/files**
+16. **GET /recipes/:id/notes/:noteId/files**
     - Purpose: List all files for a note.
     - Response: Array of RecipeNoteFileInfo.
     - Authorization: Same as GET /recipes/:id/notes.
 
-16. **POST /recipes/:id/notes/:noteId/files**
+17. **POST /recipes/:id/notes/:noteId/files**
     - Purpose: Upload a new file for a note (multiple files allowed).
     - Request: multipart or binary; store in Azure.
     - Response: RecipeNoteFileInfo.
     - Authorization: Admin only.
 
-17. **DELETE /recipes/:id/notes/:noteId/files/:fileId**
+18. **DELETE /recipes/:id/notes/:noteId/files/:fileId**
     - Purpose: Remove one file from a note.
     - Authorization: Admin only.
 
 ### Menus
 
-18. **GET /menus**
+19. **GET /menus**
     - Purpose: List menus (public only for non-admin).
     - Response: Array of Menu (with nested groupings).
     - Authorization: Public for anyone; private only for admin.
 
-19. **GET /menus/:id**
+20. **GET /menus/:id**
     - Purpose: Get menu with nested groupings (each grouping has name and recipeIds in order). Short descriptions come from each recipe’s short_description when displaying.
     - Response: Menu (groupings embedded); optionally minimal Recipe info for display.
     - Authorization: Same as GET /menus.
 
-20. **POST /menus**
+21. **POST /menus**
     - Purpose: Create menu with nested structure.
     - Request body: name, isPublic, groupings (array of `{ name, recipeIds }`).
     - Response: Menu.
     - Authorization: Admin only.
 
-21. **PUT /menus/:id**
+22. **PUT /menus/:id**
     - Purpose: Update menu name, isPublic, and groupings. On edit, append current user id to editedByUserIds if not already present.
     - Request body: name, isPublic, groupings.
     - Response: Updated Menu.
     - Authorization: Admin only.
 
-22. **DELETE /menus/:id**
+23. **DELETE /menus/:id**
     - Purpose: Delete menu.
     - Authorization: Admin only.
 
@@ -233,7 +240,7 @@ Error responses: 400 validation, 401 unauthenticated, 403 forbidden (e.g. privat
 
 5. **Recipe detail / edit**
    - Purpose: View recipe, version history, and notes; edit metadata and add versions/notes (admin).
-   - Key features: Current version display (structured ingredients + markdown instructions); version history with diff or list; notes list with “last time” emphasis; add/edit note (with optional version link); upload/delete recipe files and note files (multiple per recipe/note); edit recipe metadata and create new version (admin only).
+   - Key features: Current version display (structured ingredients + markdown instructions); version history with diff or list; notes list with “last time” emphasis; add/edit note (with optional version link); upload/delete recipe files and note files (multiple per recipe/note); edit recipe metadata and content (admin only). When saving content changes, offer choice: update latest version in place (e.g. typo) or create new version (record in history).
 
 6. **Menus (list and edit)**
    - Purpose: List menus (admin sees all; non-admin sees public, read-only); create/edit menu (admin).
