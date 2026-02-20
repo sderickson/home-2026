@@ -42,7 +42,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
       makeWorkflowMachine(UpdateSchemaWorkflowDefinition),
       ({ context }) => ({
         path: "./schemas/recipe.ts",
-        prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add tables recipes and recipe_versions per spec. recipes: id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at. recipe_versions: id, recipe_id, content (JSON), is_latest, created_by, created_at. Index (recipe_id, is_latest). See docFiles.spec and plan Phase 1.`,
+        prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add tables recipe and recipe_version per spec. recipe: id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at. recipe_version: id, recipe_id, content (JSON), is_latest, created_by, created_at. Index (recipe_id, is_latest). See docFiles.spec and plan Phase 1.`,
       }),
     ),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
