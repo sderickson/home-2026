@@ -9,6 +9,8 @@ services:
       - "443:443/udp"
     env_file:
       - ./env.caddy
+      # BEGIN WORKFLOW AREA env-caddy FOR product/init
+      # END WORKFLOW AREA
     environment:
       - DISABLE_VITE_DEV_SERVER=#
     volumes:
@@ -45,6 +47,9 @@ services:
     env_file:
       - ./env.monolith.config
       - ./.env.monolith.secrets
+
+  # BEGIN WORKFLOW AREA monolith FOR product/init
+  # END WORKFLOW AREA
 
   prometheus:
     image: prom/prometheus:v2.46.0
