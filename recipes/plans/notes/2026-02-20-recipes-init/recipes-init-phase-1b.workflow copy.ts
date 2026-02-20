@@ -77,40 +77,6 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
       path: "./queries/recipe/versions-list.ts",
       prompt: `List versions for a recipe ordered by created_at.`,
     })),
-
-    step(CdStepMachine, () => ({ path: "../service/http" })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/list.ts",
-      prompt: `Handler for GET /recipes. Use list query; enforce public-only for non-admin.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/get.ts",
-      prompt: `Handler for GET /recipes/:id. Use get-by-id; return recipe + current version + optional notes/files.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/create.ts",
-      prompt: `Handler for POST /recipes. Admin only; use create-with-version.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/update.ts",
-      prompt: `Handler for PUT /recipes/:id. Admin only; use update-metadata.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/versions-list.ts",
-      prompt: `Handler for GET /recipes/:id/versions. Use versions-list query.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/versions-latest-update.ts",
-      prompt: `Handler for PUT /recipes/:id/versions/latest. Admin only; use update-latest-version.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/versions-create.ts",
-      prompt: `Handler for POST /recipes/:id/versions. Admin only; use create-version.`,
-    })),
-    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
-      path: "./routes/recipes/delete.ts",
-      prompt: `Handler for DELETE /recipes/:id. Admin only; use delete query.`,
-    })),
   ],
 });
 
