@@ -14,7 +14,6 @@
     "@sderickson/recipes-account-spa": "*",
     "@sderickson/recipes-admin-spa": "*",
     "@sderickson/recipes-app-spa": "*",
-    "@sderickson/recipes-auth-spa": "*",
     "@sderickson/recipes-root-spa": "*",
     "@vue/tsconfig": "^0.8.1"
   },

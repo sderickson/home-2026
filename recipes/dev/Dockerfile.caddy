@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:labs
+
+# Build hub static clients for serving alongside recipes vite dev server
+FROM node:22-slim AS hub-builder
+
+WORKDIR /app
+
+COPY --parents ./package.json ./package-lock.json ./saflib/identity/account-sdk/package.json ./saflib/admin/package.json ./saflib/identity/auth/package.json ./saflib/identity/auth-links/package.json ./saflib/cron/cron-spec/package.json ./saflib/cron/cron-vue/package.json ./saflib/email/email-vue/package.json ./saflib/env/package.json ./saflib/identity/identity-spec/package.json ./saflib/links/package.json ./saflib/monorepo/package.json ./saflib/openapi/package.json ./saflib/playwright/package.json ./saflib/sdk/package.json ./saflib/utils/package.json ./saflib/vite/package.json ./saflib/vue/package.json ./hub/clients/account/package.json ./hub/clients/admin/package.json ./hub/clients/app/package.json ./hub/clients/auth/package.json ./hub/clients/common/package.json ./hub/clients/links/package.json ./hub/clients/build/package.json ./hub/clients/root/package.json ./hub/service/sdk/package.json ./hub/service/spec/package.json ./
+RUN npm install --omit=dev
+
+COPY --parents ./saflib/identity/account-sdk ./saflib/admin ./saflib/identity/auth ./saflib/identity/auth-links ./saflib/cron/cron-spec ./saflib/cron/cron-vue ./saflib/email/email-vue ./saflib/env ./saflib/identity/identity-spec ./saflib/links ./saflib/monorepo ./saflib/openapi ./saflib/playwright ./saflib/sdk ./saflib/utils ./saflib/vite ./saflib/vue ./hub/clients/account ./hub/clients/admin ./hub/clients/app ./hub/clients/auth ./hub/clients/common ./hub/clients/links ./hub/clients/build ./hub/clients/root ./hub/service/sdk ./hub/service/spec ./
+
+WORKDIR /app/hub/clients/build
+RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=,app,auth,account,admin SERVICE_SUBDOMAINS=identity DEPLOYMENT_NAME=development TZ=UTC npm run build
+
+# Caddy with hub static builds baked in
+FROM caddy:2.9.1
+COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients

@@ -1,48 +1,62 @@
 import common.Caddyfile
 
-# Curried snippets
+# Recipes client subdomains → vite dev server
 
-(recipes-api-proxy) {
-	import api-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://recipes.docker.localhost {
+	reverse_proxy recipes-clients:5173
 }
 
-(recipes-admin-proxy) {
-	import admin-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://app.recipes.docker.localhost {
+	reverse_proxy recipes-clients:5173
 }
 
-# Subdomains
-
-{$PROTOCOL}://{$RECIPES_DOMAIN} {
-	reverse_proxy clients:5173
+http://admin.recipes.docker.localhost {
+	reverse_proxy recipes-clients:5173
 }
 
-{$PROTOCOL}://auth.{$RECIPES_DOMAIN} {
-	reverse_proxy clients:5173
+http://account.recipes.docker.localhost {
+	reverse_proxy recipes-clients:5173
 }
 
-{$PROTOCOL}://app.{$RECIPES_DOMAIN} {
-	reverse_proxy clients:5173
+# Hub client subdomains → static builds served by caddy
+
+http://docker.localhost {
+	import spa /hub-clients /root/index.html
 }
 
-{$PROTOCOL}://account.{$RECIPES_DOMAIN} {
-	reverse_proxy clients:5173
+http://app.docker.localhost {
+	import spa /hub-clients /app/index.html
 }
 
-{$PROTOCOL}://admin.{$RECIPES_DOMAIN} {
-	reverse_proxy clients:5173
+http://auth.docker.localhost {
+	import spa /hub-clients /auth/index.html
 }
 
-{$PROTOCOL}://recipes.{$RECIPES_DOMAIN} {
-	import recipes-api-proxy {$RECIPES_SERVICE_HTTP_HOST}
+http://account.docker.localhost {
+	import spa /hub-clients /account/index.html
 }
 
-{$PROTOCOL}://azurite.{$RECIPES_DOMAIN} {
+http://admin.docker.localhost {
+	import spa /hub-clients /admin/index.html
+}
+
+# Recipes API
+
+http://api.recipes.docker.localhost {
+	import api-proxy monolith:3000 monolith:3002
+}
+
+# Identity service
+
+http://identity.docker.localhost {
+	import identity docker.localhost monolith:3000
+}
+
+# Azurite
+
+http://azurite.docker.localhost {
 	reverse_proxy azurite:10000 {
 		header_up Host azurite:10000
 		header_up X-Forwarded-Host {host}
 	}
-}
-
-{$PROTOCOL}://identity.{$RECIPES_DOMAIN} {
-	import identity {$RECIPES_DOMAIN} {$RECIPES_IDENTITY_SERVICE_HTTP_HOST}
 }
