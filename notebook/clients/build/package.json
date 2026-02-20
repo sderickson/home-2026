@@ -14,7 +14,6 @@
     "@sderickson/notebook-account-spa": "*",
     "@sderickson/notebook-admin-spa": "*",
     "@sderickson/notebook-app-spa": "*",
-    "@sderickson/notebook-auth-spa": "*",
     "@sderickson/notebook-root-spa": "*",
     "@vue/tsconfig": "^0.8.1"
   },

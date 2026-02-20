@@ -1,33 +1,28 @@
-# common elements between dev and test
 services:
   caddy:
-    image: caddy:2.9.1
+    build:
+      context: ../..
+      dockerfile: ./notebook/dev/Dockerfile.caddy
     ports:
       - 80:80
     volumes:
       - ./caddy-config:/etc/caddy/
       - caddy_data:/data
       - caddy_config:/config
-    environment:
-      - NOTEBOOK_DOMAIN=${NOTEBOOK_DOMAIN}
-      - PROTOCOL=${PROTOCOL}
-      - NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST=${NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST}
-      - NOTEBOOK_SERVICE_HTTP_HOST=${NOTEBOOK_SERVICE_HTTP_HOST}
     depends_on:
-      - clients
+      - notebook-clients
 
-  clients:
-    # Named for local dev, but doesn't get published; not needed for prod
+  notebook-clients:
     image: sderickson-notebook-clients:latest
     build:
       context: ../..
       dockerfile: ./notebook/clients/build/Dockerfile
     environment:
-      - CLIENT_SUBDOMAINS=${NOTEBOOK_CLIENT_SUBDOMAINS}
-      - DOMAIN=${NOTEBOOK_DOMAIN}
+      - CLIENT_SUBDOMAINS=notebook,app.notebook,admin.notebook,account.notebook
+      - DOMAIN=docker.localhost
       - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
       - PROTOCOL=${PROTOCOL}
-      - SERVICE_SUBDOMAINS=${NOTEBOOK_SERVICE_SUBDOMAINS}
+      - SERVICE_SUBDOMAINS=identity,api.notebook
       - TZ=${TZ}
     volumes:
       - ../../notebook/clients/:/app/notebook/clients/
@@ -35,13 +30,13 @@ services:
       - ../../notebook/service/sdk/:/app/notebook/service/sdk/
     command: npm run dev
 
-  notebook-monolith:
+  monolith:
     image: ghcr.io/sderickson/sderickson-notebook-monolith:latest
     volumes:
       - ../../notebook/service/db/data:/app/notebook/service/db/data
       - ../../notebook/service/cron/data:/app/notebook/service/cron/data
-      - ../../notebook/service/identity/data:/app/notebook/service/identity/data
-      - notebook_identity_http_cache:/app/saflib/identity/identity-http/data
+      - ../../hub/service/identity/data:/app/hub/service/identity/data
+      - identity_http_cache:/app/saflib/identity/identity-http/data
 
     build:
       context: ../..
@@ -63,4 +58,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
-  notebook_identity_http_cache:
+  identity_http_cache:
