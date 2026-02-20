@@ -1,0 +1,49 @@
+updateRecipeVersionLatest:
+  summary: "Update the latest version in place (no new version created). Admin only."
+  operationId: "updateRecipeVersionLatest"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  requestBody:
+    required: true
+    description: "Version content (full or partial); same shape as RecipeVersion content."
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/recipe-version.yaml#/properties/content"
+
+  responses:
+    "200":
+      description: "Updated RecipeVersion (the latest)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/recipe-version.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
