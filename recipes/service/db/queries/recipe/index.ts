@@ -2,7 +2,8 @@
 import { createRecipe } from "./create.ts";
 import { createVersionRecipe } from "./create-version.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
-import { deleteRecipe } from "./delete.ts";
+import { deleteRecipe, type DeleteRecipeError } from "./delete.ts";
+export type { DeleteRecipeError };
 import { getByIdRecipe } from "./get-by-id.ts";
 import { listRecipes } from "./list.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
