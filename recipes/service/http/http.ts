@@ -7,7 +7,7 @@ import {
 } from "@sderickson/recipes-service-common";
 
 // BEGIN SORTED WORKFLOW AREA router-imports FOR express/add-handler
-
+import { createRecipesRouter } from "./routes/recipes/index.ts";
 // END WORKFLOW AREA
 
 /**
@@ -34,6 +34,7 @@ export function createRecipesHttpApp(
 
   // BEGIN WORKFLOW AREA app-use-routes FOR express/add-handler
 
+  app.use(createRecipesRouter());
   // END WORKFLOW AREA
 
   app.use(createErrorMiddleware());
