@@ -14,8 +14,24 @@ export interface RecipeRow {
   updatedAt: Date;
 }
 
+/** DB recipe_version row shape (from recipe_version table select). */
+export interface RecipeVersionRow {
+  id: string;
+  recipeId: string;
+  content: {
+    ingredients: { name: string; quantity: string; unit: string }[];
+    instructionsMarkdown: string;
+  };
+  isLatest: boolean;
+  createdBy: string;
+  createdAt: Date;
+}
+
 type RecipeListResponseItem =
   RecipesServiceResponseBody["listRecipes"][200][number];
+
+type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
+type RecipeVersionApi = GetRecipe200["currentVersion"];
 
 export function recipeToApiRecipe(
   row: RecipeRow,
@@ -32,5 +48,31 @@ export function recipeToApiRecipe(
     updatedBy: row.updatedBy,
     updatedAt: row.updatedAt.toISOString(),
     ...(currentVersionId !== undefined && { currentVersionId }),
+  };
+}
+
+export function recipeVersionToApiRecipeVersion(
+  row: RecipeVersionRow,
+): RecipeVersionApi {
+  return {
+    id: row.id,
+    recipeId: row.recipeId,
+    content: row.content,
+    isLatest: row.isLatest,
+    createdBy: row.createdBy,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+export function getByIdResultToGetRecipeResponse(
+  recipe: RecipeRow,
+  currentVersion: RecipeVersionRow,
+  options?: { notes?: GetRecipe200["notes"]; files?: GetRecipe200["files"] },
+): GetRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe, currentVersion.id),
+    currentVersion: recipeVersionToApiRecipeVersion(currentVersion),
+    ...(options?.notes !== undefined && { notes: options.notes }),
+    ...(options?.files !== undefined && { files: options.files }),
   };
 }
