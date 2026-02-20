@@ -3,6 +3,7 @@ import { createScopedMiddleware } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+import { versionsListRecipesHandler } from "./versions-list.ts";
 import { createRecipeHandler } from "./create.ts";
 import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
@@ -22,6 +23,7 @@ export const createRecipesRouter = () => {
   router.get("/recipes", listRecipesHandler);
   router.post("/recipes", createRecipeHandler);
   router.get("/recipes/:id", getRecipeHandler);
+  router.get("/recipes/:id/versions", versionsListRecipesHandler);
   router.put("/recipes/:id", updateRecipeHandler);
 
   return router;
