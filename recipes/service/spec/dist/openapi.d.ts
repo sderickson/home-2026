@@ -31,7 +31,8 @@ export interface paths {
         };
         /** Get one recipe with current version, optional notes and file list. */
         get: operations["getRecipe"];
-        put?: never;
+        /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
+        put: operations["updateRecipe"];
         post?: never;
         delete?: never;
         options?: never;
@@ -428,6 +429,69 @@ export interface operations {
                 };
             };
             /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Recipe title */
+                    title?: string;
+                    /** @description Short description shown on menus and list views */
+                    shortDescription?: string;
+                    /** @description Optional longer description shown on recipe detail */
+                    longDescription?: string | null;
+                    /** @description Whether the recipe is visible to non-admin users */
+                    isPublic?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Updated recipe. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
             403: {
                 headers: {
                     [name: string]: unknown;

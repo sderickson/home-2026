@@ -13,6 +13,8 @@ paths:
   /recipes/{id}:
     get:
       $ref: "./routes/recipes/get.yaml#/getRecipe"
+    put:
+      $ref: "./routes/recipes/update.yaml#/updateRecipe"
 
 components:
   schemas:

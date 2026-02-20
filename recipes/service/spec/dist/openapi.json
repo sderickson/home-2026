@@ -222,6 +222,94 @@
             }
           }
         }
+      },
+      "put": {
+        "summary": "Update recipe metadata only (title, descriptions, isPublic). Admin only.",
+        "operationId": "updateRecipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Fields to update; only provided fields are updated.",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Recipe title"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "description": "Short description shown on menus and list views"
+                  },
+                  "longDescription": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Optional longer description shown on recipe detail"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether the recipe is visible to non-admin users"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated recipe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
