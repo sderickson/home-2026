@@ -3,5 +3,5 @@ import type { paths } from "@sderickson/recipes-spec";
 
 export const { createHandler: recipesHandler } =
   typedCreateHandler<paths>({
-    subdomain: "recipes",
+    subdomain: "api.recipes",
   });
