@@ -34,7 +34,8 @@ export interface paths {
         /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
         put: operations["updateRecipe"];
         post?: never;
-        delete?: never;
+        /** Delete recipe (and handle versions/notes/files per policy). Admin only. */
+        delete: operations["deleteRecipe"];
         options?: never;
         head?: never;
         patch?: never;
@@ -516,6 +517,54 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["recipe"];
                 };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    deleteRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recipe deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
