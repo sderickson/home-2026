@@ -41,9 +41,9 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "menu",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 5: menus — spec, db, http with nested groupings JSON). Then: Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 5: menus — spec, db, http with nested groupings JSON). Then: Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/list.yaml",
@@ -68,7 +68,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
 
     step(CdStepMachine, () => ({ path: "../db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/menus.ts",
+      path: "./schemas/menu.ts",
       prompt: `Add table menus: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON). Queries list, get, create, update, delete. On update append user id to edited_by_user_ids.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({

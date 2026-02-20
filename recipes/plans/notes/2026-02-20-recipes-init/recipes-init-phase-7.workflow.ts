@@ -33,9 +33,9 @@ export const RecipesInitPhase7WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../clients/root" })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/list",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 7: root client — public recipe list, recipe detail, menu list, menu detail; refactor into SDK after each). Then: Add public recipe list page (read-only). Use SDK recipe list query. After implementing, refactor shared listing/display into recipes/service/sdk (e.g. sdk/add-component for recipe list item) so app client can reuse. See plan Phase 7.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 7: root client — public recipe list, recipe detail, menu list, menu detail; refactor into SDK after each). Then: Add public recipe list page (read-only). Use SDK recipe list query. After implementing, refactor shared listing/display into recipes/service/sdk (e.g. sdk/add-component for recipe list item) so app client can reuse. See plan Phase 7.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",

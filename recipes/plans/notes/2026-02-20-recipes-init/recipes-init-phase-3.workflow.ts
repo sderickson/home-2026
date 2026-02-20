@@ -41,9 +41,9 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-file-info",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",
@@ -61,7 +61,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
 
     step(CdStepMachine, () => ({ path: "../db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-files.ts",
+      path: "./schemas/recipe-file.ts",
       file: true,
       prompt: `Add table recipe_files: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by. Add queries list, insert, delete.`,
     })),

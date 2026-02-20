@@ -41,9 +41,9 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",
@@ -64,7 +64,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
 
     step(CdStepMachine, () => ({ path: "../db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-notes.ts",
+      path: "./schemas/recipe-note.ts",
       prompt: `Add table recipe_notes: id, recipe_id, recipe_version_id (nullable), body, ever_edited, created_by, created_at, updated_by, updated_at. Add queries for list, create, update, delete.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({

@@ -42,9 +42,9 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
     })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-version",
@@ -85,7 +85,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
 
     step(CdStepMachine, () => ({ path: "../db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipes.ts",
+      path: "./schemas/recipe.ts",
       prompt: `Add tables recipes and recipe_versions per spec. recipes: id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at. recipe_versions: id, recipe_id, content (JSON), is_latest, created_by, created_at. Index (recipe_id, is_latest). See docFiles.spec and plan Phase 1.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({

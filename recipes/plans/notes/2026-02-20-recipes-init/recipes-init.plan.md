@@ -15,7 +15,7 @@ This plan breaks the spec into workflow-sized chunks. Run workflows from the **r
 2. **OpenAPI routes** — `openapi/add-route` (cwd: `recipes/service/spec`):
    - Routes for recipes: list, get, create, update, delete, versions list, `versions/latest` (PUT), versions create (POST). Paths per existing spec route layout (e.g. `./routes/recipes/list.yaml`, `./routes/recipes/get.yaml`, etc.).
 3. **Drizzle schema** — `drizzle/update-schema` (cwd: `recipes/service/db`):
-   - Path to schema file per existing db layout (e.g. `./schemas/recipes.ts` or single `schema.ts` as used by the package).
+   - Path to schema file per existing db layout; use singular names (e.g. `./schemas/recipe.ts` for tables recipes/recipe_versions, or single `schema.ts` as used by the package).
    - Add tables: `recipes` (id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at), `recipe_versions` (id, recipe_id, content JSON, is_latest, created_by, created_at). Index on (recipe_id, is_latest).
 4. **Drizzle queries** — `drizzle/add-query` (cwd: `recipes/service/db`):
    - Queries for: list recipes (filter by public/admin), get recipe by id, get latest version, create recipe + first version, update recipe metadata, update latest version in place, create new version (transaction: insert + clear previous is_latest), delete recipe.

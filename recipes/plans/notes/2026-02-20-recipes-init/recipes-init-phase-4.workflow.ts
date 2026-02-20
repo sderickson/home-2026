@@ -41,9 +41,9 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note-file-info",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",
@@ -61,7 +61,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
 
     step(CdStepMachine, () => ({ path: "../db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-note-files.ts",
+      path: "./schemas/recipe-note-file.ts",
       file: true,
       prompt: `Add table recipe_note_files: id, recipe_note_id, ...fileMetadataColumns. Queries list, insert, delete.`,
     })),

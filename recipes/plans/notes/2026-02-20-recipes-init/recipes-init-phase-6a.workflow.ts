@@ -33,9 +33,9 @@ export const RecipesInitPhase6aWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
-    step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/recipes/list.ts",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 6a: SDK query hooks for recipes, notes, files, menus). Then: Add query for GET /recipes (list). See plan Phase 6.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 6a: SDK query hooks for recipes, notes, files, menus). Then: Add query for GET /recipes (list). See plan Phase 6.`,
     })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
       path: "./requests/recipes/get.ts",
