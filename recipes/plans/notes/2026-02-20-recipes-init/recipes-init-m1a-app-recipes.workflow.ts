@@ -72,20 +72,6 @@ export const RecipesInitM1aAppRecipesWorkflowDefinition = defineWorkflow<
       path: "./requests/recipes/delete.ts",
       prompt: `Add mutation DELETE /recipes/:id.`,
     })),
-
-    step(CdStepMachine, () => ({ path: "../clients/app" })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
-      path: "./pages/recipes/list",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Recipe list page: admin sees all recipes, non-admin sees public only. Hide "create recipe" for non-admin. Use SDK recipe list query. See plan M1a.`,
-    })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
-      path: "./pages/recipes/detail",
-      prompt: `Recipe detail page (read): current version, ingredients, instructions, descriptions. Use SDK recipe get. No edit UI yet. Admin can see delete; non-admin read-only.`,
-    })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
-      path: "./pages/recipes/detail",
-      prompt: `Update recipe detail: add edit (metadata + content). On save offer "Update latest version" vs "Save as new version." Admin only. Use SDK mutations. Include create-recipe flow from list.`,
-    })),
     GetFeedbackStep,
   ],
 });
