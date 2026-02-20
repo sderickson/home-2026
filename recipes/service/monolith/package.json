@@ -11,7 +11,8 @@
     "@saflib/sentry": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
-    "@sderickson/recipes-identity": "*",
+    "@sderickson/hub-identity": "*",
+    "@sderickson/recipes-service": "*",
     "@sderickson/recipes-service-common": "*"
   }
 }

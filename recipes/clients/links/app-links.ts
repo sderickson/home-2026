@@ -1,6 +1,6 @@
 import type { LinkMap } from "@saflib/links";
 
-const subdomain = "app";
+const subdomain = "app.recipes";
 
 console.log(
   "TODO: Remove this log once appLinks is being used by the routes",

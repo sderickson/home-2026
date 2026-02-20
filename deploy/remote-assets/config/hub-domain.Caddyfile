@@ -1,0 +1,116 @@
+# Hub domain model: single DOMAIN, single identity, all products (Phase 6)
+# Curried snippets
+
+(hub-spa) {
+	import spa /hub-clients {args[0]}
+}
+
+(recipes-spa) {
+	import spa /recipes-clients {args[0]}
+}
+
+(notebook-spa) {
+	import spa /notebook-clients {args[0]}
+}
+
+(api-proxy-identity) {
+	import api-proxy {$IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+(admin-proxy-identity) {
+	import admin-proxy {$IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+}
+
+# Hub client subdomains
+
+{$PROTOCOL}://{$DOMAIN} {
+	import hub-spa /root/index.html
+}
+
+{$PROTOCOL}://auth.{$DOMAIN} {
+	import hub-spa /auth/index.html
+}
+
+{$PROTOCOL}://app.{$DOMAIN} {
+	import hub-spa /app/index.html
+}
+
+{$PROTOCOL}://admin.{$DOMAIN} {
+	import hub-spa /admin/index.html
+}
+
+{$PROTOCOL}://account.{$DOMAIN} {
+	import hub-spa /account/index.html
+}
+
+# Recipes client subdomains
+
+{$PROTOCOL}://recipes.{$DOMAIN} {
+	import recipes-spa /recipes/index.html
+}
+
+{$PROTOCOL}://app.recipes.{$DOMAIN} {
+	import recipes-spa /app.recipes/index.html
+}
+
+{$PROTOCOL}://admin.recipes.{$DOMAIN} {
+	import recipes-spa /admin.recipes/index.html
+}
+
+{$PROTOCOL}://account.recipes.{$DOMAIN} {
+	import recipes-spa /account.recipes/index.html
+}
+
+# Notebook client subdomains
+
+{$PROTOCOL}://notebook.{$DOMAIN} {
+	import notebook-spa /notebook/index.html
+}
+
+{$PROTOCOL}://app.notebook.{$DOMAIN} {
+	import notebook-spa /app.notebook/index.html
+}
+
+{$PROTOCOL}://admin.notebook.{$DOMAIN} {
+	import notebook-spa /admin.notebook/index.html
+}
+
+{$PROTOCOL}://account.notebook.{$DOMAIN} {
+	import notebook-spa /account.notebook/index.html
+}
+
+# API subdomains (forward_auth to identity, then proxy to product service)
+
+{$PROTOCOL}://api.recipes.{$DOMAIN} {
+	import api-proxy-identity {$RECIPES_SERVICE_HTTP_HOST}
+}
+
+{$PROTOCOL}://api.notebook.{$DOMAIN} {
+	import api-proxy-identity {$NOTEBOOK_SERVICE_HTTP_HOST}
+}
+
+{$PROTOCOL}://hub.{$DOMAIN} {
+	import api-proxy-identity {$HUB_SERVICE_HTTP_HOST}
+}
+
+# Identity service
+
+{$PROTOCOL}://identity.{$DOMAIN} {
+	import identity {$DOMAIN} {$IDENTITY_SERVICE_HTTP_HOST}
+}
+
+# Admin-only services
+
+{$PROTOCOL}://grafana.{$DOMAIN} {
+	import admin-proxy-identity grafana:3000
+}
+
+{$PROTOCOL}://prometheus.{$DOMAIN} {
+	import admin-proxy-identity prometheus:9090
+}
+
+# Domain redirects (optional)
+
+{$DOMAIN_REDIRECTS} {
+	import redirect {$DOMAIN}
+}

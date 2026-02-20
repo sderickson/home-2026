@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:labs
+# Build recipes and notebook static clients for hub dev (hub clients run on vite)
+
+FROM node:22-slim AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install --omit=dev
+
+RUN (cd recipes/clients/build && DOMAIN=docker.localhost CLIENT_SUBDOMAINS=recipes,app.recipes,admin.recipes,account.recipes SERVICE_SUBDOMAINS=identity,api.recipes DEPLOYMENT_NAME=development TZ=UTC npm run build)
+
+RUN (cd notebook/clients/build && DOMAIN=docker.localhost CLIENT_SUBDOMAINS=notebook,app.notebook,admin.notebook,account.notebook SERVICE_SUBDOMAINS=identity,api.notebook DEPLOYMENT_NAME=development TZ=UTC npm run build)
+
+FROM caddy:2.9.1
+COPY --from=builder /app/recipes/clients/build/dist /srv/recipes-clients
+COPY --from=builder /app/notebook/clients/build/dist /srv/notebook-clients

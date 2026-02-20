@@ -1,48 +1,62 @@
 import common.Caddyfile
 
-# Curried snippets
+# Notebook client subdomains → vite dev server
 
-(notebook-api-proxy) {
-	import api-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://notebook.docker.localhost {
+	reverse_proxy notebook-clients:5173
 }
 
-(notebook-admin-proxy) {
-	import admin-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://app.notebook.docker.localhost {
+	reverse_proxy notebook-clients:5173
 }
 
-# Subdomains
-
-{$PROTOCOL}://{$NOTEBOOK_DOMAIN} {
-	reverse_proxy clients:5173
+http://admin.notebook.docker.localhost {
+	reverse_proxy notebook-clients:5173
 }
 
-{$PROTOCOL}://auth.{$NOTEBOOK_DOMAIN} {
-	reverse_proxy clients:5173
+http://account.notebook.docker.localhost {
+	reverse_proxy notebook-clients:5173
 }
 
-{$PROTOCOL}://app.{$NOTEBOOK_DOMAIN} {
-	reverse_proxy clients:5173
+# Hub client subdomains → static builds served by caddy
+
+http://docker.localhost {
+	import spa /hub-clients /root/index.html
 }
 
-{$PROTOCOL}://account.{$NOTEBOOK_DOMAIN} {
-	reverse_proxy clients:5173
+http://app.docker.localhost {
+	import spa /hub-clients /app/index.html
 }
 
-{$PROTOCOL}://admin.{$NOTEBOOK_DOMAIN} {
-	reverse_proxy clients:5173
+http://auth.docker.localhost {
+	import spa /hub-clients /auth/index.html
 }
 
-{$PROTOCOL}://notebook.{$NOTEBOOK_DOMAIN} {
-	import notebook-api-proxy {$NOTEBOOK_SERVICE_HTTP_HOST}
+http://account.docker.localhost {
+	import spa /hub-clients /account/index.html
 }
 
-{$PROTOCOL}://azurite.{$NOTEBOOK_DOMAIN} {
+http://admin.docker.localhost {
+	import spa /hub-clients /admin/index.html
+}
+
+# Notebook API
+
+http://api.notebook.docker.localhost {
+	import api-proxy monolith:3000 monolith:3003
+}
+
+# Identity service
+
+http://identity.docker.localhost {
+	import identity docker.localhost monolith:3000
+}
+
+# Azurite
+
+http://azurite.docker.localhost {
 	reverse_proxy azurite:10000 {
 		header_up Host azurite:10000
 		header_up X-Forwarded-Host {host}
 	}
-}
-
-{$PROTOCOL}://identity.{$NOTEBOOK_DOMAIN} {
-	import identity {$NOTEBOOK_DOMAIN} {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST}
 }

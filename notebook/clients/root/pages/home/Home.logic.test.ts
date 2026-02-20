@@ -10,7 +10,7 @@ beforeEach(() => {
       protocol: "http:",
     },
   } as unknown as Document;
-  setClientName("root");
+  setClientName("notebook");
 });
 
 describe("getRegisterLinkProps", () => {

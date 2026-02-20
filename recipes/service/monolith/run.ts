@@ -4,7 +4,7 @@ import { setServiceName } from "@saflib/node";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/sentry";
-import { startRecipesIdentityService } from "@sderickson/recipes-identity";
+import { startHubIdentityService } from "@sderickson/hub-identity";
 
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
@@ -12,5 +12,5 @@ addLokiTransport();
 initSentry();
 collectSystemMetrics();
 
-startRecipesIdentityService();
+startHubIdentityService();
 startRecipesService();

@@ -5,7 +5,7 @@ import { createRootRouter } from "./router.ts";
 import { root_strings } from "./strings.ts";
 
 export const main = () => {
-  setClientName("root");
+  setClientName("recipes");
   const router = createRootRouter();
   createVueApp(Spa, {
     router,

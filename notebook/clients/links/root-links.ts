@@ -1,6 +1,6 @@
 import type { LinkMap } from "@saflib/links";
 
-const subdomain = "root";
+const subdomain = "notebook";
 
 console.log(
   "TODO: Remove this log once rootLinks is being used by the routes",

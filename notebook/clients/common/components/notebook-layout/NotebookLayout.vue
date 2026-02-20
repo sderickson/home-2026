@@ -18,7 +18,7 @@
           :key="link.path"
           variant="text"
           class="text-uppercase font-weight-regular"
-          :href="linkToHrefWithHost(link)"
+          :href="getNavHref(link)"
         >
           {{ link.name }}
         </v-btn>
@@ -45,7 +45,7 @@
         :key="link.name"
         :title="link.name"
         class="text-uppercase text-center py-4"
-        :href="linkToHrefWithHost(link)"
+        :href="getNavHref(link)"
       />
     </v-navigation-drawer>
 
@@ -66,7 +66,7 @@ import { useRoute } from "vue-router";
 import { TopLevelContainer } from "@saflib/vue/components";
 import { notebook_layout } from "./NotebookLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
-import { linkToHrefWithHost, type Link } from "@saflib/links";
+import { linkToHref, linkToHrefWithHost, getHost, type Link } from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
@@ -109,4 +109,17 @@ const links = computed<LinkWithName[]>(() => {
         { ...authLinks.register, name: "Sign Up" },
       ];
 });
+
+function getNavHref(link: LinkWithName) {
+  if (link.subdomain !== "auth") {
+    return linkToHrefWithHost(link);
+  }
+  let redirect: string | undefined;
+  if (link.path === "/login" || link.path === "/register") {
+    redirect = linkToHref(appLinks.home, { domain: getHost() });
+  } else if (link.path === "/logout") {
+    redirect = linkToHref(rootLinks.home, { domain: getHost() });
+  }
+  return linkToHrefWithHost(link, redirect != null ? { params: { redirect } } : undefined);
+}
 </script>

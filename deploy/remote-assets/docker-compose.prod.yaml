@@ -8,11 +8,7 @@ services:
       - "443:443"
       - "443:443/udp"
     env_file:
-      # BEGIN WORKFLOW AREA env-caddy FOR product/init
-      - ./env.recipes.caddy
-      - ./env.notebook.caddy
-      - ./env.hub.caddy
-      # END WORKFLOW AREA
+      - ./env.caddy
     environment:
       - DISABLE_VITE_DEV_SERVER=#
     volumes:
@@ -21,80 +17,34 @@ services:
       - caddy_config:/config
     restart: unless-stopped
 
-  # BEGIN WORKFLOW AREA monolith FOR product/init
-  recipes-monolith:
-    image: $CONTAINER_REGISTRY/sderickson-recipes-monolith:latest
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-    memswap_limit: 2G
-    volumes:
-      - /opt/recipes/cron:/app/recipes/service/cron/data
-      - /opt/recipes/db:/app/recipes/service/db/data
-      - /opt/recipes/identity:/app/recipes/service/identity/data
-      - /opt/recipes/identity-http:/app/saflib/identity/identity-http/data
-
-    build:
-      context: ../..
-      dockerfile: recipes/service/monolith/Dockerfile
-
-    env_file:
-      - ./env.recipes.config
-      - ./.env.recipes.secrets
-    
-  notebook-monolith:
-    image: $CONTAINER_REGISTRY/sderickson-notebook-monolith:latest
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-    memswap_limit: 2G
-    volumes:
-      - /opt/notebook/cron:/app/notebook/service/cron/data
-      - /opt/notebook/db:/app/notebook/service/db/data
-      - /opt/notebook/identity:/app/notebook/service/identity/data
-      - /opt/notebook/identity-http:/app/saflib/identity/identity-http/data
-
-    build:
-      context: ../..
-      dockerfile: notebook/service/monolith/Dockerfile
-
-    env_file:
-      - ./env.notebook.config
-      - ./.env.notebook.secrets
-    
-  hub-monolith:
+  # Single hub monolith runs identity + hub + recipes + notebook services (Phase 6)
+  monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     restart: unless-stopped
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 512M
         reservations:
-          memory: 128M
+          memory: 256M
     memswap_limit: 2G
     volumes:
       - /opt/hub/cron:/app/hub/service/cron/data
       - /opt/hub/db:/app/hub/service/db/data
       - /opt/hub/identity:/app/hub/service/identity/data
       - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
+      - /opt/recipes/cron:/app/recipes/service/cron/data
+      - /opt/recipes/db:/app/recipes/service/db/data
+      - /opt/notebook/cron:/app/notebook/service/cron/data
+      - /opt/notebook/db:/app/notebook/service/db/data
 
     build:
       context: ../..
       dockerfile: hub/service/monolith/Dockerfile
 
     env_file:
-      - ./env.hub.config
-      - ./.env.hub.secrets
-    
-  # END WORKFLOW AREA
+      - ./env.monolith.config
+      - ./.env.monolith.secrets
 
   prometheus:
     image: prom/prometheus:v2.46.0

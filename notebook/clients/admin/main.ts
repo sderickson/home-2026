@@ -5,7 +5,7 @@ import { createAdminRouter } from "./router.ts";
 import { admin_strings } from "./strings.ts";
 
 export const main = () => {
-  setClientName("admin");
+  setClientName("admin.notebook");
   const router = createAdminRouter();
   createVueApp(Spa, {
     router,

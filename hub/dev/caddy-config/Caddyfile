@@ -1,48 +1,88 @@
 import common.Caddyfile
 
-# Curried snippets
+# Hub client subdomains → vite dev server
 
-(hub-api-proxy) {
-	import api-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://docker.localhost {
+	reverse_proxy hub-clients:5173
 }
 
-(hub-admin-proxy) {
-	import admin-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+http://app.docker.localhost {
+	reverse_proxy hub-clients:5173
 }
 
-# Subdomains
-
-{$PROTOCOL}://{$HUB_DOMAIN} {
-	reverse_proxy clients:5173
+http://auth.docker.localhost {
+	reverse_proxy hub-clients:5173
 }
 
-{$PROTOCOL}://auth.{$HUB_DOMAIN} {
-	reverse_proxy clients:5173
+http://account.docker.localhost {
+	reverse_proxy hub-clients:5173
 }
 
-{$PROTOCOL}://app.{$HUB_DOMAIN} {
-	reverse_proxy clients:5173
+http://admin.docker.localhost {
+	reverse_proxy hub-clients:5173
 }
 
-{$PROTOCOL}://account.{$HUB_DOMAIN} {
-	reverse_proxy clients:5173
+# Recipes client subdomains → static builds served by caddy
+
+http://recipes.docker.localhost {
+	import spa /recipes-clients /recipes/index.html
 }
 
-{$PROTOCOL}://admin.{$HUB_DOMAIN} {
-	reverse_proxy clients:5173
+http://app.recipes.docker.localhost {
+	import spa /recipes-clients /app.recipes/index.html
 }
 
-{$PROTOCOL}://hub.{$HUB_DOMAIN} {
-	import hub-api-proxy {$HUB_SERVICE_HTTP_HOST}
+http://admin.recipes.docker.localhost {
+	import spa /recipes-clients /admin.recipes/index.html
 }
 
-{$PROTOCOL}://azurite.{$HUB_DOMAIN} {
+http://account.recipes.docker.localhost {
+	import spa /recipes-clients /account.recipes/index.html
+}
+
+# Notebook client subdomains → static builds served by caddy
+
+http://notebook.docker.localhost {
+	import spa /notebook-clients /notebook/index.html
+}
+
+http://app.notebook.docker.localhost {
+	import spa /notebook-clients /app.notebook/index.html
+}
+
+http://admin.notebook.docker.localhost {
+	import spa /notebook-clients /admin.notebook/index.html
+}
+
+http://account.notebook.docker.localhost {
+	import spa /notebook-clients /account.notebook/index.html
+}
+
+# API subdomains
+
+http://api.recipes.docker.localhost {
+	import api-proxy monolith:3000 monolith:3002
+}
+
+http://api.notebook.docker.localhost {
+	import api-proxy monolith:3000 monolith:3003
+}
+
+http://hub.docker.localhost {
+	import api-proxy monolith:3000 monolith:3001
+}
+
+# Identity service
+
+http://identity.docker.localhost {
+	import identity docker.localhost monolith:3000
+}
+
+# Azurite
+
+http://azurite.docker.localhost {
 	reverse_proxy azurite:10000 {
 		header_up Host azurite:10000
 		header_up X-Forwarded-Host {host}
 	}
-}
-
-{$PROTOCOL}://identity.{$HUB_DOMAIN} {
-	import identity {$HUB_DOMAIN} {$HUB_IDENTITY_SERVICE_HTTP_HOST}
 }
