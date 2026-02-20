@@ -37,7 +37,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(
       makeWorkflowMachine(UpdateSchemaWorkflowDefinition),
       ({ context }) => ({
@@ -78,7 +78,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
       prompt: `List versions for a recipe ordered by created_at.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/list.ts",
       prompt: `Handler for GET /recipes. Use list query; enforce public-only for non-admin.`,

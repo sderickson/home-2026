@@ -62,7 +62,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/notes/:noteId. Admin only. See spec API #12.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/recipe-note.ts",
       prompt: `Add table recipe_note: id, recipe_id, recipe_version_id (nullable), body, ever_edited, created_by, created_at, updated_by, updated_at.`,
@@ -84,7 +84,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       prompt: `Delete recipe note.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.ts",
       prompt: `Handler GET /recipes/:id/notes.`,

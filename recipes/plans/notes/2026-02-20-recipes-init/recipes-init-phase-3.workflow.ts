@@ -59,7 +59,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/files/:fileId. Admin only. See spec API #15.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/recipe-file.ts",
       file: true,
@@ -78,7 +78,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       prompt: `Delete recipe file by id.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.ts",
       prompt: `Handler GET /recipes/:id/files.`,

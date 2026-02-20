@@ -59,7 +59,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only. See spec API #18.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/recipe-note-file.ts",
       file: true,
@@ -78,7 +78,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       prompt: `Delete note file by id.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.ts",
       prompt: `Handler GET /recipes/:id/notes/:noteId/files.`,

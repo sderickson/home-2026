@@ -66,7 +66,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /menus/:id. Admin only. See spec API #23.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
       path: "./schemas/menu.ts",
       prompt: `Add table menu: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON). Queries list, get, create, update, delete. On update append user id to edited_by_user_ids.`,
@@ -92,7 +92,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       prompt: `Delete menu.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/menus/list.ts",
       prompt: `Handler GET /menus.`,
