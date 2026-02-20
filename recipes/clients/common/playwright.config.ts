@@ -1,6 +1,7 @@
 // Hack - load env a better way, but not dotenv, it's endless pushing dotenvx
-process.env.DOMAIN = "recipes.docker.localhost";
+// Hub model: single domain, api.recipes subdomain for API
+process.env.DOMAIN = "docker.localhost";
 process.env.PROTOCOL = "http";
-process.env.SERVICE_SUBDOMAINS = "identity,recipes";
+process.env.SERVICE_SUBDOMAINS = "identity,api.recipes";
 
 export { default } from "@saflib/playwright/playwright.config";
