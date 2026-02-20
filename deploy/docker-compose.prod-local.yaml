@@ -7,32 +7,13 @@ services:
     env_file: !override
       - ./env.caddy.prod-local
 
-  # BEGIN WORKFLOW AREA monolith FOR product/init
-  recipes-monolith:
+  monolith:
     extends:
       file: remote-assets/docker-compose.prod.yaml
-      service: recipes-monolith
+      service: monolith
     volumes: !override []
     env_file: !override
-      - ./env.recipes.prod-local
-  
-  notebook-monolith:
-    extends:
-      file: remote-assets/docker-compose.prod.yaml
-      service: notebook-monolith
-    volumes: !override []
-    env_file: !override
-      - ./env.notebook.prod-local
-  
-  hub-monolith:
-    extends:
-      file: remote-assets/docker-compose.prod.yaml
-      service: hub-monolith
-    volumes: !override []
-    env_file: !override
-      - ./env.hub.prod-local
-  
-  # END WORKFLOW AREA
+      - ./env.monolith.prod-local
 
   loki:
     extends:
