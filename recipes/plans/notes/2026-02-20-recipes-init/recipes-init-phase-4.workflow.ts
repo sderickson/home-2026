@@ -43,7 +43,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-note-file-info",
-      prompt: `Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",

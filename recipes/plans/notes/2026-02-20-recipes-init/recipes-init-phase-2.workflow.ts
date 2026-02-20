@@ -43,7 +43,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-note",
-      prompt: `Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",

@@ -35,7 +35,7 @@ export const RecipesInitPhase6bWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/create.ts",
-      prompt: `Add mutation POST /recipes.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 6b: SDK mutation hooks, including upload). Then: Add mutation POST /recipes.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/update.ts",

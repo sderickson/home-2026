@@ -43,7 +43,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "menu",
-      prompt: `Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 5: menus — spec, db, http with nested groupings JSON). Then: Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/list.yaml",

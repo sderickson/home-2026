@@ -35,7 +35,7 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail-version-history",
-      prompt: `Update recipe detail: add version history section (list versions, optionally diff). Admin only. See plan Phase 8.4.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 8b: app client — version history, notes, recipe files, note files on recipe detail). Then: Update recipe detail: add version history section (list versions, optionally diff). Admin only. See plan Phase 8.4.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail-notes",

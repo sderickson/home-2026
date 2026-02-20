@@ -43,7 +43,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-file-info",
-      prompt: `Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",

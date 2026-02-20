@@ -44,7 +44,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe",
-      prompt: `Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See docFiles.spec.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
     })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-version",

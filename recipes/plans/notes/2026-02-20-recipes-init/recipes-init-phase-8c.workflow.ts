@@ -35,7 +35,7 @@ export const RecipesInitPhase8cWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/list",
-      prompt: `Menu list: admin sees all, non-admin public; hide create for non-admin. Reuse SDK. See plan Phase 8.8.`,
+      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 8c: app client — menu list, menu create/edit). Then: Menu list: admin sees all, non-admin public; hide create for non-admin. Reuse SDK. See plan Phase 8.8.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/edit",
