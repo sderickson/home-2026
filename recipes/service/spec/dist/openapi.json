@@ -17,6 +17,9 @@
       "Recipe": {
         "$ref": "#/components/schemas/recipe"
       },
+      "RecipeVersion": {
+        "$ref": "#/components/schemas/recipe-version"
+      },
       "error": {
         "type": "object",
         "properties": {
@@ -208,6 +211,114 @@
           "createdAt",
           "updatedBy",
           "updatedAt"
+        ]
+      },
+      "recipe-version": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this recipe version",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "recipeId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id of the recipe this version belongs to",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "content": {
+            "type": "object",
+            "description": "Version body — structured ingredients and markdown instructions",
+            "properties": {
+              "ingredients": {
+                "type": "array",
+                "description": "List of ingredients; quantity and unit are strings (e.g. \"2+1/3\", \"cups\")",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "quantity",
+                    "unit"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Ingredient name",
+                      "example": "All-purpose flour"
+                    },
+                    "quantity": {
+                      "type": "string",
+                      "description": "Quantity as string to support values like \"1/3\", \"2+1/3\"",
+                      "example": "2+1/3"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "description": "Unit of measure (unrestricted string)",
+                      "example": "cups"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "name": "All-purpose flour",
+                    "quantity": "2",
+                    "unit": "cups"
+                  },
+                  {
+                    "name": "Butter",
+                    "quantity": "1/2",
+                    "unit": "cup"
+                  }
+                ]
+              },
+              "instructionsMarkdown": {
+                "type": "string",
+                "description": "Recipe instructions in markdown",
+                "example": "1. Preheat oven to 350°F.\n2. Mix dry ingredients..."
+              }
+            },
+            "required": [
+              "ingredients",
+              "instructionsMarkdown"
+            ],
+            "example": {
+              "ingredients": [
+                {
+                  "name": "All-purpose flour",
+                  "quantity": "2",
+                  "unit": "cups"
+                }
+              ],
+              "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+            }
+          },
+          "isLatest": {
+            "type": "boolean",
+            "description": "Whether this version is the current one for the recipe (only one per recipe is true)",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the creator of this version",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this version was created",
+            "example": "2023-01-15T14:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "recipeId",
+          "content",
+          "isLatest",
+          "createdBy",
+          "createdAt"
         ]
       }
     }

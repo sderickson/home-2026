@@ -10,6 +10,7 @@ export interface components {
         Error: components["schemas"]["error"];
         ProductEvent: components["schemas"]["index"];
         Recipe: components["schemas"]["recipe"];
+        RecipeVersion: components["schemas"]["recipe-version"];
         error: {
             /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
             code?: string;
@@ -109,6 +110,90 @@ export interface components {
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
              */
             currentVersionId?: string;
+        };
+        "recipe-version": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for this recipe version
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Id of the recipe this version belongs to
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            recipeId: string;
+            /**
+             * @description Version body — structured ingredients and markdown instructions
+             * @example {
+             *       "ingredients": [
+             *         {
+             *           "name": "All-purpose flour",
+             *           "quantity": "2",
+             *           "unit": "cups"
+             *         }
+             *       ],
+             *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+             *     }
+             */
+            content: {
+                /**
+                 * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
+                 * @example [
+                 *       {
+                 *         "name": "All-purpose flour",
+                 *         "quantity": "2",
+                 *         "unit": "cups"
+                 *       },
+                 *       {
+                 *         "name": "Butter",
+                 *         "quantity": "1/2",
+                 *         "unit": "cup"
+                 *       }
+                 *     ]
+                 */
+                ingredients: {
+                    /**
+                     * @description Ingredient name
+                     * @example All-purpose flour
+                     */
+                    name: string;
+                    /**
+                     * @description Quantity as string to support values like "1/3", "2+1/3"
+                     * @example 2+1/3
+                     */
+                    quantity: string;
+                    /**
+                     * @description Unit of measure (unrestricted string)
+                     * @example cups
+                     */
+                    unit: string;
+                }[];
+                /**
+                 * @description Recipe instructions in markdown
+                 * @example 1. Preheat oven to 350°F.
+                 *     2. Mix dry ingredients...
+                 */
+                instructionsMarkdown: string;
+            };
+            /**
+             * @description Whether this version is the current one for the recipe (only one per recipe is true)
+             * @example true
+             */
+            isLatest: boolean;
+            /**
+             * Format: uuid
+             * @description User id of the creator of this version
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When this version was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
         };
     };
     responses: never;

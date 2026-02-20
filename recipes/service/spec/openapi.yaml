@@ -31,4 +31,6 @@ components:
 
     Recipe:
       $ref: "./schemas/recipe.yaml"
+    RecipeVersion:
+      $ref: "./schemas/recipe-version.yaml"
     # END WORKFLOW AREA
