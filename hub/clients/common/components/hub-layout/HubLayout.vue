@@ -111,12 +111,15 @@ const links = computed<LinkWithName[]>(() => {
 });
 
 function getNavHref(link: LinkWithName) {
-  const needsRedirect =
-    link.subdomain === "auth" &&
-    (link.path === "/login" || link.path === "/register");
-  const redirectToApp = needsRedirect
-    ? linkToHref(appLinks.home, { domain: getHost() })
-    : undefined;
-  return linkToHrefWithHost(link, redirectToApp != null ? { params: { redirect: redirectToApp } } : undefined);
+  if (link.subdomain !== "auth") {
+    return linkToHrefWithHost(link);
+  }
+  let redirect: string | undefined;
+  if (link.path === "/login" || link.path === "/register") {
+    redirect = linkToHref(appLinks.home, { domain: getHost() });
+  } else if (link.path === "/logout") {
+    redirect = linkToHref(rootLinks.home, { domain: getHost() });
+  }
+  return linkToHrefWithHost(link, redirect != null ? { params: { redirect } } : undefined);
 }
 </script>
