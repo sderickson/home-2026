@@ -12,13 +12,14 @@
 import { home_page as strings } from "./Home.strings.ts";
 import { useHomeLoader } from "./Home.loader.ts";
 import { useReverseT } from "@sderickson/recipes-root-spa/i18n";
-import { linkToProps } from "@saflib/links";
+import { linkToProps, linkToHref, getHost } from "@saflib/links";
 import { authLinks } from "@saflib/auth-links";
+import { appLinks } from "@sderickson/recipes-links";
 
 const { t } = useReverseT();
 useHomeLoader();
 
 const registerLinkProps = linkToProps(authLinks.register, {
-  params: { redirect: window.location.href },
+  params: { redirect: linkToHref(appLinks.home, { domain: getHost() }) },
 });
 </script>

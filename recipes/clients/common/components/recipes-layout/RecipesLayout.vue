@@ -67,7 +67,7 @@ import { TopLevelContainer } from "@saflib/vue/components";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 import { authLinks } from "@saflib/auth-links";
-import { linkToHrefWithHost, type Link } from "@saflib/links";
+import { linkToHref, linkToHrefWithHost, getHost, type Link } from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
@@ -113,6 +113,9 @@ function getNavHref(link: LinkWithName) {
   const needsRedirect =
     link.subdomain === "auth" &&
     (link.path === "/login" || link.path === "/register");
-  return linkToHrefWithHost(link, needsRedirect ? { params: { redirect: window.location.href } } : undefined);
+  const redirectToApp = needsRedirect
+    ? linkToHref(appLinks.home, { domain: getHost() })
+    : undefined;
+  return linkToHrefWithHost(link, redirectToApp != null ? { params: { redirect: redirectToApp } } : undefined);
 }
 </script>
