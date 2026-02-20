@@ -9,6 +9,7 @@ export interface components {
     schemas: {
         Error: components["schemas"]["error"];
         ProductEvent: components["schemas"]["index"];
+        Recipe: components["schemas"]["recipe"];
         error: {
             /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
             code?: string;
@@ -51,6 +52,64 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
+        recipe: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the recipe
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Recipe title
+             * @example Classic Chocolate Chip Cookies
+             */
+            title: string;
+            /**
+             * @description Short description shown on menus and list views
+             * @example Crispy edges, chewy centers
+             */
+            shortDescription: string;
+            /**
+             * @description Optional longer description shown on recipe detail (not on menu)
+             * @example A crowd-pleasing recipe that works every time. Best with room-temperature butter.
+             */
+            longDescription?: string | null;
+            /**
+             * @description Whether the recipe is visible to non-admin users
+             * @example true
+             */
+            isPublic: boolean;
+            /**
+             * Format: uuid
+             * @description User id of the creator
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description User id of the last updater
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            updatedBy: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+            /**
+             * Format: uuid
+             * @description Optional id of the current/latest version for display
+             * @example b2c3d4e5-e89b-12d3-a456-426614174002
+             */
+            currentVersionId?: string;
+        };
     };
     responses: never;
     parameters: never;

@@ -15,7 +15,7 @@ export type Error = components["schemas"]["Error"];
 export type ProductEvent = components["schemas"]["ProductEvent"];
 
 // BEGIN SORTED WORKFLOW AREA schema-exports FOR openapi/add-schema
-
+export type Recipe = components["schemas"]["Recipe"];
 // END WORKFLOW AREA
 
 import * as json from "./dist/openapi.json" with { type: "json" };

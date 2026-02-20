@@ -29,4 +29,6 @@ components:
     # BEGIN WORKFLOW AREA schema-components FOR openapi/add-schema
 
 
+    Recipe:
+      $ref: "./schemas/recipe.yaml"
     # END WORKFLOW AREA
