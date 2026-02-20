@@ -15,6 +15,9 @@ paths:
       $ref: "./routes/recipes/get.yaml#/getRecipe"
     put:
       $ref: "./routes/recipes/update.yaml#/updateRecipe"
+  /recipes/{id}/versions:
+    get:
+      $ref: "./routes/recipes/versions-list.yaml#/listRecipeVersions"
 
 components:
   schemas:
