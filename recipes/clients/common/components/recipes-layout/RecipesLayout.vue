@@ -18,7 +18,7 @@
           :key="link.path"
           variant="text"
           class="text-uppercase font-weight-regular"
-          :href="linkToHrefWithHost(link)"
+          :href="getNavHref(link)"
         >
           {{ link.name }}
         </v-btn>
@@ -45,7 +45,7 @@
         :key="link.name"
         :title="link.name"
         class="text-uppercase text-center py-4"
-        :href="linkToHrefWithHost(link)"
+        :href="getNavHref(link)"
       />
     </v-navigation-drawer>
 
@@ -108,4 +108,11 @@ const links = computed<LinkWithName[]>(() => {
     { ...authLinks.register, name: "Sign Up" },
   ];
 });
+
+function getNavHref(link: LinkWithName) {
+  const needsRedirect =
+    link.subdomain === "auth" &&
+    (link.path === "/login" || link.path === "/register");
+  return linkToHrefWithHost(link, needsRedirect ? { params: { redirect: window.location.href } } : undefined);
+}
 </script>

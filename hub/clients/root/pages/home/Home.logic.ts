@@ -6,5 +6,7 @@ import { authLinks } from "@saflib/auth-links";
  * Uses the auth register link so the button navigates to the auth app's register page.
  */
 export function getRegisterLinkProps() {
-  return linkToProps(authLinks.register);
+  return linkToProps(authLinks.register, {
+    params: { redirect: typeof window !== "undefined" ? window.location.href : "" },
+  });
 }

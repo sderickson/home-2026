@@ -18,5 +18,7 @@ import { authLinks } from "@saflib/auth-links";
 const { t } = useReverseT();
 useHomeLoader();
 
-const registerLinkProps = linkToProps(authLinks.register);
+const registerLinkProps = linkToProps(authLinks.register, {
+  params: { redirect: window.location.href },
+});
 </script>
