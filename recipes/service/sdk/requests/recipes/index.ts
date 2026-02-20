@@ -6,5 +6,6 @@ export * from "./versions-list.ts";
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
 export * from "./create.ts";
 export * from "./update.ts";
+export * from "./versions-create.ts";
 export * from "./versions-latest-update.ts";
 // END WORKFLOW AREA
