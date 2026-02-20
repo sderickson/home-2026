@@ -1,33 +1,28 @@
-# common elements between dev and test
 services:
   caddy:
-    image: caddy:2.9.1
+    build:
+      context: ../..
+      dockerfile: ./hub/dev/Dockerfile.caddy
     ports:
       - 80:80
     volumes:
       - ./caddy-config:/etc/caddy/
       - caddy_data:/data
       - caddy_config:/config
-    environment:
-      - HUB_DOMAIN=${HUB_DOMAIN}
-      - PROTOCOL=${PROTOCOL}
-      - HUB_IDENTITY_SERVICE_HTTP_HOST=${HUB_IDENTITY_SERVICE_HTTP_HOST}
-      - HUB_SERVICE_HTTP_HOST=${HUB_SERVICE_HTTP_HOST}
     depends_on:
-      - clients
+      - hub-clients
 
-  clients:
-    # Named for local dev, but doesn't get published; not needed for prod
+  hub-clients:
     image: sderickson-hub-clients:latest
     build:
       context: ../..
       dockerfile: ./hub/clients/build/Dockerfile
     environment:
-      - CLIENT_SUBDOMAINS=${HUB_CLIENT_SUBDOMAINS}
-      - DOMAIN=${HUB_DOMAIN}
+      - CLIENT_SUBDOMAINS=,app,auth,account,admin
+      - DOMAIN=docker.localhost
       - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
       - PROTOCOL=${PROTOCOL}
-      - SERVICE_SUBDOMAINS=${HUB_SERVICE_SUBDOMAINS}
+      - SERVICE_SUBDOMAINS=identity,hub
       - TZ=${TZ}
     volumes:
       - ../../hub/clients/:/app/hub/clients/
@@ -35,20 +30,23 @@ services:
       - ../../hub/service/sdk/:/app/hub/service/sdk/
     command: npm run dev
 
-  hub-monolith:
-    image: ghcr.io/sderickson/sderickson-hub-monolith:latest
+  monolith:
+    image: sderickson-hub-monolith:latest
     volumes:
       - ../../hub/service/db/data:/app/hub/service/db/data
       - ../../hub/service/cron/data:/app/hub/service/cron/data
       - ../../hub/service/identity/data:/app/hub/service/identity/data
-      - hub_identity_http_cache:/app/saflib/identity/identity-http/data
+      - ../../recipes/service/db/data:/app/recipes/service/db/data
+      - ../../recipes/service/cron/data:/app/recipes/service/cron/data
+      - ../../notebook/service/db/data:/app/notebook/service/db/data
+      - ../../notebook/service/cron/data:/app/notebook/service/cron/data
+      - identity_http_cache:/app/saflib/identity/identity-http/data
 
     build:
       context: ../..
       dockerfile: hub/service/monolith/Dockerfile
 
     env_file:
-      - ./.env
       - ./env.dev
 
   azurite:
@@ -63,4 +61,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
-  hub_identity_http_cache:
+  identity_http_cache:

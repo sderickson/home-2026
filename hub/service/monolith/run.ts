@@ -5,6 +5,8 @@ import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/sentry";
 import { startHubIdentityService } from "@sderickson/hub-identity";
+import { startRecipesService } from "@sderickson/recipes-service";
+import { startNotebookService } from "@sderickson/notebook-service";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
@@ -14,3 +16,5 @@ collectSystemMetrics();
 
 startHubIdentityService();
 startHubService();
+startRecipesService();
+startNotebookService();
