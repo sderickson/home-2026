@@ -5,7 +5,7 @@ let client: ReturnType<typeof createSafClient<paths>> | null = null;
 
 export const getClient = () => {
   if (!client) {
-    client = createSafClient<paths>("notebook");
+    client = createSafClient<paths>("api.notebook");
   }
   return client;
 };
