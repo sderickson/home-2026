@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one recipe with current version, optional notes and file list. */
+        get: operations["getRecipe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -96,39 +113,6 @@ export interface components {
              */
             message?: string;
         };
-        login: {
-            /** @enum {string} */
-            event: "login";
-            context: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup: {
-            /** @enum {string} */
-            event?: "signup";
-            context?: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup_view: {
-            /** @enum {string} */
-            event?: "signup_view";
-        };
-        verify_email: {
-            /** @enum {string} */
-            event?: "verify_email";
-        };
-        index: {
-            event: string;
-            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
-            client?: string;
-            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
-            view?: string;
-            /** @description The component that triggered the event. For vue, it should be the component name. */
-            component?: string;
-        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
         "recipe-version": {
             /**
              * Format: uuid
@@ -213,6 +197,39 @@ export interface components {
              */
             createdAt: string;
         };
+        login: {
+            /** @enum {string} */
+            event: "login";
+            context: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup: {
+            /** @enum {string} */
+            event?: "signup";
+            context?: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup_view: {
+            /** @enum {string} */
+            event?: "signup_view";
+        };
+        verify_email: {
+            /** @enum {string} */
+            event?: "verify_email";
+        };
+        index: {
+            event: string;
+            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
+            client?: string;
+            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
+            view?: string;
+            /** @description The component that triggered the event. For vue, it should be the component name. */
+            component?: string;
+        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
     };
     responses: never;
     parameters: never;
@@ -251,6 +268,63 @@ export interface operations {
             };
             /** @description Forbidden - user does not have required privileges. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    getRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recipe with current version; optionally includes recent notes and file list. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        currentVersion: components["schemas"]["recipe-version"];
+                        /** @description Optional list of recent recipe notes. */
+                        notes?: Record<string, never>[];
+                        /** @description Optional list of recipe file info. */
+                        files?: Record<string, never>[];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

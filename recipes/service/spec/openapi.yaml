@@ -8,6 +8,9 @@ paths:
   /recipes:
     get:
       $ref: "./routes/recipes/list.yaml#/listRecipes"
+  /recipes/{id}:
+    get:
+      $ref: "./routes/recipes/get.yaml#/getRecipe"
 
 components:
   schemas:

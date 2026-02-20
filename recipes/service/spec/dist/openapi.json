@@ -46,6 +46,92 @@
           }
         }
       }
+    },
+    "/recipes/{id}": {
+      "get": {
+        "summary": "Get one recipe with current version, optional notes and file list.",
+        "operationId": "getRecipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe with current version; optionally includes recent notes and file list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "recipe",
+                    "currentVersion"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    },
+                    "currentVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    },
+                    "notes": {
+                      "type": "array",
+                      "description": "Optional list of recent recipe notes.",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "files": {
+                      "type": "array",
+                      "description": "Optional list of recipe file info.",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -147,113 +233,6 @@
             "example": "The requested resource could not be found."
           }
         }
-      },
-      "login": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "login"
-            ]
-          },
-          "context": {
-            "type": "object",
-            "properties": {
-              "method": {
-                "type": "string",
-                "enum": [
-                  "email"
-                ]
-              }
-            }
-          }
-        },
-        "required": [
-          "event",
-          "context"
-        ]
-      },
-      "signup": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "signup"
-            ]
-          },
-          "context": {
-            "type": "object",
-            "properties": {
-              "method": {
-                "type": "string",
-                "enum": [
-                  "email"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "signup_view": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "signup_view"
-            ]
-          }
-        }
-      },
-      "verify_email": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "verify_email"
-            ]
-          }
-        }
-      },
-      "index": {
-        "type": "object",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/login"
-          },
-          {
-            "$ref": "#/components/schemas/signup"
-          },
-          {
-            "$ref": "#/components/schemas/signup_view"
-          },
-          {
-            "$ref": "#/components/schemas/verify_email"
-          }
-        ],
-        "properties": {
-          "event": {
-            "type": "string"
-          },
-          "client": {
-            "type": "string",
-            "description": "The frontend client that triggered the event. For web, it should be \"web-{spa-name}\"."
-          },
-          "view": {
-            "type": "string",
-            "description": "The page that triggered the event. For vue, it should be the route name provided by vue router."
-          },
-          "component": {
-            "type": "string",
-            "description": "The component that triggered the event. For vue, it should be the component name."
-          }
-        },
-        "required": [
-          "event"
-        ]
       },
       "recipe-version": {
         "type": "object",
@@ -361,6 +340,113 @@
           "isLatest",
           "createdBy",
           "createdAt"
+        ]
+      },
+      "login": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "login"
+            ]
+          },
+          "context": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "event",
+          "context"
+        ]
+      },
+      "signup": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "signup"
+            ]
+          },
+          "context": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "signup_view": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "signup_view"
+            ]
+          }
+        }
+      },
+      "verify_email": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "verify_email"
+            ]
+          }
+        }
+      },
+      "index": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/login"
+          },
+          {
+            "$ref": "#/components/schemas/signup"
+          },
+          {
+            "$ref": "#/components/schemas/signup_view"
+          },
+          {
+            "$ref": "#/components/schemas/verify_email"
+          }
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string",
+            "description": "The frontend client that triggered the event. For web, it should be \"web-{spa-name}\"."
+          },
+          "view": {
+            "type": "string",
+            "description": "The page that triggered the event. For vue, it should be the route name provided by vue router."
+          },
+          "component": {
+            "type": "string",
+            "description": "The component that triggered the event. For vue, it should be the component name."
+          }
+        },
+        "required": [
+          "event"
         ]
       }
     }
