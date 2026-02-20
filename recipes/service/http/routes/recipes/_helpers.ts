@@ -32,6 +32,7 @@ type RecipeListResponseItem =
 
 type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
 type RecipeVersionApi = GetRecipe200["currentVersion"];
+type CreateRecipe200 = RecipesServiceResponseBody["createRecipe"][200];
 
 export function recipeToApiRecipe(
   row: RecipeRow,
@@ -74,5 +75,23 @@ export function getByIdResultToGetRecipeResponse(
     currentVersion: recipeVersionToApiRecipeVersion(currentVersion),
     ...(options?.notes !== undefined && { notes: options.notes }),
     ...(options?.files !== undefined && { files: options.files }),
+  };
+}
+
+export function createWithVersionResultToCreateRecipeResponse(
+  recipe: RecipeRow,
+  version: RecipeVersionRow,
+): CreateRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe, version.id),
+    initialVersion: recipeVersionToApiRecipeVersion(version),
+  };
+}
+
+export function createRecipeResultToCreateRecipeResponse(
+  recipe: RecipeRow,
+): CreateRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe),
   };
 }
