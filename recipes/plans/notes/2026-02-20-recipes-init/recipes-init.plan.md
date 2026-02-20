@@ -138,9 +138,30 @@ Use SDK queries and mutations throughout. Gate all mutation UI and create button
 
 ---
 
+## Workflows (one per phase; each can use a different agent)
+
+Implementation is split into **phase workflows** so each run has a focused context. Run from **recipes/plans** so `Cd` paths resolve.
+
+| Workflow file | Scope | Steps (approx) |
+|---------------|--------|----------------|
+| **recipes-init.workflow.ts** | Orchestrator only: runs phases 1 → … → 8c in order | 11 |
+| **recipes-init-phase-1.workflow.ts** | Recipes core: spec, db, http | ~30 |
+| **recipes-init-phase-2.workflow.ts** | Recipe notes: spec, db, http | ~14 |
+| **recipes-init-phase-3.workflow.ts** | Recipe files: spec, db, http | ~12 |
+| **recipes-init-phase-4.workflow.ts** | Recipe note files: spec, db, http | ~12 |
+| **recipes-init-phase-5.workflow.ts** | Menus: spec, db, http | ~17 |
+| **recipes-init-phase-6a.workflow.ts** | SDK queries only | 9 |
+| **recipes-init-phase-6b.workflow.ts** | SDK mutations (incl. upload) | 16 |
+| **recipes-init-phase-7.workflow.ts** | Root client: 4 views + refactor into SDK | 4 |
+| **recipes-init-phase-8a.workflow.ts** | App: recipe list, detail, edit | 3 |
+| **recipes-init-phase-8b.workflow.ts** | App: version history, notes, recipe/note files | 4 |
+| **recipes-init-phase-8c.workflow.ts** | App: menu list, menu edit | 2 |
+
+- **Full run:** `npm exec saf-workflow run processes/spec-project recipes-init` (or run the orchestrator workflow); each step runs one phase workflow.
+- **Single phase:** e.g. `npm exec saf-workflow run ./notes/2026-02-20-recipes-init/recipes-init-phase-2.workflow.ts` to run only recipe notes.
+- **Dry-run:** `npm exec saf-workflow dry-run ./notes/2026-02-20-recipes-init/recipes-init-phase-N.workflow.ts` to verify wiring.
+
 ## Workflow reference
 
 - **Backend:** `openapi/add-schema`, `openapi/add-route` (flag: `upload`), `drizzle/update-schema` (flag: `file`), `drizzle/add-query`, `express/add-handler` (flag: `upload`).
 - **Frontend:** `sdk/add-query`, `sdk/add-mutation` (flag: `upload`), `sdk/add-component`, `vue/add-view`.
-
-Run `npm exec saf-workflow dry-run ./path/to/workflow.ts` for each workflow to verify wiring; ensure workflows that need to run in a specific package use `CdStepMachine` to change into that directory.
