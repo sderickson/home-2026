@@ -7,6 +7,7 @@ services:
     env_file: !override
       - ./env.caddy.prod-local
 
+  # BEGIN WORKFLOW AREA monolith FOR product/init
   monolith:
     extends:
       file: remote-assets/docker-compose.prod.yaml
@@ -14,6 +15,8 @@ services:
     volumes: !override []
     env_file: !override
       - ./env.monolith.prod-local
+
+  # END WORKFLOW AREA
 
   loki:
     extends:
