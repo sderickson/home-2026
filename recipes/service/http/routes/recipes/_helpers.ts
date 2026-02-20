@@ -33,6 +33,7 @@ type RecipeListResponseItem =
 type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
 type RecipeVersionApi = GetRecipe200["currentVersion"];
 type CreateRecipe200 = RecipesServiceResponseBody["createRecipe"][200];
+type UpdateRecipe200 = RecipesServiceResponseBody["updateRecipe"][200];
 
 export function recipeToApiRecipe(
   row: RecipeRow,
@@ -94,4 +95,10 @@ export function createRecipeResultToCreateRecipeResponse(
   return {
     recipe: recipeToApiRecipe(recipe),
   };
+}
+
+export function updateMetadataResultToUpdateRecipeResponse(
+  row: RecipeRow,
+): UpdateRecipe200 {
+  return recipeToApiRecipe(row);
 }
