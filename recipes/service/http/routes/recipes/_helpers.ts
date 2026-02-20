@@ -37,6 +37,8 @@ type UpdateRecipe200 = RecipesServiceResponseBody["updateRecipe"][200];
 type ListRecipeVersions200 = RecipesServiceResponseBody["listRecipeVersions"][200];
 type UpdateRecipeVersionLatest200 =
   RecipesServiceResponseBody["updateRecipeVersionLatest"][200];
+type CreateRecipeVersion200 =
+  RecipesServiceResponseBody["createRecipeVersion"][200];
 
 export function recipeToApiRecipe(
   row: RecipeRow,
@@ -115,5 +117,11 @@ export function versionsListResultToListRecipeVersionsResponse(
 export function updateLatestVersionResultToUpdateRecipeVersionLatestResponse(
   row: RecipeVersionRow,
 ): UpdateRecipeVersionLatest200 {
+  return recipeVersionToApiRecipeVersion(row);
+}
+
+export function createVersionResultToCreateRecipeVersionResponse(
+  row: RecipeVersionRow,
+): CreateRecipeVersion200 {
   return recipeVersionToApiRecipeVersion(row);
 }

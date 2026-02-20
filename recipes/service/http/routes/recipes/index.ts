@@ -7,6 +7,7 @@ import { createRecipeHandler } from "./create.ts";
 import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
 import { updateRecipeHandler } from "./update.ts";
+import { versionsCreateRecipesHandler } from "./versions-create.ts";
 import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.ts";
 import { versionsListRecipesHandler } from "./versions-list.ts";
 // END WORKFLOW AREA
@@ -25,6 +26,7 @@ export const createRecipesRouter = () => {
   router.post("/recipes", createRecipeHandler);
   router.get("/recipes/:id", getRecipeHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);
+  router.post("/recipes/:id/versions", versionsCreateRecipesHandler);
   router.put("/recipes/:id", updateRecipeHandler);
   router.put("/recipes/:id/versions/latest", versionsLatestUpdateRecipesHandler);
 
