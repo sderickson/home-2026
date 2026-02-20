@@ -6,6 +6,7 @@ import { getByIdRecipe } from "./get-by-id.ts";
 import { listRecipes } from "./list.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 import { updateMetadataRecipe } from "./update-metadata.ts";
+import { versionsListRecipe } from "./versions-list.ts";
 // END WORKFLOW AREA
 
 export const recipeQueries = {
@@ -17,5 +18,6 @@ export const recipeQueries = {
   listRecipes,
   updateLatestVersionRecipe,
   updateMetadataRecipe,
+  versionsListRecipe,
   // END WORKFLOW AREA
 };
