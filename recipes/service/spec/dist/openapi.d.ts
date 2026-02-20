@@ -3,12 +3,145 @@
  * Do not make direct changes to the file.
  */
 
-export type paths = Record<string, never>;
+export interface paths {
+    "/recipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recipes. Public-only for non-admin; admins see private too. */
+        get: operations["listRecipes"];
+        put?: never;
+        /** Create recipe (and optionally initial version). Admin only. */
+        post: operations["createRecipe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one recipe with current version, optional notes and file list. */
+        get: operations["getRecipe"];
+        /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
+        put: operations["updateRecipe"];
+        post?: never;
+        /** Delete recipe (and handle versions/notes/files per policy). Admin only. */
+        delete: operations["deleteRecipe"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List version history for a recipe (ordered by createdAt). */
+        get: operations["listRecipeVersions"];
+        put?: never;
+        /** Create a new recipe version (recorded history entry). Admin only. */
+        post: operations["createRecipeVersion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/versions/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update the latest version in place (no new version created). Admin only. */
+        put: operations["updateRecipeVersionLatest"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Error: components["schemas"]["error"];
         ProductEvent: components["schemas"]["index"];
+        Recipe: components["schemas"]["recipe"];
+        RecipeVersion: components["schemas"]["recipe-version"];
+        recipe: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the recipe
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Recipe title
+             * @example Classic Chocolate Chip Cookies
+             */
+            title: string;
+            /**
+             * @description Short description shown on menus and list views
+             * @example Crispy edges, chewy centers
+             */
+            shortDescription: string;
+            /**
+             * @description Optional longer description shown on recipe detail (not on menu)
+             * @example A crowd-pleasing recipe that works every time. Best with room-temperature butter.
+             */
+            longDescription?: string | null;
+            /**
+             * @description Whether the recipe is visible to non-admin users
+             * @example true
+             */
+            isPublic: boolean;
+            /**
+             * Format: uuid
+             * @description User id of the creator
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description User id of the last updater
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            updatedBy: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+            /**
+             * Format: uuid
+             * @description Optional id of the current/latest version for display
+             * @example b2c3d4e5-e89b-12d3-a456-426614174002
+             */
+            currentVersionId?: string;
+        };
         error: {
             /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
             code?: string;
@@ -17,6 +150,143 @@ export interface components {
              * @example The requested resource could not be found.
              */
             message?: string;
+        };
+        /**
+         * @description Version body — structured ingredients and markdown instructions
+         * @example {
+         *       "ingredients": [
+         *         {
+         *           "name": "All-purpose flour",
+         *           "quantity": "2",
+         *           "unit": "cups"
+         *         }
+         *       ],
+         *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+         *     }
+         */
+        content: {
+            /**
+             * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
+             * @example [
+             *       {
+             *         "name": "All-purpose flour",
+             *         "quantity": "2",
+             *         "unit": "cups"
+             *       },
+             *       {
+             *         "name": "Butter",
+             *         "quantity": "1/2",
+             *         "unit": "cup"
+             *       }
+             *     ]
+             */
+            ingredients: {
+                /**
+                 * @description Ingredient name
+                 * @example All-purpose flour
+                 */
+                name: string;
+                /**
+                 * @description Quantity as string to support values like "1/3", "2+1/3"
+                 * @example 2+1/3
+                 */
+                quantity: string;
+                /**
+                 * @description Unit of measure (unrestricted string)
+                 * @example cups
+                 */
+                unit: string;
+            }[];
+            /**
+             * @description Recipe instructions in markdown
+             * @example 1. Preheat oven to 350°F.
+             *     2. Mix dry ingredients...
+             */
+            instructionsMarkdown: string;
+        };
+        "recipe-version": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for this recipe version
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Id of the recipe this version belongs to
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            recipeId: string;
+            /**
+             * @description Version body — structured ingredients and markdown instructions
+             * @example {
+             *       "ingredients": [
+             *         {
+             *           "name": "All-purpose flour",
+             *           "quantity": "2",
+             *           "unit": "cups"
+             *         }
+             *       ],
+             *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+             *     }
+             */
+            content: {
+                /**
+                 * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
+                 * @example [
+                 *       {
+                 *         "name": "All-purpose flour",
+                 *         "quantity": "2",
+                 *         "unit": "cups"
+                 *       },
+                 *       {
+                 *         "name": "Butter",
+                 *         "quantity": "1/2",
+                 *         "unit": "cup"
+                 *       }
+                 *     ]
+                 */
+                ingredients: {
+                    /**
+                     * @description Ingredient name
+                     * @example All-purpose flour
+                     */
+                    name: string;
+                    /**
+                     * @description Quantity as string to support values like "1/3", "2+1/3"
+                     * @example 2+1/3
+                     */
+                    quantity: string;
+                    /**
+                     * @description Unit of measure (unrestricted string)
+                     * @example cups
+                     */
+                    unit: string;
+                }[];
+                /**
+                 * @description Recipe instructions in markdown
+                 * @example 1. Preheat oven to 350°F.
+                 *     2. Mix dry ingredients...
+                 */
+                instructionsMarkdown: string;
+            };
+            /**
+             * @description Whether this version is the current one for the recipe (only one per recipe is true)
+             * @example true
+             */
+            isLatest: boolean;
+            /**
+             * Format: uuid
+             * @description User id of the creator of this version
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When this version was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
         };
         login: {
             /** @enum {string} */
@@ -59,4 +329,430 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    listRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of recipes (public only for non-admin, includes private for admins). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe"][];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Recipe title */
+                    title: string;
+                    /** @description Short description shown on menus and list views */
+                    shortDescription: string;
+                    /** @description Optional longer description shown on recipe detail */
+                    longDescription?: string | null;
+                    /** @description Whether the recipe is visible to non-admin users */
+                    isPublic: boolean;
+                    /** @description Optional initial version content for the first version */
+                    initialVersion?: {
+                        content?: components["schemas"]["content"];
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Created recipe and initial RecipeVersion if provided. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        /** @description Present when initialVersion was supplied in the request. */
+                        initialVersion?: components["schemas"]["recipe-version"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    getRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recipe with current version; optionally includes recent notes and file list. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        currentVersion: components["schemas"]["recipe-version"];
+                        /** @description Optional list of recent recipe notes. */
+                        notes?: Record<string, never>[];
+                        /** @description Optional list of recipe file info. */
+                        files?: Record<string, never>[];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Recipe title */
+                    title?: string;
+                    /** @description Short description shown on menus and list views */
+                    shortDescription?: string;
+                    /** @description Optional longer description shown on recipe detail */
+                    longDescription?: string | null;
+                    /** @description Whether the recipe is visible to non-admin users */
+                    isPublic?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Updated recipe. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    deleteRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recipe deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    listRecipeVersions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Version history for the recipe (ordered by createdAt). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-version"][];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createRecipeVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Content for the new version. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["content"];
+            };
+        };
+        responses: {
+            /** @description New RecipeVersion (set as latest). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-version"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateRecipeVersionLatest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Version content (full or partial); same shape as RecipeVersion content. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["content"];
+            };
+        };
+        responses: {
+            /** @description Updated RecipeVersion (the latest). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-version"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+}

@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -41,9 +42,9 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-file-info",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",
@@ -59,26 +60,26 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/files/:fileId. Admin only. See spec API #15.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-files.ts",
+      path: "./schemas/recipe-file.ts",
       file: true,
-      prompt: `Add table recipe_files: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by. Add queries list, insert, delete.`,
+      prompt: `Add table recipe_file: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/list.ts",
+      path: "./queries/recipe-file/list.ts",
       prompt: `List files for a recipe.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/insert.ts",
+      path: "./queries/recipe-file/insert.ts",
       prompt: `Insert recipe file row.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/delete.ts",
+      path: "./queries/recipe-file/delete.ts",
       prompt: `Delete recipe file by id.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.ts",
       prompt: `Handler GET /recipes/:id/files.`,
@@ -92,6 +93,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/files-delete.ts",
       prompt: `Handler DELETE /recipes/:id/files/:fileId. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

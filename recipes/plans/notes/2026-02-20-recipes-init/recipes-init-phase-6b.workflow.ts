@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSdkMutationWorkflowDefinition } from "@saflib/sdk/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -19,7 +19,8 @@ export const RecipesInitPhase6bWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/recipes-init-phase-6b",
-  description: "SDK: add all mutation hooks (recipes, notes, files, menus; upload where needed).",
+  description:
+    "SDK: add all mutation hooks (recipes, notes, files, menus; upload where needed).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -33,10 +34,13 @@ export const RecipesInitPhase6bWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
-    step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
-      path: "./requests/recipes/create.ts",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 6b: SDK mutation hooks, including upload). Then: Add mutation POST /recipes.`,
-    })),
+    step(
+      makeWorkflowMachine(AddSdkMutationWorkflowDefinition),
+      ({ context }) => ({
+        path: "./requests/recipes/create.ts",
+        prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 6b: SDK mutation hooks, including upload). Then: Add mutation POST /recipes.`,
+      }),
+    ),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/update.ts",
       prompt: `Add mutation PUT /recipes/:id.`,
@@ -95,6 +99,7 @@ export const RecipesInitPhase6bWorkflowDefinition = defineWorkflow<
       path: "./requests/menus/delete.ts",
       prompt: `Add mutation DELETE /menus/:id.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

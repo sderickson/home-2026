@@ -5,7 +5,568 @@
     "version": "1.0.0",
     "description": "API specification for the recipes service"
   },
-  "paths": null,
+  "paths": {
+    "/recipes": {
+      "get": {
+        "summary": "List recipes. Public-only for non-admin; admins see private too.",
+        "operationId": "listRecipes",
+        "responses": {
+          "200": {
+            "description": "List of recipes (public only for non-admin, includes private for admins).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create recipe (and optionally initial version). Admin only.",
+        "operationId": "createRecipe",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "shortDescription",
+                  "isPublic"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Recipe title"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "description": "Short description shown on menus and list views"
+                  },
+                  "longDescription": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Optional longer description shown on recipe detail"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether the recipe is visible to non-admin users"
+                  },
+                  "initialVersion": {
+                    "type": "object",
+                    "description": "Optional initial version content for the first version",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/components/schemas/content"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created recipe and initial RecipeVersion if provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "recipe"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    },
+                    "initialVersion": {
+                      "$ref": "#/components/schemas/recipe-version",
+                      "description": "Present when initialVersion was supplied in the request."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}": {
+      "get": {
+        "summary": "Get one recipe with current version, optional notes and file list.",
+        "operationId": "getRecipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe with current version; optionally includes recent notes and file list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "recipe",
+                    "currentVersion"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    },
+                    "currentVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    },
+                    "notes": {
+                      "type": "array",
+                      "description": "Optional list of recent recipe notes.",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "files": {
+                      "type": "array",
+                      "description": "Optional list of recipe file info.",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update recipe metadata only (title, descriptions, isPublic). Admin only.",
+        "operationId": "updateRecipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Fields to update; only provided fields are updated.",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Recipe title"
+                  },
+                  "shortDescription": {
+                    "type": "string",
+                    "description": "Short description shown on menus and list views"
+                  },
+                  "longDescription": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Optional longer description shown on recipe detail"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether the recipe is visible to non-admin users"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated recipe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete recipe (and handle versions/notes/files per policy). Admin only.",
+        "operationId": "deleteRecipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Recipe deleted."
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}/versions": {
+      "get": {
+        "summary": "List version history for a recipe (ordered by createdAt).",
+        "operationId": "listRecipeVersions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Version history for the recipe (ordered by createdAt).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe-version"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new recipe version (recorded history entry). Admin only.",
+        "operationId": "createRecipeVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Content for the new version.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/content"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New RecipeVersion (set as latest).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe-version"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}/versions/latest": {
+      "put": {
+        "summary": "Update the latest version in place (no new version created). Admin only.",
+        "operationId": "updateRecipeVersionLatest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Version content (full or partial); same shape as RecipeVersion content.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/content"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated RecipeVersion (the latest).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe-version"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
       "Error": {
@@ -13,6 +574,84 @@
       },
       "ProductEvent": {
         "$ref": "#/components/schemas/index"
+      },
+      "Recipe": {
+        "$ref": "#/components/schemas/recipe"
+      },
+      "RecipeVersion": {
+        "$ref": "#/components/schemas/recipe-version"
+      },
+      "recipe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the recipe",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Recipe title",
+            "example": "Classic Chocolate Chip Cookies"
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Short description shown on menus and list views",
+            "example": "Crispy edges, chewy centers"
+          },
+          "longDescription": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional longer description shown on recipe detail (not on menu)",
+            "example": "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether the recipe is visible to non-admin users",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the creator",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the last updater",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "currentVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional id of the current/latest version for display",
+            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "shortDescription",
+          "isPublic",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt"
+        ]
       },
       "error": {
         "type": "object",
@@ -27,6 +666,180 @@
             "example": "The requested resource could not be found."
           }
         }
+      },
+      "content": {
+        "type": "object",
+        "description": "Version body — structured ingredients and markdown instructions",
+        "properties": {
+          "ingredients": {
+            "type": "array",
+            "description": "List of ingredients; quantity and unit are strings (e.g. \"2+1/3\", \"cups\")",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "quantity",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Ingredient name",
+                  "example": "All-purpose flour"
+                },
+                "quantity": {
+                  "type": "string",
+                  "description": "Quantity as string to support values like \"1/3\", \"2+1/3\"",
+                  "example": "2+1/3"
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "Unit of measure (unrestricted string)",
+                  "example": "cups"
+                }
+              }
+            },
+            "example": [
+              {
+                "name": "All-purpose flour",
+                "quantity": "2",
+                "unit": "cups"
+              },
+              {
+                "name": "Butter",
+                "quantity": "1/2",
+                "unit": "cup"
+              }
+            ]
+          },
+          "instructionsMarkdown": {
+            "type": "string",
+            "description": "Recipe instructions in markdown",
+            "example": "1. Preheat oven to 350°F.\n2. Mix dry ingredients..."
+          }
+        },
+        "required": [
+          "ingredients",
+          "instructionsMarkdown"
+        ],
+        "example": {
+          "ingredients": [
+            {
+              "name": "All-purpose flour",
+              "quantity": "2",
+              "unit": "cups"
+            }
+          ],
+          "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+        }
+      },
+      "recipe-version": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this recipe version",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "recipeId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id of the recipe this version belongs to",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "content": {
+            "type": "object",
+            "description": "Version body — structured ingredients and markdown instructions",
+            "properties": {
+              "ingredients": {
+                "type": "array",
+                "description": "List of ingredients; quantity and unit are strings (e.g. \"2+1/3\", \"cups\")",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "quantity",
+                    "unit"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Ingredient name",
+                      "example": "All-purpose flour"
+                    },
+                    "quantity": {
+                      "type": "string",
+                      "description": "Quantity as string to support values like \"1/3\", \"2+1/3\"",
+                      "example": "2+1/3"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "description": "Unit of measure (unrestricted string)",
+                      "example": "cups"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "name": "All-purpose flour",
+                    "quantity": "2",
+                    "unit": "cups"
+                  },
+                  {
+                    "name": "Butter",
+                    "quantity": "1/2",
+                    "unit": "cup"
+                  }
+                ]
+              },
+              "instructionsMarkdown": {
+                "type": "string",
+                "description": "Recipe instructions in markdown",
+                "example": "1. Preheat oven to 350°F.\n2. Mix dry ingredients..."
+              }
+            },
+            "required": [
+              "ingredients",
+              "instructionsMarkdown"
+            ],
+            "example": {
+              "ingredients": [
+                {
+                  "name": "All-purpose flour",
+                  "quantity": "2",
+                  "unit": "cups"
+                }
+              ],
+              "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+            }
+          },
+          "isLatest": {
+            "type": "boolean",
+            "description": "Whether this version is the current one for the recipe (only one per recipe is true)",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the creator of this version",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this version was created",
+            "example": "2023-01-15T14:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "recipeId",
+          "content",
+          "isLatest",
+          "createdBy",
+          "createdAt"
+        ]
       },
       "login": {
         "type": "object",

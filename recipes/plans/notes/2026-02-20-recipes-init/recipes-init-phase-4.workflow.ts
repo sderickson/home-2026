@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -41,9 +42,9 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note-file-info",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",
@@ -59,26 +60,26 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only. See spec API #18.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-note-files.ts",
+      path: "./schemas/recipe-note-file.ts",
       file: true,
-      prompt: `Add table recipe_note_files: id, recipe_note_id, ...fileMetadataColumns. Queries list, insert, delete.`,
+      prompt: `Add table recipe_note_file: id, recipe_note_id, ...fileMetadataColumns.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/list.ts",
+      path: "./queries/recipe-note-file/list.ts",
       prompt: `List files for a note.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/insert.ts",
+      path: "./queries/recipe-note-file/insert.ts",
       prompt: `Insert note file row.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/delete.ts",
+      path: "./queries/recipe-note-file/delete.ts",
       prompt: `Delete note file by id.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.ts",
       prompt: `Handler GET /recipes/:id/notes/:noteId/files.`,
@@ -92,6 +93,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/notes-files-delete.ts",
       prompt: `Handler DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

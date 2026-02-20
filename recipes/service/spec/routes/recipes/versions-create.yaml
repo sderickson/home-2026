@@ -1,0 +1,49 @@
+createRecipeVersion:
+  summary: "Create a new recipe version (recorded history entry). Admin only."
+  operationId: "createRecipeVersion"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  requestBody:
+    required: true
+    description: "Content for the new version."
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/recipe-version.yaml#/properties/content"
+
+  responses:
+    "200":
+      description: "New RecipeVersion (set as latest)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/recipe-version.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

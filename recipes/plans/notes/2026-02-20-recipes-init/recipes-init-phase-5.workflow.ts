@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -41,9 +42,9 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "menu",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 5: menus — spec, db, http with nested groupings JSON). Then: Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 5: menus — spec, db, http with nested groupings JSON). Then: Add Menu schema: id, name, isPublic, createdBy, createdAt, editedByUserIds (array), groupings (array of { name, recipeIds }). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/list.yaml",
@@ -66,33 +67,33 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /menus/:id. Admin only. See spec API #23.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/menus.ts",
-      prompt: `Add table menus: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON). Queries list, get, create, update, delete. On update append user id to edited_by_user_ids.`,
+      path: "./schemas/menu.ts",
+      prompt: `Add table menu: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON).`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/list.ts",
+      path: "./queries/menu/list.ts",
       prompt: `List menus (public filter for non-admin).`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/get.ts",
+      path: "./queries/menu/get.ts",
       prompt: `Get menu by id.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/create.ts",
+      path: "./queries/menu/create.ts",
       prompt: `Create menu.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/update.ts",
+      path: "./queries/menu/update.ts",
       prompt: `Update menu; append current user to editedByUserIds if not present.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/delete.ts",
+      path: "./queries/menu/delete.ts",
       prompt: `Delete menu.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/menus/list.ts",
       prompt: `Handler GET /menus.`,
@@ -113,6 +114,7 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       path: "./routes/menus/delete.ts",
       prompt: `Handler DELETE /menus/:id. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

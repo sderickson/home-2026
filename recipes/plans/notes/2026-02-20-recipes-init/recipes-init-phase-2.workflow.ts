@@ -18,6 +18,7 @@ import {
 } from "@saflib/drizzle/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -41,9 +42,9 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",
@@ -62,29 +63,29 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       prompt: `DELETE /recipes/:id/notes/:noteId. Admin only. See spec API #12.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../db" })),
+    step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-      path: "./schemas/recipe-notes.ts",
-      prompt: `Add table recipe_notes: id, recipe_id, recipe_version_id (nullable), body, ever_edited, created_by, created_at, updated_by, updated_at. Add queries for list, create, update, delete.`,
+      path: "./schemas/recipe-note.ts",
+      prompt: `Add table recipe_note: id, recipe_id, recipe_version_id (nullable), body, ever_edited, created_by, created_at, updated_by, updated_at.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/list.ts",
+      path: "./queries/recipe-note/list.ts",
       prompt: `List notes for a recipe.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/create.ts",
+      path: "./queries/recipe-note/create.ts",
       prompt: `Create recipe note.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/update.ts",
+      path: "./queries/recipe-note/update.ts",
       prompt: `Update note body; set ever_edited to true.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/delete.ts",
+      path: "./queries/recipe-note/delete.ts",
       prompt: `Delete recipe note.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../http" })),
+    step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.ts",
       prompt: `Handler GET /recipes/:id/notes.`,
@@ -101,6 +102,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/notes-delete.ts",
       prompt: `Handler DELETE /recipes/:id/notes/:noteId. Admin only.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

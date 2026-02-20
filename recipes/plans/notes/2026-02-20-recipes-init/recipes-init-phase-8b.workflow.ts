@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -19,7 +19,8 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/recipes-init-phase-8b",
-  description: "App client: recipe detail — version history, notes, recipe files, note files (admin only).",
+  description:
+    "App client: recipe detail — version history, notes, recipe files, note files (admin only).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -33,9 +34,9 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../clients/app" })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/detail-version-history",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 8b: app client — version history, notes, recipe files, note files on recipe detail). Then: Update recipe detail: add version history section (list versions, optionally diff). Admin only. See plan Phase 8.4.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 8b: app client — version history, notes, recipe files, note files on recipe detail). Then: Update recipe detail: add version history section (list versions, optionally diff). Admin only. See plan Phase 8.4.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail-notes",
@@ -49,6 +50,7 @@ export const RecipesInitPhase8bWorkflowDefinition = defineWorkflow<
       path: "./pages/recipes/detail-note-files",
       prompt: `Update recipe detail: add managing files per note (list, upload, delete per note). Admin only. See plan Phase 8.7.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

@@ -10,7 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
-
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
@@ -19,7 +19,8 @@ export const RecipesInitPhase8aWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/recipes-init-phase-8a",
-  description: "App client: recipe list, recipe detail (read), recipe edit (metadata + content, update latest vs new version).",
+  description:
+    "App client: recipe list, recipe detail (read), recipe edit (metadata + content, update latest vs new version).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -33,9 +34,9 @@ export const RecipesInitPhase8aWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../clients/app" })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/list",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 8a: app client — recipe list, recipe detail view, recipe edit). Then: Recipe list: admin sees all, non-admin sees public only; hide create for non-admin. Reuse SDK list/display. See plan Phase 8.1.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 8a: app client — recipe list, recipe detail view, recipe edit). Then: Recipe list: admin sees all, non-admin sees public only; hide create for non-admin. Reuse SDK list/display. See plan Phase 8.1.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",
@@ -45,6 +46,7 @@ export const RecipesInitPhase8aWorkflowDefinition = defineWorkflow<
       path: "./pages/recipes/detail-edit",
       prompt: `Update recipe detail: add edit (metadata + content). On save offer "Update latest version" vs "Save as new version." Admin only. See plan Phase 8.3.`,
     })),
+    GetFeedbackStep,
   ],
 });
 

@@ -1,0 +1,59 @@
+getRecipe:
+  summary: "Get one recipe with current version, optional notes and file list."
+  operationId: "getRecipe"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  responses:
+    "200":
+      description: "Recipe with current version; optionally includes recent notes and file list."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - recipe
+              - currentVersion
+            properties:
+              recipe:
+                $ref: "../../schemas/recipe.yaml"
+              currentVersion:
+                $ref: "../../schemas/recipe-version.yaml"
+              notes:
+                type: array
+                description: "Optional list of recent recipe notes."
+                items:
+                  type: object
+              files:
+                type: array
+                description: "Optional list of recipe file info."
+                items:
+                  type: object
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

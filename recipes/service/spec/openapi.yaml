@@ -5,20 +5,26 @@ info:
   description: API specification for the recipes service
 
 paths:
-  # Add your API routes here
-  # Example:
-  # /resource:
-  #   get:
-  #     $ref: "./routes/resource/list.yaml#/listResource"
-  #   post:
-  #     $ref: "./routes/resource/create.yaml#/createResource"
-  # /resource/{id}:
-  #   get:
-  #     $ref: "./routes/resource/get.yaml#/getResource"
-  #   put:
-  #     $ref: "./routes/resource/update.yaml#/updateResource"
-  #   delete:
-  #     $ref: "./routes/resource/delete.yaml#/deleteResource"
+  /recipes:
+    get:
+      $ref: "./routes/recipes/list.yaml#/listRecipes"
+    post:
+      $ref: "./routes/recipes/create.yaml#/createRecipe"
+  /recipes/{id}:
+    get:
+      $ref: "./routes/recipes/get.yaml#/getRecipe"
+    put:
+      $ref: "./routes/recipes/update.yaml#/updateRecipe"
+    delete:
+      $ref: "./routes/recipes/delete.yaml#/deleteRecipe"
+  /recipes/{id}/versions:
+    get:
+      $ref: "./routes/recipes/versions-list.yaml#/listRecipeVersions"
+    post:
+      $ref: "./routes/recipes/versions-create.yaml#/createRecipeVersion"
+  /recipes/{id}/versions/latest:
+    put:
+      $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"
 
 components:
   schemas:
@@ -29,4 +35,8 @@ components:
     # BEGIN WORKFLOW AREA schema-components FOR openapi/add-schema
 
 
+    Recipe:
+      $ref: "./schemas/recipe.yaml"
+    RecipeVersion:
+      $ref: "./schemas/recipe-version.yaml"
     # END WORKFLOW AREA

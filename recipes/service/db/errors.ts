@@ -7,3 +7,7 @@ export class RecipesDatabaseError extends HandledDatabaseError {}
 
 // TODO: Add specific error classes for your database
 export class StubError extends RecipesDatabaseError {}
+
+export class RecipeNotFoundError extends RecipesDatabaseError {}
+
+export class RecipeVersionNotFoundError extends RecipesDatabaseError {}

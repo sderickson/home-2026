@@ -10,6 +10,7 @@ import {
 } from "@saflib/workflows";
 import { AddSdkQueryWorkflowDefinition } from "@saflib/sdk/workflows";
 import path from "path";
+import { GetFeedbackStep } from "@saflib/processes/workflows";
 
 const input = [] as const;
 interface Context {}
@@ -33,9 +34,9 @@ export const RecipesInitPhase6aWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
-    step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/recipes/list.ts",
-      prompt: `Orientation: Read context.docFiles.spec and context.docFiles.plan. Make sure you understand the overall plan and your part in it (Phase 6a: SDK query hooks for recipes, notes, files, menus). Then: Add query for GET /recipes (list). See plan Phase 6.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 6a: SDK query hooks for recipes, notes, files, menus). Then: Add query for GET /recipes (list). See plan Phase 6.`,
     })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
       path: "./requests/recipes/get.ts",
@@ -65,6 +66,7 @@ export const RecipesInitPhase6aWorkflowDefinition = defineWorkflow<
       path: "./requests/menus/get.ts",
       prompt: `Add query for GET /menus/:id.`,
     })),
+    GetFeedbackStep,
   ],
 });
 
