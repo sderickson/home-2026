@@ -66,15 +66,15 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       prompt: `Add table recipe_note_files: id, recipe_note_id, ...fileMetadataColumns. Queries list, insert, delete.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/list.ts",
+      path: "./queries/recipe-note-file/list.ts",
       prompt: `List files for a note.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/insert.ts",
+      path: "./queries/recipe-note-file/insert.ts",
       prompt: `Insert note file row.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-note-files/delete.ts",
+      path: "./queries/recipe-note-file/delete.ts",
       prompt: `Delete note file by id.`,
     })),
 

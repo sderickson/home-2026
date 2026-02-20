@@ -66,15 +66,15 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
       prompt: `Add table recipe_files: id, recipe_id, ...fileMetadataColumns (from @saflib/drizzle/types/file-metadata), optional uploaded_by. Add queries list, insert, delete.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/list.ts",
+      path: "./queries/recipe-file/list.ts",
       prompt: `List files for a recipe.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/insert.ts",
+      path: "./queries/recipe-file/insert.ts",
       prompt: `Insert recipe file row.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-files/delete.ts",
+      path: "./queries/recipe-file/delete.ts",
       prompt: `Delete recipe file by id.`,
     })),
 

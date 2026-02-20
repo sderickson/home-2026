@@ -72,23 +72,23 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
       prompt: `Add table menus: id, name, is_public, created_by, created_at, edited_by_user_ids (JSON), groupings (JSON). Queries list, get, create, update, delete. On update append user id to edited_by_user_ids.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/list.ts",
+      path: "./queries/menu/list.ts",
       prompt: `List menus (public filter for non-admin).`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/get.ts",
+      path: "./queries/menu/get.ts",
       prompt: `Get menu by id.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/create.ts",
+      path: "./queries/menu/create.ts",
       prompt: `Create menu.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/update.ts",
+      path: "./queries/menu/update.ts",
       prompt: `Update menu; append current user to editedByUserIds if not present.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/menus/delete.ts",
+      path: "./queries/menu/delete.ts",
       prompt: `Delete menu.`,
     })),
 

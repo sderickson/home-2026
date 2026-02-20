@@ -68,19 +68,19 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       prompt: `Add table recipe_notes: id, recipe_id, recipe_version_id (nullable), body, ever_edited, created_by, created_at, updated_by, updated_at. Add queries for list, create, update, delete.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/list.ts",
+      path: "./queries/recipe-note/list.ts",
       prompt: `List notes for a recipe.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/create.ts",
+      path: "./queries/recipe-note/create.ts",
       prompt: `Create recipe note.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/update.ts",
+      path: "./queries/recipe-note/update.ts",
       prompt: `Update note body; set ever_edited to true.`,
     })),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
-      path: "./queries/recipe-notes/delete.ts",
+      path: "./queries/recipe-note/delete.ts",
       prompt: `Delete recipe note.`,
     })),
 
