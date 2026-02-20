@@ -18,6 +18,8 @@ paths:
   /recipes/{id}/versions:
     get:
       $ref: "./routes/recipes/versions-list.yaml#/listRecipeVersions"
+    post:
+      $ref: "./routes/recipes/versions-create.yaml#/createRecipeVersion"
   /recipes/{id}/versions/latest:
     put:
       $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"

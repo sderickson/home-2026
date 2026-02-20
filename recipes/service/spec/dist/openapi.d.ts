@@ -50,7 +50,8 @@ export interface paths {
         /** List version history for a recipe (ordered by createdAt). */
         get: operations["listRecipeVersions"];
         put?: never;
-        post?: never;
+        /** Create a new recipe version (recorded history entry). Admin only. */
+        post: operations["createRecipeVersion"];
         delete?: never;
         options?: never;
         head?: never;
@@ -576,6 +577,61 @@ export interface operations {
                 };
             };
             /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createRecipeVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Content for the new version. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["content"];
+            };
+        };
+        responses: {
+            /** @description New RecipeVersion (set as latest). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-version"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
             403: {
                 headers: {
                     [name: string]: unknown;

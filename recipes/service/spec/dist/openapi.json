@@ -373,6 +373,75 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create a new recipe version (recorded history entry). Admin only.",
+        "operationId": "createRecipeVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Content for the new version.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/content"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New RecipeVersion (set as latest).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe-version"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/recipes/{id}/versions/latest": {
