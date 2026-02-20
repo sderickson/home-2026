@@ -8,6 +8,8 @@ paths:
   /recipes:
     get:
       $ref: "./routes/recipes/list.yaml#/listRecipes"
+    post:
+      $ref: "./routes/recipes/create.yaml#/createRecipe"
   /recipes/{id}:
     get:
       $ref: "./routes/recipes/get.yaml#/getRecipe"

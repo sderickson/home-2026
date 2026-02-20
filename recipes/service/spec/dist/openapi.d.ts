@@ -14,7 +14,8 @@ export interface paths {
         /** List recipes. Public-only for non-admin; admins see private too. */
         get: operations["listRecipes"];
         put?: never;
-        post?: never;
+        /** Create recipe (and optionally initial version). Admin only. */
+        post: operations["createRecipe"];
         delete?: never;
         options?: never;
         head?: never;
@@ -112,6 +113,59 @@ export interface components {
              * @example The requested resource could not be found.
              */
             message?: string;
+        };
+        /**
+         * @description Version body — structured ingredients and markdown instructions
+         * @example {
+         *       "ingredients": [
+         *         {
+         *           "name": "All-purpose flour",
+         *           "quantity": "2",
+         *           "unit": "cups"
+         *         }
+         *       ],
+         *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+         *     }
+         */
+        content: {
+            /**
+             * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
+             * @example [
+             *       {
+             *         "name": "All-purpose flour",
+             *         "quantity": "2",
+             *         "unit": "cups"
+             *       },
+             *       {
+             *         "name": "Butter",
+             *         "quantity": "1/2",
+             *         "unit": "cup"
+             *       }
+             *     ]
+             */
+            ingredients: {
+                /**
+                 * @description Ingredient name
+                 * @example All-purpose flour
+                 */
+                name: string;
+                /**
+                 * @description Quantity as string to support values like "1/3", "2+1/3"
+                 * @example 2+1/3
+                 */
+                quantity: string;
+                /**
+                 * @description Unit of measure (unrestricted string)
+                 * @example cups
+                 */
+                unit: string;
+            }[];
+            /**
+             * @description Recipe instructions in markdown
+             * @example 1. Preheat oven to 350°F.
+             *     2. Mix dry ingredients...
+             */
+            instructionsMarkdown: string;
         };
         "recipe-version": {
             /**
@@ -267,6 +321,65 @@ export interface operations {
                 };
             };
             /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Recipe title */
+                    title: string;
+                    /** @description Short description shown on menus and list views */
+                    shortDescription: string;
+                    /** @description Optional longer description shown on recipe detail */
+                    longDescription?: string | null;
+                    /** @description Whether the recipe is visible to non-admin users */
+                    isPublic: boolean;
+                    /** @description Optional initial version content for the first version */
+                    initialVersion?: {
+                        content?: components["schemas"]["content"];
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Created recipe and initial RecipeVersion if provided. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        /** @description Present when initialVersion was supplied in the request. */
+                        initialVersion?: components["schemas"]["recipe-version"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
             403: {
                 headers: {
                     [name: string]: unknown;

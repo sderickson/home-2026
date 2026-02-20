@@ -1,0 +1,64 @@
+createRecipe:
+  summary: "Create recipe (and optionally initial version). Admin only."
+  operationId: "createRecipe"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - title
+            - shortDescription
+            - isPublic
+          properties:
+            title:
+              type: string
+              description: Recipe title
+            shortDescription:
+              type: string
+              description: Short description shown on menus and list views
+            longDescription:
+              type: string
+              nullable: true
+              description: Optional longer description shown on recipe detail
+            isPublic:
+              type: boolean
+              description: Whether the recipe is visible to non-admin users
+            initialVersion:
+              type: object
+              description: Optional initial version content for the first version
+              properties:
+                content:
+                  $ref: "../../schemas/recipe-version.yaml#/properties/content"
+
+  responses:
+    "200":
+      description: "Created recipe and initial RecipeVersion if provided."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - recipe
+            properties:
+              recipe:
+                $ref: "../../schemas/recipe.yaml"
+              initialVersion:
+                $ref: "../../schemas/recipe-version.yaml"
+                description: "Present when initialVersion was supplied in the request."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
