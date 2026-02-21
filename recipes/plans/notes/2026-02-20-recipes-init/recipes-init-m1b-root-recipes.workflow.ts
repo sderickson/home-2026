@@ -51,10 +51,12 @@ export const RecipesInitM1bRootRecipesWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/root" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/list",
+      urlPath: "/recipes/list",
       prompt: `Add public recipe list page (read-only). Use SDK recipe list query and the SDK recipe-list (and recipe-preview) components. See plan M1b.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Add public recipe detail page (current version, ingredients, instructions). Use SDK recipe get query and display components. See plan M1b.`,
     })),
     GetFeedbackStep,

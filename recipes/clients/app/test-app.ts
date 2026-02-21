@@ -1,10 +1,10 @@
 import { mountWithPlugins } from "@saflib/vue/testing";
 import type { ComponentMountingOptions } from "@vue/test-utils";
 import type { Component } from "vue";
+import { createMemoryHistory, type Router } from "vue-router";
 import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
 import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
-import { createMemoryHistory, type Router } from "vue-router";
 
 export const createTestRouter = () =>
   createAppRouter({ history: createMemoryHistory() });

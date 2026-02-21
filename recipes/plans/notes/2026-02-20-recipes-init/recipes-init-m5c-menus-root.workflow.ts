@@ -54,12 +54,14 @@ export const RecipesInitM5cMenusRootWorkflowDefinition = defineWorkflow<
       }),
     ),
     step(CdStepMachine, () => ({ path: "../clients/root" })),
-    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/list",
+      urlPath: "/menus/list",
       prompt: `Add public menu list page. Use SDK menus list query and the SDK menu-preview component. Pass full Menu to each preview. See plan M5c.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/detail",
+      urlPath: "/menus/:id",
       prompt: `Add public menu detail page. Fetch menu (GET /menus/:id) and resolve recipe summaries (id, title, shortDescription) for each recipeId in groupings; pass the fully resolved \`menuDetail\` shape to the SDK menu-detail component. See plan M5c interface sketch.`,
     })),
     GetFeedbackStep,

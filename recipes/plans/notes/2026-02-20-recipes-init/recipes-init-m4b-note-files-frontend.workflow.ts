@@ -57,6 +57,7 @@ export const RecipesInitM4bNoteFilesFrontendWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Update recipe detail: add managing files per note (list, upload, delete per note). Admin only. Use SDK note files queries and mutations. See plan M4b.`,
     })),
     GetFeedbackStep,

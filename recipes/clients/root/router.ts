@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { rootLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
@@ -11,7 +11,7 @@ import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesListAsync from "./pages/recipes/list/ListAsync.vue";
 // END WORKFLOW AREA
 
-export const createRootRouter = () => {
+export const createRootRouter = (options?: { history?: RouterHistory }) => {
   const routes = [
     // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
 
@@ -34,7 +34,7 @@ export const createRootRouter = () => {
     { path: "/:pathMatch(.*)*", component: PageNotFound },
   ];
   return createRouter({
-    history: createWebHistory("/"),
+    history: options?.history ?? createWebHistory("/"),
     routes,
   });
 };
