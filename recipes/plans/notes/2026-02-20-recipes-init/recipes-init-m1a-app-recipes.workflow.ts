@@ -13,7 +13,6 @@ import {
   AddSdkQueryWorkflowDefinition,
   AddSdkMutationWorkflowDefinition,
 } from "@saflib/sdk/workflows";
-import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
 import { GetFeedbackStep } from "@saflib/processes/workflows";
 
