@@ -60,6 +60,7 @@ export const RecipesInitM2bNotesFrontendWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Update recipe detail: add notes section — list notes, add note, edit note (set ever_edited on edit), optional link to version. Admin only. Use SDK notes queries and mutations. See plan M2b.`,
     })),
     GetFeedbackStep,

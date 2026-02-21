@@ -48,15 +48,21 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",
+      urlPath: "/recipes/{id}/notes/{noteId}/files",
+      method: "get",
       prompt: `GET /recipes/:id/notes/:noteId/files. See spec API #16.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-upload.yaml",
       upload: true,
+      urlPath: "/recipes/{id}/notes/{noteId}/files",
+      method: "post",
       prompt: `POST /recipes/:id/notes/:noteId/files. Admin only. See spec API #17.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-delete.yaml",
+      urlPath: "/recipes/{id}/notes/{noteId}/files/{fileId}",
+      method: "delete",
       prompt: `DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only. See spec API #18.`,
     })),
 

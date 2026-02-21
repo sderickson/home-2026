@@ -48,15 +48,21 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",
+      urlPath: "/recipes/{id}/files",
+      method: "get",
       prompt: `GET /recipes/:id/files — list recipe files. See spec API #13.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-upload.yaml",
       upload: true,
+      urlPath: "/recipes/{id}/files",
+      method: "post",
       prompt: `POST /recipes/:id/files — upload file (multipart). Admin only. Azure storage. See spec API #14.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-delete.yaml",
+      urlPath: "/recipes/{id}/files/{fileId}",
+      method: "delete",
       prompt: `DELETE /recipes/:id/files/:fileId. Admin only. See spec API #15.`,
     })),
 

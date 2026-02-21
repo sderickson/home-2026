@@ -57,6 +57,7 @@ export const RecipesInitM3bRecipeFilesFrontendWorkflowDefinition = defineWorkflo
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Update recipe detail: add managing recipe files (list, upload, delete). Admin only. Use SDK recipe files queries and mutations. See plan M3b.`,
     })),
     GetFeedbackStep,

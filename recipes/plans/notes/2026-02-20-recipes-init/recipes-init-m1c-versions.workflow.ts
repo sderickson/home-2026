@@ -38,6 +38,7 @@ export const RecipesInitM1cVersionsWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 1c: add version history to recipe detail). Then: Update recipe detail page: add version history section — list versions for this recipe, optionally diff or compare. Admin only. Use existing SDK versions-list query. See plan M1c.`,
     })),
     GetFeedbackStep,

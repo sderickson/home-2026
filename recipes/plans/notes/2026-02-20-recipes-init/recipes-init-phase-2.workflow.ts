@@ -48,18 +48,26 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",
+      urlPath: "/recipes/{id}/notes",
+      method: "get",
       prompt: `GET /recipes/:id/notes — list notes for recipe. See spec API #9.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-create.yaml",
+      urlPath: "/recipes/{id}/notes",
+      method: "post",
       prompt: `POST /recipes/:id/notes — create note. Admin only. See spec API #10.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-update.yaml",
+      urlPath: "/recipes/{id}/notes/{noteId}",
+      method: "put",
       prompt: `PUT /recipes/:id/notes/:noteId — edit note; set everEdited. Admin only. See spec API #11.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-delete.yaml",
+      urlPath: "/recipes/{id}/notes/{noteId}",
+      method: "delete",
       prompt: `DELETE /recipes/:id/notes/:noteId. Admin only. See spec API #12.`,
     })),
 

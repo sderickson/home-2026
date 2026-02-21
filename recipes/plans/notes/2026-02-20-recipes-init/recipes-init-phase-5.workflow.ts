@@ -48,22 +48,32 @@ export const RecipesInitPhase5WorkflowDefinition = defineWorkflow<
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/list.yaml",
+      urlPath: "/menus",
+      method: "get",
       prompt: `GET /menus. See spec API #19.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/get.yaml",
+      urlPath: "/menus/{id}",
+      method: "get",
       prompt: `GET /menus/:id. See spec API #20.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/create.yaml",
+      urlPath: "/menus",
+      method: "post",
       prompt: `POST /menus. Admin only. See spec API #21.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/update.yaml",
+      urlPath: "/menus/{id}",
+      method: "put",
       prompt: `PUT /menus/:id; append current user to editedByUserIds if new. Admin only. See spec API #22.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/menus/delete.yaml",
+      urlPath: "/menus/{id}",
+      method: "delete",
       prompt: `DELETE /menus/:id. Admin only. See spec API #23.`,
     })),
 

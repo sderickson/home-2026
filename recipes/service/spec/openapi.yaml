@@ -5,6 +5,7 @@ info:
   description: API specification for the recipes service
 
 paths:
+  # BEGIN WORKFLOW AREA route-paths FOR openapi/add-route
   /recipes:
     get:
       $ref: "./routes/recipes/list.yaml#/listRecipes"
@@ -25,6 +26,7 @@ paths:
   /recipes/{id}/versions/latest:
     put:
       $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"
+  # END WORKFLOW AREA
 
 components:
   schemas:
@@ -33,7 +35,6 @@ components:
     ProductEvent:
       $ref: "./events/index.yaml"
     # BEGIN WORKFLOW AREA schema-components FOR openapi/add-schema
-
 
     Recipe:
       $ref: "./schemas/recipe.yaml"

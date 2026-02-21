@@ -64,10 +64,12 @@ export const RecipesInitM5bMenusAppWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/menus/list",
+      urlPath: "/menus/list",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Menu list page: admin sees all, non-admin sees public only; hide "create menu" for non-admin. Use SDK. See plan M5b.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/edit",
+      urlPath: "/menus/:id",
       prompt: `Menu create and edit: name, is_public, groupings (name + ordered recipe ids). Admin only. See plan M5b.`,
     })),
     GetFeedbackStep,
