@@ -1,27 +1,38 @@
 <template>
-  <div class="recipe-content-preview">
-    <p v-if="title" class="text-h6">{{ title }}</p>
-    <p v-if="shortDescription" class="text-medium-emphasis">{{ shortDescription }}</p>
-    <p v-if="longDescription" class="mt-2">{{ longDescription }}</p>
+  <v-card variant="outlined">
+    <v-card-title v-if="title" class="text-h5">{{ title }}</v-card-title>
+    <v-card-subtitle v-if="shortDescription" class="text-medium-emphasis">
+      {{ shortDescription }}
+    </v-card-subtitle>
+    <v-card-text v-if="longDescription" class="text-body-2 pt-0">
+      {{ longDescription }}
+    </v-card-text>
+
     <template v-if="content.ingredients.length > 0">
-      <h3 class="mt-4 text-subtitle-1">{{ t(strings.ingredients) }}</h3>
-      <ul>
-        <li
+      <v-divider />
+      <v-card-title class="text-subtitle-1 font-weight-medium">
+        {{ t(strings.ingredients) }}
+      </v-card-title>
+      <v-list density="compact" class="pt-0">
+        <v-list-item
           v-for="(ing, i) in content.ingredients"
           :key="i"
-        >
-          {{ ing.quantity }} {{ ing.unit }} {{ ing.name }}
-        </li>
-      </ul>
+          :title="ingredientLine(ing)"
+          class="text-body-2"
+        />
+      </v-list>
     </template>
+
     <template v-if="content.instructionsMarkdown">
-      <h3 class="mt-4 text-subtitle-1">{{ t(strings.instructions) }}</h3>
-      <div
-        class="recipe-instructions"
-        v-html="renderedInstructions"
-      />
+      <v-divider />
+      <v-card-title class="text-subtitle-1 font-weight-medium">
+        {{ t(strings.instructions) }}
+      </v-card-title>
+      <v-card-text class="pt-0 text-body-2">
+        <div v-html="renderedInstructions" />
+      </v-card-text>
     </template>
-  </div>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -42,9 +53,18 @@ const props = defineProps<{
   };
 }>();
 
+function ingredientLine(ing: {
+  name: string;
+  quantity: string;
+  unit: string;
+}): string {
+  const parts = [ing.quantity, ing.unit, ing.name].filter(Boolean);
+  return parts.join(" ").trim() || ing.name;
+}
+
 const renderedInstructions = computed(() =>
   props.content.instructionsMarkdown
-    ? marked(props.content.instructionsMarkdown, { async: false }) as string
+    ? (marked(props.content.instructionsMarkdown, { async: false }) as string)
     : "",
 );
 </script>

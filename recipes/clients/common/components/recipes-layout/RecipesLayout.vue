@@ -50,10 +50,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <TopLevelContainer v-if="!disableContainer">
+      <v-container>
         <slot />
-      </TopLevelContainer>
-      <slot v-else />
+      </v-container>
     </v-main>
 
     <SnackbarQueue />
@@ -63,11 +62,15 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import { TopLevelContainer } from "@saflib/vue/components";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 import { authLinks } from "@saflib/auth-links";
-import { linkToHref, linkToHrefWithHost, getHost, type Link } from "@saflib/links";
+import {
+  linkToHref,
+  linkToHrefWithHost,
+  getHost,
+  type Link,
+} from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
@@ -119,6 +122,9 @@ function getNavHref(link: LinkWithName) {
   } else if (link.path === "/logout") {
     redirect = linkToHref(rootLinks.home, { domain: getHost() });
   }
-  return linkToHrefWithHost(link, redirect != null ? { params: { redirect } } : undefined);
+  return linkToHrefWithHost(
+    link,
+    redirect != null ? { params: { redirect } } : undefined,
+  );
 }
 </script>

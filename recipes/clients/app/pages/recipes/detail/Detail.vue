@@ -1,8 +1,18 @@
 <template>
   <v-container>
-    <v-btn :to="'/recipes/list'" variant="text" class="mb-4">
-      {{ t(strings.back_to_list) }}
-    </v-btn>
+    <div class="d-flex align-center flex-wrap gap-2 mb-4">
+      <v-btn :to="'/recipes/list'" variant="text" prepend-icon="mdi-arrow-left">
+        {{ t(strings.back_to_list) }}
+      </v-btn>
+      <v-spacer />
+      <v-btn
+        :to="`/recipes/${recipe.id}/edit`"
+        color="primary"
+        prepend-icon="mdi-pencil"
+      >
+        {{ t(strings.edit_recipe) }}
+      </v-btn>
+    </div>
     <RecipeContentPreview
       :title="recipe.title"
       :short-description="recipe.shortDescription"

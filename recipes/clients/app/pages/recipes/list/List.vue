@@ -1,27 +1,42 @@
 <template>
   <v-container>
-    <h1>{{ t(strings.title) }}</h1>
-    <v-btn
-      v-if="showCreateRecipe"
-      :to="'/recipes/create'"
-      color="primary"
-      class="mb-4"
-    >
-      {{ t(strings.create_recipe) }}
-    </v-btn>
-    <div v-if="recipes.length === 0" class="text-medium-emphasis">
-      {{ t(strings.empty_list) }}
+    <div class="d-flex align-center flex-wrap gap-2 mb-4">
+      <h1 class="text-h4">{{ t(strings.title) }}</h1>
+      <v-spacer />
+      <v-btn
+        v-if="showCreateRecipe"
+        :to="'/recipes/create'"
+        color="primary"
+        prepend-icon="mdi-plus"
+      >
+        {{ t(strings.create_recipe) }}
+      </v-btn>
     </div>
-    <v-list v-else>
-      <v-list-item
-        v-for="recipe in recipes"
-        :key="recipe.id"
-        :to="`/recipes/${recipe.id}`"
-        :title="recipe.title"
-        :subtitle="recipe.shortDescription"
-        lines="two"
-      />
-    </v-list>
+
+    <v-alert
+      v-if="recipes.length === 0"
+      variant="tonal"
+      type="info"
+      class="mb-4"
+      icon="mdi-book-open-variant-outline"
+    >
+      {{ t(strings.empty_list) }}
+    </v-alert>
+
+    <v-card v-else variant="outlined">
+      <v-list lines="two">
+        <v-list-item
+          v-for="recipe in recipes"
+          :key="recipe.id"
+          :to="`/recipes/${recipe.id}`"
+          :title="recipe.title"
+          :subtitle="recipe.shortDescription"
+          prepend-icon="mdi-book-open-page-variant-outline"
+          append-icon="mdi-chevron-right"
+          link
+        />
+      </v-list>
+    </v-card>
   </v-container>
 </template>
 

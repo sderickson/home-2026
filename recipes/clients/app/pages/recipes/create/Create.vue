@@ -1,25 +1,40 @@
 <template>
   <v-container>
-    <v-btn :to="'/recipes/list'" variant="text" class="mb-4">
+    <v-btn
+      :to="'/recipes/list'"
+      variant="text"
+      prepend-icon="mdi-arrow-left"
+      class="mb-4"
+    >
       {{ t(strings.back_to_list) }}
     </v-btn>
-    <h1>{{ t(strings.title) }}</h1>
+
+    <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
     <v-row>
       <v-col cols="12" md="6">
-        <RecipeForm
-          v-model="formModel"
-          :on-success="handleSuccess"
-        />
+        <v-card variant="outlined" class="pa-4">
+          <RecipeForm
+            v-model="formModel"
+            :on-success="handleSuccess"
+          />
+        </v-card>
       </v-col>
       <v-col cols="12" md="6">
-        <h2 class="text-h6 mb-2">{{ t(strings.preview_heading) }}</h2>
-        <RecipeContentPreview
-          :title="formModel.title"
-          :short-description="formModel.shortDescription"
-          :long-description="formModel.longDescription ?? undefined"
-          :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
-        />
+        <v-card variant="outlined">
+          <v-card-title class="text-subtitle-1 font-weight-medium">
+            {{ t(strings.preview_heading) }}
+          </v-card-title>
+          <v-divider />
+          <v-card-text>
+            <RecipeContentPreview
+              :title="formModel.title"
+              :short-description="formModel.shortDescription"
+              :long-description="formModel.longDescription ?? undefined"
+              :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
+            />
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
