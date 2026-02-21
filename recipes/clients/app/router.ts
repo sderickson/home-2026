@@ -7,6 +7,7 @@ console.log("appLinks:", appLinks);
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import HomeAsync from "./pages/home/HomeAsync.vue";
+import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesListAsync from "./pages/recipes/list/ListAsync.vue";
 // END WORKFLOW AREA
 
@@ -24,6 +25,10 @@ export const createAppRouter = () => {
     {
       path: appLinks.recipesList.path,
       component: RecipesListAsync,
+    },
+    {
+      path: appLinks.recipesDetail.path,
+      component: RecipesDetailAsync,
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
