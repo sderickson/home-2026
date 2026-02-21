@@ -61,7 +61,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 import { authLinks } from "@saflib/auth-links";
@@ -87,11 +86,6 @@ const props = defineProps<{
 }>();
 
 const { t } = useReverseT();
-
-const route = useRoute();
-const disableContainer = computed(() => {
-  return route.meta?.disableContainer ?? false;
-});
 
 const drawer = ref(false);
 
