@@ -22,5 +22,9 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/recipes/:id",
   },
+  recipesCreate: {
+    subdomain,
+    path: "/recipes/create",
+  },
   // END WORKFLOW AREA
 };

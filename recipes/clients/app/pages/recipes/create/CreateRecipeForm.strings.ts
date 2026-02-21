@@ -1,0 +1,18 @@
+export const create_recipe_form = {
+  title_label: "Title",
+  title_placeholder: "Recipe title",
+  short_description_label: "Short description",
+  short_description_placeholder: "Brief description for menus and lists",
+  long_description_label: "Long description (optional)",
+  long_description_placeholder: "Longer description for recipe detail",
+  is_public_label: "Public",
+  is_public_hint: "Visible to everyone when checked",
+  ingredients_label: "Ingredients",
+  add_ingredient: "Add ingredient",
+  ingredient_name_placeholder: "Name",
+  ingredient_quantity_placeholder: "Quantity",
+  ingredient_unit_placeholder: "Unit",
+  instructions_label: "Instructions (markdown)",
+  instructions_placeholder: "1. Preheat oven...\n2. Mix ingredients...",
+  submit: "Create recipe",
+};
