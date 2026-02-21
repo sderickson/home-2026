@@ -9,6 +9,7 @@ console.log("appLinks:", appLinks);
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
+import RecipesEditAsync from "./pages/recipes/edit/EditAsync.vue";
 import RecipesListAsync from "./pages/recipes/list/ListAsync.vue";
 // END WORKFLOW AREA
 
@@ -34,6 +35,10 @@ export const createAppRouter = () => {
     {
       path: appLinks.recipesCreate.path,
       component: RecipesCreateAsync,
+    },
+    {
+      path: appLinks.recipesEdit.path,
+      component: RecipesEditAsync,
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

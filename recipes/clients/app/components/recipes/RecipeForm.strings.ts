@@ -1,4 +1,4 @@
-export const create_recipe_form = {
+export const recipe_form = {
   title_label: "Title",
   title_placeholder: "Recipe title",
   short_description_label: "Short description",
@@ -14,5 +14,7 @@ export const create_recipe_form = {
   ingredient_unit_placeholder: "Unit",
   instructions_label: "Instructions (markdown)",
   instructions_placeholder: "1. Preheat oven...\n2. Mix ingredients...",
-  submit: "Create recipe",
+  submit_create: "Create recipe",
+  submit_update_latest: "Update latest version",
+  submit_save_new_version: "Save as new version",
 };

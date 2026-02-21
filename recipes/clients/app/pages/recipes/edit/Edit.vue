@@ -9,6 +9,7 @@
       <v-col cols="12" md="6">
         <RecipeForm
           v-model="formModel"
+          :recipe="recipeQuery.data.value ?? null"
           :on-success="handleSuccess"
         />
       </v-col>
@@ -28,32 +29,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { recipes_create_page as strings } from "./Create.strings.ts";
-import { useCreateLoader } from "./Create.loader.ts";
-import { assertCreateDataLoaded } from "./Create.logic.ts";
+import { recipes_edit_page as strings } from "./Edit.strings.ts";
+import { useEditLoader } from "./Edit.loader.ts";
+import { assertEditDataLoaded, recipeToFormModel } from "./Edit.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
-import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import RecipeContentPreview from "../../../components/recipes/RecipeContentPreview.vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
 const { t } = useReverseT();
 const router = useRouter();
-const { profileQuery } = useCreateLoader();
+const { recipeQuery } = useEditLoader();
 
-assertCreateDataLoaded(profileQuery.data.value);
+assertEditDataLoaded(recipeQuery.data.value);
 
-const formModel = ref<RecipeFormModel>({
-  title: "",
-  shortDescription: "",
-  longDescription: null,
-  isPublic: false,
-  initialVersion: {
-    content: {
-      ingredients: [],
-      instructionsMarkdown: "",
-    },
-  },
-});
+const formModel = ref(recipeToFormModel(recipeQuery.data.value!));
 
 function handleSuccess(recipeId: string) {
   router.push(`/recipes/${recipeId}`);

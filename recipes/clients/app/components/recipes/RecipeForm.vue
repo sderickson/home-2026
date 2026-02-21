@@ -1,5 +1,5 @@
 <template>
-  <form class="create-recipe-form" @submit.prevent>
+  <form class="recipe-form" @submit.prevent>
     <v-text-field
       v-model="model.title"
       :label="t(strings.title_label)"
@@ -85,19 +85,55 @@
       rows="6"
       class="mb-2"
     />
+    <div class="d-flex gap-2 mt-2">
+      <template v-if="recipe">
+        <v-btn
+          color="primary"
+          :disabled="!isValid"
+          :loading="updateLatestMutation.isPending.value"
+          @click="handleUpdateLatest"
+        >
+          {{ t(strings.submit_update_latest) }}
+        </v-btn>
+        <v-btn
+          variant="outlined"
+          :disabled="!isValid"
+          :loading="createVersionMutation.isPending.value"
+          @click="handleSaveNewVersion"
+        >
+          {{ t(strings.submit_save_new_version) }}
+        </v-btn>
+      </template>
+      <v-btn
+        v-else
+        color="primary"
+        :disabled="!isValid"
+        :loading="createMutation.isPending.value"
+        @click="handleCreate"
+      >
+        {{ t(strings.submit_create) }}
+      </v-btn>
+    </div>
   </form>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-import { create_recipe_form as strings } from "./CreateRecipeForm.strings.ts";
-import { isCreateRecipeFormValid } from "./CreateRecipeForm.logic.ts";
+import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
+import { recipe_form as strings } from "./RecipeForm.strings.ts";
+import { isRecipeFormValid } from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import {
+  useCreateRecipeMutation,
+  useUpdateRecipeMutation,
+  useUpdateRecipeVersionLatestMutation,
+  useCreateRecipeVersionMutation,
+} from "@sderickson/recipes-sdk";
 
 const { t } = useReverseT();
 
-export type CreateRecipeModel = Omit<
+export type RecipeFormModel = Omit<
   RecipesServiceRequestBody["createRecipe"],
   "initialVersion"
 > & {
@@ -109,7 +145,22 @@ export type CreateRecipeModel = Omit<
   };
 };
 
-const model = defineModel<CreateRecipeModel>({ required: true });
+type GetRecipeResponse = RecipesServiceResponseBody["getRecipe"][200];
+
+const props = withDefaults(
+  defineProps<{
+    recipe?: GetRecipeResponse | null;
+    onSuccess?: (recipeId: string) => void;
+  }>(),
+  { recipe: null, onSuccess: undefined },
+);
+
+const model = defineModel<RecipeFormModel>({ required: true });
+
+const createMutation = useCreateRecipeMutation();
+const updateMutation = useUpdateRecipeMutation();
+const updateLatestMutation = useUpdateRecipeVersionLatestMutation();
+const createVersionMutation = useCreateRecipeVersionMutation();
 
 function content() {
   return model.value.initialVersion.content;
@@ -127,7 +178,47 @@ function removeIngredient(index: number) {
   content().ingredients.splice(index, 1);
 }
 
-const isValid = computed(() => isCreateRecipeFormValid(model.value));
+const isValid = computed(() => isRecipeFormValid(model.value));
+
+async function handleCreate() {
+  if (!isValid.value) return;
+  const data = await createMutation.mutateAsync(model.value);
+  props.onSuccess?.(data.recipe.id);
+}
+
+async function handleUpdateLatest() {
+  if (!props.recipe || !isValid.value) return;
+  const { recipe } = props.recipe;
+  await updateMutation.mutateAsync({
+    id: recipe.id,
+    title: model.value.title,
+    shortDescription: model.value.shortDescription,
+    longDescription: model.value.longDescription ?? undefined,
+    isPublic: model.value.isPublic,
+  });
+  await updateLatestMutation.mutateAsync({
+    id: recipe.id,
+    ...content(),
+  });
+  props.onSuccess?.(recipe.id);
+}
+
+async function handleSaveNewVersion() {
+  if (!props.recipe || !isValid.value) return;
+  const { recipe } = props.recipe;
+  await updateMutation.mutateAsync({
+    id: recipe.id,
+    title: model.value.title,
+    shortDescription: model.value.shortDescription,
+    longDescription: model.value.longDescription ?? undefined,
+    isPublic: model.value.isPublic,
+  });
+  await createVersionMutation.mutateAsync({
+    id: recipe.id,
+    ...content(),
+  });
+  props.onSuccess?.(recipe.id);
+}
 
 defineExpose({ isValid });
 </script>
