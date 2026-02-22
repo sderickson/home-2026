@@ -42,6 +42,7 @@ export const RecipesInitM1aAppRecipesWorkflowDefinition = defineWorkflow<
     // })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/create",
+      urlPath: "/recipes/create",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Recipe create page: add form for creating a new recipe. Use SDK create mutation. Redirect to detail page on creation. It should include a preview of the recipe, with a lightweight markdown renderer since this is frontend. When you get to refactoring, definitely set up the preview and the form for sharing elsewhere. Have the detail page use the preview component.`,
     })),
 
@@ -51,6 +52,7 @@ export const RecipesInitM1aAppRecipesWorkflowDefinition = defineWorkflow<
     // })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/edit",
+      urlPath: "/recipes/:id",
       prompt: `Recipe edit page: add form for editing an existing recipe. Use SDK recipe update mutation. Use the same preview and form components as the create page. Move them into a shared space, such as a recipes/service/sdk/components directory. Have the form use the mutation depending on if it was given a recipe or not via props. And have it render CTAs differently, e.g. "Create Recipe" vs for update it should have two: "Update latest version" vs "Save as new version."`,
     })),
     GetFeedbackStep,

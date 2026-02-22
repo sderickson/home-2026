@@ -42,32 +42,44 @@ export const RecipesInitM5bMenusAppWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/menus/list.ts",
+      urlPath: "/menus",
+      method: "get",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 5b: menus SDK + app). Then: Add query for GET /menus.`,
     })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
       path: "./requests/menus/get.ts",
+      urlPath: "/menus/{id}",
+      method: "get",
       prompt: `Add query for GET /menus/:id.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/create.ts",
+      urlPath: "/menus",
+      method: "post",
       prompt: `Add mutation POST /menus.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/update.ts",
+      urlPath: "/menus/{id}",
+      method: "put",
       prompt: `Add mutation PUT /menus/:id.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/delete.ts",
+      urlPath: "/menus/{id}",
+      method: "delete",
       prompt: `Add mutation DELETE /menus/:id.`,
     })),
 
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/menus/list",
+      urlPath: "/menus/list",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Menu list page: admin sees all, non-admin sees public only; hide "create menu" for non-admin. Use SDK. See plan M5b.`,
     })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/menus/edit",
+      urlPath: "/menus/:id",
       prompt: `Menu create and edit: name, is_public, groupings (name + ordered recipe ids). Admin only. See plan M5b.`,
     })),
     GetFeedbackStep,

@@ -42,24 +42,33 @@ export const RecipesInitM2bNotesFrontendWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/recipes/notes-list.ts",
+      urlPath: "/recipes/{id}/notes",
+      method: "get",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 2b: notes SDK + app notes section). Then: Add query for GET /recipes/:id/notes.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/notes-create.ts",
+      urlPath: "/recipes/{id}/notes",
+      method: "post",
       prompt: `Add mutation POST /recipes/:id/notes.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/notes-update.ts",
+      urlPath: "/recipes/{id}/notes/{noteId}",
+      method: "put",
       prompt: `Add mutation PUT /recipes/:id/notes/:noteId.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/notes-delete.ts",
+      urlPath: "/recipes/{id}/notes/{noteId}",
+      method: "delete",
       prompt: `Add mutation DELETE /recipes/:id/notes/:noteId.`,
     })),
 
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Update recipe detail: add notes section — list notes, add note, edit note (set ever_edited on edit), optional link to version. Admin only. Use SDK notes queries and mutations. See plan M2b.`,
     })),
     GetFeedbackStep,

@@ -42,21 +42,28 @@ export const RecipesInitM3bRecipeFilesFrontendWorkflowDefinition = defineWorkflo
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/recipes/files-list.ts",
+      urlPath: "/recipes/{id}/files",
+      method: "get",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 3b: recipe files SDK + app UI). Then: Add query for GET /recipes/:id/files.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/files-upload.ts",
       upload: true,
+      urlPath: "/recipes/{id}/files",
+      method: "post",
       prompt: `Add mutation POST /recipes/:id/files (upload).`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/files-delete.ts",
+      urlPath: "/recipes/{id}/files/{fileId}",
+      method: "delete",
       prompt: `Add mutation DELETE /recipes/:id/files/:fileId.`,
     })),
 
     step(CdStepMachine, () => ({ path: "../clients/app" })),
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), () => ({
       path: "./pages/recipes/detail",
+      urlPath: "/recipes/:id",
       prompt: `Update recipe detail: add managing recipe files (list, upload, delete). Admin only. Use SDK recipe files queries and mutations. See plan M3b.`,
     })),
     GetFeedbackStep,
