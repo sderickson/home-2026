@@ -2,7 +2,7 @@
 
 // END WORKFLOW AREA
 
-export const notebookSdkStrings = {
+export const notebook_sdk_strings = {
   // BEGIN SORTED WORKFLOW AREA string-object FOR sdk/add-component
 
   // END WORKFLOW AREA

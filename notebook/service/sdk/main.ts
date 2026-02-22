@@ -2,7 +2,7 @@ import App from "./App.vue";
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
 import "@saflib/vue/components";
-import { notebookSdkStrings } from "./strings";
+import { notebook_sdk_strings } from "./strings";
 import { setupWorker } from "msw/browser";
 import { notebookServiceFakeHandlers } from "./fakes.ts";
 import { http, bypass } from "msw";
@@ -23,7 +23,7 @@ export const main = async () => {
   await server.start({ onUnhandledRequest: "error" });
   createVueApp(App, {
     i18nMessages: {
-      ...notebookSdkStrings,
+      ...notebook_sdk_strings,
     },
     router,
   });

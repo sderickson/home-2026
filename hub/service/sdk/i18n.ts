@@ -1,4 +1,4 @@
 import { makeReverseTComposable } from "@saflib/vue";
-import { hubSdkStrings } from "./strings.ts";
+import { hub_sdk_strings } from "./strings.ts";
 
-export const useReverseT = makeReverseTComposable(hubSdkStrings);
+export const useReverseT = makeReverseTComposable(hub_sdk_strings);

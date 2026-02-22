@@ -1,4 +1,4 @@
 import { makeReverseTComposable } from "@saflib/vue";
-import { notebookSdkStrings } from "./strings.ts";
+import { notebook_sdk_strings } from "./strings.ts";
 
-export const useReverseT = makeReverseTComposable(notebookSdkStrings);
+export const useReverseT = makeReverseTComposable(notebook_sdk_strings);
