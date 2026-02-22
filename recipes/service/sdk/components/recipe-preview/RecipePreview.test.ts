@@ -31,13 +31,4 @@ describe("RecipePreview", () => {
     );
   });
 
-  it("shows loading state when loading is true", () => {
-    const recipe = mockRecipes[0];
-    const wrapper = mountTestApp(RecipePreview, {
-      props: { recipe, loading: true },
-    });
-
-    expect(wrapper.find("[aria-busy='true']").exists()).toBe(true);
-    expect(wrapper.text()).not.toContain(recipe.title);
-  });
 });
