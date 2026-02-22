@@ -6,7 +6,7 @@
     <v-app-bar height="90" class="px-4" flat>
       <!-- Logo -->
       <v-app-bar-title>
-        <SpaLink :link="{ subdomain: 'root', path: '/' }" class="logo-link">
+        <SpaLink :link="rootLinks.home" class="logo-link">
           {{ t(recipes_layout.nav_title) }}
         </SpaLink>
       </v-app-bar-title>

@@ -48,7 +48,7 @@ import { useCreateLoader } from "./Create.loader.ts";
 import { assertCreateDataLoaded } from "./Create.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
-import RecipeContentPreview from "../../../components/recipes/RecipeContentPreview.vue";
+import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
 const { t } = useReverseT();

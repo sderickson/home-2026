@@ -33,7 +33,7 @@ import { recipes_edit_page as strings } from "./Edit.strings.ts";
 import { useEditLoader } from "./Edit.loader.ts";
 import { assertEditDataLoaded, recipeToFormModel } from "./Edit.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
-import RecipeContentPreview from "../../../components/recipes/RecipeContentPreview.vue";
+import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
 const { t } = useReverseT();
