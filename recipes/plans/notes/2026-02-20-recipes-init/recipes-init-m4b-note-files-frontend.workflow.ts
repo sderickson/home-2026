@@ -42,15 +42,21 @@ export const RecipesInitM4bNoteFilesFrontendWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/recipes/notes-files-list.ts",
+      urlPath: "/recipes/{id}/notes/{noteId}/files",
+      method: "get",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 4b: note files SDK + app UI). Then: Add query for GET /recipes/:id/notes/:noteId/files.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/notes-files-upload.ts",
       upload: true,
+      urlPath: "/recipes/{id}/notes/{noteId}/files",
+      method: "post",
       prompt: `Add mutation POST /recipes/:id/notes/:noteId/files.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/recipes/notes-files-delete.ts",
+      urlPath: "/recipes/{id}/notes/{noteId}/files/{fileId}",
+      method: "delete",
       prompt: `Add mutation DELETE /recipes/:id/notes/:noteId/files/:fileId.`,
     })),
 

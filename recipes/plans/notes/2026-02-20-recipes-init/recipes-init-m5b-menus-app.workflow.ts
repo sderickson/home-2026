@@ -42,22 +42,32 @@ export const RecipesInitM5bMenusAppWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/sdk" })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), ({ context }) => ({
       path: "./requests/menus/list.ts",
+      urlPath: "/menus",
+      method: "get",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Understand your part (Milestone 5b: menus SDK + app). Then: Add query for GET /menus.`,
     })),
     step(makeWorkflowMachine(AddSdkQueryWorkflowDefinition), () => ({
       path: "./requests/menus/get.ts",
+      urlPath: "/menus/{id}",
+      method: "get",
       prompt: `Add query for GET /menus/:id.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/create.ts",
+      urlPath: "/menus",
+      method: "post",
       prompt: `Add mutation POST /menus.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/update.ts",
+      urlPath: "/menus/{id}",
+      method: "put",
       prompt: `Add mutation PUT /menus/:id.`,
     })),
     step(makeWorkflowMachine(AddSdkMutationWorkflowDefinition), () => ({
       path: "./requests/menus/delete.ts",
+      urlPath: "/menus/{id}",
+      method: "delete",
       prompt: `Add mutation DELETE /menus/:id.`,
     })),
 
