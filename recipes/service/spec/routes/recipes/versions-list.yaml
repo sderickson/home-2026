@@ -1,6 +1,8 @@
 listRecipeVersions:
   summary: "List version history for a recipe (ordered by createdAt)."
   operationId: "listRecipeVersions"
+  tags:
+    - "no-auth"
 
   parameters:
     - name: "id"
@@ -20,20 +22,6 @@ listRecipeVersions:
             type: array
             items:
               $ref: "../../schemas/recipe-version.yaml"
-
-    "401":
-      description: "Unauthorized - missing or invalid auth headers, or not logged in."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"
-
-    "403":
-      description: "Forbidden - user does not have required privileges."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"
 
     "404":
       description: "Not Found"

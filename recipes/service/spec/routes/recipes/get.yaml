@@ -1,6 +1,8 @@
 getRecipe:
   summary: "Get one recipe with current version, optional notes and file list."
   operationId: "getRecipe"
+  tags:
+    - "no-auth"
 
   parameters:
     - name: "id"
@@ -36,20 +38,6 @@ getRecipe:
                 description: "Optional list of recipe file info."
                 items:
                   type: object
-
-    "401":
-      description: "Unauthorized - missing or invalid auth headers, or not logged in."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"
-
-    "403":
-      description: "Forbidden - user does not have required privileges."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"
 
     "404":
       description: "Not Found"

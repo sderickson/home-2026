@@ -20,7 +20,7 @@ export const createRecipesRouter = () => {
     "/recipes",
     createScopedMiddleware({
       apiSpec: jsonSpec,
-      authRequired: true,
+      enforceAuth: true,
     }),
   );
   router.get("/recipes", listRecipesHandler);
@@ -30,7 +30,10 @@ export const createRecipesRouter = () => {
   router.post("/recipes/:id/versions", versionsCreateRecipesHandler);
   router.put("/recipes/:id", updateRecipeHandler);
   router.delete("/recipes/:id", deleteRecipeHandler);
-  router.put("/recipes/:id/versions/latest", versionsLatestUpdateRecipesHandler);
+  router.put(
+    "/recipes/:id/versions/latest",
+    versionsLatestUpdateRecipesHandler,
+  );
 
   return router;
 };

@@ -57,10 +57,30 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
     expect(response.body[0].createdAt).toBeDefined();
   });
 
-  it("should return 401 when not authenticated", async () => {
+  it("should return 200 when not authenticated for public recipe", async () => {
     const response = await request(app).get(`/recipes/${recipeId}/versions`);
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body).toHaveLength(1);
+  });
+
+  it("should return 404 when not authenticated and recipe is private", async () => {
+    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      title: "Private Recipe",
+      shortDescription: "Private",
+      longDescription: null,
+      isPublic: false,
+      createdBy: seedUserId,
+      updatedBy: seedUserId,
+      versionContent: { ingredients: [], instructionsMarkdown: "" },
+    });
+    if (!result) throw new Error("Expected createWithVersionRecipe to return result");
+    const privateId = result.recipe.id;
+
+    const response = await request(app).get(`/recipes/${privateId}/versions`);
+
+    expect(response.status).toBe(404);
   });
 
   it("should return 404 when recipe not found", async () => {
