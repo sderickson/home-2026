@@ -4,7 +4,7 @@ import { RecipesLayout } from "@sderickson/recipes-clients-common";
 import { useProfile } from "@saflib/auth";
 
 const profileQuery = useProfile();
-const loggedIn = computed(() => !!profileQuery.data?.value);
+const loggedIn = computed(() => !!profileQuery.data?.value?.id);
 const isAdmin = computed(() => profileQuery.data?.value?.isAdmin ?? false);
 </script>
 
