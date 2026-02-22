@@ -1,6 +1,6 @@
 import { recipes_common_strings } from "../common/strings.ts";
 
-// BEGIN SORTED WORKFLOW AREA page-string-imports FOR vue/add-view
+// BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { home_page } from "./pages/home/Home.strings.ts";
 import { recipe_content_preview } from "./components/recipes/RecipeContentPreview.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
@@ -12,7 +12,7 @@ import { recipes_list_page } from "./pages/recipes/list/List.strings.ts";
 
 export const app_strings = {
   ...recipes_common_strings,
-  // BEGIN SORTED WORKFLOW AREA page-string-object FOR vue/add-view
+  // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   home_page,
   recipe_content_preview,
   recipe_form,
