@@ -1,4 +1,4 @@
-import { recipes_common_strings } from "../common/strings.ts";
+import { recipes_common_strings } from "@sderickson/recipes-clients-common/strings";
 
 // BEGIN SORTED WORKFLOW AREA page-string-imports FOR vue/add-view
 import { home_page } from "./pages/home/Home.strings.ts";
