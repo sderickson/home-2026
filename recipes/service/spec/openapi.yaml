@@ -36,6 +36,9 @@ paths:
       $ref: "./routes/recipes/notes-update.yaml#/notesUpdateRecipes"
     delete:
       $ref: "./routes/recipes/notes-delete.yaml#/notesDeleteRecipes"
+  /recipes/{id}/files:
+    get:
+      $ref: "./routes/recipes/files-list.yaml#/filesListRecipes"
   # END WORKFLOW AREA
 
 components:
