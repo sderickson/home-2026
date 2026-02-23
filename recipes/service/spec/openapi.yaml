@@ -40,4 +40,6 @@ components:
       $ref: "./schemas/recipe.yaml"
     RecipeVersion:
       $ref: "./schemas/recipe-version.yaml"
+    RecipeNote:
+      $ref: "./schemas/recipe-note.yaml"
     # END WORKFLOW AREA
