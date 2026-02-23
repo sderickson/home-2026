@@ -8,6 +8,7 @@ import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
 import { createRecipesHandler } from "./create.fake.ts";
 import { deleteRecipesHandler } from "./delete.fake.ts";
+import { notesCreateRecipesHandler } from "./notes-create.fake.ts";
 import { updateRecipesHandler } from "./update.fake.ts";
 import { versionsCreateRecipesHandler } from "./versions-create.fake.ts";
 import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.fake.ts";
@@ -25,6 +26,7 @@ export const recipesFakeHandlers = [
   // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
   createRecipesHandler,
   deleteRecipesHandler,
+  notesCreateRecipesHandler,
   updateRecipesHandler,
   versionsCreateRecipesHandler,
   versionsLatestUpdateRecipesHandler,
