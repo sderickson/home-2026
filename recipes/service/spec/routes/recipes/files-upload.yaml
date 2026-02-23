@@ -1,0 +1,55 @@
+filesUploadRecipes:
+  summary: "Upload a new file for a recipe (multiple files allowed). Admin only."
+  operationId: "filesUploadRecipes"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - file
+          properties:
+            file:
+              type: string
+              format: binary
+              description: "The file to upload (stored in Azure)."
+
+  responses:
+    "200":
+      description: "Created recipe file metadata."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/recipe-file-info.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

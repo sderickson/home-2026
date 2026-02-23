@@ -122,7 +122,8 @@ export interface paths {
         /** List all files for a recipe. */
         get: operations["filesListRecipes"];
         put?: never;
-        post?: never;
+        /** Upload a new file for a recipe (multiple files allowed). Admin only. */
+        post: operations["filesUploadRecipes"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1099,6 +1100,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-file-info"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    filesUploadRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description The file to upload (stored in Azure).
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created recipe file metadata. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-file-info"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */

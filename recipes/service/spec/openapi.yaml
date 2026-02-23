@@ -39,6 +39,8 @@ paths:
   /recipes/{id}/files:
     get:
       $ref: "./routes/recipes/files-list.yaml#/filesListRecipes"
+    post:
+      $ref: "./routes/recipes/files-upload.yaml#/filesUploadRecipes"
   # END WORKFLOW AREA
 
 components:
