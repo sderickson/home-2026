@@ -1,6 +1,6 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
-import { recipe, recipeVersion } from "./recipe.js";
+import { recipe, recipeVersion } from "./recipe.ts";
 
 export interface RecipeNoteEntity {
   id: string;
