@@ -105,7 +105,8 @@ export interface paths {
         /** Edit note; server sets everEdited. Admin only. */
         put: operations["notesUpdateRecipes"];
         post?: never;
-        delete?: never;
+        /** Delete a note on a recipe. Admin only. */
+        delete: operations["notesDeleteRecipes"];
         options?: never;
         head?: never;
         patch?: never;
@@ -922,6 +923,56 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["recipe-note"];
                 };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesDeleteRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Note deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {

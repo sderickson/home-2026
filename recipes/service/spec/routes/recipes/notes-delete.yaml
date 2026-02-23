@@ -1,0 +1,44 @@
+notesDeleteRecipes:
+  summary: "Delete a note on a recipe. Admin only."
+  operationId: "notesDeleteRecipes"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+    - name: "noteId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Note id"
+
+  responses:
+    "204":
+      description: "Note deleted."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
