@@ -8,9 +8,11 @@ import { mockRecipes } from "../../requests/recipes/mocks.ts";
 describe("RecipeList", () => {
   stubGlobals();
 
+  const getRecipeLinkProps = (recipeId: string) => ({ to: `/recipes/${recipeId}` });
+
   it("renders title and description with empty list", () => {
     const wrapper = mountTestApp(RecipeList, {
-      props: { recipes: [] },
+      props: { recipes: [], getRecipeLinkProps },
     });
 
     expect(getElementByString(wrapper, strings.title).exists()).toBe(true);
@@ -20,10 +22,10 @@ describe("RecipeList", () => {
     expect(getElementByString(wrapper, strings.empty).exists()).toBe(true);
   });
 
-  it("renders a recipe preview for each recipe", () => {
+  it("renders a list item for each recipe with title and subtitle", () => {
     const recipes = mockRecipes.slice(0, 2);
     const wrapper = mountTestApp(RecipeList, {
-      props: { recipes },
+      props: { recipes, getRecipeLinkProps },
     });
 
     for (const recipe of recipes) {

@@ -6,7 +6,9 @@
   "exports": {
     ".": "./index.ts",
     "./fakes": "./fakes.ts",
-    "./strings": "./strings.ts"
+    "./strings": "./strings.ts",
+    "./i18n": "./i18n.ts",
+    "./test-app": "./test-app.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -23,9 +25,10 @@
   "dependencies": {
     "@saflib/monorepo": "*",
     "@saflib/sdk": "*",
-    "@sderickson/recipes-spec": "*",
     "@saflib/vite": "*",
     "@saflib/vue": "*",
+    "@sderickson/recipes-spec": "*",
+    "marked": "^15.0.12",
     "msw": "^2.11.3"
   },
   "msw": {

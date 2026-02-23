@@ -3,62 +3,38 @@
     <h2 class="text-h6 mb-4">{{ t(strings.title) }}</h2>
     <p class="text-medium-emphasis mb-4">{{ t(strings.description) }}</p>
 
-    <template v-if="loading">
-      <v-row>
-        <v-col v-for="n in 3" :key="n" cols="12" sm="6" md="4">
-          <v-card>
-            <v-card-title>
-              <v-skeleton-loader type="heading" />
-            </v-card-title>
-            <v-card-text>
-              <v-skeleton-loader type="paragraph" class="mb-2" />
-              <v-skeleton-loader type="text" />
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </template>
-
-    <v-alert v-else-if="error" type="error" variant="tonal" class="mb-4">
-      {{ getTanstackErrorMessage(error) }}
-    </v-alert>
-
-    <v-alert
-      v-else-if="recipes.length === 0"
-      type="info"
-      variant="tonal"
-      class="mb-4"
-    >
+    <v-alert v-if="recipes.length === 0" type="info" variant="tonal" class="mb-4">
       {{ t(strings.empty) }}
     </v-alert>
 
-    <v-row v-else>
-      <v-col
-        v-for="recipe in recipes"
-        :key="recipe.id"
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        <RecipePreview :recipe="recipe" />
-      </v-col>
-    </v-row>
+    <v-card v-else variant="outlined">
+      <v-list lines="two">
+        <v-list-item
+          v-for="recipe in recipes"
+          :key="recipe.id"
+          v-bind="getRecipeLinkProps(recipe.id)"
+          :title="recipe.title"
+          :subtitle="recipe.shortDescription"
+          prepend-icon="mdi-book-open-page-variant-outline"
+          append-icon="mdi-chevron-right"
+          link
+        />
+      </v-list>
+    </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Recipe } from "@sderickson/recipes-spec";
-import { TanstackError, getTanstackErrorMessage } from "@saflib/sdk";
-import RecipePreview from "../recipe-preview/RecipePreview.vue";
 import { recipe_list_strings as strings } from "./RecipeList.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 
 const { t } = useReverseT();
 
 defineProps<{
-  /** List of recipes to display (from list query). Data fetching is handled by the parent. */
+  /** List of recipes to display. Data fetching is handled by the parent. */
   recipes: Recipe[];
-  loading?: boolean;
-  error?: TanstackError;
+  /** Returns link props (to or href) for navigating to the recipe detail page. */
+  getRecipeLinkProps: (recipeId: string) => { to?: string; href?: string };
 }>();
 </script>

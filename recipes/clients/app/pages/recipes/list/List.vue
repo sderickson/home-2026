@@ -5,7 +5,7 @@
       <v-spacer />
       <v-btn
         v-if="showCreateRecipe"
-        :to="'/recipes/create'"
+        v-bind="createLinkProps"
         color="primary"
         prepend-icon="mdi-plus"
       >
@@ -13,35 +13,15 @@
       </v-btn>
     </div>
 
-    <v-alert
-      v-if="recipes.length === 0"
-      variant="tonal"
-      type="info"
-      class="mb-4"
-      icon="mdi-book-open-variant-outline"
-    >
-      {{ t(strings.empty_list) }}
-    </v-alert>
-
-    <v-card v-else variant="outlined">
-      <v-list lines="two">
-        <v-list-item
-          v-for="recipe in recipes"
-          :key="recipe.id"
-          :to="`/recipes/${recipe.id}`"
-          :title="recipe.title"
-          :subtitle="recipe.shortDescription"
-          prepend-icon="mdi-book-open-page-variant-outline"
-          append-icon="mdi-chevron-right"
-          link
-        />
-      </v-list>
-    </v-card>
+    <RecipeList :recipes="recipes" :get-recipe-link-props="getRecipeLinkProps" />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { RecipeList } from "@sderickson/recipes-sdk";
+import { linkToProps } from "@saflib/links";
+import { appLinks } from "@sderickson/recipes-links";
 import { recipes_list_page as strings } from "./List.strings.ts";
 import { useListLoader } from "./List.loader.ts";
 import {
@@ -61,4 +41,12 @@ assertRecipesLoaded(recipesQuery.data.value);
 const profile = profileQuery.data.value;
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));
 const showCreateRecipe = computed(() => canShowCreateRecipe(profile));
+const createLinkProps = linkToProps(appLinks.recipesCreate);
+
+function getRecipeLinkProps(recipeId: string) {
+  return linkToProps({
+    ...appLinks.recipesDetail,
+    path: `/recipes/${recipeId}`,
+  });
+}
 </script>

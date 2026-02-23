@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContextWithAuth } from "@saflib/node";
+import { getSafContext } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
@@ -10,9 +10,24 @@ type VersionsListRecipeError = RecipeNotFoundError;
 
 export const versionsListRecipesHandler = createHandler(
   async (req, res) => {
-    getSafContextWithAuth();
+    const store = getSafContext();
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const id = req.params.id as string;
+
+    const getOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
+    if (getOut.error) {
+      const error: VersionsListRecipeError = getOut.error;
+      switch (true) {
+        case error instanceof RecipeNotFoundError:
+          throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
+        default:
+          throw error satisfies never;
+      }
+    }
+    const isAdmin = store.auth?.userScopes?.includes("*") ?? false;
+    if (!getOut.result.recipe.isPublic && !isAdmin) {
+      throw createError(404, "Recipe not found", { code: "RECIPE_NOT_FOUND" });
+    }
 
     const out = await recipeQueries.versionsListRecipe(recipesDbKey, id);
 

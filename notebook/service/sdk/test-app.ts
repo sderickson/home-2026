@@ -1,7 +1,7 @@
 import { mountWithPlugins } from "@saflib/vue/testing";
 import type { ComponentMountingOptions } from "@vue/test-utils";
 import type { Component } from "vue";
-import { notebookSdkStrings } from "./strings.ts";
+import { notebook_sdk_strings } from "./strings.ts";
 import { notebookServiceFakeHandlers } from "./fakes.ts";
 import { router } from "./router.ts";
 
@@ -11,7 +11,7 @@ export const mountTestApp = <C extends Component>(
 ) => {
   return mountWithPlugins(Component, options, {
     i18nMessages: {
-      ...notebookSdkStrings,
+      ...notebook_sdk_strings,
     },
     router,
   });

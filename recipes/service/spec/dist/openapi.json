@@ -8,11 +8,14 @@
   "paths": {
     "/recipes": {
       "get": {
-        "summary": "List recipes. Public-only for non-admin; admins see private too.",
+        "summary": "List recipes. Public-only when not logged in or non-admin; admins see private too.",
         "operationId": "listRecipes",
+        "tags": [
+          "no-auth"
+        ],
         "responses": {
           "200": {
-            "description": "List of recipes (public only for non-admin, includes private for admins).",
+            "description": "List of recipes (public only when not admin, includes private for admins).",
             "content": {
               "application/json": {
                 "schema": {
@@ -20,26 +23,6 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe"
                   }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -142,6 +125,9 @@
       "get": {
         "summary": "Get one recipe with current version, optional notes and file list.",
         "operationId": "getRecipe",
+        "tags": [
+          "no-auth"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -187,26 +173,6 @@
                       }
                     }
                   }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -367,6 +333,9 @@
       "get": {
         "summary": "List version history for a recipe (ordered by createdAt).",
         "operationId": "listRecipeVersions",
+        "tags": [
+          "no-auth"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -389,26 +358,6 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe-version"
                   }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -653,20 +602,6 @@
           "updatedAt"
         ]
       },
-      "error": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
-          },
-          "message": {
-            "type": "string",
-            "description": "A human-readable description of the error.",
-            "example": "The requested resource could not be found."
-          }
-        }
-      },
       "content": {
         "type": "object",
         "description": "Version body — structured ingredients and markdown instructions",
@@ -840,6 +775,20 @@
           "createdBy",
           "createdAt"
         ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
       },
       "login": {
         "type": "object",

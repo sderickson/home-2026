@@ -1,27 +1,15 @@
 listRecipes:
-  summary: "List recipes. Public-only for non-admin; admins see private too."
+  summary: "List recipes. Public-only when not logged in or non-admin; admins see private too."
   operationId: "listRecipes"
+  tags:
+    - "no-auth"
 
   responses:
     "200":
-      description: "List of recipes (public only for non-admin, includes private for admins)."
+      description: "List of recipes (public only when not admin, includes private for admins)."
       content:
         application/json:
           schema:
             type: array
             items:
               $ref: "../../schemas/recipe.yaml"
-
-    "401":
-      description: "Unauthorized - missing or invalid auth headers, or not logged in."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"
-
-    "403":
-      description: "Forbidden - user does not have required privileges."
-      content:
-        application/json:
-          schema:
-            $ref: "../../schemas/error.yaml"

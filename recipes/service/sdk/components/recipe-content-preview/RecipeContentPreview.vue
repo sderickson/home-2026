@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { marked } from "marked";
-import { recipe_content_preview as strings } from "./RecipeContentPreview.strings.ts";
-import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { recipe_content_preview_strings as strings } from "./RecipeContentPreview.strings.ts";
+import { useReverseT } from "../../i18n.ts";
 
 const { t } = useReverseT();
 

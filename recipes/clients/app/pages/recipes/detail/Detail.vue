@@ -27,7 +27,7 @@ import { computed } from "vue";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
 import { useDetailLoader } from "./Detail.loader.ts";
 import { assertRecipeLoaded } from "./Detail.logic.ts";
-import RecipeContentPreview from "../../../components/recipes/RecipeContentPreview.vue";
+import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
 const { t } = useReverseT();

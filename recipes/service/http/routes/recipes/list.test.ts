@@ -20,9 +20,10 @@ describe("GET /recipes", () => {
     expect(response.body).toEqual([]);
   });
 
-  it("should return 401 when not authenticated", async () => {
+  it("should return 200 when not authenticated (public recipes only)", async () => {
     const response = await request(app).get("/recipes");
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
 });

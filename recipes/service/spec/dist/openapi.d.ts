@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List recipes. Public-only for non-admin; admins see private too. */
+        /** List recipes. Public-only when not logged in or non-admin; admins see private too. */
         get: operations["listRecipes"];
         put?: never;
         /** Create recipe (and optionally initial version). Admin only. */
@@ -141,15 +141,6 @@ export interface components {
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
              */
             currentVersionId?: string;
-        };
-        error: {
-            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
-            code?: string;
-            /**
-             * @description A human-readable description of the error.
-             * @example The requested resource could not be found.
-             */
-            message?: string;
         };
         /**
          * @description Version body — structured ingredients and markdown instructions
@@ -288,6 +279,15 @@ export interface components {
              */
             createdAt: string;
         };
+        error: {
+            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
+            code?: string;
+            /**
+             * @description A human-readable description of the error.
+             * @example The requested resource could not be found.
+             */
+            message?: string;
+        };
         login: {
             /** @enum {string} */
             event: "login";
@@ -339,31 +339,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of recipes (public only for non-admin, includes private for admins). */
+            /** @description List of recipes (public only when not admin, includes private for admins). */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["recipe"][];
-                };
-            };
-            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
-                };
-            };
-            /** @description Forbidden - user does not have required privileges. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
                 };
             };
         };
@@ -453,24 +435,6 @@ export interface operations {
                         /** @description Optional list of recipe file info. */
                         files?: Record<string, never>[];
                     };
-                };
-            };
-            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
-                };
-            };
-            /** @description Forbidden - user does not have required privileges. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
@@ -614,24 +578,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-version"][];
-                };
-            };
-            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
-                };
-            };
-            /** @description Forbidden - user does not have required privileges. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
