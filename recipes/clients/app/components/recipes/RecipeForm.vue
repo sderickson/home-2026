@@ -85,6 +85,15 @@
       rows="6"
       class="mb-2"
     />
+    <v-textarea
+      v-if="recipe"
+      v-model="model.note"
+      :label="t(strings.note_label)"
+      :placeholder="t(strings.note_placeholder)"
+      variant="outlined"
+      rows="3"
+      class="mb-2"
+    />
     <div class="d-flex gap-2 mt-2">
       <template v-if="recipe">
         <v-btn
@@ -129,6 +138,7 @@ import {
   useUpdateRecipeMutation,
   useUpdateRecipeVersionLatestMutation,
   useCreateRecipeVersionMutation,
+  useNotesCreateRecipesMutation,
 } from "@sderickson/recipes-sdk";
 
 const { t } = useReverseT();
@@ -143,6 +153,8 @@ export type RecipeFormModel = Omit<
       instructionsMarkdown: string;
     };
   };
+  /** Optional note attached to the version when saving (edit page). */
+  note: string;
 };
 
 type GetRecipeResponse = RecipesServiceResponseBody["getRecipe"][200];
@@ -161,6 +173,7 @@ const createMutation = useCreateRecipeMutation();
 const updateMutation = useUpdateRecipeMutation();
 const updateLatestMutation = useUpdateRecipeVersionLatestMutation();
 const createVersionMutation = useCreateRecipeVersionMutation();
+const notesCreateMutation = useNotesCreateRecipesMutation();
 
 function content() {
   return model.value.initialVersion.content;
@@ -182,7 +195,16 @@ const isValid = computed(() => isRecipeFormValid(model.value));
 
 async function handleCreate() {
   if (!isValid.value) return;
-  const data = await createMutation.mutateAsync(model.value);
+  const { note: _note, ...createPayload } = model.value;
+  const data = await createMutation.mutateAsync(createPayload);
+  const noteBody = model.value.note?.trim();
+  if (data.initialVersion && noteBody) {
+    await notesCreateMutation.mutateAsync({
+      id: data.recipe.id,
+      body: noteBody,
+      recipeVersionId: data.initialVersion.id,
+    });
+  }
   props.onSuccess?.(data.recipe.id);
 }
 
@@ -196,10 +218,18 @@ async function handleUpdateLatest() {
     longDescription: model.value.longDescription ?? undefined,
     isPublic: model.value.isPublic,
   });
-  await updateLatestMutation.mutateAsync({
+  const version = await updateLatestMutation.mutateAsync({
     id: recipe.id,
     ...content(),
   });
+  const noteBody = model.value.note?.trim();
+  if (noteBody) {
+    await notesCreateMutation.mutateAsync({
+      id: recipe.id,
+      body: noteBody,
+      recipeVersionId: version.id,
+    });
+  }
   props.onSuccess?.(recipe.id);
 }
 
@@ -213,10 +243,18 @@ async function handleSaveNewVersion() {
     longDescription: model.value.longDescription ?? undefined,
     isPublic: model.value.isPublic,
   });
-  await createVersionMutation.mutateAsync({
+  const version = await createVersionMutation.mutateAsync({
     id: recipe.id,
     ...content(),
   });
+  const noteBody = model.value.note?.trim();
+  if (noteBody) {
+    await notesCreateMutation.mutateAsync({
+      id: recipe.id,
+      body: noteBody,
+      recipeVersionId: version.id,
+    });
+  }
   props.onSuccess?.(recipe.id);
 }
 

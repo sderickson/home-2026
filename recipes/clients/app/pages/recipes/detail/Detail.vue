@@ -13,160 +13,134 @@
         {{ t(strings.edit_recipe) }}
       </v-btn>
     </div>
-    <RecipeContentPreview
-      :title="recipe.title"
-      :short-description="recipe.shortDescription"
-      :long-description="recipe.longDescription ?? undefined"
-      :content="content"
-    />
 
-    <v-divider class="my-4" />
-    <h2 class="text-h6 mb-2">{{ t(strings.notes_section) }}</h2>
-    <template v-if="notes.length === 0">
-      <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
-    </template>
-    <template v-else>
-      <v-card variant="outlined" class="mb-3" v-for="note in notes" :key="note.id">
-        <v-card-text>
-          <div class="d-flex align-center flex-wrap gap-2 mb-2">
-            <span class="text-caption text-medium-emphasis">
-              {{ formatVersionDate(note.createdAt) }}
-            </span>
-            <v-chip v-if="note.everEdited" size="small" variant="tonal">
-              {{ t(strings.ever_edited) }}
-            </v-chip>
-            <v-spacer />
-            <template v-if="showNotesEdit">
-              <v-btn
-                size="small"
-                variant="text"
-                :disabled="updateMutation.isPending.value"
-                @click="startEditNote(note)"
-              >
-                {{ t(strings.edit_note) }}
-              </v-btn>
-              <v-btn
-                size="small"
-                variant="text"
-                color="error"
-                :disabled="deleteMutation.isPending.value"
-                @click="confirmDeleteNote(note)"
-              >
-                {{ t(strings.delete_note) }}
-              </v-btn>
-            </template>
-          </div>
-          <template v-if="editingNoteId === note.id">
-            <v-textarea
-              v-model="editBody"
-              :placeholder="t(strings.note_body_placeholder)"
-              rows="3"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="mb-2"
-            />
-            <v-select
-              v-model="editVersionId"
-              :items="versionOptions"
-              :label="t(strings.link_to_version)"
-              clearable
-              density="compact"
-              hide-details
-              class="mb-2"
-            />
-            <div class="d-flex gap-2">
-              <v-btn
-                size="small"
-                color="primary"
-                :loading="updateMutation.isPending.value"
-                @click="saveEditNote(note)"
-              >
-                {{ t(strings.save_note) }}
-              </v-btn>
-              <v-btn
-                size="small"
-                variant="text"
-                @click="editingNoteId = null"
-              >
-                {{ t(strings.cancel) }}
-              </v-btn>
-            </div>
-          </template>
-          <template v-else>
-            <p class="text-body-2 mb-0">{{ note.body }}</p>
-            <v-expansion-panels
-              v-if="note.recipeVersionId"
-              v-model="expandedNoteId"
-              variant="accordion"
-              class="mt-2"
-            >
-              <v-expansion-panel :value="note.id">
-                <v-expansion-panel-title>
-                  {{ t(strings.associated_version) }}
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <RecipeContentPreview
-                    :title="recipe.title"
-                    :short-description="recipe.shortDescription"
-                    :long-description="recipe.longDescription ?? undefined"
-                    :content="versionById(note.recipeVersionId)?.content ?? { ingredients: [], instructionsMarkdown: '' }"
-                  />
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </template>
-        </v-card-text>
-      </v-card>
-    </template>
+    <v-row>
+      <v-col cols="12" md="8" lg="9">
+        <RecipeContentPreview
+          :title="recipe.title"
+          :short-description="recipe.shortDescription"
+          :long-description="recipe.longDescription ?? undefined"
+          :content="content"
+        />
 
-    <template v-if="showNotesEdit">
-      <v-card variant="outlined" class="mt-2">
-        <v-card-title class="text-subtitle-1">
-          {{ t(strings.add_note) }}
-        </v-card-title>
-        <v-card-text>
-          <v-textarea
-            v-model="newNoteBody"
-            :placeholder="t(strings.note_body_placeholder)"
-            rows="3"
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mb-2"
-          />
-          <v-select
-            v-model="newNoteVersionId"
-            :items="versionOptions"
-            :label="t(strings.link_to_version)"
-            clearable
-            density="compact"
-            hide-details
-            class="mb-2"
-          />
+        <template v-if="showVersionHistory">
+          <v-divider class="my-4" />
+          <h2 class="text-h6 mb-2">{{ t(strings.version_history) }}</h2>
           <v-btn
-            color="primary"
-            :loading="createMutation.isPending.value"
-            :disabled="!newNoteBody.trim()"
-            @click="submitNewNote"
+            variant="outlined"
+            prepend-icon="mdi-history"
+            @click="versionHistoryModalOpen = true"
           >
-            {{ t(strings.create_note) }}
+            {{ t(strings.version_history_open) }}
           </v-btn>
-        </v-card-text>
-      </v-card>
-    </template>
+        </template>
+      </v-col>
 
-    <template v-if="showVersionHistory">
-      <v-divider class="my-4" />
-      <h2 class="text-h6 mb-2">{{ t(strings.version_history) }}</h2>
-      <v-btn
-        variant="outlined"
-        prepend-icon="mdi-history"
-        @click="versionHistoryModalOpen = true"
-      >
-        {{ t(strings.version_history_open) }}
-      </v-btn>
-    </template>
+      <v-col cols="12" md="4" lg="3">
+        <h2 class="text-h6 mb-2">{{ t(strings.notes_section) }}</h2>
+
+        <template v-if="showNotesEdit">
+          <v-card variant="outlined" class="mb-3">
+            <v-card-title class="text-subtitle-1">
+              {{ t(strings.add_note) }}
+            </v-card-title>
+            <v-card-text>
+              <v-textarea
+                v-model="newNoteBody"
+                :placeholder="t(strings.note_body_placeholder)"
+                rows="3"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mb-2"
+              />
+              <v-btn
+                color="primary"
+                :loading="createMutation.isPending.value"
+                :disabled="!newNoteBody.trim()"
+                @click="submitNewNote"
+              >
+                {{ t(strings.create_note) }}
+              </v-btn>
+            </v-card-text>
+          </v-card>
+        </template>
+
+        <template v-if="notesNewestFirst.length === 0">
+          <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
+        </template>
+        <template v-else>
+          <v-card
+            variant="outlined"
+            class="mb-3"
+            v-for="note in notesNewestFirst"
+            :key="note.id"
+          >
+            <v-card-text>
+              <div class="d-flex align-center flex-wrap gap-2 mb-2">
+                <span class="text-caption text-medium-emphasis">
+                  {{ formatVersionDate(note.createdAt) }}
+                </span>
+                <v-chip v-if="note.everEdited" size="small" variant="tonal">
+                  {{ t(strings.ever_edited) }}
+                </v-chip>
+                <v-spacer />
+                <template v-if="showNotesEdit">
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    :disabled="updateMutation.isPending.value"
+                    @click="startEditNote(note)"
+                  >
+                    {{ t(strings.edit_note) }}
+                  </v-btn>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    color="error"
+                    :disabled="deleteMutation.isPending.value"
+                    @click="confirmDeleteNote(note)"
+                  >
+                    {{ t(strings.delete_note) }}
+                  </v-btn>
+                </template>
+              </div>
+              <template v-if="editingNoteId === note.id">
+                <v-textarea
+                  v-model="editBody"
+                  :placeholder="t(strings.note_body_placeholder)"
+                  rows="3"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="mb-2"
+                />
+                <div class="d-flex gap-2">
+                  <v-btn
+                    size="small"
+                    color="primary"
+                    :loading="updateMutation.isPending.value"
+                    @click="saveEditNote(note)"
+                  >
+                    {{ t(strings.save_note) }}
+                  </v-btn>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    @click="editingNoteId = null"
+                  >
+                    {{ t(strings.cancel) }}
+                  </v-btn>
+                </div>
+              </template>
+              <template v-else>
+                <p class="text-body-2 mb-0">{{ note.body }}</p>
+              </template>
+            </v-card-text>
+          </v-card>
+        </template>
+      </v-col>
+    </v-row>
 
     <v-dialog
       v-model="versionHistoryModalOpen"
@@ -277,7 +251,6 @@ import {
   canShowNotesEdit,
   canShowVersionHistory,
   formatVersionDate,
-  getVersionById,
   notesByVersionIdMap,
 } from "./Detail.logic.ts";
 import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
@@ -314,34 +287,16 @@ const versionHistoryModalOpen = ref(false);
 const versionsNewestFirst = computed(() => [...versions.value].reverse());
 
 const notesByVersionId = computed(() => notesByVersionIdMap(notes.value));
-
-function versionById(id: string) {
-  return getVersionById(versions.value, id);
-}
-
-const versionOptions = computed(() =>
-  versionsNewestFirst.value.map((v) => ({
-    title: v.isLatest
-      ? (t(strings.version_latest) as string)
-      : (t(strings.version_from_date) as string).replace(
-          "{date}",
-          formatVersionDate(v.createdAt),
-        ),
-    value: v.id,
-  })),
-);
+const notesNewestFirst = computed(() => [...notes.value].reverse());
 
 const {
   createMutation,
   updateMutation,
   deleteMutation,
   newNoteBody,
-  newNoteVersionId,
   editingNoteId,
   editBody,
-  editVersionId,
   deleteDialogOpen,
-  expandedNoteId,
   submitNewNote,
   startEditNote,
   saveEditNote,

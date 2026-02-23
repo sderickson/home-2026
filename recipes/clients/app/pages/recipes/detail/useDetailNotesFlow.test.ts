@@ -25,7 +25,6 @@ describe("useDetailNotesFlow", () => {
     ).length;
 
     flow.newNoteBody.value = "New note from composable test";
-    flow.newNoteVersionId.value = null;
     await flow.submitNewNote();
 
     expect(mockRecipeNotes.filter((n) => n.recipeId === recipeId)).toHaveLength(
@@ -33,7 +32,6 @@ describe("useDetailNotesFlow", () => {
     );
     expect(mockRecipeNotes.some((n) => n.body === "New note from composable test")).toBe(true);
     expect(flow.newNoteBody.value).toBe("");
-    expect(flow.newNoteVersionId.value).toBeNull();
 
     app.unmount();
   });

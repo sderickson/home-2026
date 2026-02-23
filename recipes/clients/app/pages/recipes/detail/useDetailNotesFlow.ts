@@ -18,13 +18,10 @@ export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
   const deleteMutation = useNotesDeleteRecipesMutation();
 
   const newNoteBody = ref("");
-  const newNoteVersionId = ref<string | null>(null);
   const editingNoteId = ref<string | null>(null);
   const editBody = ref("");
-  const editVersionId = ref<string | null>(null);
   const noteToDelete = ref<RecipeNote | null>(null);
   const deleteDialogOpen = ref(false);
-  const expandedNoteId = ref<string | null>(null);
 
   async function submitNewNote() {
     const body = newNoteBody.value.trim();
@@ -32,18 +29,13 @@ export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
     await createMutation.mutateAsync({
       id: recipeId.value,
       body,
-      ...(newNoteVersionId.value && {
-        recipeVersionId: newNoteVersionId.value,
-      }),
     });
     newNoteBody.value = "";
-    newNoteVersionId.value = null;
   }
 
   function startEditNote(note: RecipeNote) {
     editingNoteId.value = note.id;
     editBody.value = note.body;
-    editVersionId.value = note.recipeVersionId ?? null;
   }
 
   async function saveEditNote(note: RecipeNote) {
@@ -51,7 +43,6 @@ export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
       id: recipeId.value,
       noteId: note.id,
       body: editBody.value.trim(),
-      recipeVersionId: editVersionId.value ?? null,
     });
     editingNoteId.value = null;
   }
@@ -76,13 +67,10 @@ export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
     updateMutation,
     deleteMutation,
     newNoteBody,
-    newNoteVersionId,
     editingNoteId,
     editBody,
-    editVersionId,
     noteToDelete,
     deleteDialogOpen,
-    expandedNoteId,
     submitNewNote,
     startEditNote,
     saveEditNote,
