@@ -121,6 +121,7 @@ export interface components {
         Recipe: components["schemas"]["recipe"];
         RecipeVersion: components["schemas"]["recipe-version"];
         RecipeNote: components["schemas"]["recipe-note"];
+        RecipeFileInfo: components["schemas"]["recipe-file-info"];
         recipe: {
             /**
              * Format: uuid
@@ -423,6 +424,65 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
+        /** @description Metadata for one file attached to a recipe. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
+        "recipe-file-info": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the file record
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Id of the recipe this file is attached to
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            recipeId: string;
+            /**
+             * @description Storage blob name (Azure) for the file
+             * @example recipes/a1b2c3d4-e89b-12d3-a456-426614174001/123e4567-e89b-12d3-a456-426614174000.pdf
+             */
+            blobName: string;
+            /**
+             * @description Original filename as provided on upload
+             * @example grandmas-cookies.pdf
+             */
+            fileOriginalName: string;
+            /**
+             * @description MIME type of the file
+             * @example application/pdf
+             */
+            mimetype: string;
+            /**
+             * @description File size in bytes
+             * @example 102400
+             */
+            size: number;
+            /**
+             * Format: date-time
+             * @description When the file was uploaded
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When the file metadata was last updated
+             * @example 2023-01-15T14:30:00Z
+             */
+            updatedAt: string;
+            /**
+             * Format: uuid
+             * @description User id of the uploader (optional)
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            uploadedBy?: string | null;
+            /**
+             * Format: uri
+             * @description URL to download or view the file (when included in response)
+             * @example https://storage.example.com/recipes/.../file.pdf
+             */
+            downloadUrl?: string;
+        };
     };
     responses: never;
     parameters: never;
