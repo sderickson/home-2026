@@ -94,6 +94,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/notes/{noteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edit note; server sets everEdited. Admin only. */
+        put: operations["notesUpdateRecipes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -838,6 +855,66 @@ export interface operations {
         };
         responses: {
             /** @description Created RecipeNote. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesUpdateRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Note body and optional recipe version link. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    body: components["schemas"]["body"];
+                    recipeVersionId?: components["schemas"]["recipeVersionId"];
+                };
+            };
+        };
+        responses: {
+            /** @description Updated RecipeNote (everEdited set by server when applicable). */
             200: {
                 headers: {
                     [name: string]: unknown;

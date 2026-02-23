@@ -31,6 +31,9 @@ paths:
       $ref: "./routes/recipes/notes-list.yaml#/notesListRecipes"
     post:
       $ref: "./routes/recipes/notes-create.yaml#/notesCreateRecipes"
+  /recipes/{id}/notes/{noteId}:
+    put:
+      $ref: "./routes/recipes/notes-update.yaml#/notesUpdateRecipes"
   # END WORKFLOW AREA
 
 components:
