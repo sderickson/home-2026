@@ -76,6 +76,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List notes for a recipe (e.g. chronological). */
+        get: operations["notesListRecipes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -289,39 +306,6 @@ export interface components {
              */
             message?: string;
         };
-        login: {
-            /** @enum {string} */
-            event: "login";
-            context: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup: {
-            /** @enum {string} */
-            event?: "signup";
-            context?: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup_view: {
-            /** @enum {string} */
-            event?: "signup_view";
-        };
-        verify_email: {
-            /** @enum {string} */
-            event?: "verify_email";
-        };
-        index: {
-            event: string;
-            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
-            client?: string;
-            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
-            view?: string;
-            /** @description The component that triggered the event. For vue, it should be the component name. */
-            component?: string;
-        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
         "recipe-note": {
             /**
              * Format: uuid
@@ -376,6 +360,39 @@ export interface components {
              */
             updatedAt: string;
         };
+        login: {
+            /** @enum {string} */
+            event: "login";
+            context: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup: {
+            /** @enum {string} */
+            event?: "signup";
+            context?: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup_view: {
+            /** @enum {string} */
+            event?: "signup_view";
+        };
+        verify_email: {
+            /** @enum {string} */
+            event?: "verify_email";
+        };
+        index: {
+            event: string;
+            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
+            client?: string;
+            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
+            view?: string;
+            /** @description The component that triggered the event. For vue, it should be the component name. */
+            component?: string;
+        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
     };
     responses: never;
     parameters: never;
@@ -743,6 +760,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesListRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Notes for the recipe (e.g. chronological). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"][];
                 };
             };
             /** @description Not Found */

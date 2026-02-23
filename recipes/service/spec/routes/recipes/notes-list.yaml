@@ -1,0 +1,31 @@
+notesListRecipes:
+  summary: "List notes for a recipe (e.g. chronological)."
+  operationId: "notesListRecipes"
+  tags:
+    - "no-auth"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  responses:
+    "200":
+      description: "Notes for the recipe (e.g. chronological)."
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../schemas/recipe-note.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

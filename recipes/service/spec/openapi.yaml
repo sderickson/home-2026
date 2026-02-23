@@ -26,6 +26,9 @@ paths:
   /recipes/{id}/versions/latest:
     put:
       $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"
+  /recipes/{id}/notes:
+    get:
+      $ref: "./routes/recipes/notes-list.yaml#/notesListRecipes"
   # END WORKFLOW AREA
 
 components:

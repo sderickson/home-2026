@@ -514,6 +514,52 @@
           }
         }
       }
+    },
+    "/recipes/{id}/notes": {
+      "get": {
+        "summary": "List notes for a recipe (e.g. chronological).",
+        "operationId": "notesListRecipes",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notes for the recipe (e.g. chronological).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe-note"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -793,6 +839,74 @@
           }
         }
       },
+      "recipe-note": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the note",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "recipeId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id of the recipe this note belongs to",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "recipeVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
+            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
+          },
+          "body": {
+            "type": "string",
+            "description": "Note content (how it went, what to try next)",
+            "example": "Reduced sugar by 1/4 cup; next time try brown butter."
+          },
+          "everEdited": {
+            "type": "boolean",
+            "description": "Whether the note has ever been edited after creation (set to true on first update)",
+            "example": false
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the creator",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the note was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User id of the last updater",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the note was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "recipeId",
+          "body",
+          "everEdited",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt"
+        ]
+      },
       "login": {
         "type": "object",
         "properties": {
@@ -898,74 +1012,6 @@
         },
         "required": [
           "event"
-        ]
-      },
-      "recipe-note": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier for the note",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "recipeId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Id of the recipe this note belongs to",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "recipeVersionId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
-            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
-          },
-          "body": {
-            "type": "string",
-            "description": "Note content (how it went, what to try next)",
-            "example": "Reduced sugar by 1/4 cup; next time try brown butter."
-          },
-          "everEdited": {
-            "type": "boolean",
-            "description": "Whether the note has ever been edited after creation (set to true on first update)",
-            "example": false
-          },
-          "createdBy": {
-            "type": "string",
-            "format": "uuid",
-            "description": "User id of the creator",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the note was created",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedBy": {
-            "type": "string",
-            "format": "uuid",
-            "description": "User id of the last updater",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the note was last updated",
-            "example": "2023-02-01T09:00:00Z"
-          }
-        },
-        "required": [
-          "id",
-          "recipeId",
-          "body",
-          "everEdited",
-          "createdBy",
-          "createdAt",
-          "updatedBy",
-          "updatedAt"
         ]
       }
     }
