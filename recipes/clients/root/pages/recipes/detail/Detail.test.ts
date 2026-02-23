@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import { stubGlobals, mountWithPlugins } from "@saflib/vue/testing";
 import RecipesDetailAsync from "./DetailAsync.vue";
 import { createRootRouter } from "../../../router.ts";
@@ -7,6 +7,7 @@ import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
   recipesServiceFakeHandlers,
   mockRecipes,
+  resetMocks,
 } from "@sderickson/recipes-sdk/fakes";
 
 // Renders the page to capture baseline coverage.
@@ -15,6 +16,7 @@ import {
 describe("RecipesDetail", () => {
   stubGlobals();
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("should render", async () => {
     const router = createRootRouter();

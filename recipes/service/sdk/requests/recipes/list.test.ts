@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { listRecipesQuery } from "./list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockRecipes } from "./mocks.ts";
+import { mockRecipes, resetMocks } from "./mocks.ts";
 
 describe("listRecipes", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("returns list of recipes from fake handler", async () => {
     const [query, app] = withVueQuery(() => useQuery(listRecipesQuery()));

@@ -3,8 +3,14 @@
 // All fake handlers in this group (and perhaps other groups) should use the shared mock array from this
 // file so that operations affect one another (e.g. create adds to the array,
 // so subsequent list queries return the new resource).
+//
+// Export resetMocks() so tests that mutate these arrays can restore initial state (e.g. in afterEach).
 
-import type { Recipe, RecipeVersion } from "@sderickson/recipes-spec";
+import type {
+  Recipe,
+  RecipeVersion,
+  RecipeNote,
+} from "@sderickson/recipes-spec";
 
 export const mockRecipes: Recipe[] = [
   {
@@ -42,7 +48,8 @@ export const mockRecipeVersions: RecipeVersion[] = [
         { name: "All-purpose flour", quantity: "2", unit: "cups" },
         { name: "Butter", quantity: "1/2", unit: "cup" },
       ],
-      instructionsMarkdown: "1. Preheat oven to 350°F.\n2. Mix dry ingredients.",
+      instructionsMarkdown:
+        "1. Preheat oven to 350°F.\n2. Mix dry ingredients.",
     },
     isLatest: true,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
@@ -60,3 +67,59 @@ export const mockRecipeVersions: RecipeVersion[] = [
     createdAt: "2023-03-10T10:00:00Z",
   },
 ];
+
+export const mockRecipeNotes: RecipeNote[] = [
+  {
+    id: "423e4567-e89b-12d3-a456-426614174001",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    recipeVersionId: "b2c3d4e5-e89b-12d3-a456-426614174002",
+    body: "Reduced sugar by 1/4 cup; next time try brown butter.",
+    everEdited: false,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-01-20T11:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-01-20T11:00:00Z",
+  },
+  {
+    id: "523e4567-e89b-12d3-a456-426614174002",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    recipeVersionId: null,
+    body: "Doubled the batch; cookies were perfect.",
+    everEdited: true,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-02-05T14:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-02-06T09:00:00Z",
+  },
+  {
+    id: "623e4567-e89b-12d3-a456-426614174003",
+    recipeId: "223e4567-e89b-12d3-a456-426614174001",
+    recipeVersionId: null,
+    body: "Added feta; worked well.",
+    everEdited: false,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-03-12T12:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-03-12T12:00:00Z",
+  },
+];
+
+const initialMockRecipes = JSON.parse(JSON.stringify(mockRecipes)) as Recipe[];
+const initialMockRecipeVersions = JSON.parse(
+  JSON.stringify(mockRecipeVersions),
+) as RecipeVersion[];
+const initialMockRecipeNotes = JSON.parse(
+  JSON.stringify(mockRecipeNotes),
+) as RecipeNote[];
+
+/** Restore mock arrays to their initial state. Call from tests (e.g. afterEach) if they mutate the mocks. */
+export function resetMocks(): void {
+  mockRecipes.length = 0;
+  mockRecipes.push(...JSON.parse(JSON.stringify(initialMockRecipes)));
+  mockRecipeVersions.length = 0;
+  mockRecipeVersions.push(
+    ...JSON.parse(JSON.stringify(initialMockRecipeVersions)),
+  );
+  mockRecipeNotes.length = 0;
+  mockRecipeNotes.push(...JSON.parse(JSON.stringify(initialMockRecipeNotes)));
+}

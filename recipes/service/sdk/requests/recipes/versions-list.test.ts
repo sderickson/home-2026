@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { listRecipeVersionsQuery } from "./versions-list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
+import { mockRecipes, mockRecipeVersions, resetMocks } from "./mocks.ts";
 
 describe("listRecipeVersions", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("returns version list for recipe id", async () => {
     const id = mockRecipes[0].id;

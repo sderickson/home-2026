@@ -4,6 +4,10 @@ import type { Component } from "vue";
 import { createMemoryHistory, type Router } from "vue-router";
 import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
+import {
+  recipesServiceFakeHandlers,
+  resetMocks,
+} from "@sderickson/recipes-sdk/fakes";
 import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
 
 export const createTestRouter = () =>
@@ -22,5 +26,8 @@ export const mountTestApp = <C extends Component>(
   });
 };
 
-// TODO: import and add here any other mock handlers from sdk packages this SPA depends on
-export const testAppHandlers = [...identityServiceFakeHandlers];
+export const testAppHandlers = [
+  ...recipesServiceFakeHandlers,
+  ...identityServiceFakeHandlers,
+];
+export { resetMocks };
