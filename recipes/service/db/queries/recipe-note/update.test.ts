@@ -20,6 +20,7 @@ describe("updateRecipeNote", () => {
   it("returns error when recipe note not found", async () => {
     const out = await updateRecipeNote(dbKey, {
       id: "non-existent-id",
+      recipeId: "any-recipe",
       body: "Updated body",
       updatedBy: "user-1",
     });
@@ -64,6 +65,7 @@ describe("updateRecipeNote", () => {
 
     const out = await updateRecipeNote(dbKey, {
       id: noteId,
+      recipeId,
       body: "Updated body",
       updatedBy: "user-2",
     });

@@ -4,12 +4,12 @@ import type { ReturnsError } from "@saflib/monorepo";
 
 import { queryWrapper } from "@saflib/drizzle";
 import type { DbKey } from "@saflib/drizzle";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { recipeNote } from "../../schemas/recipe-note.ts";
 
 export type UpdateRecipeNoteParams = Pick<
   typeof recipeNote.$inferSelect,
-  "id" | "body" | "updatedBy"
+  "id" | "recipeId" | "body" | "updatedBy"
 >;
 
 export type UpdateRecipeNoteResult = typeof recipeNote.$inferSelect;
@@ -31,7 +31,12 @@ export const updateRecipeNote = queryWrapper(
         updatedBy: params.updatedBy,
         updatedAt: now,
       })
-      .where(eq(recipeNote.id, params.id))
+      .where(
+        and(
+          eq(recipeNote.id, params.id),
+          eq(recipeNote.recipeId, params.recipeId),
+        ),
+      )
       .returning();
 
     if (result.length === 0) {
