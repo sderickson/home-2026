@@ -1,4 +1,5 @@
-import { getRecipeQuery } from "@sderickson/recipes-sdk";
+import { getRecipeQuery, listRecipeVersionsQuery } from "@sderickson/recipes-sdk";
+import { getProfile } from "@saflib/auth";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
@@ -7,6 +8,8 @@ export function useDetailLoader() {
   const id = route.params.id as string;
 
   return {
+    profileQuery: useQuery(getProfile()),
     recipeQuery: useQuery(getRecipeQuery(id)),
+    versionsQuery: useQuery(listRecipeVersionsQuery(id)),
   };
 }
