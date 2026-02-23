@@ -9,6 +9,7 @@ import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 import { createRecipesHandler } from "./create.fake.ts";
 import { deleteRecipesHandler } from "./delete.fake.ts";
 import { notesCreateRecipesHandler } from "./notes-create.fake.ts";
+import { notesUpdateRecipesHandler } from "./notes-update.fake.ts";
 import { updateRecipesHandler } from "./update.fake.ts";
 import { versionsCreateRecipesHandler } from "./versions-create.fake.ts";
 import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.fake.ts";
@@ -27,6 +28,7 @@ export const recipesFakeHandlers = [
   createRecipesHandler,
   deleteRecipesHandler,
   notesCreateRecipesHandler,
+  notesUpdateRecipesHandler,
   updateRecipesHandler,
   versionsCreateRecipesHandler,
   versionsLatestUpdateRecipesHandler,

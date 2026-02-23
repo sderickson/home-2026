@@ -8,6 +8,7 @@ export * from "./versions-list.ts";
 export * from "./create.ts";
 export * from "./delete.ts";
 export * from "./notes-create.ts";
+export * from "./notes-update.ts";
 export * from "./update.ts";
 export * from "./versions-create.ts";
 export * from "./versions-latest-update.ts";
