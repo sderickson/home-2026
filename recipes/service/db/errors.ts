@@ -11,3 +11,5 @@ export class StubError extends RecipesDatabaseError {}
 export class RecipeNotFoundError extends RecipesDatabaseError {}
 
 export class RecipeVersionNotFoundError extends RecipesDatabaseError {}
+
+export class RecipeNoteNotFoundError extends RecipesDatabaseError {}

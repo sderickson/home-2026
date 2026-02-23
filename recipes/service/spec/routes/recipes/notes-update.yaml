@@ -1,0 +1,63 @@
+notesUpdateRecipes:
+  summary: "Edit note; server sets everEdited. Admin only."
+  operationId: "notesUpdateRecipes"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+    - name: "noteId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Note id"
+
+  requestBody:
+    required: true
+    description: "Note body and optional recipe version link."
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              $ref: "../../schemas/recipe-note.yaml#/properties/body"
+            recipeVersionId:
+              $ref: "../../schemas/recipe-note.yaml#/properties/recipeVersionId"
+
+  responses:
+    "200":
+      description: "Updated RecipeNote (everEdited set by server when applicable)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/recipe-note.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

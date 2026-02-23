@@ -50,7 +50,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
       path: "./routes/recipes/notes-list.yaml",
       urlPath: "/recipes/{id}/notes",
       method: "get",
-      prompt: `GET /recipes/:id/notes — list notes for recipe. See spec API #9.`,
+      prompt: `GET /recipes/:id/notes — list notes for recipe. See spec API #9. Reminder: this does not require auth.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-create.yaml",

@@ -26,6 +26,16 @@ paths:
   /recipes/{id}/versions/latest:
     put:
       $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"
+  /recipes/{id}/notes:
+    get:
+      $ref: "./routes/recipes/notes-list.yaml#/notesListRecipes"
+    post:
+      $ref: "./routes/recipes/notes-create.yaml#/notesCreateRecipes"
+  /recipes/{id}/notes/{noteId}:
+    put:
+      $ref: "./routes/recipes/notes-update.yaml#/notesUpdateRecipes"
+    delete:
+      $ref: "./routes/recipes/notes-delete.yaml#/notesDeleteRecipes"
   # END WORKFLOW AREA
 
 components:
@@ -40,4 +50,6 @@ components:
       $ref: "./schemas/recipe.yaml"
     RecipeVersion:
       $ref: "./schemas/recipe-version.yaml"
+    RecipeNote:
+      $ref: "./schemas/recipe-note.yaml"
     # END WORKFLOW AREA

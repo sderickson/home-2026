@@ -76,6 +76,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List notes for a recipe (e.g. chronological). */
+        get: operations["notesListRecipes"];
+        put?: never;
+        /** Create a note; optionally link to a recipe version. Admin only. */
+        post: operations["notesCreateRecipes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/notes/{noteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edit note; server sets everEdited. Admin only. */
+        put: operations["notesUpdateRecipes"];
+        post?: never;
+        /** Delete a note on a recipe. Admin only. */
+        delete: operations["notesDeleteRecipes"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -84,6 +120,7 @@ export interface components {
         ProductEvent: components["schemas"]["index"];
         Recipe: components["schemas"]["recipe"];
         RecipeVersion: components["schemas"]["recipe-version"];
+        RecipeNote: components["schemas"]["recipe-note"];
         recipe: {
             /**
              * Format: uuid
@@ -288,6 +325,71 @@ export interface components {
              */
             message?: string;
         };
+        "recipe-note": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the note
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Id of the recipe this note belongs to
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            recipeId: string;
+            /**
+             * Format: uuid
+             * @description Optional id of the recipe version this note is linked to (e.g. when written with a change)
+             * @example b2c3d4e5-e89b-12d3-a456-426614174002
+             */
+            recipeVersionId?: string | null;
+            /**
+             * @description Note content (how it went, what to try next)
+             * @example Reduced sugar by 1/4 cup; next time try brown butter.
+             */
+            body: string;
+            /**
+             * @description Whether the note has ever been edited after creation (set to true on first update)
+             * @example false
+             */
+            everEdited: boolean;
+            /**
+             * Format: uuid
+             * @description User id of the creator
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the note was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description User id of the last updater
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            updatedBy: string;
+            /**
+             * Format: date-time
+             * @description When the note was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+        };
+        /**
+         * @description Note content (how it went, what to try next)
+         * @example Reduced sugar by 1/4 cup; next time try brown butter.
+         */
+        body: string;
+        /**
+         * Format: uuid
+         * @description Optional id of the recipe version this note is linked to (e.g. when written with a change)
+         * @example b2c3d4e5-e89b-12d3-a456-426614174002
+         */
+        recipeVersionId: string | null;
         login: {
             /** @enum {string} */
             event: "login";
@@ -671,6 +773,206 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["recipe-version"];
                 };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesListRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Notes for the recipe (e.g. chronological). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesCreateRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Note body and optional recipe version link. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    body: components["schemas"]["body"];
+                    recipeVersionId?: components["schemas"]["recipeVersionId"];
+                };
+            };
+        };
+        responses: {
+            /** @description Created RecipeNote. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesUpdateRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Note body and optional recipe version link. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    body: components["schemas"]["body"];
+                    recipeVersionId?: components["schemas"]["recipeVersionId"];
+                };
+            };
+        };
+        responses: {
+            /** @description Updated RecipeNote (everEdited set by server when applicable). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesDeleteRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Note deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {

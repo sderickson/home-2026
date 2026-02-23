@@ -39,6 +39,59 @@ type UpdateRecipeVersionLatest200 =
   RecipesServiceResponseBody["updateRecipeVersionLatest"][200];
 type CreateRecipeVersion200 =
   RecipesServiceResponseBody["createRecipeVersion"][200];
+type NotesListRecipes200 = RecipesServiceResponseBody["notesListRecipes"][200];
+type RecipeNoteApi = NotesListRecipes200[number];
+type NotesCreateRecipes200 =
+  RecipesServiceResponseBody["notesCreateRecipes"][200];
+type NotesUpdateRecipes200 =
+  RecipesServiceResponseBody["notesUpdateRecipes"][200];
+
+/** DB recipe_note row shape (from recipe_note table select). */
+export interface RecipeNoteRow {
+  id: string;
+  recipeId: string;
+  recipeVersionId: string | null;
+  body: string;
+  everEdited: boolean;
+  createdBy: string;
+  createdAt: Date;
+  updatedBy: string;
+  updatedAt: Date;
+}
+
+export function recipeNoteToApiRecipeNote(row: RecipeNoteRow): RecipeNoteApi {
+  return {
+    id: row.id,
+    recipeId: row.recipeId,
+    ...(row.recipeVersionId !== null && {
+      recipeVersionId: row.recipeVersionId,
+    }),
+    body: row.body,
+    everEdited: row.everEdited,
+    createdBy: row.createdBy,
+    createdAt: row.createdAt.toISOString(),
+    updatedBy: row.updatedBy,
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+export function notesListResultToNotesListRecipesResponse(
+  notes: RecipeNoteRow[],
+): NotesListRecipes200 {
+  return notes.map(recipeNoteToApiRecipeNote);
+}
+
+export function createNoteResultToNotesCreateRecipesResponse(
+  row: RecipeNoteRow,
+): NotesCreateRecipes200 {
+  return recipeNoteToApiRecipeNote(row);
+}
+
+export function updateNoteResultToNotesUpdateRecipesResponse(
+  row: RecipeNoteRow,
+): NotesUpdateRecipes200 {
+  return recipeNoteToApiRecipeNote(row);
+}
 
 export function recipeToApiRecipe(
   row: RecipeRow,
@@ -129,6 +182,13 @@ export function createVersionResultToCreateRecipeVersionResponse(
 /** No response body for 204; mapper used for consistency with other routes. */
 export function deleteRecipeResultToDeleteRecipeResponse(
   _row: RecipeRow,
+): void {
+  // 204 No Content - no body to map
+}
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteNoteResultToNotesDeleteRecipesResponse(
+  _row: RecipeNoteRow,
 ): void {
   // 204 No Content - no body to map
 }
