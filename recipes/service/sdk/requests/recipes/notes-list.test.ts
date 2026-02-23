@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { notesListRecipesQuery } from "./notes-list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockRecipes, mockRecipeNotes } from "./mocks.ts";
+import { mockRecipes, mockRecipeNotes, resetMocks } from "./mocks.ts";
 
 describe("notesListRecipes", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("returns notes for a recipe from fake handler", async () => {
     const recipeId = mockRecipes[0].id;

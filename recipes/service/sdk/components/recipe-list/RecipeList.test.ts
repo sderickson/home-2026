@@ -1,12 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { stubGlobals, getElementByString } from "@saflib/vue/testing";
 import RecipeList from "./RecipeList.vue";
 import { recipe_list_strings as strings } from "./RecipeList.strings.ts";
 import { mountTestApp } from "../../test-app.ts";
-import { mockRecipes } from "../../requests/recipes/mocks.ts";
+import { mockRecipes, resetMocks } from "../../requests/recipes/mocks.ts";
 
 describe("RecipeList", () => {
   stubGlobals();
+  afterEach(resetMocks);
 
   const getRecipeLinkProps = (recipeId: string) => ({ to: `/recipes/${recipeId}` });
 

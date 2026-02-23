@@ -1,14 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { useCreateRecipeVersionMutation } from "./versions-create.ts";
 import { listRecipeVersionsQuery } from "./versions-list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
+import { mockRecipes, mockRecipeVersions, resetMocks } from "./mocks.ts";
 
 describe("createRecipeVersion", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("succeeds and returns the new version", async () => {
     const [mutation, app] = withVueQuery(() =>

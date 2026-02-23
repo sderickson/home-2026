@@ -1,14 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { useNotesDeleteRecipesMutation } from "./notes-delete.ts";
 import { notesListRecipesQuery } from "./notes-list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockRecipeNotes } from "./mocks.ts";
+import { mockRecipeNotes, resetMocks } from "./mocks.ts";
 
 describe("notesDeleteRecipes", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("succeeds and removes the note from mock data", async () => {
     const [mutation, app] = withVueQuery(() =>

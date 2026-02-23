@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vitest";
 import { computed } from "vue";
 import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
@@ -7,10 +7,12 @@ import {
   recipesServiceFakeHandlers,
   mockRecipes,
   mockRecipeNotes,
+  resetMocks,
 } from "@sderickson/recipes-sdk/fakes";
 
 describe("useDetailNotesFlow", () => {
   setupMockServer(recipesServiceFakeHandlers);
+  afterEach(resetMocks);
 
   it("create: submitNewNote adds note and clears form", async () => {
     const recipeId = mockRecipes[0].id;
@@ -59,7 +61,8 @@ describe("useDetailNotesFlow", () => {
 
   it("delete: confirmDeleteNote then doDeleteNote removes note and closes dialog", async () => {
     const recipeId = mockRecipes[0].id;
-    const note = mockRecipeNotes[mockRecipeNotes.length - 1];
+    const notesForRecipe = mockRecipeNotes.filter((n) => n.recipeId === recipeId);
+    const note = notesForRecipe[notesForRecipe.length - 1];
     const noteId = note.id;
     const [flow, app] = withVueQuery(() =>
       useDetailNotesFlow(computed(() => recipeId)),
