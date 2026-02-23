@@ -3,6 +3,8 @@
 // All fake handlers in this group (and perhaps other groups) should use the shared mock array from this
 // file so that operations affect one another (e.g. create adds to the array,
 // so subsequent list queries return the new resource).
+//
+// Export resetMocks() so tests that mutate these arrays can restore initial state (e.g. in afterEach).
 
 import type {
   Recipe,
@@ -46,7 +48,8 @@ export const mockRecipeVersions: RecipeVersion[] = [
         { name: "All-purpose flour", quantity: "2", unit: "cups" },
         { name: "Butter", quantity: "1/2", unit: "cup" },
       ],
-      instructionsMarkdown: "1. Preheat oven to 350°F.\n2. Mix dry ingredients.",
+      instructionsMarkdown:
+        "1. Preheat oven to 350°F.\n2. Mix dry ingredients.",
     },
     isLatest: true,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
@@ -100,3 +103,23 @@ export const mockRecipeNotes: RecipeNote[] = [
     updatedAt: "2023-03-12T12:00:00Z",
   },
 ];
+
+const initialMockRecipes = JSON.parse(JSON.stringify(mockRecipes)) as Recipe[];
+const initialMockRecipeVersions = JSON.parse(
+  JSON.stringify(mockRecipeVersions),
+) as RecipeVersion[];
+const initialMockRecipeNotes = JSON.parse(
+  JSON.stringify(mockRecipeNotes),
+) as RecipeNote[];
+
+/** Restore mock arrays to their initial state. Call from tests (e.g. afterEach) if they mutate the mocks. */
+export function resetMocks(): void {
+  mockRecipes.length = 0;
+  mockRecipes.push(...JSON.parse(JSON.stringify(initialMockRecipes)));
+  mockRecipeVersions.length = 0;
+  mockRecipeVersions.push(
+    ...JSON.parse(JSON.stringify(initialMockRecipeVersions)),
+  );
+  mockRecipeNotes.length = 0;
+  mockRecipeNotes.push(...JSON.parse(JSON.stringify(initialMockRecipeNotes)));
+}
