@@ -12,6 +12,20 @@ export const recipes_detail_page = {
   version_from_date: "Version from {date}",
   version_latest: "Latest",
   close: "Close",
+  notes_section: "Notes",
+  add_note: "Add note",
+  note_body_placeholder: "How it went, what to try next…",
+  save_note: "Save note",
+  cancel: "Cancel",
+  edit_note: "Edit",
+  delete_note: "Delete",
+  ever_edited: "Edited",
+  associated_version: "Associated version",
+  no_notes: "No notes yet.",
+  link_to_version: "Link to version (optional)",
+  create_note: "Add note",
+  notes_for_version: "Notes for this version",
+  delete_note_confirm: "Delete this note?",
 };
 
 export { recipes_detail_page as recipes_detail };
