@@ -1,0 +1,44 @@
+filesDeleteRecipes:
+  summary: "Remove one file from a recipe. Admin only."
+  operationId: "filesDeleteRecipes"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+    - name: "fileId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe file id to remove"
+
+  responses:
+    "204":
+      description: "File removed from recipe."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges (admin only)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

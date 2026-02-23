@@ -41,6 +41,9 @@ paths:
       $ref: "./routes/recipes/files-list.yaml#/filesListRecipes"
     post:
       $ref: "./routes/recipes/files-upload.yaml#/filesUploadRecipes"
+  /recipes/{id}/files/{fileId}:
+    delete:
+      $ref: "./routes/recipes/files-delete.yaml#/filesDeleteRecipes"
   # END WORKFLOW AREA
 
 components:
