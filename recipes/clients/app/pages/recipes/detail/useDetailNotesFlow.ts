@@ -11,8 +11,12 @@ import {
  * Stateful flow for notes on the recipe detail page: add, edit, and delete notes
  * with form state and mutations. The component binds to the returned refs and
  * calls the handlers from the template.
+ * When latestVersionId is provided, new notes are automatically associated with that version.
  */
-export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
+export function useDetailNotesFlow(
+  recipeId: ComputedRef<string>,
+  latestVersionId?: ComputedRef<string | undefined>,
+) {
   const createMutation = useNotesCreateRecipesMutation();
   const updateMutation = useNotesUpdateRecipesMutation();
   const deleteMutation = useNotesDeleteRecipesMutation();
@@ -26,9 +30,11 @@ export function useDetailNotesFlow(recipeId: ComputedRef<string>) {
   async function submitNewNote() {
     const body = newNoteBody.value.trim();
     if (!body) return;
+    const versionId = latestVersionId?.value;
     await createMutation.mutateAsync({
       id: recipeId.value,
       body,
+      ...(versionId && { recipeVersionId: versionId }),
     });
     newNoteBody.value = "";
   }

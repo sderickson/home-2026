@@ -66,14 +66,14 @@
           </v-card>
         </template>
 
-        <template v-if="notesNewestFirst.length === 0">
+        <template v-if="notesForLatestVersion.length === 0">
           <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
         </template>
         <template v-else>
           <v-card
             variant="outlined"
             class="mb-3"
-            v-for="note in notesNewestFirst"
+            v-for="note in notesForLatestVersion"
             :key="note.id"
           >
             <v-card-text>
@@ -287,7 +287,13 @@ const versionHistoryModalOpen = ref(false);
 const versionsNewestFirst = computed(() => [...versions.value].reverse());
 
 const notesByVersionId = computed(() => notesByVersionIdMap(notes.value));
-const notesNewestFirst = computed(() => [...notes.value].reverse());
+const notesForLatestVersion = computed(() => {
+  const versionId = currentVersion.value?.id;
+  if (!versionId) return [];
+  return [...notes.value]
+    .filter((n) => n.recipeVersionId === versionId)
+    .reverse();
+});
 
 const {
   createMutation,
@@ -302,5 +308,8 @@ const {
   saveEditNote,
   confirmDeleteNote,
   doDeleteNote,
-} = useDetailNotesFlow(computed(() => recipe.value.id));
+} = useDetailNotesFlow(
+  computed(() => recipe.value.id),
+  computed(() => currentVersion.value?.id),
+);
 </script>
