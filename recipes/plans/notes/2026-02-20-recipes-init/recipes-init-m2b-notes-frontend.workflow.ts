@@ -69,7 +69,7 @@ export const RecipesInitM2bNotesFrontendWorkflowDefinition = defineWorkflow<
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/recipes/detail",
       urlPath: "/recipes/:id",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Update recipe detail: add notes section — list notes, add note, edit note (set ever_edited on edit), optional link to version. Admin only. Use SDK notes queries and mutations. See plan M2b.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Then: Update recipe detail: add notes tab — list notes, add note, edit note (set ever_edited on edit), have an expandable section to show the version the note is associated with if there is one. Editing is admin only, viewable by all. Also show notes in the existing version history section, for notes that are associated with a version. Use SDK notes queries and mutations. See plan M2b.`,
     })),
     GetFeedbackStep,
   ],
