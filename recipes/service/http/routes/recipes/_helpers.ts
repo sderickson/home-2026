@@ -43,6 +43,8 @@ type NotesListRecipes200 = RecipesServiceResponseBody["notesListRecipes"][200];
 type RecipeNoteApi = NotesListRecipes200[number];
 type NotesCreateRecipes200 =
   RecipesServiceResponseBody["notesCreateRecipes"][200];
+type NotesUpdateRecipes200 =
+  RecipesServiceResponseBody["notesUpdateRecipes"][200];
 
 /** DB recipe_note row shape (from recipe_note table select). */
 export interface RecipeNoteRow {
@@ -82,6 +84,12 @@ export function notesListResultToNotesListRecipesResponse(
 export function createNoteResultToNotesCreateRecipesResponse(
   row: RecipeNoteRow,
 ): NotesCreateRecipes200 {
+  return recipeNoteToApiRecipeNote(row);
+}
+
+export function updateNoteResultToNotesUpdateRecipesResponse(
+  row: RecipeNoteRow,
+): NotesUpdateRecipes200 {
   return recipeNoteToApiRecipeNote(row);
 }
 
