@@ -1,5 +1,6 @@
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
 import express from "express";
+import { createObjectStore } from "@saflib/object-store";
 import { recipesDb } from "@sderickson/recipes-db";
 import {
   recipesServiceStorage,
@@ -20,12 +21,14 @@ export function createRecipesHttpApp(
   if (!dbKey) {
     dbKey = recipesDb.connect();
   }
+  const recipesFileContainer =
+    options.recipesFileContainer ?? createObjectStore({ type: "test" });
 
   const app = express();
   app.use(createGlobalMiddleware());
   app.set("trust proxy", 1);
 
-  const context = { recipesDbKey: dbKey };
+  const context = { recipesDbKey: dbKey, recipesFileContainer };
   app.use((_req, _res, next) => {
     recipesServiceStorage.run(context, () => {
       next();
