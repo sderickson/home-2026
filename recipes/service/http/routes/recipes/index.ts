@@ -8,6 +8,7 @@ import { deleteRecipeHandler } from "./delete.ts";
 import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
 import { notesCreateRecipesHandler } from "./notes-create.ts";
+import { notesDeleteRecipesHandler } from "./notes-delete.ts";
 import { notesListRecipesHandler } from "./notes-list.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.ts";
 import { updateRecipeHandler } from "./update.ts";
@@ -32,6 +33,7 @@ export const createRecipesRouter = () => {
   router.get("/recipes/:id/notes", notesListRecipesHandler);
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
   router.put("/recipes/:id/notes/:noteId", notesUpdateRecipesHandler);
+  router.delete("/recipes/:id/notes/:noteId", notesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);
   router.post("/recipes/:id/versions", versionsCreateRecipesHandler);
   router.put("/recipes/:id", updateRecipeHandler);
