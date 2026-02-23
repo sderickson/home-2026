@@ -86,7 +86,8 @@ export interface paths {
         /** List notes for a recipe (e.g. chronological). */
         get: operations["notesListRecipes"];
         put?: never;
-        post?: never;
+        /** Create a note; optionally link to a recipe version. Admin only. */
+        post: operations["notesCreateRecipes"];
         delete?: never;
         options?: never;
         head?: never;
@@ -360,6 +361,17 @@ export interface components {
              */
             updatedAt: string;
         };
+        /**
+         * @description Note content (how it went, what to try next)
+         * @example Reduced sugar by 1/4 cup; next time try brown butter.
+         */
+        body: string;
+        /**
+         * Format: uuid
+         * @description Optional id of the recipe version this note is linked to (e.g. when written with a change)
+         * @example b2c3d4e5-e89b-12d3-a456-426614174002
+         */
+        recipeVersionId: string | null;
         login: {
             /** @enum {string} */
             event: "login";
@@ -792,6 +804,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-note"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesCreateRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Note body and optional recipe version link. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    body: components["schemas"]["body"];
+                    recipeVersionId?: components["schemas"]["recipeVersionId"];
+                };
+            };
+        };
+        responses: {
+            /** @description Created RecipeNote. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */

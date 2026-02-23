@@ -559,6 +559,86 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create a note; optionally link to a recipe version. Admin only.",
+        "operationId": "notesCreateRecipes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Note body and optional recipe version link.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "body"
+                ],
+                "properties": {
+                  "body": {
+                    "$ref": "#/components/schemas/body"
+                  },
+                  "recipeVersionId": {
+                    "$ref": "#/components/schemas/recipeVersionId"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created RecipeNote.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe-note"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -906,6 +986,18 @@
           "updatedBy",
           "updatedAt"
         ]
+      },
+      "body": {
+        "type": "string",
+        "description": "Note content (how it went, what to try next)",
+        "example": "Reduced sugar by 1/4 cup; next time try brown butter."
+      },
+      "recipeVersionId": {
+        "type": "string",
+        "format": "uuid",
+        "nullable": true,
+        "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
+        "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
       },
       "login": {
         "type": "object",
