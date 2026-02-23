@@ -1,6 +1,7 @@
 // BEGIN SORTED WORKFLOW AREA fake-handler-imports FOR sdk/add-query
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
+import { notesListRecipesHandler } from "./notes-list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // END WORKFLOW AREA
 
@@ -17,6 +18,7 @@ export const recipesFakeHandlers = [
   // BEGIN SORTED WORKFLOW AREA fake-handler-array FOR sdk/add-query
   getRecipeHandler,
   listRecipesHandler,
+  notesListRecipesHandler,
   versionsListRecipesHandler,
   // END WORKFLOW AREA
 

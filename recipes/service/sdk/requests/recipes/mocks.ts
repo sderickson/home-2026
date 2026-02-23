@@ -4,7 +4,11 @@
 // file so that operations affect one another (e.g. create adds to the array,
 // so subsequent list queries return the new resource).
 
-import type { Recipe, RecipeVersion } from "@sderickson/recipes-spec";
+import type {
+  Recipe,
+  RecipeVersion,
+  RecipeNote,
+} from "@sderickson/recipes-spec";
 
 export const mockRecipes: Recipe[] = [
   {
@@ -58,5 +62,41 @@ export const mockRecipeVersions: RecipeVersion[] = [
     isLatest: true,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
     createdAt: "2023-03-10T10:00:00Z",
+  },
+];
+
+export const mockRecipeNotes: RecipeNote[] = [
+  {
+    id: "423e4567-e89b-12d3-a456-426614174001",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    recipeVersionId: "b2c3d4e5-e89b-12d3-a456-426614174002",
+    body: "Reduced sugar by 1/4 cup; next time try brown butter.",
+    everEdited: false,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-01-20T11:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-01-20T11:00:00Z",
+  },
+  {
+    id: "523e4567-e89b-12d3-a456-426614174002",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    recipeVersionId: null,
+    body: "Doubled the batch; cookies were perfect.",
+    everEdited: true,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-02-05T14:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-02-06T09:00:00Z",
+  },
+  {
+    id: "623e4567-e89b-12d3-a456-426614174003",
+    recipeId: "223e4567-e89b-12d3-a456-426614174001",
+    recipeVersionId: null,
+    body: "Added feta; worked well.",
+    everEdited: false,
+    createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    createdAt: "2023-03-12T12:00:00Z",
+    updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    updatedAt: "2023-03-12T12:00:00Z",
   },
 ];
