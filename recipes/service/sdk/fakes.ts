@@ -4,6 +4,10 @@ import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
 import { recipesFakeHandlers } from "./requests/recipes/index.fakes.ts";
 // END WORKFLOW AREA
 
+// BEGIN SORTED WORKFLOW AREA import-mocks FOR sdk/add-query sdk/add-mutation
+import { resetMocks as recipesResetMocks } from "./requests/recipes/mocks.ts";
+// END WORKFLOW AREA
+
 // BEGIN SORTED WORKFLOW AREA mock-data-exports FOR sdk/add-query sdk/add-mutation
 export * from "./requests/recipes/mocks.ts";
 // END WORKFLOW AREA
@@ -14,3 +18,9 @@ export const recipesServiceFakeHandlers = [
   ...recipesFakeHandlers,
   // END WORKFLOW AREA
 ];
+
+export const resetMocks = () => {
+  // BEGIN SORTED WORKFLOW AREA export-mocks FOR sdk/add-query sdk/add-mutation
+  recipesResetMocks();
+  // END WORKFLOW AREA
+};
