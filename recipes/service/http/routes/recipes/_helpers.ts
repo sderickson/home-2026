@@ -1,31 +1,11 @@
 // Shared mappers between database models and API response types.
+import type {
+  RecipeEntity,
+  RecipeFileEntity,
+  RecipeNoteEntity,
+  RecipeVersionEntity,
+} from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-
-/** DB recipe row shape (from recipe table select). */
-export interface RecipeRow {
-  id: string;
-  title: string;
-  shortDescription: string;
-  longDescription: string | null;
-  isPublic: boolean;
-  createdBy: string;
-  createdAt: Date;
-  updatedBy: string;
-  updatedAt: Date;
-}
-
-/** DB recipe_version row shape (from recipe_version table select). */
-export interface RecipeVersionRow {
-  id: string;
-  recipeId: string;
-  content: {
-    ingredients: { name: string; quantity: string; unit: string }[];
-    instructionsMarkdown: string;
-  };
-  isLatest: boolean;
-  createdBy: string;
-  createdAt: Date;
-}
 
 type RecipeListResponseItem =
   RecipesServiceResponseBody["listRecipes"][200][number];
@@ -48,33 +28,7 @@ type NotesCreateRecipes200 =
 type NotesUpdateRecipes200 =
   RecipesServiceResponseBody["notesUpdateRecipes"][200];
 
-/** DB recipe_file row shape (from recipe_file table select). */
-export interface RecipeFileRow {
-  id: string;
-  recipe_id: string;
-  blob_name: string;
-  file_original_name: string;
-  mimetype: string;
-  size: number;
-  created_at: string;
-  updated_at: string;
-  uploaded_by: string | null;
-}
-
-/** DB recipe_note row shape (from recipe_note table select). */
-export interface RecipeNoteRow {
-  id: string;
-  recipeId: string;
-  recipeVersionId: string | null;
-  body: string;
-  everEdited: boolean;
-  createdBy: string;
-  createdAt: Date;
-  updatedBy: string;
-  updatedAt: Date;
-}
-
-export function recipeFileToApiRecipeFile(row: RecipeFileRow): RecipeFileInfoApi {
+export function recipeFileToApiRecipeFile(row: RecipeFileEntity): RecipeFileInfoApi {
   return {
     id: row.id,
     recipeId: row.recipe_id,
@@ -89,12 +43,12 @@ export function recipeFileToApiRecipeFile(row: RecipeFileRow): RecipeFileInfoApi
 }
 
 export function filesListResultToFilesListRecipesResponse(
-  files: RecipeFileRow[],
+  files: RecipeFileEntity[],
 ): FilesListRecipes200 {
   return files.map(recipeFileToApiRecipeFile);
 }
 
-export function recipeNoteToApiRecipeNote(row: RecipeNoteRow): RecipeNoteApi {
+export function recipeNoteToApiRecipeNote(row: RecipeNoteEntity): RecipeNoteApi {
   return {
     id: row.id,
     recipeId: row.recipeId,
@@ -111,25 +65,25 @@ export function recipeNoteToApiRecipeNote(row: RecipeNoteRow): RecipeNoteApi {
 }
 
 export function notesListResultToNotesListRecipesResponse(
-  notes: RecipeNoteRow[],
+  notes: RecipeNoteEntity[],
 ): NotesListRecipes200 {
   return notes.map(recipeNoteToApiRecipeNote);
 }
 
 export function createNoteResultToNotesCreateRecipesResponse(
-  row: RecipeNoteRow,
+  row: RecipeNoteEntity,
 ): NotesCreateRecipes200 {
   return recipeNoteToApiRecipeNote(row);
 }
 
 export function updateNoteResultToNotesUpdateRecipesResponse(
-  row: RecipeNoteRow,
+  row: RecipeNoteEntity,
 ): NotesUpdateRecipes200 {
   return recipeNoteToApiRecipeNote(row);
 }
 
 export function recipeToApiRecipe(
-  row: RecipeRow,
+  row: RecipeEntity,
   currentVersionId?: string,
 ): RecipeListResponseItem {
   return {
@@ -147,7 +101,7 @@ export function recipeToApiRecipe(
 }
 
 export function recipeVersionToApiRecipeVersion(
-  row: RecipeVersionRow,
+  row: RecipeVersionEntity,
 ): RecipeVersionApi {
   return {
     id: row.id,
@@ -160,8 +114,8 @@ export function recipeVersionToApiRecipeVersion(
 }
 
 export function getByIdResultToGetRecipeResponse(
-  recipe: RecipeRow,
-  currentVersion: RecipeVersionRow,
+  recipe: RecipeEntity,
+  currentVersion: RecipeVersionEntity,
   options?: { notes?: GetRecipe200["notes"]; files?: GetRecipe200["files"] },
 ): GetRecipe200 {
   return {
@@ -173,8 +127,8 @@ export function getByIdResultToGetRecipeResponse(
 }
 
 export function createWithVersionResultToCreateRecipeResponse(
-  recipe: RecipeRow,
-  version: RecipeVersionRow,
+  recipe: RecipeEntity,
+  version: RecipeVersionEntity,
 ): CreateRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe, version.id),
@@ -183,7 +137,7 @@ export function createWithVersionResultToCreateRecipeResponse(
 }
 
 export function createRecipeResultToCreateRecipeResponse(
-  recipe: RecipeRow,
+  recipe: RecipeEntity,
 ): CreateRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe),
@@ -191,46 +145,46 @@ export function createRecipeResultToCreateRecipeResponse(
 }
 
 export function updateMetadataResultToUpdateRecipeResponse(
-  row: RecipeRow,
+  row: RecipeEntity,
 ): UpdateRecipe200 {
   return recipeToApiRecipe(row);
 }
 
 export function versionsListResultToListRecipeVersionsResponse(
-  versions: RecipeVersionRow[],
+  versions: RecipeVersionEntity[],
 ): ListRecipeVersions200 {
   return versions.map(recipeVersionToApiRecipeVersion);
 }
 
 export function updateLatestVersionResultToUpdateRecipeVersionLatestResponse(
-  row: RecipeVersionRow,
+  row: RecipeVersionEntity,
 ): UpdateRecipeVersionLatest200 {
   return recipeVersionToApiRecipeVersion(row);
 }
 
 export function createVersionResultToCreateRecipeVersionResponse(
-  row: RecipeVersionRow,
+  row: RecipeVersionEntity,
 ): CreateRecipeVersion200 {
   return recipeVersionToApiRecipeVersion(row);
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */
 export function deleteRecipeResultToDeleteRecipeResponse(
-  _row: RecipeRow,
+  _row: RecipeEntity,
 ): void {
   // 204 No Content - no body to map
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */
 export function deleteNoteResultToNotesDeleteRecipesResponse(
-  _row: RecipeNoteRow,
+  _row: RecipeNoteEntity,
 ): void {
   // 204 No Content - no body to map
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */
 export function deleteFileResultToFilesDeleteRecipesResponse(
-  _row: RecipeFileRow,
+  _row: RecipeFileEntity,
 ): void {
   // 204 No Content - no body to map
 }
