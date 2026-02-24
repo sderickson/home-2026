@@ -15,6 +15,13 @@
       "when": 1771869345504,
       "tag": "0002_shallow_bruce_banner",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1771882095014,
+      "tag": "0003_shallow_ultimo",
+      "breakpoints": true
     }
   ]
 }

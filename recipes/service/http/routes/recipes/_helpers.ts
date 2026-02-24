@@ -41,10 +41,25 @@ type CreateRecipeVersion200 =
   RecipesServiceResponseBody["createRecipeVersion"][200];
 type NotesListRecipes200 = RecipesServiceResponseBody["notesListRecipes"][200];
 type RecipeNoteApi = NotesListRecipes200[number];
+type FilesListRecipes200 = RecipesServiceResponseBody["filesListRecipes"][200];
+type RecipeFileInfoApi = FilesListRecipes200[number];
 type NotesCreateRecipes200 =
   RecipesServiceResponseBody["notesCreateRecipes"][200];
 type NotesUpdateRecipes200 =
   RecipesServiceResponseBody["notesUpdateRecipes"][200];
+
+/** DB recipe_file row shape (from recipe_file table select). */
+export interface RecipeFileRow {
+  id: string;
+  recipe_id: string;
+  blob_name: string;
+  file_original_name: string;
+  mimetype: string;
+  size: number;
+  created_at: string;
+  updated_at: string;
+  uploaded_by: string | null;
+}
 
 /** DB recipe_note row shape (from recipe_note table select). */
 export interface RecipeNoteRow {
@@ -57,6 +72,26 @@ export interface RecipeNoteRow {
   createdAt: Date;
   updatedBy: string;
   updatedAt: Date;
+}
+
+export function recipeFileToApiRecipeFile(row: RecipeFileRow): RecipeFileInfoApi {
+  return {
+    id: row.id,
+    recipeId: row.recipe_id,
+    blobName: row.blob_name,
+    fileOriginalName: row.file_original_name,
+    mimetype: row.mimetype,
+    size: row.size,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
+  };
+}
+
+export function filesListResultToFilesListRecipesResponse(
+  files: RecipeFileRow[],
+): FilesListRecipes200 {
+  return files.map(recipeFileToApiRecipeFile);
 }
 
 export function recipeNoteToApiRecipeNote(row: RecipeNoteRow): RecipeNoteApi {
@@ -189,6 +224,13 @@ export function deleteRecipeResultToDeleteRecipeResponse(
 /** No response body for 204; mapper used for consistency with other routes. */
 export function deleteNoteResultToNotesDeleteRecipesResponse(
   _row: RecipeNoteRow,
+): void {
+  // 204 No Content - no body to map
+}
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteFileResultToFilesDeleteRecipesResponse(
+  _row: RecipeFileRow,
 ): void {
   // 204 No Content - no body to map
 }

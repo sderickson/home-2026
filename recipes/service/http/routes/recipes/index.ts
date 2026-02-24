@@ -1,10 +1,13 @@
 import express from "express";
-import { createScopedMiddleware } from "@saflib/express";
+import { createScopedMiddleware, uploadToDiskOptions } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
 import { createRecipeHandler } from "./create.ts";
 import { deleteRecipeHandler } from "./delete.ts";
+import { filesDeleteRecipesHandler } from "./files-delete.ts";
+import { filesListRecipesHandler } from "./files-list.ts";
+import { filesUploadRecipesHandler } from "./files-upload.ts";
 import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
 import { notesCreateRecipesHandler } from "./notes-create.ts";
@@ -25,11 +28,15 @@ export const createRecipesRouter = () => {
     createScopedMiddleware({
       apiSpec: jsonSpec,
       enforceAuth: true,
+      fileUploader: uploadToDiskOptions,
     }),
   );
   router.get("/recipes", listRecipesHandler);
   router.post("/recipes", createRecipeHandler);
   router.get("/recipes/:id", getRecipeHandler);
+  router.get("/recipes/:id/files", filesListRecipesHandler);
+  router.post("/recipes/:id/files", filesUploadRecipesHandler);
+  router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/notes", notesListRecipesHandler);
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
   router.put("/recipes/:id/notes/:noteId", notesUpdateRecipesHandler);

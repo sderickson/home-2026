@@ -1,0 +1,31 @@
+filesListRecipes:
+  summary: "List all files for a recipe."
+  operationId: "filesListRecipes"
+  tags:
+    - "no-auth"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+
+  responses:
+    "200":
+      description: "All files for the recipe."
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../schemas/recipe-file-info.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
