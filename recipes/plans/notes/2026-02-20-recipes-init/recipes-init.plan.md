@@ -98,6 +98,16 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Stopping point:** Admins can manage recipe files in the app.
 
+### M3c — Recipe files visible (Root)
+
+**Packages:** `recipes/clients/root`.
+
+**Goal:** Make recipe files visible on the public recipe detail page. Use existing SDK `filesListRecipesQuery`; root recipe detail shows file list (read-only, no upload/delete).
+
+**Workflow:** `recipes-init-m3c-recipe-files-visible.workflow.ts`.
+
+**Stopping point:** Logged-out users can see recipe files on the public recipe detail page.
+
 ---
 
 ## Milestone 4: Note files
@@ -182,6 +192,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 | **recipes-init-m2b-notes-frontend.workflow.ts** | SDK notes + App notes section | service/sdk, clients/app |
 | **recipes-init-phase-3.workflow.ts** | Recipe files backend | service/spec, db, http |
 | **recipes-init-m3b-recipe-files-frontend.workflow.ts** | SDK recipe files + App UI | service/sdk, clients/app |
+| **recipes-init-m3c-recipe-files-visible.workflow.ts** | Root recipe detail: show files (read-only) | clients/root |
 | **recipes-init-phase-4.workflow.ts** | Note files backend | service/spec, db, http |
 | **recipes-init-m4b-note-files-frontend.workflow.ts** | SDK note files + App UI | service/sdk, clients/app |
 | **recipes-init-phase-5.workflow.ts** | Menus backend | service/spec, db, http |
