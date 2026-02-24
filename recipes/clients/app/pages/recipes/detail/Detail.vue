@@ -133,8 +133,80 @@
                   </v-btn>
                 </div>
               </template>
-              <template v-else>
-                <p class="text-body-2 mb-0">{{ note.body }}</p>
+        <template v-else>
+          <p class="text-body-2 mb-0">{{ note.body }}</p>
+              </template>
+            </v-card-text>
+          </v-card>
+        </template>
+
+        <v-divider class="my-4" />
+        <h2 class="text-h6 mb-2">{{ t(strings.files_section) }}</h2>
+
+        <template v-if="showFilesEdit">
+          <v-card variant="outlined" class="mb-3">
+            <v-card-text>
+              <input
+                ref="fileInputRef"
+                type="file"
+                class="d-none"
+                @change="onFileInputChange"
+              />
+              <v-btn
+                variant="outlined"
+                prepend-icon="mdi-paperclip"
+                class="mb-2"
+                @click="triggerFileInputClick"
+              >
+                {{ t(strings.choose_file) }}
+              </v-btn>
+              <div v-if="selectedFile" class="d-flex align-center gap-2 mb-2">
+                <span class="text-body-2">{{ selectedFile.name }}</span>
+                <v-btn
+                  color="primary"
+                  size="small"
+                  :loading="uploadFileMutation.isPending.value"
+                  @click="submitUploadFile"
+                >
+                  {{ t(strings.upload_file) }}
+                </v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+        </template>
+
+        <template v-if="files.length === 0">
+          <p class="text-medium-emphasis">{{ t(strings.no_files) }}</p>
+        </template>
+        <template v-else>
+          <v-card
+            variant="outlined"
+            class="mb-3"
+            v-for="file in files"
+            :key="file.id"
+          >
+            <v-card-text class="d-flex align-center">
+              <a
+                v-if="file.downloadUrl"
+                :href="file.downloadUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-body-2 text-primary text-decoration-none"
+              >
+                {{ file.fileOriginalName }}
+              </a>
+              <span v-else class="text-body-2">{{ file.fileOriginalName }}</span>
+              <v-spacer />
+              <template v-if="showFilesEdit">
+                <v-btn
+                  size="small"
+                  variant="text"
+                  color="error"
+                  :disabled="deleteFileMutation.isPending.value"
+                  @click="confirmDeleteFile(file)"
+                >
+                  {{ t(strings.delete_file) }}
+                </v-btn>
               </template>
             </v-card-text>
           </v-card>
@@ -236,6 +308,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="deleteFileDialogOpen" max-width="400" persistent>
+      <v-card>
+        <v-card-title>{{ t(strings.delete_file) }}</v-card-title>
+        <v-card-text>
+          {{ t(strings.delete_file_confirm) }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="deleteFileDialogOpen = false">
+            {{ t(strings.cancel) }}
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="deleteFileMutation.isPending.value"
+            @click="doDeleteFile"
+          >
+            {{ t(strings.delete_file) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -244,6 +338,7 @@ import { computed, ref } from "vue";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
+  assertFilesLoaded,
   assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
@@ -254,6 +349,7 @@ import {
   notesByVersionIdMap,
 } from "./Detail.logic.ts";
 import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
+import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
@@ -263,12 +359,14 @@ const {
   recipeQuery,
   versionsQuery,
   notesQuery,
+  filesQuery,
 } = useDetailLoader();
 
 assertRecipeLoaded(recipeQuery.data.value);
 assertProfileLoaded(profileQuery.data.value);
 assertVersionsLoaded(versionsQuery.data.value);
 assertNotesLoaded(notesQuery.data.value);
+assertFilesLoaded(filesQuery.data.value);
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
@@ -282,6 +380,24 @@ const showVersionHistory = computed(() =>
 const showNotesEdit = computed(() =>
   canShowNotesEdit(profile.value as { isAdmin?: boolean }),
 );
+const showFilesEdit = computed(() =>
+  canShowNotesEdit(profile.value as { isAdmin?: boolean }),
+);
+
+const files = computed(() => filesQuery.data.value ?? []);
+
+const {
+  fileInputRef,
+  selectedFile,
+  deleteFileDialogOpen,
+  uploadFileMutation,
+  deleteFileMutation,
+  triggerFileInputClick,
+  onFileInputChange,
+  submitUploadFile,
+  confirmDeleteFile,
+  doDeleteFile,
+} = useDetailFilesFlow(computed(() => recipe.value.id));
 
 const versionHistoryModalOpen = ref(false);
 const versionsNewestFirst = computed(() => [...versions.value].reverse());

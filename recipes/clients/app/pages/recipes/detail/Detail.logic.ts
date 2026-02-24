@@ -38,6 +38,15 @@ export function assertNotesLoaded(data: unknown): asserts data {
 }
 
 /**
+ * Asserts that recipe files list data is loaded.
+ */
+export function assertFilesLoaded(data: unknown): asserts data {
+  if (data === undefined || data === null) {
+    throw new Error("Failed to load recipe files");
+  }
+}
+
+/**
  * Whether the current user can see the version history section (admin only).
  */
 export function canShowVersionHistory(profile: { isAdmin?: boolean }): boolean {

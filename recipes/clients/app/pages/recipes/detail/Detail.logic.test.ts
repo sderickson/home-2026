@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  assertFilesLoaded,
   assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
@@ -76,6 +77,24 @@ describe("assertNotesLoaded", () => {
 
   it("does not throw when data is truthy", () => {
     expect(() => assertNotesLoaded([])).not.toThrow();
+  });
+});
+
+describe("assertFilesLoaded", () => {
+  it("throws when data is undefined", () => {
+    expect(() => assertFilesLoaded(undefined)).toThrow(
+      "Failed to load recipe files",
+    );
+  });
+
+  it("throws when data is null", () => {
+    expect(() => assertFilesLoaded(null)).toThrow(
+      "Failed to load recipe files",
+    );
+  });
+
+  it("does not throw when data is truthy", () => {
+    expect(() => assertFilesLoaded([])).not.toThrow();
   });
 });
 
