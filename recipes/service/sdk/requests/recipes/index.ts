@@ -8,6 +8,7 @@ export * from "./versions-list.ts";
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
 export * from "./create.ts";
 export * from "./delete.ts";
+export * from "./files-upload.ts";
 export * from "./notes-create.ts";
 export * from "./notes-delete.ts";
 export * from "./notes-update.ts";
