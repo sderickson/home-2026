@@ -1,4 +1,5 @@
 // BEGIN SORTED WORKFLOW AREA fake-handler-imports FOR sdk/add-query
+import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
 import { notesListRecipesHandler } from "./notes-list.fake.ts";
@@ -19,6 +20,7 @@ import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.fak
 // export all fake handlers for this group
 export const recipesFakeHandlers = [
   // BEGIN SORTED WORKFLOW AREA fake-handler-array FOR sdk/add-query
+  filesListRecipesHandler,
   getRecipeHandler,
   listRecipesHandler,
   notesListRecipesHandler,

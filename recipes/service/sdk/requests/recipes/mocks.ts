@@ -8,6 +8,7 @@
 
 import type {
   Recipe,
+  RecipeFileInfo,
   RecipeVersion,
   RecipeNote,
 } from "@sderickson/recipes-spec";
@@ -104,6 +105,51 @@ export const mockRecipeNotes: RecipeNote[] = [
   },
 ];
 
+export const mockRecipeFiles: RecipeFileInfo[] = [
+  {
+    id: "713e4567-e89b-12d3-a456-426614174001",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    blobName:
+      "recipes/123e4567-e89b-12d3-a456-426614174000/713e4567-e89b-12d3-a456-426614174001.pdf",
+    fileOriginalName: "grandmas-cookies.pdf",
+    mimetype: "application/pdf",
+    size: 102400,
+    createdAt: "2023-01-16T10:00:00Z",
+    updatedAt: "2023-01-16T10:00:00Z",
+    uploadedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    downloadUrl:
+      "https://storage.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/713e4567-e89b-12d3-a456-426614174001.pdf",
+  },
+  {
+    id: "723e4567-e89b-12d3-a456-426614174002",
+    recipeId: "123e4567-e89b-12d3-a456-426614174000",
+    blobName:
+      "recipes/123e4567-e89b-12d3-a456-426614174000/723e4567-e89b-12d3-a456-426614174002.jpg",
+    fileOriginalName: "cookies-photo.jpg",
+    mimetype: "image/jpeg",
+    size: 256000,
+    createdAt: "2023-01-18T14:00:00Z",
+    updatedAt: "2023-01-18T14:00:00Z",
+    uploadedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    downloadUrl:
+      "https://storage.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/723e4567-e89b-12d3-a456-426614174002.jpg",
+  },
+  {
+    id: "733e4567-e89b-12d3-a456-426614174003",
+    recipeId: "223e4567-e89b-12d3-a456-426614174001",
+    blobName:
+      "recipes/223e4567-e89b-12d3-a456-426614174001/733e4567-e89b-12d3-a456-426614174003.pdf",
+    fileOriginalName: "dressing-recipe.pdf",
+    mimetype: "application/pdf",
+    size: 15360,
+    createdAt: "2023-03-11T09:00:00Z",
+    updatedAt: "2023-03-11T09:00:00Z",
+    uploadedBy: null,
+    downloadUrl:
+      "https://storage.example.com/recipes/223e4567-e89b-12d3-a456-426614174001/733e4567-e89b-12d3-a456-426614174003.pdf",
+  },
+];
+
 const initialMockRecipes = JSON.parse(JSON.stringify(mockRecipes)) as Recipe[];
 const initialMockRecipeVersions = JSON.parse(
   JSON.stringify(mockRecipeVersions),
@@ -111,6 +157,9 @@ const initialMockRecipeVersions = JSON.parse(
 const initialMockRecipeNotes = JSON.parse(
   JSON.stringify(mockRecipeNotes),
 ) as RecipeNote[];
+const initialMockRecipeFiles = JSON.parse(
+  JSON.stringify(mockRecipeFiles),
+) as RecipeFileInfo[];
 
 /** Restore mock arrays to their initial state. Call from tests (e.g. afterEach) if they mutate the mocks. */
 export function resetMocks(): void {
@@ -122,4 +171,8 @@ export function resetMocks(): void {
   );
   mockRecipeNotes.length = 0;
   mockRecipeNotes.push(...JSON.parse(JSON.stringify(initialMockRecipeNotes)));
+  mockRecipeFiles.length = 0;
+  mockRecipeFiles.push(
+    ...JSON.parse(JSON.stringify(initialMockRecipeFiles)),
+  );
 }
