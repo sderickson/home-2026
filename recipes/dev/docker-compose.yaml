@@ -35,6 +35,7 @@ services:
     volumes:
       - ../../recipes/service/db/data:/app/recipes/service/db/data
       - ../../recipes/service/cron/data:/app/recipes/service/cron/data
+      - ../../recipes/service/common/data/recipe-files:/app/recipes/service/common/data/recipe-files
       - ../../hub/service/identity/data:/app/hub/service/identity/data
       - identity_http_cache:/app/saflib/identity/identity-http/data
 
