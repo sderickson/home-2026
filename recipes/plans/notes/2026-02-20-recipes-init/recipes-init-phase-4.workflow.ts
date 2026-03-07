@@ -65,6 +65,13 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
       method: "delete",
       prompt: `DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only. See spec API #18.`,
     })),
+    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+      path: "./routes/recipes/notes-files-download.yaml",
+      urlPath: "/recipes/{id}/notes/{noteId}/files/{fileId}/blob",
+      method: "get",
+      download: true,
+      prompt: `GET /recipes/:id/notes/:noteId/files/:fileId/blob — serve file binary. See spec.`,
+    })),
 
     step(CdStepMachine, () => ({ path: "../service/db" })),
     step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
@@ -98,6 +105,11 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-delete.ts",
       prompt: `Handler DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only.`,
+    })),
+    step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
+      path: "./routes/recipes/notes-files-download.ts",
+      download: true,
+      prompt: `Handler GET /recipes/:id/notes/:noteId/files/:fileId/blob (binary response; set Content-Disposition per add-handler guidance). Also update _helpers.ts: in the mapper for note file list response add downloadUrl pointing to this endpoint (path ending in /blob, built from recipeId, noteId, and fileId) so list responses include it.`,
     })),
     GetFeedbackStep,
   ],
