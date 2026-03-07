@@ -74,7 +74,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
-    expect(response.headers["content-disposition"]).toContain("attachment");
+    expect(response.headers["content-disposition"]).toContain("inline");
     expect(response.headers["content-disposition"]).toContain("test-doc.pdf");
     expect(Buffer.isBuffer(response.body)).toBe(true);
     expect(response.body.toString()).toBe("binary content");

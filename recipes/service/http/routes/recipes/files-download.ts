@@ -88,7 +88,7 @@ export const filesDownloadRecipesHandler = createHandler(
     res.setHeader("Content-Type", mimetype);
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${filename.replace(/"/g, '\\"')}"`,
+      `inline; filename="${filename.replace(/"/g, '\\"')}"`,
     );
     readOut.result.pipe(res);
   },
