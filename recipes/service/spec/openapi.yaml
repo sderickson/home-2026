@@ -55,6 +55,9 @@ paths:
   /recipes/{id}/notes/{noteId}/files/{fileId}:
     delete:
       $ref: "./routes/recipes/notes-files-delete.yaml#/notesFilesDeleteRecipes"
+  /recipes/{id}/notes/{noteId}/files/{fileId}/blob:
+    get:
+      $ref: "./routes/recipes/notes-files-download.yaml#/notesFilesDownloadRecipes"
   # END WORKFLOW AREA
 
 components:
