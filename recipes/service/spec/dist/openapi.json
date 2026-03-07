@@ -1051,6 +1051,62 @@
           }
         }
       }
+    },
+    "/recipes/{id}/notes/{noteId}/files": {
+      "get": {
+        "summary": "List all files for a recipe note.",
+        "operationId": "notesFilesListRecipes",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          },
+          {
+            "name": "noteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe note id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All files for the note.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe-note-file-info"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1490,6 +1546,81 @@
           "updatedAt"
         ]
       },
+      "recipe-note-file-info": {
+        "type": "object",
+        "description": "Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the file record",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "recipeNoteId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id of the recipe note this file is attached to",
+            "example": "b2c3d4e5-f90c-23e4-b567-537725285002"
+          },
+          "blobName": {
+            "type": "string",
+            "description": "Storage blob name (Azure) for the file",
+            "example": "recipe-notes/b2c3d4e5-f90c-23e4-b567-537725285002/123e4567-e89b-12d3-a456-426614174000.pdf"
+          },
+          "fileOriginalName": {
+            "type": "string",
+            "description": "Original filename as provided on upload",
+            "example": "attempt-photo.pdf"
+          },
+          "mimetype": {
+            "type": "string",
+            "description": "MIME type of the file",
+            "example": "application/pdf"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "File size in bytes",
+            "example": 102400
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the file was uploaded",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the file metadata was last updated",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "uploadedBy": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "User id of the uploader (optional)",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Full URL to download or view the file (API base + /recipes/:id/notes/:noteId/files/:fileId/blob)",
+            "example": "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/notes/b2c3d4e5-f90c-23e4-b567-537725285002/files/123e4567-e89b-12d3-a456-426614174000/blob"
+          }
+        },
+        "required": [
+          "id",
+          "recipeNoteId",
+          "blobName",
+          "fileOriginalName",
+          "mimetype",
+          "size",
+          "createdAt",
+          "updatedAt",
+          "downloadUrl"
+        ]
+      },
       "login": {
         "type": "object",
         "properties": {
@@ -1595,81 +1726,6 @@
         },
         "required": [
           "event"
-        ]
-      },
-      "recipe-note-file-info": {
-        "type": "object",
-        "description": "Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at).",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier for the file record",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "recipeNoteId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Id of the recipe note this file is attached to",
-            "example": "b2c3d4e5-f90c-23e4-b567-537725285002"
-          },
-          "blobName": {
-            "type": "string",
-            "description": "Storage blob name (Azure) for the file",
-            "example": "recipe-notes/b2c3d4e5-f90c-23e4-b567-537725285002/123e4567-e89b-12d3-a456-426614174000.pdf"
-          },
-          "fileOriginalName": {
-            "type": "string",
-            "description": "Original filename as provided on upload",
-            "example": "attempt-photo.pdf"
-          },
-          "mimetype": {
-            "type": "string",
-            "description": "MIME type of the file",
-            "example": "application/pdf"
-          },
-          "size": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "File size in bytes",
-            "example": 102400
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the file was uploaded",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the file metadata was last updated",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "uploadedBy": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "User id of the uploader (optional)",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "downloadUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Full URL to download or view the file (API base + /recipes/:id/notes/:noteId/files/:fileId/blob)",
-            "example": "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/notes/b2c3d4e5-f90c-23e4-b567-537725285002/files/123e4567-e89b-12d3-a456-426614174000/blob"
-          }
-        },
-        "required": [
-          "id",
-          "recipeNoteId",
-          "blobName",
-          "fileOriginalName",
-          "mimetype",
-          "size",
-          "createdAt",
-          "updatedAt",
-          "downloadUrl"
         ]
       }
     }
