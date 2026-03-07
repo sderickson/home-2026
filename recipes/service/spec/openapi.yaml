@@ -50,6 +50,8 @@ paths:
   /recipes/{id}/notes/{noteId}/files:
     get:
       $ref: "./routes/recipes/notes-files-list.yaml#/notesFilesListRecipes"
+    post:
+      $ref: "./routes/recipes/notes-files-upload.yaml#/notesFilesUploadRecipes"
   # END WORKFLOW AREA
 
 components:
