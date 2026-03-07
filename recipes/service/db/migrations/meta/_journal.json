@@ -22,6 +22,13 @@
       "when": 1771882095014,
       "tag": "0003_shallow_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1772924645592,
+      "tag": "0004_fancy_abomination",
+      "breakpoints": true
     }
   ]
 }
