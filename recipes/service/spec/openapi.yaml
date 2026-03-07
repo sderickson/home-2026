@@ -52,6 +52,9 @@ paths:
       $ref: "./routes/recipes/notes-files-list.yaml#/notesFilesListRecipes"
     post:
       $ref: "./routes/recipes/notes-files-upload.yaml#/notesFilesUploadRecipes"
+  /recipes/{id}/notes/{noteId}/files/{fileId}:
+    delete:
+      $ref: "./routes/recipes/notes-files-delete.yaml#/notesFilesDeleteRecipes"
   # END WORKFLOW AREA
 
 components:
