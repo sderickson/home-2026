@@ -48,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-// import { ref, watch, computed } from "vue";
 import { recipe_files_display_strings as strings } from "./RecipeFilesDisplay.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 
@@ -59,7 +58,7 @@ export interface RecipeFileDisplayItem {
   downloadUrl?: string;
 }
 
-const props = defineProps<{
+defineProps<{
   files: RecipeFileDisplayItem[];
 }>();
 
