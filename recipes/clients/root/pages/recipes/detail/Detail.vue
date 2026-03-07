@@ -9,6 +9,8 @@
       {{ t(strings.back_to_list) }}
     </v-btn>
 
+    <RecipeFilesDisplay :files="files" />
+
     <RecipePreview
       :recipe="recipe"
       :current-version="currentVersion"
@@ -20,15 +22,16 @@
       :long-description="recipe.longDescription ?? undefined"
       :content="content"
     />
-
-    <RecipeFilesDisplay :files="files" />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { RecipeContentPreview, RecipePreview } from "@sderickson/recipes-sdk";
-import RecipeFilesDisplay from "./RecipeFilesDisplay.vue";
+import {
+  RecipeContentPreview,
+  RecipeFilesDisplay,
+  RecipePreview,
+} from "@sderickson/recipes-sdk";
 import { rootLinks } from "@sderickson/recipes-links";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
 import { useDetailLoader } from "./Detail.loader.ts";

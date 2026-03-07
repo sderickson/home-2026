@@ -7,16 +7,13 @@
     </template>
     <template v-else>
       <v-carousel
+        :cycle="false"
         height="320"
         hide-delimiters
         show-arrows="hover"
         class="rounded"
       >
-        <v-carousel-item
-          v-for="file in files"
-          :key="file.id"
-          class="d-flex align-center justify-center pa-2"
-        >
+        <v-carousel-item v-for="file in files" :key="file.id" :value="file.id">
           <template v-if="isImageFile(file)">
             <v-img
               v-if="file.downloadUrl"
@@ -39,7 +36,9 @@
               >
                 {{ file.fileOriginalName }}
               </a>
-              <span v-else class="text-body-2">{{ file.fileOriginalName }}</span>
+              <span v-else class="text-body-2">{{
+                file.fileOriginalName
+              }}</span>
             </v-card>
           </template>
         </v-carousel-item>
@@ -49,8 +48,9 @@
 </template>
 
 <script setup lang="ts">
-import { recipe_files_display as strings } from "./RecipeFilesDisplay.strings.ts";
-import { useReverseT } from "@sderickson/recipes-root-spa/i18n";
+// import { ref, watch, computed } from "vue";
+import { recipe_files_display_strings as strings } from "./RecipeFilesDisplay.strings.ts";
+import { useReverseT } from "../../i18n.ts";
 
 export interface RecipeFileDisplayItem {
   id: string;
@@ -59,12 +59,11 @@ export interface RecipeFileDisplayItem {
   downloadUrl?: string;
 }
 
-defineProps<{
+const props = defineProps<{
   files: RecipeFileDisplayItem[];
 }>();
 
 const { t } = useReverseT();
-
 function isImageFile(file: RecipeFileDisplayItem): boolean {
   return (file.mimetype ?? "").startsWith("image/");
 }

@@ -16,6 +16,8 @@
 
     <v-row>
       <v-col cols="12" md="8" lg="9">
+        <RecipeFilesDisplay :files="files" />
+
         <RecipeContentPreview
           :title="recipe.title"
           :short-description="recipe.shortDescription"
@@ -350,7 +352,10 @@ import {
 } from "./Detail.logic.ts";
 import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
 import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
-import { RecipeContentPreview } from "@sderickson/recipes-sdk";
+import {
+  RecipeContentPreview,
+  RecipeFilesDisplay,
+} from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
 const { t } = useReverseT();
