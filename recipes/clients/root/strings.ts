@@ -2,7 +2,9 @@ import { recipes_common_strings } from "@sderickson/recipes-clients-common/strin
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { home_page } from "./pages/home/Home.strings.ts";
+import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
+import { recipe_files_display } from "./pages/recipes/detail/RecipeFilesDisplay.strings.ts";
 import { recipes_list_page } from "./pages/recipes/list/List.strings.ts";
 // END WORKFLOW AREA
 
@@ -10,7 +12,9 @@ export const root_strings = {
   ...recipes_common_strings,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   home_page,
+  recipes_detail,
   recipes_detail_page,
+  recipe_files_display,
   recipes_list_page,
   // END WORKFLOW AREA
 };

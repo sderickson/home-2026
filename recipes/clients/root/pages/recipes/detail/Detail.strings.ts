@@ -4,3 +4,5 @@ export const recipes_detail_page = {
   ingredients: "Ingredients",
   instructions: "Instructions",
 };
+
+export { recipes_detail_page as recipes_detail };

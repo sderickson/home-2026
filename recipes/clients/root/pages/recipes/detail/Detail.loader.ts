@@ -1,4 +1,7 @@
-import { getRecipeQuery } from "@sderickson/recipes-sdk";
+import {
+  filesListRecipesQuery,
+  getRecipeQuery,
+} from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
@@ -8,5 +11,6 @@ export function useDetailLoader() {
 
   return {
     recipeQuery: useQuery(getRecipeQuery(id)),
+    filesQuery: useQuery(filesListRecipesQuery(id)),
   };
 }
