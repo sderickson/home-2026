@@ -18,31 +18,13 @@ describe("RecipeFilesDisplay", () => {
     wrapper.unmount();
   });
 
-  it("renders file link when file has downloadUrl", () => {
+  it("renders carousel when files are present", () => {
     const files = [
       {
         id: "f1",
         fileOriginalName: "recipe.pdf",
         downloadUrl: "/recipes/r1/files/f1/blob",
       },
-    ] as const;
-    const wrapper = mountWithPlugins(RecipeFilesDisplay, {
-      props: { files },
-    }, {
-      i18nMessages: { ...root_strings },
-    });
-
-    expect(wrapper.text()).toContain("Recipe files");
-    expect(wrapper.text()).toContain("recipe.pdf");
-    const link = wrapper.find('a[href="/recipes/r1/files/f1/blob"]');
-    expect(link.exists()).toBe(true);
-    expect(link.attributes("target")).toBe("_blank");
-    wrapper.unmount();
-  });
-
-  it("renders file name without link when downloadUrl missing", () => {
-    const files = [
-      { id: "f1", fileOriginalName: "notes.txt" },
     ];
     const wrapper = mountWithPlugins(RecipeFilesDisplay, {
       props: { files },
@@ -50,8 +32,9 @@ describe("RecipeFilesDisplay", () => {
       i18nMessages: { ...root_strings },
     });
 
-    expect(wrapper.text()).toContain("notes.txt");
-    expect(wrapper.find("a").exists()).toBe(false);
+    expect(wrapper.text()).toContain("Recipe files");
+    expect(wrapper.find(".v-carousel").exists()).toBe(true);
+    expect(wrapper.findAll(".v-window-item").length).toBe(1);
     wrapper.unmount();
   });
 });

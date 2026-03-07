@@ -6,25 +6,44 @@
       <p class="text-medium-emphasis">{{ t(strings.no_files) }}</p>
     </template>
     <template v-else>
-      <v-card
-        v-for="file in files"
-        :key="file.id"
-        variant="outlined"
-        class="mb-3"
+      <v-carousel
+        height="320"
+        hide-delimiters
+        show-arrows="hover"
+        class="rounded"
       >
-        <v-card-text class="d-flex align-center">
-          <a
-            v-if="file.downloadUrl"
-            :href="file.downloadUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-body-2 text-primary text-decoration-none"
-          >
-            {{ file.fileOriginalName }}
-          </a>
-          <span v-else class="text-body-2">{{ file.fileOriginalName }}</span>
-        </v-card-text>
-      </v-card>
+        <v-carousel-item
+          v-for="file in files"
+          :key="file.id"
+          class="d-flex align-center justify-center pa-2"
+        >
+          <template v-if="isImageFile(file)">
+            <v-img
+              v-if="file.downloadUrl"
+              :src="file.downloadUrl"
+              :alt="file.fileOriginalName"
+              max-height="280"
+              contain
+              class="rounded"
+            />
+          </template>
+          <template v-else>
+            <v-card variant="outlined" class="pa-4 text-center">
+              <v-icon size="48" class="mb-2">mdi-file-document-outline</v-icon>
+              <a
+                v-if="file.downloadUrl"
+                :href="file.downloadUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-body-2 text-primary text-decoration-none d-block"
+              >
+                {{ file.fileOriginalName }}
+              </a>
+              <span v-else class="text-body-2">{{ file.fileOriginalName }}</span>
+            </v-card>
+          </template>
+        </v-carousel-item>
+      </v-carousel>
     </template>
   </div>
 </template>
@@ -36,6 +55,7 @@ import { useReverseT } from "@sderickson/recipes-root-spa/i18n";
 export interface RecipeFileDisplayItem {
   id: string;
   fileOriginalName: string;
+  mimetype?: string;
   downloadUrl?: string;
 }
 
@@ -44,4 +64,8 @@ defineProps<{
 }>();
 
 const { t } = useReverseT();
+
+function isImageFile(file: RecipeFileDisplayItem): boolean {
+  return (file.mimetype ?? "").startsWith("image/");
+}
 </script>
