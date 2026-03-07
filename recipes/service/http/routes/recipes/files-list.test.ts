@@ -1,3 +1,7 @@
+// Required for downloadUrl to be a valid full URI (recipes API base from env).
+if (!process.env.PROTOCOL) process.env.PROTOCOL = "http";
+if (!process.env.DOMAIN) process.env.DOMAIN = "docker.localhost";
+
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";

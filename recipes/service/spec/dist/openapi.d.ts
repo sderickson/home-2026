@@ -497,8 +497,8 @@ export interface components {
             uploadedBy?: string | null;
             /**
              * Format: uri
-             * @description URL to download or view the file (when included in response)
-             * @example https://storage.example.com/recipes/.../file.pdf
+             * @description Full URL to download or view the file (API base + /recipes/:id/files/:fileId/blob)
+             * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl?: string;
         };

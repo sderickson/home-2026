@@ -5,6 +5,7 @@ import type {
   RecipeNoteEntity,
   RecipeVersionEntity,
 } from "@sderickson/recipes-db";
+import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 
 type RecipeListResponseItem =
@@ -39,7 +40,7 @@ export function recipeFileToApiRecipeFile(row: RecipeFileEntity): RecipeFileInfo
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
-    downloadUrl: `/recipes/${row.recipe_id}/files/${row.id}/blob`,
+    downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
   };
 }
 
