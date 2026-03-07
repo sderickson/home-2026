@@ -15,3 +15,5 @@ export class RecipeVersionNotFoundError extends RecipesDatabaseError {}
 export class RecipeNoteNotFoundError extends RecipesDatabaseError {}
 
 export class RecipeFileNotFoundError extends RecipesDatabaseError {}
+
+export class RecipeNoteFileNotFoundError extends RecipesDatabaseError {}
