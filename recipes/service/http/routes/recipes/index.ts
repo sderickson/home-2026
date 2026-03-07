@@ -4,6 +4,7 @@ import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
 import { createRecipeHandler } from "./create.ts";
+import { filesDownloadRecipesHandler } from "./files-download.ts";
 import { deleteRecipeHandler } from "./delete.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.ts";
 import { filesListRecipesHandler } from "./files-list.ts";
@@ -35,6 +36,7 @@ export const createRecipesRouter = () => {
   router.post("/recipes", createRecipeHandler);
   router.get("/recipes/:id", getRecipeHandler);
   router.get("/recipes/:id/files", filesListRecipesHandler);
+  router.get("/recipes/:id/files/:fileId/blob", filesDownloadRecipesHandler);
   router.post("/recipes/:id/files", filesUploadRecipesHandler);
   router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/notes", notesListRecipesHandler);

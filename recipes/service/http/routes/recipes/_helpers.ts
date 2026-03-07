@@ -39,6 +39,7 @@ export function recipeFileToApiRecipeFile(row: RecipeFileEntity): RecipeFileInfo
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
+    downloadUrl: `/recipes/${row.recipe_id}/files/${row.id}/blob`,
   };
 }
 
