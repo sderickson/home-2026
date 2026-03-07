@@ -14,9 +14,7 @@ import { createRecipesRouter } from "./routes/recipes/index.ts";
 /**
  * Creates the HTTP server for the recipes service.
  */
-export function createRecipesHttpApp(
-  options: RecipesServiceContextOptions,
-) {
+export function createRecipesHttpApp(options: RecipesServiceContextOptions) {
   let dbKey = options.recipesDbKey;
   if (!dbKey) {
     dbKey = recipesDb.connect();
@@ -25,7 +23,11 @@ export function createRecipesHttpApp(
     options.recipesFileContainer ?? createObjectStore({ type: "test" });
 
   const app = express();
-  app.use(createGlobalMiddleware());
+  app.use(
+    createGlobalMiddleware({
+      disableCors: true,
+    }),
+  );
   app.set("trust proxy", 1);
 
   const context = { recipesDbKey: dbKey, recipesFileContainer };
