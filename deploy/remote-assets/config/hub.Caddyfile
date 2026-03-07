@@ -5,6 +5,7 @@
 }
 
 (hub-api-proxy) {
+	import cors {$HUB_DOMAIN}
 	import api-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
 }
 

@@ -5,6 +5,7 @@
 }
 
 (notebook-api-proxy) {
+	import cors {$NOTEBOOK_DOMAIN}
 	import api-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
 }
 

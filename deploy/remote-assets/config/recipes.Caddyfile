@@ -5,6 +5,7 @@
 }
 
 (recipes-api-proxy) {
+	import cors {$RECIPES_DOMAIN}
 	import api-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
 }
 

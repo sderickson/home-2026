@@ -13,16 +13,18 @@ import {
 /**
  * Creates the HTTP server for the notebook service.
  */
-export function createNotebookHttpApp(
-  options: NotebookServiceContextOptions,
-) {
+export function createNotebookHttpApp(options: NotebookServiceContextOptions) {
   let dbKey = options.notebookDbKey;
   if (!dbKey) {
     dbKey = notebookDb.connect();
   }
 
   const app = express();
-  app.use(createGlobalMiddleware());
+  app.use(
+    createGlobalMiddleware({
+      disableCors: true,
+    }),
+  );
   app.set("trust proxy", 1);
 
   const context = { notebookDbKey: dbKey };

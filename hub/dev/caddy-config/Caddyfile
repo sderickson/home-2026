@@ -61,14 +61,17 @@ http://account.notebook.docker.localhost {
 # API subdomains
 
 http://api.recipes.docker.localhost {
+	import cors recipes.docker.localhost
 	import api-proxy monolith:3000 monolith:3002
 }
 
 http://api.notebook.docker.localhost {
+	import cors notebook.docker.localhost
 	import api-proxy monolith:3000 monolith:3003
 }
 
 http://hub.docker.localhost {
+	import cors docker.localhost
 	import api-proxy monolith:3000 monolith:3001
 }
 
