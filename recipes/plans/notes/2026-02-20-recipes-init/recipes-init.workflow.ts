@@ -4,7 +4,7 @@
  * Run from recipes/plans so phase Cd paths (e.g. ../service/spec) resolve.
  *
  * Order: Phase 1 (recipes backend) → M1a, M1b, M1c (recipes frontend) →
- * Phase 2 → M2b (notes) → Phase 3 → M3b (recipe files) → Phase 4 → M4b (note files) →
+ * Phase 2 → M2b (notes) → Phase 3 → M3b, M3c (recipe files) → Phase 4 → M4b (note files) →
  * Phase 5 → M5b, M5c (menus).
  */
 import { defineWorkflow, step, makeWorkflowMachine } from "@saflib/workflows";
@@ -18,6 +18,7 @@ import { RecipesInitPhase2WorkflowDefinition } from "./recipes-init-phase-2.work
 import { RecipesInitM2bNotesFrontendWorkflowDefinition } from "./recipes-init-m2b-notes-frontend.workflow.ts";
 import { RecipesInitPhase3WorkflowDefinition } from "./recipes-init-phase-3.workflow.ts";
 import { RecipesInitM3bRecipeFilesFrontendWorkflowDefinition } from "./recipes-init-m3b-recipe-files-frontend.workflow.ts";
+import { RecipesInitM3cRecipeFilesVisibleWorkflowDefinition } from "./recipes-init-m3c-recipe-files-visible.workflow.ts";
 import { RecipesInitPhase4WorkflowDefinition } from "./recipes-init-phase-4.workflow.ts";
 import { RecipesInitM4bNoteFilesFrontendWorkflowDefinition } from "./recipes-init-m4b-note-files-frontend.workflow.ts";
 import { RecipesInitPhase5WorkflowDefinition } from "./recipes-init-phase-5.workflow.ts";
@@ -63,6 +64,7 @@ export const RecipesInitWorkflowDefinition = defineWorkflow<
     step(makeWorkflowMachine(RecipesInitM2bNotesFrontendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitPhase3WorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM3bRecipeFilesFrontendWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM3cRecipeFilesVisibleWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitPhase4WorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM4bNoteFilesFrontendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitPhase5WorkflowDefinition), () => ({})),

@@ -43,6 +43,7 @@ http://admin.docker.localhost {
 # Notebook API
 
 http://api.notebook.docker.localhost {
+	import cors notebook.docker.localhost
 	import api-proxy monolith:3000 monolith:3003
 }
 

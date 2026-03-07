@@ -37,6 +37,7 @@ services:
       - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
       - /opt/recipes/cron:/app/recipes/service/cron/data
       - /opt/recipes/db:/app/recipes/service/db/data
+      - /opt/recipes/common/data:/app/recipes/service/common/data
       - /opt/notebook/cron:/app/notebook/service/cron/data
       - /opt/notebook/db:/app/notebook/service/db/data
 

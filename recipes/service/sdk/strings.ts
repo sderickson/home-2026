@@ -1,5 +1,6 @@
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { recipe_content_preview_strings } from "././components//recipe-content-preview/RecipeContentPreview.strings.ts";
+import { recipe_files_display_strings } from "././components//recipe-files-display/RecipeFilesDisplay.strings.ts";
 import { recipe_list_strings } from "././components//recipe-list/RecipeList.strings.ts";
 import { recipe_preview_strings } from "././components//recipe-preview/RecipePreview.strings.ts";
 // END WORKFLOW AREA
@@ -7,6 +8,7 @@ import { recipe_preview_strings } from "././components//recipe-preview/RecipePre
 export const recipes_sdk_strings = {
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   recipe_content_preview_strings,
+  recipe_files_display_strings,
   recipe_list_strings,
   recipe_preview_strings,
   // END WORKFLOW AREA

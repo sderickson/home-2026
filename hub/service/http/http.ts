@@ -13,16 +13,18 @@ import {
 /**
  * Creates the HTTP server for the hub service.
  */
-export function createHubHttpApp(
-  options: HubServiceContextOptions,
-) {
+export function createHubHttpApp(options: HubServiceContextOptions) {
   let dbKey = options.hubDbKey;
   if (!dbKey) {
     dbKey = hubDb.connect();
   }
 
   const app = express();
-  app.use(createGlobalMiddleware());
+  app.use(
+    createGlobalMiddleware({
+      disableCors: true,
+    }),
+  );
   app.set("trust proxy", 1);
 
   const context = { hubDbKey: dbKey };

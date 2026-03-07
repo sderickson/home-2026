@@ -980,6 +980,77 @@
           }
         }
       }
+    },
+    "/recipes/{id}/files/{fileId}/blob": {
+      "get": {
+        "summary": "Serve recipe file binary (blob).",
+        "operationId": "filesDownloadRecipes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe id"
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Recipe file id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File binary content.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1401,8 +1472,8 @@
           "downloadUrl": {
             "type": "string",
             "format": "uri",
-            "description": "URL to download or view the file (when included in response)",
-            "example": "https://storage.example.com/recipes/.../file.pdf"
+            "description": "Full URL to download or view the file (API base + /recipes/:id/files/:fileId/blob)",
+            "example": "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob"
           }
         },
         "required": [

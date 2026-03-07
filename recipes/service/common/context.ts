@@ -3,6 +3,8 @@ import type { DbKey } from "@saflib/drizzle";
 import { createObjectStore } from "@saflib/object-store";
 import type { ObjectStore } from "@saflib/object-store";
 import { recipesDb } from "@sderickson/recipes-db";
+import path from "path";
+import fs from "fs";
 
 export interface RecipesServiceContext {
   recipesDbKey: DbKey;
@@ -23,8 +25,12 @@ export const makeContext = (
   options: RecipesServiceContextOptions = {},
 ): RecipesServiceContext => {
   const dbKey = options.recipesDbKey ?? recipesDb.connect();
+  const rootPath = path.join(import.meta.dirname, "data", "recipe-files");
+  // ensure the directory exists
+  fs.mkdirSync(rootPath, { recursive: true });
   const recipesFileContainer =
-    options.recipesFileContainer ?? createObjectStore({ type: "test" });
+    options.recipesFileContainer ??
+    createObjectStore({ type: "disk", rootPath });
   return {
     recipesDbKey: dbKey,
     recipesFileContainer,

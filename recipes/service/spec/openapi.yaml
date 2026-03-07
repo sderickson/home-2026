@@ -44,6 +44,9 @@ paths:
   /recipes/{id}/files/{fileId}:
     delete:
       $ref: "./routes/recipes/files-delete.yaml#/filesDeleteRecipes"
+  /recipes/{id}/files/{fileId}/blob:
+    get:
+      $ref: "./routes/recipes/files-download.yaml#/filesDownloadRecipes"
   # END WORKFLOW AREA
 
 components:

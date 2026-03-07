@@ -8,6 +8,7 @@ export * from "./requests/recipes/index.ts";
 
 // BEGIN SORTED WORKFLOW AREA component-exports FOR sdk/add-component
 export { default as RecipeContentPreview } from "./components/recipe-content-preview/RecipeContentPreview.vue";
+export { default as RecipeFilesDisplay } from "./components/recipe-files-display/RecipeFilesDisplay.vue";
 export { default as RecipeList } from "./components/recipe-list/RecipeList.vue";
 export { default as RecipePreview } from "./components/recipe-preview/RecipePreview.vue";
 // END WORKFLOW AREA

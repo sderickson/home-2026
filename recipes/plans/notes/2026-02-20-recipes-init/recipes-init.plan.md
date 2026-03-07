@@ -98,6 +98,16 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Stopping point:** Admins can manage recipe files in the app.
 
+### M3c — Recipe files visible (serve endpoint + Root)
+
+**Packages:** `recipes/service/spec`, `recipes/service/http`, `recipes/clients/root`.
+
+**Goal:** Add recipe file serve endpoint GET /recipes/:id/files/:fileId/blob (route + handler, binary response; Content-Disposition per purpose). So GET .../files/:fileId can later return JSON RecipeFileInfo if desired. Update _helpers.ts so recipeFileToApiRecipeFile includes downloadUrl pointing to the /blob endpoint. Make recipe files visible on the public recipe detail page using filesListRecipesQuery; display each file via its downloadUrl. No SDK mutation — list response includes downloadUrl.
+
+**Workflow:** `recipes-init-m3c-recipe-files-visible.workflow.ts`.
+
+**Stopping point:** Serve endpoint exists; list returns downloadUrl; logged-out users can see (and view) recipe files on the public recipe detail page.
+
 ---
 
 ## Milestone 4: Note files
@@ -182,6 +192,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 | **recipes-init-m2b-notes-frontend.workflow.ts** | SDK notes + App notes section | service/sdk, clients/app |
 | **recipes-init-phase-3.workflow.ts** | Recipe files backend | service/spec, db, http |
 | **recipes-init-m3b-recipe-files-frontend.workflow.ts** | SDK recipe files + App UI | service/sdk, clients/app |
+| **recipes-init-m3c-recipe-files-visible.workflow.ts** | Recipe file serve (route + handler + downloadUrl in _helpers) + Root show files | service/spec, http, clients/root |
 | **recipes-init-phase-4.workflow.ts** | Note files backend | service/spec, db, http |
 | **recipes-init-m4b-note-files-frontend.workflow.ts** | SDK note files + App UI | service/sdk, clients/app |
 | **recipes-init-phase-5.workflow.ts** | Menus backend | service/spec, db, http |

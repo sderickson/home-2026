@@ -26,6 +26,12 @@ export const recipes_detail_page = {
   create_note: "Add note",
   notes_for_version: "Notes for this version",
   delete_note_confirm: "Delete this note?",
+  files_section: "Recipe files",
+  no_files: "No files attached.",
+  upload_file: "Upload file",
+  choose_file: "Choose file",
+  delete_file: "Remove file",
+  delete_file_confirm: "Remove this file from the recipe?",
 };
 
 export { recipes_detail_page as recipes_detail };

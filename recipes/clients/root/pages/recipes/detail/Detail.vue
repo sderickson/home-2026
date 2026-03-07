@@ -9,6 +9,8 @@
       {{ t(strings.back_to_list) }}
     </v-btn>
 
+    <RecipeFilesDisplay :files="files" />
+
     <RecipePreview
       :recipe="recipe"
       :current-version="currentVersion"
@@ -25,20 +27,28 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { RecipeContentPreview, RecipePreview } from "@sderickson/recipes-sdk";
+import {
+  RecipeContentPreview,
+  RecipeFilesDisplay,
+  RecipePreview,
+} from "@sderickson/recipes-sdk";
 import { rootLinks } from "@sderickson/recipes-links";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
 import { useDetailLoader } from "./Detail.loader.ts";
 import { useReverseT } from "@sderickson/recipes-root-spa/i18n";
 
 const { t } = useReverseT();
-const { recipeQuery } = useDetailLoader();
+const { recipeQuery, filesQuery } = useDetailLoader();
 
 if (!recipeQuery.data.value) {
   throw new Error("Failed to load recipe");
+}
+if (!filesQuery.data.value) {
+  throw new Error("Failed to load recipe files");
 }
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
 const content = computed(() => currentVersion.value.content);
+const files = computed(() => filesQuery.data.value ?? []);
 </script>

@@ -1,4 +1,5 @@
 import {
+  filesListRecipesQuery,
   getRecipeQuery,
   listRecipeVersionsQuery,
   notesListRecipesQuery,
@@ -16,5 +17,6 @@ export function useDetailLoader() {
     recipeQuery: useQuery(getRecipeQuery(id)),
     versionsQuery: useQuery(listRecipeVersionsQuery(id)),
     notesQuery: useQuery(notesListRecipesQuery(id)),
+    filesQuery: useQuery(filesListRecipesQuery(id)),
   };
 }

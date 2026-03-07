@@ -1,4 +1,5 @@
 // BEGIN SORTED WORKFLOW AREA query-exports FOR sdk/add-query
+export * from "./files-list.ts";
 export * from "./get.ts";
 export * from "./list.ts";
 export * from "./notes-list.ts";
@@ -7,6 +8,8 @@ export * from "./versions-list.ts";
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
 export * from "./create.ts";
 export * from "./delete.ts";
+export * from "./files-delete.ts";
+export * from "./files-upload.ts";
 export * from "./notes-create.ts";
 export * from "./notes-delete.ts";
 export * from "./notes-update.ts";

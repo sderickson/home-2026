@@ -1,0 +1,49 @@
+filesDownloadRecipes:
+  summary: "Serve recipe file binary (blob)."
+  operationId: "filesDownloadRecipes"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+    - name: "fileId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe file id"
+
+  responses:
+    "200":
+      description: "File binary content."
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
