@@ -2,6 +2,7 @@
 export * from "./files-list.ts";
 export * from "./get.ts";
 export * from "./list.ts";
+export * from "./notes-files-list.ts";
 export * from "./notes-list.ts";
 export * from "./versions-list.ts";
 // END WORKFLOW AREA

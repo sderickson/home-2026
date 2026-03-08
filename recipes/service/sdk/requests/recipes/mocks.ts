@@ -9,6 +9,7 @@
 import type {
   Recipe,
   RecipeFileInfo,
+  RecipeNoteFileInfo,
   RecipeVersion,
   RecipeNote,
 } from "@sderickson/recipes-spec";
@@ -150,6 +151,37 @@ export const mockRecipeFiles: RecipeFileInfo[] = [
   },
 ];
 
+export const mockRecipeNoteFiles: RecipeNoteFileInfo[] = [
+  {
+    id: "813e4567-e89b-12d3-a456-426614174001",
+    recipeNoteId: "423e4567-e89b-12d3-a456-426614174001",
+    blobName:
+      "recipe-notes/423e4567-e89b-12d3-a456-426614174001/813e4567-e89b-12d3-a456-426614174001.pdf",
+    fileOriginalName: "attempt-notes.pdf",
+    mimetype: "application/pdf",
+    size: 20480,
+    createdAt: "2023-01-21T10:00:00Z",
+    updatedAt: "2023-01-21T10:00:00Z",
+    uploadedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
+    downloadUrl:
+      "https://api.recipes.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/notes/423e4567-e89b-12d3-a456-426614174001/files/813e4567-e89b-12d3-a456-426614174001/blob",
+  },
+  {
+    id: "823e4567-e89b-12d3-a456-426614174002",
+    recipeNoteId: "523e4567-e89b-12d3-a456-426614174002",
+    blobName:
+      "recipe-notes/523e4567-e89b-12d3-a456-426614174002/823e4567-e89b-12d3-a456-426614174002.jpg",
+    fileOriginalName: "cookies-batch.jpg",
+    mimetype: "image/jpeg",
+    size: 51200,
+    createdAt: "2023-02-06T09:00:00Z",
+    updatedAt: "2023-02-06T09:00:00Z",
+    uploadedBy: null,
+    downloadUrl:
+      "https://api.recipes.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/notes/523e4567-e89b-12d3-a456-426614174002/files/823e4567-e89b-12d3-a456-426614174002/blob",
+  },
+];
+
 const initialMockRecipes = JSON.parse(JSON.stringify(mockRecipes)) as Recipe[];
 const initialMockRecipeVersions = JSON.parse(
   JSON.stringify(mockRecipeVersions),
@@ -160,6 +192,9 @@ const initialMockRecipeNotes = JSON.parse(
 const initialMockRecipeFiles = JSON.parse(
   JSON.stringify(mockRecipeFiles),
 ) as RecipeFileInfo[];
+const initialMockRecipeNoteFiles = JSON.parse(
+  JSON.stringify(mockRecipeNoteFiles),
+) as RecipeNoteFileInfo[];
 
 /** Restore mock arrays to their initial state. Call from tests (e.g. afterEach) if they mutate the mocks. */
 export function resetMocks(): void {
@@ -174,5 +209,9 @@ export function resetMocks(): void {
   mockRecipeFiles.length = 0;
   mockRecipeFiles.push(
     ...JSON.parse(JSON.stringify(initialMockRecipeFiles)),
+  );
+  mockRecipeNoteFiles.length = 0;
+  mockRecipeNoteFiles.push(
+    ...JSON.parse(JSON.stringify(initialMockRecipeNoteFiles)),
   );
 }

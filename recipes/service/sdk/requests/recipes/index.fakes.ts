@@ -2,6 +2,7 @@
 import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
+import { notesFilesListRecipesHandler } from "./notes-files-list.fake.ts";
 import { notesListRecipesHandler } from "./notes-list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // END WORKFLOW AREA
@@ -25,6 +26,7 @@ export const recipesFakeHandlers = [
   filesListRecipesHandler,
   getRecipeHandler,
   listRecipesHandler,
+  notesFilesListRecipesHandler,
   notesListRecipesHandler,
   versionsListRecipesHandler,
   // END WORKFLOW AREA
