@@ -9,7 +9,9 @@ import fs from "fs";
 export interface RecipesServiceContext {
   recipesDbKey: DbKey;
   /** Container for recipe file blobs (upload, delete, read). */
+  // BEGIN SORTED WORKFLOW AREA storeProperties FOR service/add-store
   recipesFileContainer: ObjectStore;
+  // END SORTED WORKFLOW AREA
 }
 
 export const recipesServiceStorage =
@@ -17,8 +19,9 @@ export const recipesServiceStorage =
 
 export interface RecipesServiceContextOptions {
   recipesDbKey?: DbKey;
-  /** When omitted, a default is created (TestObjectStore in test, else callers should pass one). */
+  // BEGIN SORTED WORKFLOW AREA storeOptions FOR service/add-store
   recipesFileContainer?: ObjectStore;
+  // END SORTED WORKFLOW AREA
 }
 
 export const makeContext = (
@@ -28,11 +31,15 @@ export const makeContext = (
   const rootPath = path.join(import.meta.dirname, "data", "recipe-files");
   // ensure the directory exists
   fs.mkdirSync(rootPath, { recursive: true });
+  // BEGIN WORKFLOW AREA storeInit FOR service/add-store
   const recipesFileContainer =
     options.recipesFileContainer ??
     createObjectStore({ type: "disk", rootPath });
+  // END WORKFLOW AREA
   return {
     recipesDbKey: dbKey,
+    // BEGIN SORTED WORKFLOW AREA storeReturn FOR service/add-store
     recipesFileContainer,
+    // END SORTED WORKFLOW AREA
   };
 };
