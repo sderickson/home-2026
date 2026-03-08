@@ -1,5 +1,6 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
+import { generateShortId } from "@saflib/drizzle";
 import { recipe, recipeVersion } from "./recipe.ts";
 
 export interface RecipeNoteEntity {
@@ -19,7 +20,7 @@ export const recipeNote = sqliteTable(
   {
     id: text("id")
       .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
+      .$defaultFn(() => generateShortId()),
     recipeId: text("recipe_id")
       .notNull()
       .references(() => recipe.id),

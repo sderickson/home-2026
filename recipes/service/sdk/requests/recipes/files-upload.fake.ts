@@ -1,3 +1,4 @@
+import { generateShortId } from "@saflib/utils";
 import type { RecipeFileInfo } from "@sderickson/recipes-spec";
 import { recipesHandler } from "../../typed-fake.ts";
 import { mockRecipeFiles } from "./mocks.ts";
@@ -10,7 +11,7 @@ export const filesUploadRecipesHandler = recipesHandler({
   status: 200,
   handler: async ({ params }) => {
     const now = new Date().toISOString();
-    const id = crypto.randomUUID();
+    const id = generateShortId();
     const recipeId = params.id;
     const fileInfo: RecipeFileInfo = {
       id,

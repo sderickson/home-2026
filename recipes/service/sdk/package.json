@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@saflib/monorepo": "*",
+    "@saflib/utils": "*",
     "@saflib/sdk": "*",
     "@saflib/vite": "*",
     "@saflib/vue": "*",

@@ -1,3 +1,4 @@
+import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
 import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
 
@@ -9,11 +10,11 @@ export const createRecipesHandler = recipesHandler({
   status: 200,
   handler: async ({ params: _params, query: _query, body }) => {
     const now = new Date().toISOString();
-    const recipeId = crypto.randomUUID();
+    const recipeId = generateShortId();
     let initialVersion: (typeof mockRecipeVersions)[0] | undefined;
     let currentVersionId: string | undefined;
     if (body.initialVersion?.content) {
-      const versionId = crypto.randomUUID();
+      const versionId = generateShortId();
       initialVersion = {
         id: versionId,
         recipeId,

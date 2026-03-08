@@ -5,6 +5,7 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
+import { generateShortId } from "@saflib/drizzle";
 
 // Recipe version content shape (JSON in recipe_version.content)
 export interface RecipeVersionContent {
@@ -27,7 +28,7 @@ export interface RecipeEntity {
 export const recipe = sqliteTable("recipe", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => generateShortId()),
   title: text("title").notNull(),
   shortDescription: text("short_description").notNull(),
   longDescription: text("long_description"),
@@ -56,7 +57,7 @@ export const recipeVersion = sqliteTable(
   {
     id: text("id")
       .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
+      .$defaultFn(() => generateShortId()),
     recipeId: text("recipe_id")
       .notNull()
       .references(() => recipe.id),

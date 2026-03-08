@@ -1,5 +1,6 @@
 export type * from "./types.ts";
 export * from "./errors.ts";
+export { generateShortId } from "@saflib/drizzle";
 
 import { recipesDbManager } from "./instances.ts";
 export const recipesDb = recipesDbManager.publicInterface();
