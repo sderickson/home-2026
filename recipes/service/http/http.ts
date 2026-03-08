@@ -1,8 +1,8 @@
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
 import express from "express";
-import { createObjectStore } from "@saflib/object-store";
 import { recipesDb } from "@sderickson/recipes-db";
 import {
+  getDefaultRecipesFileContainer,
   recipesServiceStorage,
   type RecipesServiceContextOptions,
 } from "@sderickson/recipes-service-common";
@@ -20,7 +20,7 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions) {
     dbKey = recipesDb.connect();
   }
   const recipesFileContainer =
-    options.recipesFileContainer ?? createObjectStore({ type: "test" });
+    options.recipesFileContainer ?? getDefaultRecipesFileContainer();
 
   const app = express();
   app.use(

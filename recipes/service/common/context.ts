@@ -1,12 +1,19 @@
 import { AsyncLocalStorage } from "async_hooks";
 import type { DbKey } from "@saflib/drizzle";
 // BEGIN SORTED WORKFLOW AREA storeImports FOR service/add-store
-import { createObjectStore } from "@saflib/object-store";
 import type { ObjectStore } from "@saflib/object-store";
+import { createObjectStore } from "@saflib/object-store";
 // END WORKFLOW AREA
 import { recipesDb } from "@sderickson/recipes-db";
 import path from "path";
 import fs from "fs";
+
+/** Default disk-backed file store for recipe/note blobs. Use when no container is passed (e.g. from tests). */
+export function getDefaultRecipesFileContainer(): ObjectStore {
+  const rootPath = path.join(import.meta.dirname, "data", "recipe-files");
+  fs.mkdirSync(rootPath, { recursive: true });
+  return createObjectStore({ type: "disk", rootPath });
+}
 
 export interface RecipesServiceContext {
   recipesDbKey: DbKey;
@@ -30,13 +37,9 @@ export const makeContext = (
   options: RecipesServiceContextOptions = {},
 ): RecipesServiceContext => {
   const dbKey = options.recipesDbKey ?? recipesDb.connect();
-  const rootPath = path.join(import.meta.dirname, "data", "recipe-files");
-  // ensure the directory exists
-  fs.mkdirSync(rootPath, { recursive: true });
   // BEGIN WORKFLOW AREA storeInit FOR service/add-store
   const recipesFileContainer =
-    options.recipesFileContainer ??
-    createObjectStore({ type: "disk", rootPath });
+    options.recipesFileContainer ?? getDefaultRecipesFileContainer();
   // END WORKFLOW AREA
   return {
     recipesDbKey: dbKey,
