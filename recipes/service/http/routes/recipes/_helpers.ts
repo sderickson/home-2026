@@ -28,6 +28,8 @@ type RecipeFileInfoApi = FilesListRecipes200[number];
 type NotesFilesListRecipes200 =
   RecipesServiceResponseBody["notesFilesListRecipes"][200];
 type RecipeNoteFileInfoApi = NotesFilesListRecipes200[number];
+type NotesFilesUploadRecipes200 =
+  RecipesServiceResponseBody["notesFilesUploadRecipes"][200];
 type NotesCreateRecipes200 =
   RecipesServiceResponseBody["notesCreateRecipes"][200];
 type NotesUpdateRecipes200 =
@@ -77,6 +79,13 @@ export function notesFilesListResultToNotesFilesListRecipesResponse(
   recipeId: string,
 ): NotesFilesListRecipes200 {
   return files.map((row) => recipeNoteFileToApiRecipeNoteFile(row, recipeId));
+}
+
+export function insertNoteFileResultToNotesFilesUploadRecipesResponse(
+  row: RecipeNoteFileEntity,
+  recipeId: string,
+): NotesFilesUploadRecipes200 {
+  return recipeNoteFileToApiRecipeNoteFile(row, recipeId);
 }
 
 export function recipeNoteToApiRecipeNote(row: RecipeNoteEntity): RecipeNoteApi {

@@ -14,6 +14,7 @@ import { listRecipesHandler } from "./list.ts";
 import { notesCreateRecipesHandler } from "./notes-create.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.ts";
 import { notesFilesListRecipesHandler } from "./notes-files-list.ts";
+import { notesFilesUploadRecipesHandler } from "./notes-files-upload.ts";
 import { notesListRecipesHandler } from "./notes-list.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.ts";
 import { updateRecipeHandler } from "./update.ts";
@@ -43,6 +44,7 @@ export const createRecipesRouter = () => {
   router.get("/recipes/:id/notes", notesListRecipesHandler);
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
   router.get("/recipes/:id/notes/:noteId/files", notesFilesListRecipesHandler);
+  router.post("/recipes/:id/notes/:noteId/files", notesFilesUploadRecipesHandler);
   router.put("/recipes/:id/notes/:noteId", notesUpdateRecipesHandler);
   router.delete("/recipes/:id/notes/:noteId", notesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);
