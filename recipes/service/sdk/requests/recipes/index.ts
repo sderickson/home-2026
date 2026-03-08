@@ -13,6 +13,7 @@ export * from "./files-delete.ts";
 export * from "./files-upload.ts";
 export * from "./notes-create.ts";
 export * from "./notes-delete.ts";
+export * from "./notes-files-delete.ts";
 export * from "./notes-files-upload.ts";
 export * from "./notes-update.ts";
 export * from "./update.ts";

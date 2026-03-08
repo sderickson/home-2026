@@ -14,6 +14,7 @@ import { filesDeleteRecipesHandler } from "./files-delete.fake.ts";
 import { filesUploadRecipesHandler } from "./files-upload.fake.ts";
 import { notesCreateRecipesHandler } from "./notes-create.fake.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.fake.ts";
+import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.fake.ts";
 import { notesFilesUploadRecipesHandler } from "./notes-files-upload.fake.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.fake.ts";
 import { updateRecipesHandler } from "./update.fake.ts";
@@ -39,6 +40,7 @@ export const recipesFakeHandlers = [
   filesUploadRecipesHandler,
   notesCreateRecipesHandler,
   notesDeleteRecipesHandler,
+  notesFilesDeleteRecipesHandler,
   notesFilesUploadRecipesHandler,
   notesUpdateRecipesHandler,
   updateRecipesHandler,
