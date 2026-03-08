@@ -5,11 +5,13 @@ import {
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
+  buildNoteIdToFilesMap,
   canShowNotesEdit,
   canShowVersionHistory,
   formatVersionDate,
   getVersionById,
   notesByVersionIdMap,
+  notesForLatestVersion,
 } from "./Detail.logic.ts";
 
 describe("assertRecipeLoaded", () => {
@@ -224,5 +226,47 @@ describe("getVersionById", () => {
   it("returns undefined when id is not found", () => {
     expect(getVersionById(versions, "v0")).toBeUndefined();
     expect(getVersionById([], "v1")).toBeUndefined();
+  });
+});
+
+describe("notesForLatestVersion", () => {
+  const notes = [
+    { id: "n1", recipeId: "r1", recipeVersionId: "v1", body: "A", everEdited: false, createdBy: "u1", createdAt: "2026-01-01Z", updatedBy: "u1", updatedAt: "2026-01-01Z" },
+    { id: "n2", recipeId: "r1", recipeVersionId: "v1", body: "B", everEdited: false, createdBy: "u1", createdAt: "2026-01-02Z", updatedBy: "u1", updatedAt: "2026-01-02Z" },
+    { id: "n3", recipeId: "r1", recipeVersionId: "v2", body: "C", everEdited: false, createdBy: "u1", createdAt: "2026-01-03Z", updatedBy: "u1", updatedAt: "2026-01-03Z" },
+  ] as Parameters<typeof notesForLatestVersion>[0];
+
+  it("returns empty array when currentVersionId is undefined", () => {
+    expect(notesForLatestVersion(notes, undefined)).toEqual([]);
+  });
+
+  it("returns notes for the given version newest first", () => {
+    const result = notesForLatestVersion(notes, "v1");
+    expect(result.map((n) => n.id)).toEqual(["n2", "n1"]);
+    expect(result[0].body).toBe("B");
+  });
+
+  it("returns empty array when no notes match", () => {
+    expect(notesForLatestVersion(notes, "v0")).toEqual([]);
+  });
+});
+
+describe("buildNoteIdToFilesMap", () => {
+  const notes = [{ id: "n1" }, { id: "n2" }];
+  const fileA = { id: "f1", recipeNoteId: "n1", blobName: "x", fileOriginalName: "a", mimetype: "application/octet-stream", size: 0, createdAt: "", updatedAt: "", downloadUrl: "https://example.com/f1" };
+  const fileB = { id: "f2", recipeNoteId: "n2", blobName: "y", fileOriginalName: "b", mimetype: "application/octet-stream", size: 0, createdAt: "", updatedAt: "", downloadUrl: "https://example.com/f2" };
+
+  it("maps each note id to its files array", () => {
+    const results = [{ data: [fileA] }, { data: [fileB] }];
+    const map = buildNoteIdToFilesMap(notes, results);
+    expect(map.get("n1")).toEqual([fileA]);
+    expect(map.get("n2")).toEqual([fileB]);
+  });
+
+  it("uses empty array when result has no data", () => {
+    const results = [{ data: undefined }, {}];
+    const map = buildNoteIdToFilesMap(notes, results);
+    expect(map.get("n1")).toEqual([]);
+    expect(map.get("n2")).toEqual([]);
   });
 });

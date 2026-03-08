@@ -42,296 +42,79 @@
         <h2 class="text-h6 mb-2">{{ t(strings.notes_section) }}</h2>
 
         <template v-if="showNotesEdit">
-          <v-card variant="outlined" class="mb-3">
-            <v-card-title class="text-subtitle-1">
-              {{ t(strings.add_note) }}
-            </v-card-title>
-            <v-card-text>
-              <v-textarea
-                v-model="newNoteBody"
-                :placeholder="t(strings.note_body_placeholder)"
-                rows="3"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="mb-2"
-              />
-              <v-btn
-                color="primary"
-                :loading="createMutation.isPending.value"
-                :disabled="!newNoteBody.trim()"
-                @click="submitNewNote"
-              >
-                {{ t(strings.create_note) }}
-              </v-btn>
-            </v-card-text>
-          </v-card>
+          <AddNoteCard
+            v-model="newNoteBody"
+            :create-mutation="createMutation"
+            @submit="submitNewNote"
+          />
         </template>
 
+        <input
+          ref="noteFileInputRef"
+          type="file"
+          class="d-none"
+          @change="onNoteFileInputChange"
+        />
         <template v-if="notesForLatestVersion.length === 0">
           <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
         </template>
         <template v-else>
-          <v-card
-            variant="outlined"
-            class="mb-3"
+          <NoteCard
             v-for="note in notesForLatestVersion"
             :key="note.id"
-          >
-            <v-card-text>
-              <div class="d-flex align-center flex-wrap gap-2 mb-2">
-                <span class="text-caption text-medium-emphasis">
-                  {{ formatVersionDate(note.createdAt) }}
-                </span>
-                <v-chip v-if="note.everEdited" size="small" variant="tonal">
-                  {{ t(strings.ever_edited) }}
-                </v-chip>
-                <v-spacer />
-                <template v-if="showNotesEdit">
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    :disabled="updateMutation.isPending.value"
-                    @click="startEditNote(note)"
-                  >
-                    {{ t(strings.edit_note) }}
-                  </v-btn>
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    color="error"
-                    :disabled="deleteMutation.isPending.value"
-                    @click="confirmDeleteNote(note)"
-                  >
-                    {{ t(strings.delete_note) }}
-                  </v-btn>
-                </template>
-              </div>
-              <template v-if="editingNoteId === note.id">
-                <v-textarea
-                  v-model="editBody"
-                  :placeholder="t(strings.note_body_placeholder)"
-                  rows="3"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <div class="d-flex gap-2">
-                  <v-btn
-                    size="small"
-                    color="primary"
-                    :loading="updateMutation.isPending.value"
-                    @click="saveEditNote(note)"
-                  >
-                    {{ t(strings.save_note) }}
-                  </v-btn>
-                  <v-btn
-                    size="small"
-                    variant="text"
-                    @click="editingNoteId = null"
-                  >
-                    {{ t(strings.cancel) }}
-                  </v-btn>
-                </div>
-              </template>
-        <template v-else>
-          <p class="text-body-2 mb-0">{{ note.body }}</p>
-              </template>
-            </v-card-text>
-          </v-card>
+            :note="note"
+            :files="getFilesForNote(note)"
+            :show-notes-edit="showNotesEdit"
+            :note-flow="noteFlow"
+            :note-file-flow="noteFileFlowForCards"
+          />
         </template>
 
         <v-divider class="my-4" />
-        <h2 class="text-h6 mb-2">{{ t(strings.files_section) }}</h2>
-
-        <template v-if="showFilesEdit">
-          <v-card variant="outlined" class="mb-3">
-            <v-card-text>
-              <input
-                ref="fileInputRef"
-                type="file"
-                class="d-none"
-                @change="onFileInputChange"
-              />
-              <v-btn
-                variant="outlined"
-                prepend-icon="mdi-paperclip"
-                class="mb-2"
-                @click="triggerFileInputClick"
-              >
-                {{ t(strings.choose_file) }}
-              </v-btn>
-              <div v-if="selectedFile" class="d-flex align-center gap-2 mb-2">
-                <span class="text-body-2">{{ selectedFile.name }}</span>
-                <v-btn
-                  color="primary"
-                  size="small"
-                  :loading="uploadFileMutation.isPending.value"
-                  @click="submitUploadFile"
-                >
-                  {{ t(strings.upload_file) }}
-                </v-btn>
-              </div>
-            </v-card-text>
-          </v-card>
-        </template>
-
-        <template v-if="files.length === 0">
-          <p class="text-medium-emphasis">{{ t(strings.no_files) }}</p>
-        </template>
-        <template v-else>
-          <v-card
-            variant="outlined"
-            class="mb-3"
-            v-for="file in files"
-            :key="file.id"
-          >
-            <v-card-text class="d-flex align-center">
-              <a
-                v-if="file.downloadUrl"
-                :href="file.downloadUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-body-2 text-primary text-decoration-none"
-              >
-                {{ file.fileOriginalName }}
-              </a>
-              <span v-else class="text-body-2">{{ file.fileOriginalName }}</span>
-              <v-spacer />
-              <template v-if="showFilesEdit">
-                <v-btn
-                  size="small"
-                  variant="text"
-                  color="error"
-                  :disabled="deleteFileMutation.isPending.value"
-                  @click="confirmDeleteFile(file)"
-                >
-                  {{ t(strings.delete_file) }}
-                </v-btn>
-              </template>
-            </v-card-text>
-          </v-card>
-        </template>
+        <RecipeFilesSection
+          :files="files"
+          :show-files-edit="showFilesEdit"
+          :files-flow="filesFlow"
+        />
       </v-col>
     </v-row>
 
-    <v-dialog
+    <VersionHistoryModal
       v-model="versionHistoryModalOpen"
-      max-width="600"
-      persistent
-      @click:outside="versionHistoryModalOpen = false"
-    >
-      <v-card>
-        <v-card-title class="d-flex align-center">
-          {{ t(strings.version_history_modal_title) }}
-          <v-spacer />
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            @click="versionHistoryModalOpen = false"
-          />
-        </v-card-title>
-        <v-card-text>
-          <v-expansion-panels variant="accordion">
-            <v-expansion-panel
-              v-for="ver in versionsNewestFirst"
-              :key="ver.id"
-              :value="ver.id"
-            >
-              <v-expansion-panel-title>
-                {{
-                  ver.isLatest
-                    ? t(strings.version_latest)
-                    : (t(strings.version_from_date) as string).replace(
-                        "{date}",
-                        formatVersionDate(ver.createdAt),
-                      )
-                }}
-              </v-expansion-panel-title>
-              <v-expansion-panel-text>
-                <RecipeContentPreview
-                  :title="recipe.title"
-                  :short-description="recipe.shortDescription"
-                  :long-description="recipe.longDescription ?? undefined"
-                  :content="ver.content"
-                />
-                <template v-if="notesByVersionId.get(ver.id)?.length">
-                  <p class="text-caption text-medium-emphasis mt-2 mb-1">
-                    {{ t(strings.notes_for_version) }}
-                  </p>
-                  <ul class="text-body-2 pl-4 mb-0">
-                    <li
-                      v-for="n in notesByVersionId.get(ver.id)"
-                      :key="n.id"
-                      class="mb-1"
-                    >
-                      {{ n.body }}
-                      <span
-                        v-if="n.everEdited"
-                        class="text-caption text-medium-emphasis"
-                      >
-                        ({{ t(strings.ever_edited) }})
-                      </span>
-                    </li>
-                  </ul>
-                </template>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="versionHistoryModalOpen = false">
-            {{ t(strings.close) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :recipe="recipe"
+      :versions="versionsNewestFirst"
+      :notes-by-version-id="notesByVersionId"
+    />
 
-    <v-dialog v-model="deleteDialogOpen" max-width="400" persistent>
-      <v-card>
-        <v-card-title>{{ t(strings.delete_note) }}</v-card-title>
-        <v-card-text>
-          {{ t(strings.delete_note_confirm) }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="deleteDialogOpen = false">
-            {{ t(strings.cancel) }}
-          </v-btn>
-          <v-btn
-            color="error"
-            :loading="deleteMutation.isPending.value"
-            @click="doDeleteNote"
-          >
-            {{ t(strings.delete_note) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="deleteDialogOpen"
+      :title="t(strings.delete_note)"
+      :message="t(strings.delete_note_confirm)"
+      :confirm-label="t(strings.delete_note)"
+      :cancel-label="t(strings.cancel)"
+      :loading="deleteMutation.isPending.value"
+      @confirm="doDeleteNote"
+    />
 
-    <v-dialog v-model="deleteFileDialogOpen" max-width="400" persistent>
-      <v-card>
-        <v-card-title>{{ t(strings.delete_file) }}</v-card-title>
-        <v-card-text>
-          {{ t(strings.delete_file_confirm) }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="deleteFileDialogOpen = false">
-            {{ t(strings.cancel) }}
-          </v-btn>
-          <v-btn
-            color="error"
-            :loading="deleteFileMutation.isPending.value"
-            @click="doDeleteFile"
-          >
-            {{ t(strings.delete_file) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmDialog
+      v-model="deleteFileDialogOpen"
+      :title="t(strings.delete_file)"
+      :message="t(strings.delete_file_confirm)"
+      :confirm-label="t(strings.delete_file)"
+      :cancel-label="t(strings.cancel)"
+      :loading="deleteFileMutation.isPending.value"
+      @confirm="doDeleteFile"
+    />
+
+    <ConfirmDialog
+      v-model="deleteNoteFileDialogOpen"
+      :title="t(strings.delete_file)"
+      :message="t(strings.delete_file_confirm)"
+      :confirm-label="t(strings.delete_file)"
+      :cancel-label="t(strings.cancel)"
+      :loading="noteFileDeleteMutation.isPending.value"
+      @confirm="doDeleteNoteFile"
+    />
   </v-container>
 </template>
 
@@ -345,18 +128,27 @@ import {
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
+  buildNoteIdToFilesMap,
   canShowNotesEdit,
   canShowVersionHistory,
-  formatVersionDate,
   notesByVersionIdMap,
+  notesForLatestVersion as notesForLatestVersionFn,
 } from "./Detail.logic.ts";
 import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
 import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
+import { useDetailNoteFilesFlow } from "./useDetailNoteFilesFlow.ts";
 import {
+  notesFilesListRecipesQuery,
   RecipeContentPreview,
   RecipeFilesDisplay,
 } from "@sderickson/recipes-sdk";
+import { useQueries } from "@tanstack/vue-query";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import AddNoteCard from "./AddNoteCard.vue";
+import NoteCard from "./NoteCard.vue";
+import RecipeFilesSection from "./RecipeFilesSection.vue";
+import VersionHistoryModal from "./VersionHistoryModal.vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
 
 const { t } = useReverseT();
 const {
@@ -391,46 +183,79 @@ const showFilesEdit = computed(() =>
 
 const files = computed(() => filesQuery.data.value ?? []);
 
-const {
-  fileInputRef,
-  selectedFile,
-  deleteFileDialogOpen,
-  uploadFileMutation,
-  deleteFileMutation,
-  triggerFileInputClick,
-  onFileInputChange,
-  submitUploadFile,
-  confirmDeleteFile,
-  doDeleteFile,
-} = useDetailFilesFlow(computed(() => recipe.value.id));
+const filesFlow = useDetailFilesFlow(computed(() => recipe.value.id));
 
 const versionHistoryModalOpen = ref(false);
 const versionsNewestFirst = computed(() => [...versions.value].reverse());
 
 const notesByVersionId = computed(() => notesByVersionIdMap(notes.value));
-const notesForLatestVersion = computed(() => {
-  const versionId = currentVersion.value?.id;
-  if (!versionId) return [];
-  return [...notes.value]
-    .filter((n) => n.recipeVersionId === versionId)
-    .reverse();
+const notesForLatestVersion = computed(() =>
+  notesForLatestVersionFn(notes.value, currentVersion.value?.id),
+);
+
+const noteFilesQueries = useQueries({
+  queries: computed(() =>
+    notes.value.map((note) =>
+      notesFilesListRecipesQuery(recipe.value.id, note.id),
+    ),
+  ),
 });
 
-const {
-  createMutation,
-  updateMutation,
-  deleteMutation,
-  newNoteBody,
-  editingNoteId,
-  editBody,
-  deleteDialogOpen,
-  submitNewNote,
-  startEditNote,
-  saveEditNote,
-  confirmDeleteNote,
-  doDeleteNote,
-} = useDetailNotesFlow(
+const noteIdToFiles = computed(() =>
+  buildNoteIdToFilesMap(notes.value, noteFilesQueries.value),
+);
+
+function getFilesForNote(note: { id: string }) {
+  return noteIdToFiles.value.get(note.id) ?? [];
+}
+
+const noteFileFlow = useDetailNoteFilesFlow(computed(() => recipe.value.id));
+const noteFileInputRef = noteFileFlow.fileInputRef;
+const onNoteFileInputChange = noteFileFlow.onFileInputChange;
+
+function setNoteFileUploadTarget(noteId: string) {
+  noteFileFlow.setUploadTargetNote(noteId);
+  noteFileFlow.triggerFileInputClick();
+}
+
+const noteFileFlowForCards = computed(() => ({
+  selectedNoteFile: noteFileFlow.selectedFile,
+  uploadTargetNoteId: noteFileFlow.uploadTargetNoteId,
+  uploadMutation: noteFileFlow.uploadMutation,
+  deleteMutation: noteFileFlow.deleteMutation,
+  setUploadTargetAndTrigger: setNoteFileUploadTarget,
+  submitUploadFile: () => noteFileFlow.submitUploadFile(),
+  confirmDeleteNoteFile: noteFileFlow.confirmDeleteFile,
+}));
+
+const notesFlow = useDetailNotesFlow(
   computed(() => recipe.value.id),
   computed(() => currentVersion.value?.id),
 );
+
+const newNoteBody = notesFlow.newNoteBody;
+const createMutation = notesFlow.createMutation;
+const submitNewNote = notesFlow.submitNewNote;
+const deleteDialogOpen = notesFlow.deleteDialogOpen;
+const deleteMutation = notesFlow.deleteMutation;
+const doDeleteNote = notesFlow.doDeleteNote;
+
+const noteFlow = computed(() => ({
+  editingNoteId: notesFlow.editingNoteId,
+  editBody: notesFlow.editBody,
+  updateMutation: notesFlow.updateMutation,
+  deleteMutation: notesFlow.deleteMutation,
+  startEditNote: notesFlow.startEditNote,
+  saveEditNote: notesFlow.saveEditNote,
+  cancelEdit: () => (notesFlow.editingNoteId.value = null),
+  confirmDeleteNote: notesFlow.confirmDeleteNote,
+}));
+
+const deleteFileDialogOpen = filesFlow.deleteFileDialogOpen;
+const deleteFileMutation = filesFlow.deleteFileMutation;
+const doDeleteFile = filesFlow.doDeleteFile;
+
+const deleteNoteFileDialogOpen = noteFileFlow.deleteNoteFileDialogOpen;
+const noteFileDeleteMutation = noteFileFlow.deleteMutation;
+const doDeleteNoteFile = noteFileFlow.doDeleteFile;
 </script>
