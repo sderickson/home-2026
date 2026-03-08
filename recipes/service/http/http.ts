@@ -1,8 +1,7 @@
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
 import express from "express";
-import { recipesDb } from "@sderickson/recipes-db";
 import {
-  getDefaultRecipesFileContainer,
+  makeContext,
   recipesServiceStorage,
   type RecipesServiceContextOptions,
 } from "@sderickson/recipes-service-common";
@@ -14,13 +13,8 @@ import { createRecipesRouter } from "./routes/recipes/index.ts";
 /**
  * Creates the HTTP server for the recipes service.
  */
-export function createRecipesHttpApp(options: RecipesServiceContextOptions) {
-  let dbKey = options.recipesDbKey;
-  if (!dbKey) {
-    dbKey = recipesDb.connect();
-  }
-  const recipesFileContainer =
-    options.recipesFileContainer ?? getDefaultRecipesFileContainer();
+export function createRecipesHttpApp(options: RecipesServiceContextOptions = {}) {
+  const context = makeContext(options);
 
   const app = express();
   app.use(
@@ -30,7 +24,6 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions) {
   );
   app.set("trust proxy", 1);
 
-  const context = { recipesDbKey: dbKey, recipesFileContainer };
   app.use((_req, _res, next) => {
     recipesServiceStorage.run(context, () => {
       next();
