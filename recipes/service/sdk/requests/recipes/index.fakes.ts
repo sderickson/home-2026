@@ -2,6 +2,7 @@
 import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
+import { recipeNoteFilesGetByNoteIdHandler } from "./note-files-by-recipe.fake.ts";
 import { notesFilesListRecipesHandler } from "./notes-files-list.fake.ts";
 import { notesListRecipesHandler } from "./notes-list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
@@ -30,6 +31,7 @@ export const recipesFakeHandlers = [
   listRecipesHandler,
   notesFilesListRecipesHandler,
   notesListRecipesHandler,
+  recipeNoteFilesGetByNoteIdHandler,
   versionsListRecipesHandler,
   // END WORKFLOW AREA
 

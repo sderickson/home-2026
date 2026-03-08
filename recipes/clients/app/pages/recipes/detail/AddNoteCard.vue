@@ -5,8 +5,7 @@
     </v-card-title>
     <v-card-text>
       <v-textarea
-        :model-value="modelValue"
-        @update:model-value="$emit('update:modelValue', $event)"
+        v-model="notesFlow.newNoteBody"
         :placeholder="t(strings.note_body_placeholder)"
         rows="3"
         variant="outlined"
@@ -16,9 +15,9 @@
       />
       <v-btn
         color="primary"
-        :loading="createMutation.isPending.value"
+        :loading="notesFlow.createMutation.isPending.value"
         :disabled="!trimmedBody"
-        @click="$emit('submit')"
+        @click="notesFlow.submitNewNote()"
       >
         {{ t(strings.create_note) }}
       </v-btn>
@@ -30,19 +29,19 @@
 import { computed } from "vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { add_note_card as strings } from "./AddNoteCard.strings.ts";
-import type { UseMutationReturnType } from "@tanstack/vue-query";
+import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
 
 const props = defineProps<{
-  modelValue: string;
-  createMutation: Pick<UseMutationReturnType<unknown, Error, unknown, unknown>, "isPending">;
+  recipeId: string;
+  latestVersionId: string | undefined;
 }>();
 
-defineEmits<{
-  "update:modelValue": [value: string];
-  submit: [];
-}>();
+const notesFlow = useDetailNotesFlow(
+  computed(() => props.recipeId),
+  computed(() => props.latestVersionId),
+);
 
 const { t } = useReverseT();
 
-const trimmedBody = computed(() => props.modelValue.trim());
+const trimmedBody = computed(() => notesFlow.newNoteBody.value.trim());
 </script>

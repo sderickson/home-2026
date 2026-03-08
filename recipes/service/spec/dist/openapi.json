@@ -1034,6 +1034,51 @@
         }
       }
     },
+    "/recipes/{id}/note-files": {
+      "get": {
+        "summary": "List all note files for a recipe (one request for the detail page).",
+        "operationId": "recipeNoteFilesGetByNoteId",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All note files for the recipe (each item has recipeNoteId).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe-note-file-info"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recipes/{id}/notes/{noteId}/files": {
       "get": {
         "summary": "List all files for a recipe note.",

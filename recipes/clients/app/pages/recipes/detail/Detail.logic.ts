@@ -51,6 +51,15 @@ export function assertFilesLoaded(data: unknown): asserts data {
 }
 
 /**
+ * Asserts that note files by recipe (single request) data is loaded.
+ */
+export function assertNoteFilesByRecipeLoaded(data: unknown): asserts data {
+  if (data === undefined || data === null) {
+    throw new Error("Failed to load note files");
+  }
+}
+
+/**
  * Whether the current user can see the version history section (admin only).
  */
 export function canShowVersionHistory(profile: { isAdmin?: boolean }): boolean {
@@ -126,6 +135,21 @@ export function buildNoteIdToFilesMap(
   const map = new Map<string, RecipeNoteFileInfo[]>();
   for (let i = 0; i < notes.length; i++) {
     map.set(notes[i].id, (noteFilesResults[i]?.data ?? []) as RecipeNoteFileInfo[]);
+  }
+  return map;
+}
+
+/**
+ * Groups a flat list of note files by recipeNoteId (e.g. from GET /recipes/:id/note-files).
+ */
+export function groupNoteFilesByNoteId(
+  files: RecipeNoteFileInfo[],
+): Map<string, RecipeNoteFileInfo[]> {
+  const map = new Map<string, RecipeNoteFileInfo[]>();
+  for (const f of files) {
+    const arr = map.get(f.recipeNoteId) ?? [];
+    arr.push(f);
+    map.set(f.recipeNoteId, arr);
   }
   return map;
 }

@@ -30,6 +30,9 @@ export const useNotesFilesUploadRecipesMutation = () => {
       queryClient.invalidateQueries({
         queryKey: ["recipes", variables.recipeId, "notes", variables.noteId, "files"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["recipes", variables.recipeId, "note-files"],
+      });
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
     },
   });

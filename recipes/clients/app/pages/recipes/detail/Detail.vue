@@ -43,18 +43,11 @@
 
         <template v-if="showNotesEdit">
           <AddNoteCard
-            v-model="newNoteBody"
-            :create-mutation="createMutation"
-            @submit="submitNewNote"
+            :recipe-id="recipe.id"
+            :latest-version-id="currentVersion?.id"
           />
         </template>
 
-        <input
-          ref="noteFileInputRef"
-          type="file"
-          class="d-none"
-          @change="onNoteFileInputChange"
-        />
         <template v-if="notesForLatestVersion.length === 0">
           <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
         </template>
@@ -62,11 +55,11 @@
           <NoteCard
             v-for="note in notesForLatestVersion"
             :key="note.id"
+            :recipe-id="recipe.id"
+            :latest-version-id="currentVersion?.id"
             :note="note"
             :files="getFilesForNote(note)"
             :show-notes-edit="showNotesEdit"
-            :note-flow="noteFlow"
-            :note-file-flow="noteFileFlowForCards"
           />
         </template>
 
@@ -87,16 +80,6 @@
     />
 
     <ConfirmDialog
-      v-model="deleteDialogOpen"
-      :title="t(strings.delete_note)"
-      :message="t(strings.delete_note_confirm)"
-      :confirm-label="t(strings.delete_note)"
-      :cancel-label="t(strings.cancel)"
-      :loading="deleteMutation.isPending.value"
-      @confirm="doDeleteNote"
-    />
-
-    <ConfirmDialog
       v-model="deleteFileDialogOpen"
       :title="t(strings.delete_file)"
       :message="t(strings.delete_file_confirm)"
@@ -106,15 +89,6 @@
       @confirm="doDeleteFile"
     />
 
-    <ConfirmDialog
-      v-model="deleteNoteFileDialogOpen"
-      :title="t(strings.delete_file)"
-      :message="t(strings.delete_file_confirm)"
-      :confirm-label="t(strings.delete_file)"
-      :cancel-label="t(strings.cancel)"
-      :loading="noteFileDeleteMutation.isPending.value"
-      @confirm="doDeleteNoteFile"
-    />
   </v-container>
 </template>
 
@@ -125,24 +99,21 @@ import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
   assertNotesLoaded,
+  assertNoteFilesByRecipeLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-  buildNoteIdToFilesMap,
   canShowNotesEdit,
   canShowVersionHistory,
+  groupNoteFilesByNoteId,
   notesByVersionIdMap,
   notesForLatestVersion as notesForLatestVersionFn,
 } from "./Detail.logic.ts";
-import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
 import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
-import { useDetailNoteFilesFlow } from "./useDetailNoteFilesFlow.ts";
 import {
-  notesFilesListRecipesQuery,
   RecipeContentPreview,
   RecipeFilesDisplay,
 } from "@sderickson/recipes-sdk";
-import { useQueries } from "@tanstack/vue-query";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import AddNoteCard from "./AddNoteCard.vue";
 import NoteCard from "./NoteCard.vue";
@@ -157,6 +128,7 @@ const {
   versionsQuery,
   notesQuery,
   filesQuery,
+  noteFilesByRecipeQuery,
 } = useDetailLoader();
 
 assertRecipeLoaded(recipeQuery.data.value);
@@ -164,6 +136,7 @@ assertProfileLoaded(profileQuery.data.value);
 assertVersionsLoaded(versionsQuery.data.value);
 assertNotesLoaded(notesQuery.data.value);
 assertFilesLoaded(filesQuery.data.value);
+assertNoteFilesByRecipeLoaded(noteFilesByRecipeQuery.data.value);
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
@@ -193,69 +166,15 @@ const notesForLatestVersion = computed(() =>
   notesForLatestVersionFn(notes.value, currentVersion.value?.id),
 );
 
-const noteFilesQueries = useQueries({
-  queries: computed(() =>
-    notes.value.map((note) =>
-      notesFilesListRecipesQuery(recipe.value.id, note.id),
-    ),
-  ),
-});
-
 const noteIdToFiles = computed(() =>
-  buildNoteIdToFilesMap(notes.value, noteFilesQueries.value),
+  groupNoteFilesByNoteId(noteFilesByRecipeQuery.data.value ?? []),
 );
 
 function getFilesForNote(note: { id: string }) {
   return noteIdToFiles.value.get(note.id) ?? [];
 }
 
-const noteFileFlow = useDetailNoteFilesFlow(computed(() => recipe.value.id));
-const noteFileInputRef = noteFileFlow.fileInputRef;
-const onNoteFileInputChange = noteFileFlow.onFileInputChange;
-
-function setNoteFileUploadTarget(noteId: string) {
-  noteFileFlow.setUploadTargetNote(noteId);
-  noteFileFlow.triggerFileInputClick();
-}
-
-const noteFileFlowForCards = computed(() => ({
-  selectedNoteFile: noteFileFlow.selectedFile,
-  uploadTargetNoteId: noteFileFlow.uploadTargetNoteId,
-  uploadMutation: noteFileFlow.uploadMutation,
-  deleteMutation: noteFileFlow.deleteMutation,
-  setUploadTargetAndTrigger: setNoteFileUploadTarget,
-  submitUploadFile: () => noteFileFlow.submitUploadFile(),
-  confirmDeleteNoteFile: noteFileFlow.confirmDeleteFile,
-}));
-
-const notesFlow = useDetailNotesFlow(
-  computed(() => recipe.value.id),
-  computed(() => currentVersion.value?.id),
-);
-
-const newNoteBody = notesFlow.newNoteBody;
-const createMutation = notesFlow.createMutation;
-const submitNewNote = notesFlow.submitNewNote;
-const deleteDialogOpen = notesFlow.deleteDialogOpen;
-const deleteMutation = notesFlow.deleteMutation;
-const doDeleteNote = notesFlow.doDeleteNote;
-
-const noteFlow = computed(() => ({
-  editingNoteId: notesFlow.editingNoteId,
-  editBody: notesFlow.editBody,
-  updateMutation: notesFlow.updateMutation,
-  deleteMutation: notesFlow.deleteMutation,
-  startEditNote: notesFlow.startEditNote,
-  saveEditNote: notesFlow.saveEditNote,
-  cancelEdit: () => (notesFlow.editingNoteId.value = null),
-  confirmDeleteNote: notesFlow.confirmDeleteNote,
-}));
-
 const deleteFileDialogOpen = filesFlow.deleteFileDialogOpen;
 const deleteFileMutation = filesFlow.deleteFileMutation;
 const doDeleteFile = filesFlow.doDeleteFile;
-
-const deleteNoteFileDialogOpen = noteFileFlow.deleteNoteFileDialogOpen;
-const noteFileDeleteMutation = noteFileFlow.deleteMutation;
-const doDeleteNoteFile = noteFileFlow.doDeleteFile;
 </script>

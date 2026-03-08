@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   assertFilesLoaded,
   assertNotesLoaded,
+  assertNoteFilesByRecipeLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
@@ -10,6 +11,7 @@ import {
   canShowVersionHistory,
   formatVersionDate,
   getVersionById,
+  groupNoteFilesByNoteId,
   notesByVersionIdMap,
   notesForLatestVersion,
 } from "./Detail.logic.ts";
@@ -97,6 +99,24 @@ describe("assertFilesLoaded", () => {
 
   it("does not throw when data is truthy", () => {
     expect(() => assertFilesLoaded([])).not.toThrow();
+  });
+});
+
+describe("assertNoteFilesByRecipeLoaded", () => {
+  it("throws when data is undefined", () => {
+    expect(() => assertNoteFilesByRecipeLoaded(undefined)).toThrow(
+      "Failed to load note files",
+    );
+  });
+
+  it("throws when data is null", () => {
+    expect(() => assertNoteFilesByRecipeLoaded(null)).toThrow(
+      "Failed to load note files",
+    );
+  });
+
+  it("does not throw when data is truthy", () => {
+    expect(() => assertNoteFilesByRecipeLoaded([])).not.toThrow();
   });
 });
 
@@ -268,5 +288,22 @@ describe("buildNoteIdToFilesMap", () => {
     const map = buildNoteIdToFilesMap(notes, results);
     expect(map.get("n1")).toEqual([]);
     expect(map.get("n2")).toEqual([]);
+  });
+});
+
+describe("groupNoteFilesByNoteId", () => {
+  const fileA = { id: "f1", recipeNoteId: "n1", blobName: "x", fileOriginalName: "a", mimetype: "application/octet-stream", size: 0, createdAt: "", updatedAt: "", downloadUrl: "https://example.com/f1" };
+  const fileB = { id: "f2", recipeNoteId: "n2", blobName: "y", fileOriginalName: "b", mimetype: "application/octet-stream", size: 0, createdAt: "", updatedAt: "", downloadUrl: "https://example.com/f2" };
+  const fileC = { id: "f3", recipeNoteId: "n1", blobName: "z", fileOriginalName: "c", mimetype: "application/octet-stream", size: 0, createdAt: "", updatedAt: "", downloadUrl: "https://example.com/f3" };
+
+  it("groups files by recipeNoteId", () => {
+    const map = groupNoteFilesByNoteId([fileA, fileB, fileC]);
+    expect(map.get("n1")).toHaveLength(2);
+    expect(map.get("n1")).toEqual(expect.arrayContaining([fileA, fileC]));
+    expect(map.get("n2")).toEqual([fileB]);
+  });
+
+  it("returns empty map for empty array", () => {
+    expect(groupNoteFilesByNoteId([]).size).toBe(0);
   });
 });

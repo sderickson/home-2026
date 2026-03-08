@@ -47,6 +47,9 @@ paths:
   /recipes/{id}/files/{fileId}/blob:
     get:
       $ref: "./routes/recipes/files-download.yaml#/filesDownloadRecipes"
+  /recipes/{id}/note-files:
+    get:
+      $ref: "./routes/recipes/notes-files-list-by-recipe.yaml#/recipeNoteFilesGetByNoteId"
   /recipes/{id}/notes/{noteId}/files:
     get:
       $ref: "./routes/recipes/notes-files-list.yaml#/notesFilesListRecipes"

@@ -32,6 +32,9 @@ export const useNotesFilesDeleteRecipesMutation = () => {
           "files",
         ],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["recipes", variables.recipeId, "note-files"],
+      });
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
     },
   });

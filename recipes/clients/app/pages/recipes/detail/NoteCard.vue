@@ -13,8 +13,8 @@
           <v-btn
             size="small"
             variant="text"
-            :disabled="noteFlow.updateMutation.isPending.value"
-            @click="noteFlow.startEditNote(note)"
+            :disabled="notesFlow.updateMutation.isPending.value"
+            @click="notesFlow.startEditNote(note)"
           >
             {{ t(strings.edit_note) }}
           </v-btn>
@@ -22,14 +22,14 @@
             size="small"
             variant="text"
             color="error"
-            :disabled="noteFlow.deleteMutation.isPending.value"
-            @click="noteFlow.confirmDeleteNote(note)"
+            :disabled="notesFlow.deleteMutation.isPending.value"
+            @click="notesFlow.confirmDeleteNote(note)"
           >
             {{ t(strings.delete_note) }}
           </v-btn>
         </template>
       </div>
-      <template v-if="noteFlow.editingNoteId?.value === note.id">
+      <template v-if="notesFlow.editingNoteId?.value === note.id">
         <v-textarea
           v-model="editBodyModel"
           :placeholder="t(strings.note_body_placeholder)"
@@ -43,15 +43,15 @@
           <v-btn
             size="small"
             color="primary"
-            :loading="noteFlow.updateMutation.isPending.value"
-            @click="noteFlow.saveEditNote(note)"
+            :loading="notesFlow.updateMutation.isPending.value"
+            @click="notesFlow.saveEditNote(note)"
           >
             {{ t(strings.save_note) }}
           </v-btn>
           <v-btn
             size="small"
             variant="text"
-            @click="noteFlow.cancelEdit()"
+            @click="notesFlow.cancelEdit()"
           >
             {{ t(strings.cancel) }}
           </v-btn>
@@ -65,19 +65,25 @@
           {{ t(strings.note_files_section) }}
         </p>
         <template v-if="showNotesEdit">
+          <input
+            :ref="(el) => { noteFileFlow.fileInputRef.value = (el as HTMLInputElement) ?? null }"
+            type="file"
+            class="d-none"
+            @change="noteFileFlow.onFileInputChange"
+          />
           <v-btn
             size="small"
             variant="text"
             prepend-icon="mdi-paperclip"
-            @click="noteFileFlow.setUploadTargetAndTrigger(note.id)"
+            @click="setUploadTargetAndTrigger()"
           >
             {{ t(strings.choose_file) }}
           </v-btn>
           <div
-            v-if="noteFileFlow.selectedNoteFile?.value && noteFileFlow.uploadTargetNoteId?.value === note.id"
+            v-if="noteFileFlow.selectedFile?.value && noteFileFlow.uploadTargetNoteId?.value === note.id"
             class="d-flex align-center gap-2 mb-2"
           >
-            <span class="text-body-2">{{ noteFileFlow.selectedNoteFile?.value?.name }}</span>
+            <span class="text-body-2">{{ noteFileFlow.selectedFile?.value?.name }}</span>
             <v-btn
               color="primary"
               size="small"
@@ -116,7 +122,7 @@
                 variant="text"
                 color="error"
                 :disabled="noteFileFlow.deleteMutation.isPending.value"
-                @click="noteFileFlow.confirmDeleteNoteFile(file)"
+                @click="noteFileFlow.confirmDeleteFile(file)"
               >
                 {{ t(strings.delete_file) }}
               </v-btn>
@@ -126,45 +132,77 @@
       </div>
     </v-card-text>
   </v-card>
+
+  <ConfirmDialog
+    v-model="deleteNoteDialogModel"
+    :title="t(detailStrings.delete_note)"
+    :message="t(detailStrings.delete_note_confirm)"
+    :confirm-label="t(detailStrings.delete_note)"
+    :cancel-label="t(detailStrings.cancel)"
+    :loading="notesFlow.deleteMutation.isPending.value"
+    @confirm="notesFlow.doDeleteNote()"
+  />
+
+  <ConfirmDialog
+    v-model="deleteNoteFileDialogModel"
+    :title="t(detailStrings.delete_file)"
+    :message="t(detailStrings.delete_file_confirm)"
+    :confirm-label="t(detailStrings.delete_file)"
+    :cancel-label="t(detailStrings.cancel)"
+    :loading="noteFileFlow.deleteMutation.isPending.value"
+    @confirm="noteFileFlow.doDeleteFile()"
+  />
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
 import { computed } from "vue";
 import type { RecipeNote, RecipeNoteFileInfo } from "@sderickson/recipes-spec";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { note_card as strings } from "./NoteCard.strings.ts";
+import { recipes_detail_page as detailStrings } from "./Detail.strings.ts";
 import { formatVersionDate } from "./Detail.logic.ts";
+import { useDetailNotesFlow } from "./useDetailNotesFlow.ts";
+import { useDetailNoteFilesFlow } from "./useDetailNoteFilesFlow.ts";
+import ConfirmDialog from "./ConfirmDialog.vue";
 
 const props = defineProps<{
+  recipeId: string;
+  latestVersionId: string | undefined;
   note: RecipeNote;
   files: RecipeNoteFileInfo[];
   showNotesEdit: boolean;
-  noteFlow: {
-    editingNoteId: Ref<string | null>;
-    editBody: Ref<string>;
-    updateMutation: { isPending: { value: boolean } };
-    deleteMutation: { isPending: { value: boolean } };
-    startEditNote: (note: RecipeNote) => void;
-    saveEditNote: (note: RecipeNote) => void;
-    cancelEdit: () => void;
-    confirmDeleteNote: (note: RecipeNote) => void;
-  };
-  noteFileFlow: {
-    selectedNoteFile: Ref<File | null>;
-    uploadTargetNoteId: Ref<string | null>;
-    uploadMutation: { isPending: { value: boolean } };
-    deleteMutation: { isPending: { value: boolean } };
-    setUploadTargetAndTrigger: (noteId: string) => void;
-    submitUploadFile: () => void;
-    confirmDeleteNoteFile: (file: RecipeNoteFileInfo) => void;
-  };
 }>();
 
+const notesFlow = useDetailNotesFlow(
+  computed(() => props.recipeId),
+  computed(() => props.latestVersionId),
+);
+
+const noteFileFlow = useDetailNoteFilesFlow(computed(() => props.recipeId));
+
+function setUploadTargetAndTrigger() {
+  noteFileFlow.setUploadTargetNote(props.note.id);
+  noteFileFlow.triggerFileInputClick();
+}
+
 const editBodyModel = computed({
-  get: () => props.noteFlow.editBody.value,
+  get: () => notesFlow.editBody.value,
   set: (v: string) => {
-    props.noteFlow.editBody.value = v;
+    notesFlow.editBody.value = v;
+  },
+});
+
+const deleteNoteDialogModel = computed({
+  get: () => notesFlow.deleteDialogOpen.value,
+  set: (v: boolean) => {
+    notesFlow.deleteDialogOpen.value = v;
+  },
+});
+
+const deleteNoteFileDialogModel = computed({
+  get: () => noteFileFlow.deleteNoteFileDialogOpen.value,
+  set: (v: boolean) => {
+    noteFileFlow.deleteNoteFileDialogOpen.value = v;
   },
 });
 
