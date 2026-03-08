@@ -3,6 +3,7 @@ import { createScopedMiddleware, uploadToDiskOptions } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+// import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.ts";
 import { createRecipeHandler } from "./create.ts";
 import { deleteRecipeHandler } from "./delete.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.ts";
@@ -13,6 +14,7 @@ import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
 import { notesCreateRecipesHandler } from "./notes-create.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.ts";
+import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.ts";
 import { notesFilesListRecipesHandler } from "./notes-files-list.ts";
 import { notesFilesUploadRecipesHandler } from "./notes-files-upload.ts";
 import { notesListRecipesHandler } from "./notes-list.ts";
@@ -45,6 +47,10 @@ export const createRecipesRouter = () => {
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
   router.get("/recipes/:id/notes/:noteId/files", notesFilesListRecipesHandler);
   router.post("/recipes/:id/notes/:noteId/files", notesFilesUploadRecipesHandler);
+  router.delete(
+    "/recipes/:id/notes/:noteId/files/:fileId",
+    notesFilesDeleteRecipesHandler,
+  );
   router.put("/recipes/:id/notes/:noteId", notesUpdateRecipesHandler);
   router.delete("/recipes/:id/notes/:noteId", notesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);

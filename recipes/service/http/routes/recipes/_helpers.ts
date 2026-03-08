@@ -228,3 +228,10 @@ export function deleteFileResultToFilesDeleteRecipesResponse(
 ): void {
   // 204 No Content - no body to map
 }
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteNoteFileResultToNotesFilesDeleteRecipesResponse(
+  _row: RecipeNoteFileEntity,
+): void {
+  // 204 No Content - no body to map
+}
