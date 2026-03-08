@@ -11,7 +11,7 @@ export interface RecipesServiceContext {
   /** Container for recipe file blobs (upload, delete, read). */
   // BEGIN SORTED WORKFLOW AREA storeProperties FOR service/add-store
   recipesFileContainer: ObjectStore;
-  // END SORTED WORKFLOW AREA
+  // END WORKFLOW AREA
 }
 
 export const recipesServiceStorage =
@@ -21,7 +21,7 @@ export interface RecipesServiceContextOptions {
   recipesDbKey?: DbKey;
   // BEGIN SORTED WORKFLOW AREA storeOptions FOR service/add-store
   recipesFileContainer?: ObjectStore;
-  // END SORTED WORKFLOW AREA
+  // END WORKFLOW AREA
 }
 
 export const makeContext = (
@@ -40,6 +40,6 @@ export const makeContext = (
     recipesDbKey: dbKey,
     // BEGIN SORTED WORKFLOW AREA storeReturn FOR service/add-store
     recipesFileContainer,
-    // END SORTED WORKFLOW AREA
+    // END WORKFLOW AREA
   };
 };
