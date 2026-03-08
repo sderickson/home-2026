@@ -164,6 +164,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/notes/{noteId}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all files for a recipe note. */
+        get: operations["notesFilesListRecipes"];
+        put?: never;
+        /** Upload a new file for a recipe note (multiple files allowed). Admin only. */
+        post: operations["notesFilesUploadRecipes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/notes/{noteId}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove one file from a recipe note. Admin only. */
+        delete: operations["notesFilesDeleteRecipes"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/notes/{noteId}/files/{fileId}/blob": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Serve recipe note file binary (blob). */
+        get: operations["notesFilesDownloadRecipes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -174,6 +226,7 @@ export interface components {
         RecipeVersion: components["schemas"]["recipe-version"];
         RecipeNote: components["schemas"]["recipe-note"];
         RecipeFileInfo: components["schemas"]["recipe-file-info"];
+        RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
         recipe: {
             /**
              * Format: uuid
@@ -501,6 +554,65 @@ export interface components {
              * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl?: string;
+        };
+        /** @description Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
+        "recipe-note-file-info": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the file record
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Id of the recipe note this file is attached to
+             * @example b2c3d4e5-f90c-23e4-b567-537725285002
+             */
+            recipeNoteId: string;
+            /**
+             * @description Storage blob name (Azure) for the file
+             * @example recipe-notes/b2c3d4e5-f90c-23e4-b567-537725285002/123e4567-e89b-12d3-a456-426614174000.pdf
+             */
+            blobName: string;
+            /**
+             * @description Original filename as provided on upload
+             * @example attempt-photo.pdf
+             */
+            fileOriginalName: string;
+            /**
+             * @description MIME type of the file
+             * @example application/pdf
+             */
+            mimetype: string;
+            /**
+             * @description File size in bytes
+             * @example 102400
+             */
+            size: number;
+            /**
+             * Format: date-time
+             * @description When the file was uploaded
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When the file metadata was last updated
+             * @example 2023-01-15T14:30:00Z
+             */
+            updatedAt: string;
+            /**
+             * Format: uuid
+             * @description User id of the uploader (optional)
+             * @example a1b2c3d4-e89b-12d3-a456-426614174001
+             */
+            uploadedBy?: string | null;
+            /**
+             * Format: uri
+             * @description Full URL to download or view the file (API base + /recipes/:id/notes/:noteId/files/:fileId/blob)
+             * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/notes/b2c3d4e5-f90c-23e4-b567-537725285002/files/123e4567-e89b-12d3-a456-426614174000/blob
+             */
+            downloadUrl: string;
         };
         login: {
             /** @enum {string} */
@@ -1265,6 +1377,208 @@ export interface operations {
                 /** @description Recipe id */
                 id: string;
                 /** @description Recipe file id */
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File binary content. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesFilesListRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Recipe note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All files for the note. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note-file-info"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesFilesUploadRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Recipe note id */
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description The file to upload (stored in Azure).
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created recipe note file metadata. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note-file-info"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesFilesDeleteRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Recipe note id */
+                noteId: string;
+                /** @description Recipe note file id to remove */
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description File removed from recipe note. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    notesFilesDownloadRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+                /** @description Recipe note id */
+                noteId: string;
+                /** @description Recipe note file id */
                 fileId: string;
             };
             cookie?: never;

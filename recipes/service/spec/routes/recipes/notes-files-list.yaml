@@ -1,0 +1,38 @@
+notesFilesListRecipes:
+  summary: "List all files for a recipe note."
+  operationId: "notesFilesListRecipes"
+  tags:
+    - "no-auth"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe id"
+    - name: "noteId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: "Recipe note id"
+
+  responses:
+    "200":
+      description: "All files for the note."
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../schemas/recipe-note-file-info.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

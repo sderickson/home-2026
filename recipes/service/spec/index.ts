@@ -18,6 +18,7 @@ export type ProductEvent = components["schemas"]["ProductEvent"];
 export type Recipe = components["schemas"]["Recipe"];
 export type RecipeFileInfo = components["schemas"]["RecipeFileInfo"];
 export type RecipeNote = components["schemas"]["RecipeNote"];
+export type RecipeNoteFileInfo = components["schemas"]["RecipeNoteFileInfo"];
 export type RecipeVersion = components["schemas"]["RecipeVersion"];
 // END WORKFLOW AREA
 

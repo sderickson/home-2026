@@ -3,16 +3,21 @@ import { createScopedMiddleware, uploadToDiskOptions } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+// import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.ts";
 import { createRecipeHandler } from "./create.ts";
-import { filesDownloadRecipesHandler } from "./files-download.ts";
 import { deleteRecipeHandler } from "./delete.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.ts";
+import { filesDownloadRecipesHandler } from "./files-download.ts";
 import { filesListRecipesHandler } from "./files-list.ts";
 import { filesUploadRecipesHandler } from "./files-upload.ts";
 import { getRecipeHandler } from "./get.ts";
 import { listRecipesHandler } from "./list.ts";
 import { notesCreateRecipesHandler } from "./notes-create.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.ts";
+import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.ts";
+import { notesFilesDownloadRecipesHandler } from "./notes-files-download.ts";
+import { notesFilesListRecipesHandler } from "./notes-files-list.ts";
+import { notesFilesUploadRecipesHandler } from "./notes-files-upload.ts";
 import { notesListRecipesHandler } from "./notes-list.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.ts";
 import { updateRecipeHandler } from "./update.ts";
@@ -41,6 +46,16 @@ export const createRecipesRouter = () => {
   router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/notes", notesListRecipesHandler);
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
+  router.get("/recipes/:id/notes/:noteId/files", notesFilesListRecipesHandler);
+  router.post("/recipes/:id/notes/:noteId/files", notesFilesUploadRecipesHandler);
+  router.get(
+    "/recipes/:id/notes/:noteId/files/:fileId/blob",
+    notesFilesDownloadRecipesHandler,
+  );
+  router.delete(
+    "/recipes/:id/notes/:noteId/files/:fileId",
+    notesFilesDeleteRecipesHandler,
+  );
   router.put("/recipes/:id/notes/:noteId", notesUpdateRecipesHandler);
   router.delete("/recipes/:id/notes/:noteId", notesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);

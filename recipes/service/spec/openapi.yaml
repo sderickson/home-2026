@@ -47,6 +47,17 @@ paths:
   /recipes/{id}/files/{fileId}/blob:
     get:
       $ref: "./routes/recipes/files-download.yaml#/filesDownloadRecipes"
+  /recipes/{id}/notes/{noteId}/files:
+    get:
+      $ref: "./routes/recipes/notes-files-list.yaml#/notesFilesListRecipes"
+    post:
+      $ref: "./routes/recipes/notes-files-upload.yaml#/notesFilesUploadRecipes"
+  /recipes/{id}/notes/{noteId}/files/{fileId}:
+    delete:
+      $ref: "./routes/recipes/notes-files-delete.yaml#/notesFilesDeleteRecipes"
+  /recipes/{id}/notes/{noteId}/files/{fileId}/blob:
+    get:
+      $ref: "./routes/recipes/notes-files-download.yaml#/notesFilesDownloadRecipes"
   # END WORKFLOW AREA
 
 components:
@@ -65,4 +76,6 @@ components:
       $ref: "./schemas/recipe-note.yaml"
     RecipeFileInfo:
       $ref: "./schemas/recipe-file-info.yaml"
+    RecipeNoteFileInfo:
+      $ref: "./schemas/recipe-note-file-info.yaml"
     # END WORKFLOW AREA

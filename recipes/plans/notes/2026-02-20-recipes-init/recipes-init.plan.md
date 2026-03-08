@@ -116,17 +116,17 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Packages:** `recipes/service/spec`, `recipes/service/db`, `recipes/service/http`.
 
-**Goal:** Multiple files per note; list, upload, delete. Same pattern as recipe files.
+**Goal:** Multiple files per note; list, upload, delete, and GET .../files/:fileId/blob to serve file binary. Update _helpers so the note file list mapper includes downloadUrl. Same pattern as recipe files (M3a + blob from M3c).
 
-**Workflow:** `recipes-init-phase-4.workflow.ts` (same as current Phase 4).
+**Workflow:** `recipes-init-phase-4.workflow.ts`.
 
-**Stopping point:** Note file API works.
+**Stopping point:** Note file API works (including blob serve and downloadUrl in list).
 
 ### M4b — Note files frontend
 
 **Packages:** `recipes/service/sdk`, `recipes/clients/app`.
 
-**Goal:** SDK for note files; app recipe detail: manage files per note (list, upload, delete per note). Admin only.
+**Goal:** SDK for note files; app recipe detail: manage files per note (list, upload, delete per note). Use downloadUrl from list for viewing/displaying files. Admin only.
 
 **Workflow:** `recipes-init-m4b-note-files-frontend.workflow.ts`.
 
