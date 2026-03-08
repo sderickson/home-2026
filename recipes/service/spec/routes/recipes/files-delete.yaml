@@ -8,14 +8,12 @@ filesDeleteRecipes:
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe id"
     - name: "fileId"
       in: "path"
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe file id to remove"
 
   responses:

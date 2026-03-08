@@ -3,7 +3,6 @@ type: object
 properties:
   id:
     type: string
-    format: uuid
     description: Unique identifier for the recipe
     example: "123e4567-e89b-12d3-a456-426614174000"
   title:
@@ -25,7 +24,6 @@ properties:
     example: true
   createdBy:
     type: string
-    format: uuid
     description: User id of the creator
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   createdAt:
@@ -35,7 +33,6 @@ properties:
     example: "2023-01-15T14:30:00Z"
   updatedBy:
     type: string
-    format: uuid
     description: User id of the last updater
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   updatedAt:
@@ -45,7 +42,6 @@ properties:
     example: "2023-02-01T09:00:00Z"
   currentVersionId:
     type: string
-    format: uuid
     description: Optional id of the current/latest version for display
     example: "b2c3d4e5-e89b-12d3-a456-426614174002"
 required:

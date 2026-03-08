@@ -8,7 +8,6 @@ filesUploadRecipes:
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe id"
 
   requestBody:

@@ -4,12 +4,10 @@ description: Metadata for one file attached to a recipe. Uses SAF file metadata 
 properties:
   id:
     type: string
-    format: uuid
     description: Unique identifier for the file record
     example: "123e4567-e89b-12d3-a456-426614174000"
   recipeId:
     type: string
-    format: uuid
     description: Id of the recipe this file is attached to
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   blobName:
@@ -41,7 +39,6 @@ properties:
     example: "2023-01-15T14:30:00Z"
   uploadedBy:
     type: string
-    format: uuid
     nullable: true
     description: User id of the uploader (optional)
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"

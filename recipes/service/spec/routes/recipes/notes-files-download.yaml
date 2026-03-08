@@ -8,21 +8,18 @@ notesFilesDownloadRecipes:
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe id"
     - name: "noteId"
       in: "path"
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe note id"
     - name: "fileId"
       in: "path"
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe note file id"
 
   responses:

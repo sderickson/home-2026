@@ -10,14 +10,12 @@ notesFilesListRecipes:
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe id"
     - name: "noteId"
       in: "path"
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe note id"
 
   responses:
