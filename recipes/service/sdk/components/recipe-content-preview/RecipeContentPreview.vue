@@ -1,35 +1,50 @@
 <template>
-  <v-card variant="outlined">
-    <v-card-title v-if="title" class="text-h5">{{ title }}</v-card-title>
-    <v-card-subtitle v-if="shortDescription" class="text-medium-emphasis">
-      {{ shortDescription }}
-    </v-card-subtitle>
-    <v-card-text v-if="longDescription" class="text-body-2 pt-0">
-      {{ longDescription }}
+  <v-card variant="outlined" class="recipe-content-preview">
+    <v-card-text class="pb-0">
+      <h2 v-if="title" class="text-h5 font-weight-bold mb-1">{{ title }}</h2>
+      <p
+        v-if="shortDescription"
+        class="text-medium-emphasis text-body-2 mb-0 mt-0"
+        style="line-height: 1.4"
+      >
+        {{ shortDescription }}
+      </p>
+      <p
+        v-if="longDescription"
+        class="text-body-2 mt-3 mb-0 recipe-content-preview__description"
+      >
+        {{ longDescription }}
+      </p>
     </v-card-text>
 
     <template v-if="content.ingredients.length > 0">
-      <v-divider />
-      <v-card-title class="text-subtitle-1 font-weight-medium">
-        {{ t(strings.ingredients) }}
-      </v-card-title>
-      <v-list density="compact" class="pt-0">
-        <v-list-item
-          v-for="(ing, i) in content.ingredients"
-          :key="i"
-          :title="ingredientLine(ing)"
-          class="text-body-2"
-        />
-      </v-list>
+      <v-divider class="mt-3" />
+      <v-card-text class="py-2">
+        <h3 class="text-subtitle-1 font-weight-medium mb-2">
+          {{ t(strings.ingredients) }}
+        </h3>
+        <ul class="recipe-content-preview__list text-body-2">
+          <li
+            v-for="(ing, i) in content.ingredients"
+            :key="i"
+            class="recipe-content-preview__list-item"
+          >
+            {{ ingredientLine(ing) }}
+          </li>
+        </ul>
+      </v-card-text>
     </template>
 
     <template v-if="content.instructionsMarkdown">
       <v-divider />
-      <v-card-title class="text-subtitle-1 font-weight-medium">
-        {{ t(strings.instructions) }}
-      </v-card-title>
-      <v-card-text class="pt-0 text-body-2">
-        <div v-html="renderedInstructions" />
+      <v-card-text class="py-2">
+        <h3 class="text-subtitle-1 font-weight-medium mb-2">
+          {{ t(strings.instructions) }}
+        </h3>
+        <div
+          class="recipe-content-preview__instructions text-body-2"
+          v-html="renderedInstructions"
+        />
       </v-card-text>
     </template>
   </v-card>
@@ -68,3 +83,54 @@ const renderedInstructions = computed(() =>
     : "",
 );
 </script>
+
+<style scoped>
+.recipe-content-preview__description {
+  line-height: 1.6;
+  color: rgba(var(--v-theme-on-surface), 0.85);
+}
+
+.recipe-content-preview__list,
+.recipe-content-preview__list-item {
+  line-height: 1.6;
+}
+
+/* Hanging indent: markers have their own x space, wraps align with text start */
+.recipe-content-preview__list {
+  padding-inline-start: 2em;
+  margin: 0;
+  list-style-position: outside;
+}
+
+.recipe-content-preview__list-item {
+  margin-bottom: 0.25rem;
+}
+
+.recipe-content-preview__list-item:last-child {
+  margin-bottom: 0;
+}
+
+.recipe-content-preview__instructions :deep(ol) {
+  padding-inline-start: 2em;
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
+  list-style-position: outside;
+}
+
+.recipe-content-preview__instructions :deep(ol li) {
+  margin-bottom: 0.25rem;
+}
+
+.recipe-content-preview__instructions :deep(ol li:last-child) {
+  margin-bottom: 0;
+}
+
+.recipe-content-preview__instructions :deep(p) {
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
+}
+
+.recipe-content-preview__instructions :deep(p:last-child) {
+  margin-bottom: 0;
+}
+</style>
