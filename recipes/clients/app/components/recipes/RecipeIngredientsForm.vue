@@ -1,11 +1,17 @@
 <template>
-  <div class="recipe-ingredients-form">
-    <table class="ingredients-table">
+  <div class="recipe-ingredients-form w-100">
+    <v-table density="compact" class="ingredients-table">
       <thead>
         <tr>
-          <th class="col-quantity">{{ quantityLabel }}</th>
-          <th class="col-unit">{{ unitLabel }}</th>
-          <th class="col-name">{{ nameLabel }}</th>
+          <th class="text-left text-caption font-weight-bold pa-2" style="width: 5rem">
+            {{ t(strings.col_quantity) }}
+          </th>
+          <th class="text-left text-caption font-weight-bold pa-2" style="width: 5rem">
+            {{ t(strings.col_unit) }}
+          </th>
+          <th class="text-left text-caption font-weight-bold pa-2">
+            {{ t(strings.col_food) }}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -16,13 +22,15 @@
           :class="{ 'is-editing': editingIndex === i }"
         >
           <template v-if="editingIndex === i">
-            <td colspan="3" class="edit-cell">
-              <input
+            <td colspan="3" class="pa-0">
+              <v-text-field
                 :ref="(el) => setRowInputRef(i, el)"
                 v-model="editingValue"
-                type="text"
-                class="row-input"
-                :placeholder="rowPlaceholder"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="w-100"
+                :placeholder="t(strings.row_placeholder)"
                 @blur="commitEdit"
                 @keydown.tab="onRowTab($event, i)"
                 @keydown.shift.tab="onRowTab($event, i, true)"
@@ -31,7 +39,8 @@
           </template>
           <template v-else>
             <td
-              class="col-quantity focus-target"
+              class="focus-target text-left pa-2"
+              style="width: 5rem"
               tabindex="0"
               :data-index="i"
               @focus="startEdit(i)"
@@ -42,13 +51,14 @@
               {{ ing.quantity }}
             </td>
             <td
-              class="col-unit"
+              class="text-left pa-2"
+              style="width: 5rem"
               @click="startEdit(i)"
             >
               {{ ing.unit }}
             </td>
             <td
-              class="col-name"
+              class="text-left pa-2"
               @click="startEdit(i)"
             >
               {{ ing.name }}
@@ -56,47 +66,40 @@
           </template>
         </tr>
         <tr class="new-row">
-          <td colspan="3" class="edit-cell">
-            <input
+          <td colspan="3" class="pa-2">
+            <v-text-field
               ref="newRowInputRef"
               v-model="newRowValue"
-              type="text"
-              class="row-input"
-              :placeholder="rowPlaceholder"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="w-100"
+              :placeholder="t(strings.row_placeholder)"
               @keydown.tab="onNewRowTab"
               @keydown.shift.tab="onNewRowShiftTab"
             />
           </td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, nextTick, watch } from "vue";
+import { recipe_ingredients_form as strings } from "./RecipeIngredientsForm.strings.ts";
+import {
+  parseIngredientLine,
+  formatIngredient,
+  type RecipeIngredient,
+} from "./RecipeIngredientsForm.logic.ts";
+import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 
-type RecipeIngredient = {
-  name: string;
-  quantity: string;
-  unit: string;
-};
+const { t } = useReverseT();
 
-const props = withDefaults(
-  defineProps<{
-    modelValue: RecipeIngredient[];
-    rowPlaceholder?: string;
-    quantityLabel?: string;
-    unitLabel?: string;
-    nameLabel?: string;
-  }>(),
-  {
-    rowPlaceholder: "e.g. 2 cups flour",
-    quantityLabel: "Quantity",
-    unitLabel: "Unit",
-    nameLabel: "Food",
-  },
-);
+const props = defineProps<{
+  modelValue: RecipeIngredient[];
+}>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: RecipeIngredient[]];
@@ -119,32 +122,14 @@ function emitList(value: RecipeIngredient[]) {
 const editingIndex = ref<number | null>(null);
 const editingValue = ref("");
 const newRowValue = ref("");
-const rowInputRefs: (HTMLInputElement | null)[] = [];
-const newRowInputRef = ref<HTMLInputElement | null>(null);
+interface Focusable {
+  focus?: () => void;
+}
+const rowInputRefs: (Focusable | null)[] = [];
+const newRowInputRef = ref<Focusable | null>(null);
 
 function setRowInputRef(i: number, el: unknown) {
-  rowInputRefs[i] = el as HTMLInputElement | null;
-}
-
-/**
- * Parse a single line into quantity, unit, and name.
- * First token = quantity, second = unit, rest = name.
- */
-function parseIngredientLine(line: string): RecipeIngredient {
-  const trimmed = line.trim();
-  if (!trimmed) {
-    return { quantity: "", unit: "", name: "" };
-  }
-  const parts = trimmed.split(/\s+/);
-  const quantity = parts[0] ?? "";
-  const unit = parts[1] ?? "";
-  const name = parts.slice(2).join(" ") ?? "";
-  return { quantity, unit, name };
-}
-
-function formatIngredient(ing: RecipeIngredient): string {
-  const parts = [ing.quantity, ing.unit, ing.name].filter(Boolean);
-  return parts.join(" ");
+  rowInputRefs[i] = el as Focusable | null;
 }
 
 function startEdit(i: number) {
@@ -153,7 +138,7 @@ function startEdit(i: number) {
   editingValue.value = ing ? formatIngredient(ing) : "";
   nextTick(() => {
     const input = rowInputRefs[i];
-    input?.focus();
+    input?.focus?.();
   });
 }
 
@@ -178,7 +163,6 @@ function commitEdit() {
 function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
   commitEdit();
   if (shift) {
-    // Shift+Tab: go to previous row or previous focusable
     if (i > 0) {
       e.preventDefault();
       nextTick(() => {
@@ -189,7 +173,6 @@ function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
       });
     }
   } else {
-    // Tab: go to next row or new row
     if (i < list.value.length - 1) {
       e.preventDefault();
       nextTick(() => {
@@ -200,7 +183,7 @@ function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
       });
     } else {
       e.preventDefault();
-      nextTick(() => newRowInputRef.value?.focus());
+      nextTick(() => newRowInputRef.value?.focus?.());
     }
   }
 }
@@ -222,7 +205,7 @@ function onFocusTargetTab(e: KeyboardEvent, i: number, shift?: boolean) {
       ) as HTMLElement | null;
       nextTarget?.focus();
     } else {
-      newRowInputRef.value?.focus();
+      newRowInputRef.value?.focus?.();
     }
   }
 }
@@ -236,9 +219,8 @@ function onNewRowTab(e: KeyboardEvent) {
     list.value = next;
     emitList(next);
     newRowValue.value = "";
-    nextTick(() => newRowInputRef.value?.focus());
+    nextTick(() => newRowInputRef.value?.focus?.());
   }
-  // else: let default tab happen → focus goes to next element (instructions)
 }
 
 function onNewRowShiftTab(e: KeyboardEvent) {
@@ -252,7 +234,6 @@ function onNewRowShiftTab(e: KeyboardEvent) {
   }
 }
 
-// When ingredients list changes (e.g. from parent), clear refs that are out of bounds
 watch(
   () => list.value.length,
   (len, prev) => {
@@ -264,84 +245,11 @@ watch(
 </script>
 
 <style scoped>
-.recipe-ingredients-form {
-  width: 100%;
-}
-
-.ingredients-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.ingredients-table th {
-  text-align: left;
-  padding: 0.25rem 0.5rem;
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: rgba(var(--v-theme-on-surface), 0.7);
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-}
-
-.ingredients-table td {
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  vertical-align: middle;
-}
-
-.col-quantity {
-  width: 5rem;
-}
-
-.col-unit {
-  width: 5rem;
-}
-
-.col-name {
-  min-width: 0;
-}
-
-.ingredient-row:not(.is-editing) .col-quantity,
-.ingredient-row:not(.is-editing) .col-unit,
-.ingredient-row:not(.is-editing) .col-name {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
-.ingredient-row.is-editing .edit-cell {
-  padding: 0;
-}
-
-.focus-target {
+.ingredient-row:not(.is-editing) .focus-target {
+  cursor: pointer;
   outline: none;
-  cursor: text;
 }
-
 .ingredient-row:not(.is-editing) td {
   cursor: pointer;
-}
-
-.row-input {
-  width: 100%;
-  padding: 0.375rem 0.5rem;
-  font: inherit;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.38);
-  border-radius: 4px;
-  background: rgb(var(--v-theme-surface));
-  color: rgb(var(--v-theme-on-surface));
-  box-sizing: border-box;
-}
-
-.row-input:focus {
-  border-color: rgb(var(--v-theme-primary));
-  outline: none;
-}
-
-.row-input::placeholder {
-  color: rgba(var(--v-theme-on-surface), 0.5);
-}
-
-.new-row .edit-cell {
-  padding: 0.25rem 0;
-  border-bottom: none;
 }
 </style>

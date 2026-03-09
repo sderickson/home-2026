@@ -34,10 +34,6 @@
       <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
       <RecipeIngredientsForm
         :model-value="content().ingredients ?? []"
-        :row-placeholder="t(strings.ingredient_row_placeholder)"
-        :quantity-label="t(strings.ingredient_col_quantity)"
-        :unit-label="t(strings.ingredient_col_unit)"
-        :name-label="t(strings.ingredient_col_food)"
         @update:model-value="setIngredients"
       />
     </div>
