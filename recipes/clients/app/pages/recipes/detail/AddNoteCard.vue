@@ -5,7 +5,7 @@
     </v-card-title>
     <v-card-text>
       <v-textarea
-        v-model="notesFlow.newNoteBody"
+        v-model="newNoteBodyModel"
         :placeholder="t(strings.note_body_placeholder)"
         rows="3"
         variant="outlined"
@@ -40,6 +40,13 @@ const notesFlow = useDetailNotesFlow(
   computed(() => props.recipeId),
   computed(() => props.latestVersionId),
 );
+
+const newNoteBodyModel = computed({
+  get: () => notesFlow.newNoteBody.value,
+  set: (v: string) => {
+    notesFlow.newNoteBody.value = v;
+  },
+});
 
 const { t } = useReverseT();
 
