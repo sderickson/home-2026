@@ -32,7 +32,9 @@ describe("listRecipeNoteFilesByRecipeId", () => {
       updatedBy: seedUserId,
       updatedAt: now,
     });
-    const { result } = await listRecipeNoteFilesByRecipeId(dbKey, { recipeId: "r1" });
+    const { result } = await listRecipeNoteFilesByRecipeId(dbKey, {
+      recipeId: "r1",
+    });
     expect(result).toEqual([]);
   });
 
@@ -100,8 +102,10 @@ describe("listRecipeNoteFilesByRecipeId", () => {
       },
     ]);
 
-    const { result } = await listRecipeNoteFilesByRecipeId(dbKey, { recipeId: "r1" });
+    const { result } = await listRecipeNoteFilesByRecipeId(dbKey, {
+      recipeId: "r1",
+    });
     expect(result).toHaveLength(2);
-    expect(result.map((f) => f.id).sort()).toEqual(["f1", "f2"]);
+    expect(result!.map((f) => f.id).sort()).toEqual(["f1", "f2"]);
   });
 });
