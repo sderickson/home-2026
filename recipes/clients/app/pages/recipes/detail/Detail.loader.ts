@@ -3,6 +3,7 @@ import {
   getRecipeQuery,
   listRecipeVersionsQuery,
   notesListRecipesQuery,
+  recipeNoteFilesGetByNoteIdQuery,
 } from "@sderickson/recipes-sdk";
 import { getProfile } from "@saflib/auth";
 import { useQuery } from "@tanstack/vue-query";
@@ -18,5 +19,6 @@ export function useDetailLoader() {
     versionsQuery: useQuery(listRecipeVersionsQuery(id)),
     notesQuery: useQuery(notesListRecipesQuery(id)),
     filesQuery: useQuery(filesListRecipesQuery(id)),
+    noteFilesByRecipeQuery: useQuery(recipeNoteFilesGetByNoteIdQuery(id)),
   };
 }

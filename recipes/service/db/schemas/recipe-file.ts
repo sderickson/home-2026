@@ -1,6 +1,6 @@
 import { index, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
-import { fileMetadataColumns, type FileMetadataFields } from "@saflib/drizzle";
+import { fileMetadataColumns, generateShortId, type FileMetadataFields } from "@saflib/drizzle";
 import { recipe } from "./recipe.ts";
 
 export interface RecipeFileEntity extends FileMetadataFields {
@@ -14,7 +14,7 @@ export const recipeFile = sqliteTable(
   {
     id: text("id")
       .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
+      .$defaultFn(() => generateShortId()),
     recipe_id: text("recipe_id")
       .notNull()
       .references(() => recipe.id),

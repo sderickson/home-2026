@@ -17,6 +17,7 @@ import { notesDeleteRecipesHandler } from "./notes-delete.ts";
 import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.ts";
 import { notesFilesDownloadRecipesHandler } from "./notes-files-download.ts";
 import { notesFilesListRecipesHandler } from "./notes-files-list.ts";
+import { recipeNoteFilesGetByNoteIdHandler } from "./notes-files-list-by-recipe.ts";
 import { notesFilesUploadRecipesHandler } from "./notes-files-upload.ts";
 import { notesListRecipesHandler } from "./notes-list.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.ts";
@@ -46,6 +47,7 @@ export const createRecipesRouter = () => {
   router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/notes", notesListRecipesHandler);
   router.post("/recipes/:id/notes", notesCreateRecipesHandler);
+  router.get("/recipes/:id/note-files", recipeNoteFilesGetByNoteIdHandler);
   router.get("/recipes/:id/notes/:noteId/files", notesFilesListRecipesHandler);
   router.post("/recipes/:id/notes/:noteId/files", notesFilesUploadRecipesHandler);
   router.get(

@@ -2,6 +2,8 @@
 import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
+import { recipeNoteFilesGetByNoteIdHandler } from "./note-files-by-recipe.fake.ts";
+import { notesFilesListRecipesHandler } from "./notes-files-list.fake.ts";
 import { notesListRecipesHandler } from "./notes-list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // END WORKFLOW AREA
@@ -13,6 +15,8 @@ import { filesDeleteRecipesHandler } from "./files-delete.fake.ts";
 import { filesUploadRecipesHandler } from "./files-upload.fake.ts";
 import { notesCreateRecipesHandler } from "./notes-create.fake.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.fake.ts";
+import { notesFilesDeleteRecipesHandler } from "./notes-files-delete.fake.ts";
+import { notesFilesUploadRecipesHandler } from "./notes-files-upload.fake.ts";
 import { notesUpdateRecipesHandler } from "./notes-update.fake.ts";
 import { updateRecipesHandler } from "./update.fake.ts";
 import { versionsCreateRecipesHandler } from "./versions-create.fake.ts";
@@ -25,7 +29,9 @@ export const recipesFakeHandlers = [
   filesListRecipesHandler,
   getRecipeHandler,
   listRecipesHandler,
+  notesFilesListRecipesHandler,
   notesListRecipesHandler,
+  recipeNoteFilesGetByNoteIdHandler,
   versionsListRecipesHandler,
   // END WORKFLOW AREA
 
@@ -36,6 +42,8 @@ export const recipesFakeHandlers = [
   filesUploadRecipesHandler,
   notesCreateRecipesHandler,
   notesDeleteRecipesHandler,
+  notesFilesDeleteRecipesHandler,
+  notesFilesUploadRecipesHandler,
   notesUpdateRecipesHandler,
   updateRecipesHandler,
   versionsCreateRecipesHandler,

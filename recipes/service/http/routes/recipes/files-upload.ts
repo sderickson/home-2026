@@ -6,6 +6,7 @@ import { getSafContextWithAuth } from "@saflib/node";
 import { Readable } from "stream";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import {
+  generateShortId,
   recipeQueries,
   recipeFileQueries,
   RecipeNotFoundError,
@@ -48,8 +49,8 @@ export const filesUploadRecipesHandler = createHandler(
       }
     }
 
-    const pathUuid = crypto.randomUUID();
-    const blob_name = `recipes/${id}/${pathUuid}`;
+    const pathId = generateShortId();
+    const blob_name = `recipes/${id}/${pathId}`;
 
     const insertOut = await recipeFileQueries.insertRecipeFile(recipesDbKey, {
       recipe_id: id,

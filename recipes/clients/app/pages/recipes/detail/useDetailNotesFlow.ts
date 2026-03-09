@@ -53,6 +53,10 @@ export function useDetailNotesFlow(
     editingNoteId.value = null;
   }
 
+  function cancelEdit() {
+    editingNoteId.value = null;
+  }
+
   function confirmDeleteNote(note: RecipeNote) {
     noteToDelete.value = note;
     deleteDialogOpen.value = true;
@@ -80,6 +84,7 @@ export function useDetailNotesFlow(
     submitNewNote,
     startEditNote,
     saveEditNote,
+    cancelEdit,
     confirmDeleteNote,
     doDeleteNote,
   };

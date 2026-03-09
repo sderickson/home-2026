@@ -1,3 +1,4 @@
+import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
 import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
 
@@ -11,7 +12,7 @@ export const versionsCreateRecipesHandler = recipesHandler({
     const recipe = mockRecipes.find((r) => r.id === params.id);
     if (!recipe || !body) return undefined;
     const now = new Date().toISOString();
-    const versionId = crypto.randomUUID();
+    const versionId = generateShortId();
     for (const v of mockRecipeVersions) {
       if (v.recipeId === params.id) v.isLatest = false;
     }

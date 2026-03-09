@@ -4,17 +4,14 @@ type: object
 properties:
   id:
     type: string
-    format: uuid
     description: Unique identifier for the note
     example: "123e4567-e89b-12d3-a456-426614174000"
   recipeId:
     type: string
-    format: uuid
     description: Id of the recipe this note belongs to
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   recipeVersionId:
     type: string
-    format: uuid
     nullable: true
     description: Optional id of the recipe version this note is linked to (e.g. when written with a change)
     example: "b2c3d4e5-e89b-12d3-a456-426614174002"
@@ -28,7 +25,6 @@ properties:
     example: false
   createdBy:
     type: string
-    format: uuid
     description: User id of the creator
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   createdAt:
@@ -38,7 +34,6 @@ properties:
     example: "2023-01-15T14:30:00Z"
   updatedBy:
     type: string
-    format: uuid
     description: User id of the last updater
     example: "a1b2c3d4-e89b-12d3-a456-426614174001"
   updatedAt:

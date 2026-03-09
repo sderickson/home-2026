@@ -134,8 +134,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -198,8 +197,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -286,8 +284,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -342,8 +339,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -383,8 +379,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -454,8 +449,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -528,8 +522,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -569,8 +562,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -651,8 +643,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -661,8 +652,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Note id"
           }
@@ -741,8 +731,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -751,8 +740,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Note id"
           }
@@ -807,8 +795,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -848,8 +835,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           }
@@ -928,8 +914,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -938,8 +923,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe file id to remove"
           }
@@ -991,8 +975,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -1001,8 +984,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe file id"
           }
@@ -1052,6 +1034,51 @@
         }
       }
     },
+    "/recipes/{id}/note-files": {
+      "get": {
+        "summary": "List all note files for a recipe (one request for the detail page).",
+        "operationId": "recipeNoteFilesGetByNoteId",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All note files for the recipe (each item has recipeNoteId).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/recipe-note-file-info"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recipes/{id}/notes/{noteId}/files": {
       "get": {
         "summary": "List all files for a recipe note.",
@@ -1065,8 +1092,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -1075,8 +1101,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note id"
           }
@@ -1116,8 +1141,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -1126,8 +1150,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note id"
           }
@@ -1206,8 +1229,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -1216,8 +1238,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note id"
           },
@@ -1226,8 +1247,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note file id to remove"
           }
@@ -1279,8 +1299,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe id"
           },
@@ -1289,8 +1308,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note id"
           },
@@ -1299,8 +1317,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "description": "Recipe note file id"
           }
@@ -1379,7 +1396,6 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
             "description": "Unique identifier for the recipe",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
@@ -1406,7 +1422,6 @@
           },
           "createdBy": {
             "type": "string",
-            "format": "uuid",
             "description": "User id of the creator",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1418,7 +1433,6 @@
           },
           "updatedBy": {
             "type": "string",
-            "format": "uuid",
             "description": "User id of the last updater",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1430,7 +1444,6 @@
           },
           "currentVersionId": {
             "type": "string",
-            "format": "uuid",
             "description": "Optional id of the current/latest version for display",
             "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
           }
@@ -1517,13 +1530,11 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
             "description": "Unique identifier for this recipe version",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "recipeId": {
             "type": "string",
-            "format": "uuid",
             "description": "Id of the recipe this version belongs to",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1600,7 +1611,6 @@
           },
           "createdBy": {
             "type": "string",
-            "format": "uuid",
             "description": "User id of the creator of this version",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1639,19 +1649,16 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
             "description": "Unique identifier for the note",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "recipeId": {
             "type": "string",
-            "format": "uuid",
             "description": "Id of the recipe this note belongs to",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
           "recipeVersionId": {
             "type": "string",
-            "format": "uuid",
             "nullable": true,
             "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
             "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
@@ -1668,7 +1675,6 @@
           },
           "createdBy": {
             "type": "string",
-            "format": "uuid",
             "description": "User id of the creator",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1680,7 +1686,6 @@
           },
           "updatedBy": {
             "type": "string",
-            "format": "uuid",
             "description": "User id of the last updater",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1709,7 +1714,6 @@
       },
       "recipeVersionId": {
         "type": "string",
-        "format": "uuid",
         "nullable": true,
         "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
         "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
@@ -1720,13 +1724,11 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
             "description": "Unique identifier for the file record",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "recipeId": {
             "type": "string",
-            "format": "uuid",
             "description": "Id of the recipe this file is attached to",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
           },
@@ -1765,7 +1767,6 @@
           },
           "uploadedBy": {
             "type": "string",
-            "format": "uuid",
             "nullable": true,
             "description": "User id of the uploader (optional)",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
@@ -1794,13 +1795,11 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
             "description": "Unique identifier for the file record",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "recipeNoteId": {
             "type": "string",
-            "format": "uuid",
             "description": "Id of the recipe note this file is attached to",
             "example": "b2c3d4e5-f90c-23e4-b567-537725285002"
           },
@@ -1839,7 +1838,6 @@
           },
           "uploadedBy": {
             "type": "string",
-            "format": "uuid",
             "nullable": true,
             "description": "User id of the uploader (optional)",
             "example": "a1b2c3d4-e89b-12d3-a456-426614174001"

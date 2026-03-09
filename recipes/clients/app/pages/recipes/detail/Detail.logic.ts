@@ -1,4 +1,8 @@
-import type { RecipeNote, RecipeVersion } from "@sderickson/recipes-spec";
+import type {
+  RecipeNote,
+  RecipeNoteFileInfo,
+  RecipeVersion,
+} from "@sderickson/recipes-spec";
 
 /**
  * Asserts that recipe detail data is loaded. The Async component only renders the page
@@ -43,6 +47,15 @@ export function assertNotesLoaded(data: unknown): asserts data {
 export function assertFilesLoaded(data: unknown): asserts data {
   if (data === undefined || data === null) {
     throw new Error("Failed to load recipe files");
+  }
+}
+
+/**
+ * Asserts that note files by recipe (single request) data is loaded.
+ */
+export function assertNoteFilesByRecipeLoaded(data: unknown): asserts data {
+  if (data === undefined || data === null) {
+    throw new Error("Failed to load note files");
   }
 }
 
@@ -95,4 +108,48 @@ export function getVersionById(
   id: string,
 ): RecipeVersion | undefined {
   return versions.find((v) => v.id === id);
+}
+
+/**
+ * Returns notes that belong to the given version (recipeVersionId match),
+ * newest first (by createdAt).
+ */
+export function notesForLatestVersion(
+  notes: RecipeNote[],
+  currentVersionId: string | undefined,
+): RecipeNote[] {
+  if (!currentVersionId) return [];
+  return [...notes]
+    .filter((n) => n.recipeVersionId === currentVersionId)
+    .reverse();
+}
+
+/**
+ * Builds a map from note id to that note's files, given notes and the
+ * parallel array of note-files query results (same order as notes).
+ */
+export function buildNoteIdToFilesMap(
+  notes: Array<{ id: string }>,
+  noteFilesResults: Array<{ data?: RecipeNoteFileInfo[] } | undefined>,
+): Map<string, RecipeNoteFileInfo[]> {
+  const map = new Map<string, RecipeNoteFileInfo[]>();
+  for (let i = 0; i < notes.length; i++) {
+    map.set(notes[i].id, (noteFilesResults[i]?.data ?? []) as RecipeNoteFileInfo[]);
+  }
+  return map;
+}
+
+/**
+ * Groups a flat list of note files by recipeNoteId (e.g. from GET /recipes/:id/note-files).
+ */
+export function groupNoteFilesByNoteId(
+  files: RecipeNoteFileInfo[],
+): Map<string, RecipeNoteFileInfo[]> {
+  const map = new Map<string, RecipeNoteFileInfo[]>();
+  for (const f of files) {
+    const arr = map.get(f.recipeNoteId) ?? [];
+    arr.push(f);
+    map.set(f.recipeNoteId, arr);
+  }
+  return map;
 }

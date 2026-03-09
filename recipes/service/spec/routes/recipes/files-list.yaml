@@ -10,7 +10,6 @@ filesListRecipes:
       required: true
       schema:
         type: string
-        format: uuid
       description: "Recipe id"
 
   responses:

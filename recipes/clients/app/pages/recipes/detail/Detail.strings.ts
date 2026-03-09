@@ -32,6 +32,8 @@ export const recipes_detail_page = {
   choose_file: "Choose file",
   delete_file: "Remove file",
   delete_file_confirm: "Remove this file from the recipe?",
+  note_files_section: "Files",
+  note_no_files: "No files attached.",
 };
 
 export { recipes_detail_page as recipes_detail };

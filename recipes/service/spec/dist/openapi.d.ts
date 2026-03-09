@@ -164,6 +164,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/note-files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all note files for a recipe (one request for the detail page). */
+        get: operations["recipeNoteFilesGetByNoteId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes/{id}/notes/{noteId}/files": {
         parameters: {
             query?: never;
@@ -229,7 +246,6 @@ export interface components {
         RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
         recipe: {
             /**
-             * Format: uuid
              * @description Unique identifier for the recipe
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
@@ -255,7 +271,6 @@ export interface components {
              */
             isPublic: boolean;
             /**
-             * Format: uuid
              * @description User id of the creator
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -267,7 +282,6 @@ export interface components {
              */
             createdAt: string;
             /**
-             * Format: uuid
              * @description User id of the last updater
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -279,7 +293,6 @@ export interface components {
              */
             updatedAt: string;
             /**
-             * Format: uuid
              * @description Optional id of the current/latest version for display
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
              */
@@ -340,13 +353,11 @@ export interface components {
         };
         "recipe-version": {
             /**
-             * Format: uuid
              * @description Unique identifier for this recipe version
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             id: string;
             /**
-             * Format: uuid
              * @description Id of the recipe this version belongs to
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -410,7 +421,6 @@ export interface components {
              */
             isLatest: boolean;
             /**
-             * Format: uuid
              * @description User id of the creator of this version
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -433,19 +443,16 @@ export interface components {
         };
         "recipe-note": {
             /**
-             * Format: uuid
              * @description Unique identifier for the note
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             id: string;
             /**
-             * Format: uuid
              * @description Id of the recipe this note belongs to
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
             recipeId: string;
             /**
-             * Format: uuid
              * @description Optional id of the recipe version this note is linked to (e.g. when written with a change)
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
              */
@@ -461,7 +468,6 @@ export interface components {
              */
             everEdited: boolean;
             /**
-             * Format: uuid
              * @description User id of the creator
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -473,7 +479,6 @@ export interface components {
              */
             createdAt: string;
             /**
-             * Format: uuid
              * @description User id of the last updater
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -491,7 +496,6 @@ export interface components {
          */
         body: string;
         /**
-         * Format: uuid
          * @description Optional id of the recipe version this note is linked to (e.g. when written with a change)
          * @example b2c3d4e5-e89b-12d3-a456-426614174002
          */
@@ -499,13 +503,11 @@ export interface components {
         /** @description Metadata for one file attached to a recipe. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
         "recipe-file-info": {
             /**
-             * Format: uuid
              * @description Unique identifier for the file record
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             id: string;
             /**
-             * Format: uuid
              * @description Id of the recipe this file is attached to
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -543,7 +545,6 @@ export interface components {
              */
             updatedAt: string;
             /**
-             * Format: uuid
              * @description User id of the uploader (optional)
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -558,13 +559,11 @@ export interface components {
         /** @description Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
         "recipe-note-file-info": {
             /**
-             * Format: uuid
              * @description Unique identifier for the file record
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             id: string;
             /**
-             * Format: uuid
              * @description Id of the recipe note this file is attached to
              * @example b2c3d4e5-f90c-23e4-b567-537725285002
              */
@@ -602,7 +601,6 @@ export interface components {
              */
             updatedAt: string;
             /**
-             * Format: uuid
              * @description User id of the uploader (optional)
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
              */
@@ -1408,6 +1406,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    recipeNoteFilesGetByNoteId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All note files for the recipe (each item has recipeNoteId). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-note-file-info"][];
                 };
             };
             /** @description Not Found */
