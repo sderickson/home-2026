@@ -34,6 +34,9 @@
                 @blur="commitEdit"
                 @keydown.tab="onRowTab($event, i)"
                 @keydown.shift.tab="onRowTab($event, i, true)"
+                @keydown.enter="onRowEnter($event, i)"
+                @keydown.shift.enter="onRowEnter($event, i, true)"
+                @keydown.escape="cancelEdit"
               />
             </td>
           </template>
@@ -45,8 +48,6 @@
               :data-index="i"
               @focus="startEdit(i)"
               @click="startEdit(i)"
-              @keydown.tab="onFocusTargetTab($event, i)"
-              @keydown.shift.tab="onFocusTargetTab($event, i, true)"
             >
               {{ ing.quantity }}
             </td>
@@ -77,6 +78,8 @@
               :placeholder="t(strings.row_placeholder)"
               @keydown.tab="onNewRowTab"
               @keydown.shift.tab="onNewRowShiftTab"
+              @keydown.enter="onNewRowEnter"
+              @keydown.shift.enter="onNewRowShiftTab"
             />
           </td>
         </tr>
@@ -160,54 +163,70 @@ function commitEdit() {
   editingValue.value = "";
 }
 
-function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
+function cancelEdit() {
+  if (editingIndex.value === null) return;
+  const i = editingIndex.value;
+  editingIndex.value = null;
+  editingValue.value = "";
+  nextTick(() => {
+    const focusTarget = document.querySelector(
+      `.recipe-ingredients-form .focus-target[data-index="${i}"]`,
+    ) as HTMLElement | null;
+    focusTarget?.focus();
+  });
+}
+
+const FOCUSABLE_SELECTOR =
+  'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function focusPreviousInForm(current: EventTarget | null) {
+  const el = current instanceof HTMLElement ? current : null;
+  const form = el?.closest("form");
+  if (!form) return;
+  const focusable = Array.from(form.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+  const idx = focusable.findIndex((node) => node === el || node.contains(el));
+  if (idx > 0) focusable[idx - 1].focus();
+}
+
+/** On Tab/Shift+Tab from row edit input: do nothing. Blur will commit; browser handles focus. */
+function onRowTab(_e: KeyboardEvent, _i: number, _shift?: boolean) {
+  // Do not preventDefault — browser moves focus by default tab order.
+  // Blur fires when focus leaves the input and will call commitEdit().
+}
+
+/** Enter doesn't move focus by default, so we mimic Tab: commit then focus next/prev. */
+function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
+  if (shift && i === 0) {
+    e.preventDefault();
+    return;
+  }
+  e.preventDefault();
   commitEdit();
-  if (shift) {
-    if (i > 0) {
-      e.preventDefault();
-      nextTick(() => {
+  nextTick(() => {
+    if (shift) {
+      if (i > 0) {
         const prev = document.querySelector(
           `.recipe-ingredients-form .focus-target[data-index="${i - 1}"]`,
         ) as HTMLElement | null;
         prev?.focus();
-      });
-    }
-  } else {
-    if (i < list.value.length - 1) {
-      e.preventDefault();
-      nextTick(() => {
+      } else {
+        focusPreviousInForm(e.target);
+      }
+    } else {
+      if (i < list.value.length - 1) {
         const nextTarget = document.querySelector(
           `.recipe-ingredients-form .focus-target[data-index="${i + 1}"]`,
         ) as HTMLElement | null;
         nextTarget?.focus();
-      });
-    } else {
-      e.preventDefault();
-      nextTick(() => newRowInputRef.value?.focus?.());
+      } else {
+        newRowInputRef.value?.focus?.();
+      }
     }
-  }
+  });
 }
 
-function onFocusTargetTab(e: KeyboardEvent, i: number, shift?: boolean) {
-  if (shift) {
-    if (i > 0) {
-      e.preventDefault();
-      const prev = document.querySelector(
-        `.recipe-ingredients-form .focus-target[data-index="${i - 1}"]`,
-      ) as HTMLElement | null;
-      prev?.focus();
-    }
-  } else {
-    e.preventDefault();
-    if (i < list.value.length - 1) {
-      const nextTarget = document.querySelector(
-        `.recipe-ingredients-form .focus-target[data-index="${i + 1}"]`,
-      ) as HTMLElement | null;
-      nextTarget?.focus();
-    } else {
-      newRowInputRef.value?.focus?.();
-    }
-  }
+function onNewRowEnter(e: KeyboardEvent) {
+  e.preventDefault();
 }
 
 function onNewRowTab(e: KeyboardEvent) {
@@ -223,15 +242,8 @@ function onNewRowTab(e: KeyboardEvent) {
   }
 }
 
-function onNewRowShiftTab(e: KeyboardEvent) {
-  if (list.value.length > 0) {
-    e.preventDefault();
-    const lastIndex = list.value.length - 1;
-    const lastTarget = document.querySelector(
-      `.recipe-ingredients-form .focus-target[data-index="${lastIndex}"]`,
-    ) as HTMLElement | null;
-    lastTarget?.focus();
-  }
+function onNewRowShiftTab(_e: KeyboardEvent) {
+  // Do not preventDefault — let the browser move focus to previous element (last row or checkbox)
 }
 
 watch(
