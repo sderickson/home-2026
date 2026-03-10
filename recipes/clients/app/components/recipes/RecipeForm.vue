@@ -15,24 +15,26 @@
         </v-tabs>
         <v-window v-model="activeTab">
           <v-window-item :value="0">
-            <div class="pa-4 bg-surface rounded-b-lg">
-              <v-row>
-                <v-col cols="12" md="6">
+            <div class="pa-4 bg-surface rounded-b-lg d-flex flex-column recipe-form__tab-contents" style="min-height: 50vh">
+              <v-row class="flex-grow-1">
+                <v-col cols="12" md="6" class="recipe-form__col-min">
                   <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
                   <RecipeIngredientsForm
                     :model-value="content().ingredients ?? []"
                     @update:model-value="setIngredients"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
-                  <v-textarea
-                    v-model="content().instructionsMarkdown"
-                    :label="t(strings.instructions_label)"
-                    :placeholder="t(strings.instructions_placeholder)"
-                    variant="outlined"
-                    rows="6"
-                    class="mb-2"
-                  />
+                <v-col cols="12" md="6" class="d-flex flex-column recipe-form__col-min">
+                  <div class="d-flex flex-column flex-grow-1 recipe-form__instructions-wrap">
+                    <v-textarea
+                      v-model="content().instructionsMarkdown"
+                      :label="t(strings.instructions_label)"
+                      :placeholder="t(strings.instructions_placeholder)"
+                      variant="outlined"
+                      rows="6"
+                      class="flex-grow-1 recipe-form__instructions-field"
+                    />
+                  </div>
                 </v-col>
               </v-row>
             </div>
@@ -40,7 +42,7 @@
           <v-window-item :value="1">
             <div class="pa-4 bg-surface rounded-b-lg">
               <v-row>
-                <v-col cols="12" md="5">
+                <v-col cols="12" md="5" class="recipe-form__col-min">
                   <v-text-field
                     v-model="model.title"
                     :label="t(strings.title_label)"
@@ -64,7 +66,7 @@
                     class="mb-2"
                   />
                 </v-col>
-                <v-col cols="12" md="7">
+                <v-col cols="12" md="7" class="recipe-form__col-min">
                   <v-textarea
                     v-model="model.description"
                     :label="t(strings.description_label)"
@@ -330,3 +332,20 @@ defineExpose({
   isCreateVersionPending: createVersionMutation.isPending,
 });
 </script>
+
+<style scoped>
+@media (min-width: 960px) {
+  .recipe-form__col-min {
+    min-width: 400px;
+  }
+}
+
+.recipe-form__instructions-wrap {
+  min-height: 0;
+}
+
+.recipe-form__instructions-field :deep(textarea) {
+  min-height: 100%;
+  height: 100% !important;
+}
+</style>
