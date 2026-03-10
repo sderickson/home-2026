@@ -3,26 +3,45 @@
     <v-btn :to="'/recipes/list'" variant="text" class="mb-4">
       {{ t(strings.back_to_list) }}
     </v-btn>
-    <h1>{{ t(strings.title) }}</h1>
+    <div class="d-flex align-center flex-wrap gap-2 mb-4">
+      <h1 class="flex-grow-1">{{ t(strings.title) }}</h1>
+      <v-btn
+        variant="outlined"
+        color="primary"
+        prepend-icon="mdi-eye"
+        @click="showPreviewDialog = true"
+      >
+        {{ t(strings.preview_heading) }}
+      </v-btn>
+    </div>
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <RecipeForm
-          v-model="formModel"
-          :recipe="recipeQuery.data.value ?? null"
-          :on-success="handleSuccess"
-        />
-      </v-col>
-      <v-col cols="12" md="6">
-        <h2 class="text-h6 mb-2">{{ t(strings.preview_heading) }}</h2>
-        <RecipeContentPreview
-          :title="formModel.title"
-          :short-description="formModel.shortDescription"
-          :long-description="formModel.longDescription ?? undefined"
-          :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
-        />
-      </v-col>
-    </v-row>
+    <RecipeForm
+      v-model="formModel"
+      :recipe="recipeQuery.data.value ?? null"
+      :on-success="handleSuccess"
+    />
+
+    <v-dialog v-model="showPreviewDialog" max-width="600" persistent>
+      <v-card>
+        <v-card-title class="d-flex align-center">
+          {{ t(strings.preview_heading) }}
+          <v-spacer />
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="showPreviewDialog = false"
+          />
+        </v-card-title>
+        <v-card-text>
+          <RecipeContentPreview
+            :title="formModel.title"
+            :short-description="formModel.shortDescription"
+            :long-description="formModel.longDescription ?? undefined"
+            :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -43,6 +62,7 @@ const { recipeQuery } = useEditLoader();
 assertEditDataLoaded(recipeQuery.data.value);
 
 const formModel = ref(recipeToFormModel(recipeQuery.data.value!));
+const showPreviewDialog = ref(false);
 
 function handleSuccess(recipeId: string) {
   router.push(`/recipes/${recipeId}`);
