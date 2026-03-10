@@ -10,63 +10,25 @@
  * - One line per instruction (numbers added as markdown list)
  */
 
-const COMMON_UNITS = new Set([
-  "tsp", "tbsp", "cup", "cups", "oz", "lb", "g", "kg", "ml", "l",
-  "head", "heads", "clove", "cloves", "stalk", "stalks", "slice", "slices",
-  "can", "cans", "pinch", "cub", // "cub" common typo for "cup"
-]);
+import {
+  parseIngredientLine,
+  type RecipeIngredient,
+} from "@sderickson/recipes-sdk";
 
-/** Matches leading quantity: digits, optional fraction (1/2, ½), or decimal */
-const QUANTITY_REGEX = /^(\d+[\d\/.]*|½|¼|¾|⅓|⅔|⅛)\s+/u;
-
-export type ParsedIngredient = {
-  name: string;
-  quantity: string;
-  unit: string;
-};
+export type ParsedIngredient = RecipeIngredient;
 
 export type ParsedRecipe = {
   ingredients: ParsedIngredient[];
   instructionsMarkdown: string;
 };
 
-function parseIngredientLine(line: string): ParsedIngredient {
-  const trimmed = line.trim();
-  if (!trimmed) {
-    return { name: "", quantity: "", unit: "" };
-  }
-
-  let quantity = "";
-  let unit = "";
-  let name = trimmed;
-
-  const qMatch = trimmed.match(QUANTITY_REGEX);
-  if (qMatch) {
-    quantity = qMatch[1].replace(/\s/g, "").trim();
-    const afterQ = trimmed.slice(qMatch[0].length);
-    const parts = afterQ.split(/\s+/);
-    if (parts.length > 0) {
-      const firstWord = parts[0].toLowerCase();
-      if (COMMON_UNITS.has(firstWord)) {
-        unit = parts[0];
-        name = parts.slice(1).join(" ").trim();
-      } else {
-        name = afterQ.trim();
-      }
-    } else {
-      name = "";
-    }
-  }
-
-  return { name, quantity, unit };
-}
-
 export function parseRecipePaste(text: string): ParsedRecipe {
   const lines = text.split(/\r?\n/).map((l) => l.trim());
   const ingredients: ParsedIngredient[] = [];
   const instructionLines: string[] = [];
 
-  let phase: "before_ingredients" | "ingredients" | "instructions" = "before_ingredients";
+  let phase: "before_ingredients" | "ingredients" | "instructions" =
+    "before_ingredients";
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -76,10 +38,8 @@ export function parseRecipePaste(text: string): ParsedRecipe {
       if (lower === "ingredients" || lower.startsWith("ingredients")) {
         phase = "ingredients";
       } else if (line === "") {
-        // Blank before any "Ingredients" header: skip
         continue;
       } else {
-        // No header found yet; treat as first ingredient line (flexible paste)
         phase = "ingredients";
         const ing = parseIngredientLine(line);
         if (ing.name || ing.quantity || ing.unit) {
@@ -101,7 +61,6 @@ export function parseRecipePaste(text: string): ParsedRecipe {
       continue;
     }
 
-    // instructions
     if (line !== "") {
       instructionLines.push(line);
     }
