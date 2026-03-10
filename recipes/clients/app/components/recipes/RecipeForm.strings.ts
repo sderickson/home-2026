@@ -1,5 +1,6 @@
 export const recipe_form = {
   title_label: "Title",
+  new_recipe_title: "New Recipe",
   title_placeholder: "Recipe title",
   subtitle_label: "Subtitle",
   subtitle_placeholder: "Brief subtitle for menus and lists",
@@ -17,4 +18,14 @@ export const recipe_form = {
   submit_create: "Create recipe",
   submit_update_latest: "Update latest version",
   submit_save_new_version: "Save as new version",
+  toolbar_preview: "Preview",
+  toolbar_save: "Save",
+  save_menu_update_current: "Update current version",
+  save_menu_create_new: "Create new version",
+  commit_dialog_title: "Save as new version",
+  commit_message_label: "Commit message",
+  commit_message_placeholder: "Describe what changed…",
+  commit_default_prefix: "update ",
+  commit_confirm: "Save",
+  commit_cancel: "Cancel",
 };

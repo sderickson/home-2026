@@ -16,32 +16,10 @@
 
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-card variant="outlined" class="pa-4">
-          <RecipeForm
-            v-model="formModel"
-            :on-success="handleSuccess"
-          />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-card variant="outlined">
-          <v-card-title class="text-subtitle-1 font-weight-medium">
-            {{ t(strings.preview_heading) }}
-          </v-card-title>
-          <v-divider />
-          <v-card-text>
-            <RecipeContentPreview
-              :title="formModel.title"
-              :subtitle="formModel.subtitle"
-              :description="formModel.description ?? undefined"
-              :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <RecipeForm
+      v-model="formModel"
+      @success="handleSuccess"
+    />
   </v-container>
 </template>
 
@@ -53,7 +31,6 @@ import { useCreateLoader } from "./Create.loader.ts";
 import { assertCreateDataLoaded } from "./Create.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
-import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { appLinks } from "@sderickson/recipes-links";
 
