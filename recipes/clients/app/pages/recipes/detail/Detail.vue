@@ -105,10 +105,13 @@
         </v-toolbar>
 
         <RecipeContentPreview
-          :title="recipe.title"
-          :subtitle="recipe.subtitle"
-          :description="recipe.description ?? undefined"
-          :content="content"
+          :recipe="recipe"
+          :current-version="currentVersion"
+          :files="files"
+          :show-image-actions="showFilesEdit"
+          :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+          @click-image="expandedImageFile = $event"
+          @delete-image="filesFlow.confirmDeleteFile($event)"
         />
       </v-card>
     </v-container>
@@ -116,47 +119,6 @@
     <v-container fluid>
         <v-row>
           <v-col cols="12" :md="notesDrawerOpen ? 8 : 12" :lg="notesDrawerOpen ? 9 : 12">
-            <!-- Images: only show when there are images -->
-            <template v-if="imageFiles.length > 0">
-              <v-container fluid class="pa-0">
-                <v-row dense>
-                  <v-col
-                    v-for="file in imageFiles"
-                    :key="file.id"
-                    cols="6"
-                    sm="4"
-                    md="3"
-                    lg="2"
-                  >
-                    <div class="image-thumb-wrapper position-relative">
-                      <v-img
-                        :src="file.downloadUrl"
-                        :alt="file.fileOriginalName"
-                        aspect-ratio="1"
-                        cover
-                        class="rounded-lg cursor-pointer"
-                        @click="expandedImageFile = file"
-                      />
-                      <template v-if="showFilesEdit">
-                        <v-btn
-                          icon
-                          size="small"
-                          color="error"
-                          variant="flat"
-                          class="image-delete-btn"
-                          :disabled="filesFlow.deleteFileMutation.isPending.value"
-                          @click.stop="filesFlow.confirmDeleteFile(file)"
-                        >
-                          <v-icon size="small">mdi-close</v-icon>
-                        </v-btn>
-                      </template>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <v-divider class="my-4" />
-            </template>
-
             <template v-if="showVersionHistory">
             <v-divider class="my-4" />
             <v-btn
@@ -301,7 +263,6 @@ assertNoteFilesByRecipeLoaded(noteFilesByRecipeQuery.data.value);
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
-const content = computed(() => currentVersion.value.content);
 const profile = computed(() => profileQuery.data.value);
 const versions = computed(() => versionsQuery.data.value ?? []);
 const notes = computed(() => notesQuery.data.value ?? []);
@@ -316,11 +277,6 @@ const showFilesEdit = computed(() =>
 );
 
 const files = computed(() => filesQuery.data.value ?? []);
-const imageFiles = computed(() =>
-  (files.value as RecipeFileInfo[]).filter((f) =>
-    (f.mimetype ?? "").startsWith("image/"),
-  ),
-);
 
 const filesFlow = useDetailFilesFlow(computed(() => recipe.value.id));
 const deleteRecipeMutation = useDeleteRecipeMutation();
@@ -376,17 +332,3 @@ watch(
   },
 );
 </script>
-
-<style scoped>
-.image-thumb-wrapper {
-  position: relative;
-}
-.image-delete-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-.cursor-pointer {
-  cursor: pointer;
-}
-</style>

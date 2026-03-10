@@ -165,10 +165,8 @@
         </v-card-title>
         <v-card-text>
           <RecipeContentPreview
-            :title="model.title"
-            :subtitle="model.subtitle"
-            :description="model.description ?? undefined"
-            :content="content()"
+            :recipe="previewRecipe"
+            :current-version="previewVersion"
           />
         </v-card-text>
       </v-card>
@@ -203,8 +201,12 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
+import type {
+  Recipe,
+  RecipesServiceRequestBody,
+  RecipesServiceResponseBody,
+  RecipeVersion,
+} from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
 import { isRecipeFormValid, getEditedFields } from "./RecipeForm.logic.ts";
@@ -278,6 +280,37 @@ const createVersionMutation = useCreateRecipeVersionMutation();
 const notesCreateMutation = useNotesCreateRecipesMutation();
 
 const isValid = computed(() => isRecipeFormValid(model.value));
+
+/** Recipe shape for preview (form state). */
+const previewRecipe = computed((): Recipe => {
+  const m = model.value;
+  const base = props.recipe?.recipe;
+  return (base
+    ? { ...base, title: m.title, subtitle: m.subtitle, description: m.description ?? null }
+    : {
+        id: "",
+        title: m.title,
+        subtitle: m.subtitle,
+        description: m.description ?? null,
+        isPublic: m.isPublic ?? true,
+        createdBy: "",
+        createdAt: "",
+        updatedBy: "",
+        updatedAt: "",
+      }) as Recipe;
+});
+
+/** Version shape for preview (form content). */
+const previewVersion = computed((): RecipeVersion =>
+  ({
+    id: "",
+    recipeId: props.recipe?.recipe.id ?? "",
+    content: content(),
+    isLatest: true,
+    createdBy: "",
+    createdAt: "",
+  }) as RecipeVersion,
+);
 
 const saveMenuLoading = computed(
   () =>

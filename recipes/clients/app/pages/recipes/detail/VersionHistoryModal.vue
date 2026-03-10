@@ -35,10 +35,8 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <RecipeContentPreview
-                :title="recipe.title"
-                :subtitle="recipe.subtitle"
-                :description="recipe.description ?? undefined"
-                :content="ver.content"
+                :recipe="recipe"
+                :current-version="ver"
               />
               <template v-if="notesByVersionId.get(ver.id)?.length">
                 <p class="text-caption text-medium-emphasis mt-2 mb-1">
@@ -83,11 +81,7 @@ import { formatVersionDate } from "./Detail.logic.ts";
 
 defineProps<{
   modelValue: boolean;
-  recipe: {
-    title: string;
-    subtitle: string;
-    description?: string | null;
-  };
+  recipe: import("@sderickson/recipes-spec").Recipe;
   versions: RecipeVersion[];
   notesByVersionId: Map<string, RecipeNote[]>;
 }>();

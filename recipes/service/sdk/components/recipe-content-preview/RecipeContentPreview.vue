@@ -1,19 +1,60 @@
 <template>
   <v-card variant="outlined" class="recipe-content-preview">
+    <!-- Images above title (only when present) -->
+    <template v-if="imageFiles.length > 0">
+      <v-container fluid class="pa-3 pb-0">
+        <v-row dense>
+          <v-col
+            v-for="file in imageFiles"
+            :key="file.id"
+            cols="6"
+            sm="4"
+            md="3"
+            lg="2"
+          >
+            <div class="recipe-content-preview__image-wrapper position-relative">
+              <v-img
+                :src="file.downloadUrl"
+                :alt="file.fileOriginalName"
+                aspect-ratio="1"
+                cover
+                class="rounded-lg cursor-pointer"
+                @click="$emit('clickImage', file)"
+              />
+              <v-btn
+                v-if="showImageActions"
+                icon
+                size="small"
+                color="error"
+                variant="flat"
+                class="recipe-content-preview__image-delete-btn"
+                :disabled="imageDeleteDisabled"
+                @click.stop="$emit('deleteImage', file)"
+              >
+                <v-icon size="small">mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </template>
+
     <v-card-text class="pb-0">
-      <h2 v-if="title" class="text-h5 font-weight-bold mb-1">{{ title }}</h2>
+      <h2 v-if="recipe.title" class="text-h5 font-weight-bold mb-1">
+        {{ recipe.title }}
+      </h2>
       <p
-        v-if="subtitle"
+        v-if="recipe.subtitle"
         class="text-medium-emphasis text-body-2 mb-0 mt-0"
         style="line-height: 1.4"
       >
-        {{ subtitle }}
+        {{ recipe.subtitle }}
       </p>
       <p
-        v-if="description"
+        v-if="recipe.description"
         class="text-body-2 mt-3 mb-0 recipe-content-preview__description"
       >
-        {{ description }}
+        {{ recipe.description }}
       </p>
     </v-card-text>
 
@@ -51,6 +92,11 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  Recipe,
+  RecipeFileInfo,
+  RecipeVersion,
+} from "@sderickson/recipes-spec";
 import { computed } from "vue";
 import { marked } from "marked";
 import { recipe_content_preview_strings as strings } from "./RecipeContentPreview.strings.ts";
@@ -58,15 +104,35 @@ import { useReverseT } from "../../i18n.ts";
 
 const { t } = useReverseT();
 
-const props = defineProps<{
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  content: {
-    ingredients: { name: string; quantity: string; unit: string }[];
-    instructionsMarkdown: string;
-  };
+const props = withDefaults(
+  defineProps<{
+    recipe: Recipe;
+    currentVersion?: RecipeVersion | null;
+    files?: RecipeFileInfo[];
+    showImageActions?: boolean;
+    imageDeleteDisabled?: boolean;
+  }>(),
+  {
+    currentVersion: undefined,
+    files: () => [],
+    showImageActions: false,
+    imageDeleteDisabled: false,
+  },
+);
+
+defineEmits<{
+  clickImage: [file: RecipeFileInfo];
+  deleteImage: [file: RecipeFileInfo];
 }>();
+
+const content = computed(() => props.currentVersion?.content ?? {
+  ingredients: [],
+  instructionsMarkdown: "",
+});
+
+const imageFiles = computed(() =>
+  (props.files ?? []).filter((f) => (f.mimetype ?? "").startsWith("image/")),
+);
 
 function ingredientLine(ing: {
   name: string;
@@ -78,8 +144,8 @@ function ingredientLine(ing: {
 }
 
 const renderedInstructions = computed(() =>
-  props.content.instructionsMarkdown
-    ? (marked(props.content.instructionsMarkdown, { async: false }) as string)
+  content.value.instructionsMarkdown
+    ? (marked(content.value.instructionsMarkdown, { async: false }) as string)
     : "",
 );
 </script>
@@ -132,5 +198,19 @@ const renderedInstructions = computed(() =>
 
 .recipe-content-preview__instructions :deep(p:last-child) {
   margin-bottom: 0;
+}
+
+.recipe-content-preview__image-wrapper {
+  position: relative;
+}
+
+.recipe-content-preview__image-delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>
