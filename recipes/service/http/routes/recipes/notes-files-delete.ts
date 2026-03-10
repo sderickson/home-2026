@@ -46,6 +46,8 @@ export const notesFilesDeleteRecipesHandler = createHandler(
       });
     }
 
+    await recipesFileContainer.deleteFile(file.blob_name);
+
     const deleteOut = await recipeNoteFileQueries.deleteRecipeNoteFile(
       recipesDbKey,
       fileId,
@@ -62,8 +64,6 @@ export const notesFilesDeleteRecipesHandler = createHandler(
           throw err satisfies never;
       }
     }
-
-    await recipesFileContainer.deleteFile(file.blob_name);
 
     deleteNoteFileResultToNotesFilesDeleteRecipesResponse(deleteOut.result);
     res.status(204).end();

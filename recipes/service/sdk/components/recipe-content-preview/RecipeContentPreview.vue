@@ -12,7 +12,9 @@
             md="3"
             lg="2"
           >
-            <div class="recipe-content-preview__image-wrapper position-relative">
+            <div
+              class="recipe-content-preview__image-wrapper position-relative"
+            >
               <v-img
                 :src="file.downloadUrl"
                 :alt="file.fileOriginalName"
@@ -24,14 +26,14 @@
               <v-btn
                 v-if="showImageActions"
                 icon
-                size="small"
+                size="tiny"
                 color="error"
                 variant="flat"
                 class="recipe-content-preview__image-delete-btn"
                 :disabled="imageDeleteDisabled"
                 @click.stop="$emit('deleteImage', file)"
               >
-                <v-icon size="small">mdi-close</v-icon>
+                <v-icon size="tiny">mdi-close</v-icon>
               </v-btn>
             </div>
           </v-col>
@@ -125,10 +127,13 @@ defineEmits<{
   deleteImage: [file: RecipeFileInfo];
 }>();
 
-const content = computed(() => props.currentVersion?.content ?? {
-  ingredients: [],
-  instructionsMarkdown: "",
-});
+const content = computed(
+  () =>
+    props.currentVersion?.content ?? {
+      ingredients: [],
+      instructionsMarkdown: "",
+    },
+);
 
 const imageFiles = computed(() =>
   (props.files ?? []).filter((f) => (f.mimetype ?? "").startsWith("image/")),

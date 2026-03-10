@@ -3,12 +3,13 @@ import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import {
   recipeFileQueries,
+  RecipeNotFoundError,
   RecipeFileNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { deleteFileResultToFilesDeleteRecipesResponse } from "./_helpers.ts";
 
-type FilesDeleteRecipeError = RecipeFileNotFoundError;
+type FilesDeleteRecipeError = RecipeNotFoundError | RecipeFileNotFoundError;
 
 export const filesDeleteRecipesHandler = createHandler(
   async (req, res) => {
@@ -22,32 +23,42 @@ export const filesDeleteRecipesHandler = createHandler(
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
 
-    const { result, error } = await recipeFileQueries.deleteRecipeFile(
-      recipesDbKey,
-      fileId,
-    );
-
-    if (error) {
-      const err: FilesDeleteRecipeError = error;
+    const listOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+      recipeId: id,
+    });
+    if (listOut.error) {
+      const err = listOut.error;
       switch (true) {
-        case err instanceof RecipeFileNotFoundError:
+        case err instanceof RecipeNotFoundError:
           throw createError(404, err.message, {
-            code: "RECIPE_FILE_NOT_FOUND",
+            code: "RECIPE_NOT_FOUND",
           });
         default:
           throw err satisfies never;
       }
     }
 
-    if (result.recipe_id !== id) {
+    const file = listOut.result.find((f) => f.id === fileId);
+    if (!file) {
       throw createError(404, "Recipe file not found", {
         code: "RECIPE_FILE_NOT_FOUND",
       });
     }
 
-    await recipesFileContainer.deleteFile(result.blob_name);
+    await recipesFileContainer.deleteFile(file.blob_name);
 
-    deleteFileResultToFilesDeleteRecipesResponse(result);
+    const deleteOut = await recipeFileQueries.deleteRecipeFile(
+      recipesDbKey,
+      fileId,
+    );
+    if (deleteOut.error) {
+      const err: RecipeFileNotFoundError = deleteOut.error;
+      throw createError(404, err.message, {
+        code: "RECIPE_FILE_NOT_FOUND",
+      });
+    }
+
+    deleteFileResultToFilesDeleteRecipesResponse(deleteOut.result);
     res.status(204).end();
   },
 );
