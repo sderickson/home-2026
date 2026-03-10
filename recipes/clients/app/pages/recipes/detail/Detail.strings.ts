@@ -34,8 +34,17 @@ export const recipes_detail_page = {
   choose_file: "Choose file",
   delete_file: "Remove file",
   delete_file_confirm: "Remove this file from the recipe?",
+  delete_recipe: "Delete recipe",
+  delete_recipe_confirm: "Delete this recipe? This cannot be undone.",
   note_files_section: "Files",
   note_no_files: "No files attached.",
+  toolbar_version_history: "Version history",
+  toolbar_edit: "Edit",
+  toolbar_notes: "Notes",
+  toolbar_images: "Add image",
+  toolbar_delete: "Delete recipe",
+  image_expand: "View full size",
+  image_remove: "Remove image",
 };
 
 export { recipes_detail_page as recipes_detail };
