@@ -1,7 +1,61 @@
 <template>
   <div class="note-card py-2">
     <div class="d-flex align-start gap-1">
-      <v-menu v-if="showNotesEdit" location="start" transition="scale-transition">
+      <div class="flex-grow-1 min-width-0">
+        <div class="text-caption text-medium-emphasis mb-0">
+          {{ formatNoteDateTime(note.createdAt) }}
+          <span v-if="note.everEdited" class="ml-1">· {{ t(strings.ever_edited) }}</span>
+        </div>
+        <template v-if="notesFlow.editingNoteId?.value === note.id">
+          <v-textarea
+            v-model="editBodyModel"
+            :placeholder="t(strings.note_body_placeholder)"
+            rows="2"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="mt-1 mb-1"
+            autofocus
+            @keydown.ctrl.enter="notesFlow.saveEditNote(note)"
+          />
+          <div class="d-flex gap-1">
+            <v-btn
+              size="x-small"
+              color="primary"
+              :loading="notesFlow.updateMutation.isPending.value"
+              @click="notesFlow.saveEditNote(note)"
+            >
+              {{ t(strings.save_note) }}
+            </v-btn>
+            <v-btn size="x-small" variant="text" @click="notesFlow.cancelEdit()">
+              {{ t(strings.cancel) }}
+            </v-btn>
+          </div>
+        </template>
+        <template v-else>
+          <div
+            class="note-card__body text-body-2 mb-0 mt-0 break-word"
+            v-html="renderedBody"
+          />
+          <template v-if="files.length > 0">
+            <div class="text-caption text-medium-emphasis mt-1">
+              <template v-for="file in files" :key="file.id">
+                <a
+                  v-if="file.downloadUrl"
+                  :href="file.downloadUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary text-decoration-none mr-2"
+                >
+                  {{ file.fileOriginalName }}
+                </a>
+                <span v-else class="mr-2">{{ file.fileOriginalName }}</span>
+              </template>
+            </div>
+          </template>
+        </template>
+      </div>
+      <v-menu v-if="showNotesEdit" location="end" transition="scale-transition">
         <template #activator="{ props: menuProps }">
           <v-btn
             v-bind="menuProps"
@@ -37,57 +91,6 @@
           />
         </v-list>
       </v-menu>
-      <div class="flex-grow-1 min-width-0">
-        <div class="text-caption text-medium-emphasis mb-0">
-          {{ formatNoteDateTime(note.createdAt) }}
-          <span v-if="note.everEdited" class="ml-1">· {{ t(strings.ever_edited) }}</span>
-        </div>
-        <template v-if="notesFlow.editingNoteId?.value === note.id">
-          <v-textarea
-            v-model="editBodyModel"
-            :placeholder="t(strings.note_body_placeholder)"
-            rows="2"
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mt-1 mb-1"
-            autofocus
-            @keydown.ctrl.enter="notesFlow.saveEditNote(note)"
-          />
-          <div class="d-flex gap-1">
-            <v-btn
-              size="x-small"
-              color="primary"
-              :loading="notesFlow.updateMutation.isPending.value"
-              @click="notesFlow.saveEditNote(note)"
-            >
-              {{ t(strings.save_note) }}
-            </v-btn>
-            <v-btn size="x-small" variant="text" @click="notesFlow.cancelEdit()">
-              {{ t(strings.cancel) }}
-            </v-btn>
-          </div>
-        </template>
-        <template v-else>
-          <p class="text-body-2 mb-0 mt-0 break-word">{{ note.body }}</p>
-          <template v-if="files.length > 0">
-            <div class="text-caption text-medium-emphasis mt-1">
-              <template v-for="file in files" :key="file.id">
-                <a
-                  v-if="file.downloadUrl"
-                  :href="file.downloadUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-primary text-decoration-none mr-2"
-                >
-                  {{ file.fileOriginalName }}
-                </a>
-                <span v-else class="mr-2">{{ file.fileOriginalName }}</span>
-              </template>
-            </div>
-          </template>
-        </template>
-      </div>
     </div>
 
     <input
@@ -122,6 +125,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { marked } from "marked";
 import type { RecipeNote, RecipeNoteFileInfo } from "@sderickson/recipes-spec";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { note_card as strings } from "./NoteCard.strings.ts";
@@ -158,6 +162,12 @@ const editBodyModel = computed({
   },
 });
 
+const renderedBody = computed(() =>
+  props.note.body
+    ? (marked(props.note.body, { async: false }) as string)
+    : "",
+);
+
 const deleteNoteDialogModel = computed({
   get: () => notesFlow.deleteDialogOpen.value,
   set: (v: boolean) => {
@@ -184,5 +194,18 @@ const { t } = useReverseT();
 }
 .break-word {
   word-break: break-word;
+}
+.note-card__body :deep(p) {
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
+}
+.note-card__body :deep(p:last-child) {
+  margin-bottom: 0;
+}
+.note-card__body :deep(ul),
+.note-card__body :deep(ol) {
+  padding-inline-start: 1.5em;
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
 }
 </style>

@@ -16,8 +16,7 @@
       </v-breadcrumbs>
 
       <v-row>
-        <!-- Main content: card + version history -->
-        <v-col cols="12" :md="notesDrawerOpen ? 8 : 12" :lg="notesDrawerOpen ? 9 : 12">
+        <v-col cols="12">
           <v-card class="mb-4">
             <v-toolbar density="comfortable">
               <v-toolbar-title class="text-h6">{{ recipe.title }}</v-toolbar-title>
@@ -31,7 +30,13 @@
                       variant="text"
                       @click="versionHistoryModalOpen = true"
                     >
-                      <v-icon>mdi-history</v-icon>
+                      <v-badge
+                        :model-value="versions.length > 0"
+                        :content="versions.length"
+                        color="primary"
+                      >
+                        <v-icon>mdi-history</v-icon>
+                      </v-badge>
                     </v-btn>
                   </template>
                 </v-tooltip>
@@ -58,7 +63,7 @@
                     @click="notesDrawerOpen = !notesDrawerOpen"
                   >
                     <v-badge
-                      :model-value="notesForLatestVersion.length > 0"
+                      :model-value="!notesDrawerOpen && notesForLatestVersion.length > 0"
                       :content="notesForLatestVersion.length"
                       color="primary"
                     >
@@ -107,67 +112,56 @@
               </template>
             </v-toolbar>
 
-            <RecipeContentPreview
-              :recipe="recipe"
-              :current-version="currentVersion"
-              :files="files"
-              :show-image-actions="showFilesEdit"
-              :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
-              @click-image="expandedImageFile = $event"
-              @delete-image="filesFlow.confirmDeleteFile($event)"
-            />
-          </v-card>
-
-          <template v-if="showVersionHistory">
-            <v-btn
-              variant="outlined"
-              prepend-icon="mdi-history"
-              @click="versionHistoryModalOpen = true"
-            >
-              {{ t(strings.version_history_open) }}
-            </v-btn>
-          </template>
-        </v-col>
-
-        <!-- Notes panel: ~1/3 width to the right, chat style -->
-        <v-col v-if="notesDrawerOpen" cols="12" md="4" lg="3">
-          <v-sheet
-            variant="outlined"
-            rounded
-            class="detail-notes-panel d-flex flex-column"
-            height="calc(100vh - 180px)"
-            min-height="320"
-          >
-            <div class="text-subtitle-2 text-medium-emphasis px-3 py-2">
-              {{ t(strings.notes_section) }}
-            </div>
-            <v-divider />
-            <div class="detail-notes-list flex-grow-1 overflow-y-auto pa-2">
-              <template v-if="notesForLatestVersion.length === 0">
-                <p class="text-body-2 text-medium-emphasis pa-2">{{ t(strings.no_notes) }}</p>
-              </template>
-              <template v-else>
-                <NoteCard
-                  v-for="note in notesTimelineOrder"
-                  :key="note.id"
-                  :recipe-id="recipe.id"
-                  :latest-version-id="currentVersion?.id"
-                  :note="note"
-                  :files="getFilesForNote(note)"
-                  :show-notes-edit="showNotesEdit"
+            <!-- Card body: content preview + notes panel side by side within border -->
+            <div class="detail-card-body d-flex">
+              <div class="detail-card-preview flex-grow-1 min-width-0">
+                <RecipeContentPreview
+                  :recipe="recipe"
+                  :current-version="currentVersion"
+                  :files="files"
+                  :show-image-actions="showFilesEdit"
+                  :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+                  @click-image="expandedImageFile = $event"
+                  @delete-image="filesFlow.confirmDeleteFile($event)"
                 />
-              </template>
-            </div>
-            <template v-if="showNotesEdit">
-              <v-divider />
-              <div class="detail-notes-composer pa-2">
-              <AddNoteCard
-                :recipe-id="recipe.id"
-                :latest-version-id="currentVersion?.id"
-              />
               </div>
-            </template>
-          </v-sheet>
+              <v-sheet
+                v-if="notesDrawerOpen"
+                variant="outlined"
+                class="detail-notes-panel d-flex flex-column flex-shrink-0"
+              >
+                <div class="text-subtitle-2 text-medium-emphasis px-3 py-2 flex-shrink-0">
+                  {{ t(strings.notes_section) }}
+                </div>
+                <v-divider />
+                <div class="detail-notes-list flex-grow-1 min-height-0 overflow-y-auto pa-2">
+                  <template v-if="notesForLatestVersion.length === 0">
+                    <p class="text-body-2 text-medium-emphasis pa-2">{{ t(strings.no_notes) }}</p>
+                  </template>
+                  <template v-else>
+                    <NoteCard
+                      v-for="note in notesTimelineOrder"
+                      :key="note.id"
+                      :recipe-id="recipe.id"
+                      :latest-version-id="currentVersion?.id"
+                      :note="note"
+                      :files="getFilesForNote(note)"
+                      :show-notes-edit="showNotesEdit"
+                    />
+                  </template>
+                </div>
+                <template v-if="showNotesEdit">
+                  <v-divider />
+                  <div class="detail-notes-composer pa-2 flex-shrink-0">
+                    <AddNoteCard
+                      :recipe-id="recipe.id"
+                      :latest-version-id="currentVersion?.id"
+                    />
+                  </div>
+                </template>
+              </v-sheet>
+            </div>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -337,3 +331,19 @@ watch(
   },
 );
 </script>
+
+<style scoped>
+.detail-card-body {
+  min-height: 420px;
+}
+.detail-notes-panel {
+  width: 33%;
+  min-width: 280px;
+  max-width: 400px;
+  min-height: 420px;
+  border-inline-start: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.detail-notes-list {
+  min-height: 0;
+}
+</style>
