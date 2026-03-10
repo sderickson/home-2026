@@ -1,66 +1,86 @@
 <template>
   <form class="recipe-form" @submit.prevent>
-    <!-- Tabbed layout (edit page) -->
-    <v-tabs v-if="layout === 'tabs'" v-model="activeTab" class="mb-4">
-      <v-tab :value="0">{{ t(strings.tab_metadata) }}</v-tab>
-      <v-tab :value="1">{{ t(strings.tab_contents) }}</v-tab>
-      <v-window v-model="activeTab">
-        <v-window-item :value="0">
-          <div class="pa-2">
-            <v-text-field
-              v-model="model.title"
-              :label="t(strings.title_label)"
-              :placeholder="t(strings.title_placeholder)"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="model.subtitle"
-              :label="t(strings.subtitle_label)"
-              :placeholder="t(strings.subtitle_placeholder)"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-textarea
-              v-model="model.description"
-              :label="t(strings.description_label)"
-              :placeholder="t(strings.description_placeholder)"
-              variant="outlined"
-              auto-grow
-              rows="2"
-              class="mb-2"
-            />
-            <v-switch
-              v-model="model.isPublic"
-              :label="t(strings.is_public_label)"
-              :hint="t(strings.is_public_hint)"
-              persistent-hint
-              color="primary"
-              class="mb-2"
-            />
-          </div>
-        </v-window-item>
-        <v-window-item :value="1">
-          <div class="pa-2">
-            <div class="mb-2">
-              <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
-              <RecipeIngredientsForm
-                :model-value="content().ingredients ?? []"
-                @update:model-value="setIngredients"
-              />
+    <!-- Tabbed layout (edit page): folder-style panel using v-card + Vuetify classes only -->
+    <template v-if="layout === 'tabs'">
+      <v-card variant="outlined" class="mb-4 rounded-lg overflow-hidden">
+        <v-tabs
+          v-model="activeTab"
+          bg-color="grey-lighten-4"
+          color="primary"
+          density="comfortable"
+          class="rounded-t-lg"
+        >
+          <v-tab :value="0">{{ t(strings.tab_contents) }}</v-tab>
+          <v-tab :value="1">{{ t(strings.tab_metadata) }}</v-tab>
+        </v-tabs>
+        <v-window v-model="activeTab">
+          <v-window-item :value="0">
+            <div class="pa-4 bg-surface rounded-b-lg">
+              <v-row>
+                <v-col cols="12" md="6">
+                  <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
+                  <RecipeIngredientsForm
+                    :model-value="content().ingredients ?? []"
+                    @update:model-value="setIngredients"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-textarea
+                    v-model="content().instructionsMarkdown"
+                    :label="t(strings.instructions_label)"
+                    :placeholder="t(strings.instructions_placeholder)"
+                    variant="outlined"
+                    rows="6"
+                    class="mb-2"
+                  />
+                </v-col>
+              </v-row>
             </div>
-            <v-textarea
-              v-model="content().instructionsMarkdown"
-              :label="t(strings.instructions_label)"
-              :placeholder="t(strings.instructions_placeholder)"
-              variant="outlined"
-              rows="6"
-              class="mb-2"
-            />
-          </div>
-        </v-window-item>
-      </v-window>
-    </v-tabs>
+          </v-window-item>
+          <v-window-item :value="1">
+            <div class="pa-4 bg-surface rounded-b-lg">
+              <v-row>
+                <v-col cols="12" md="5">
+                  <v-text-field
+                    v-model="model.title"
+                    :label="t(strings.title_label)"
+                    :placeholder="t(strings.title_placeholder)"
+                    variant="outlined"
+                    class="mb-2"
+                  />
+                  <v-text-field
+                    v-model="model.subtitle"
+                    :label="t(strings.subtitle_label)"
+                    :placeholder="t(strings.subtitle_placeholder)"
+                    variant="outlined"
+                    class="mb-2"
+                  />
+                  <v-switch
+                    v-model="model.isPublic"
+                    :label="t(strings.is_public_label)"
+                    :hint="t(strings.is_public_hint)"
+                    persistent-hint
+                    color="primary"
+                    class="mb-2"
+                  />
+                </v-col>
+                <v-col cols="12" md="7">
+                  <v-textarea
+                    v-model="model.description"
+                    :label="t(strings.description_label)"
+                    :placeholder="t(strings.description_placeholder)"
+                    variant="outlined"
+                    auto-grow
+                    rows="2"
+                    class="mb-2"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+          </v-window-item>
+        </v-window>
+      </v-card>
+    </template>
 
     <!-- Default layout (create page) -->
     <template v-if="layout !== 'tabs'">
@@ -121,7 +141,7 @@
       rows="3"
       class="mb-2"
     />
-    <div class="d-flex gap-2 mt-2">
+    <div v-if="layout !== 'tabs' || !recipe" class="d-flex gap-2 mt-2">
       <template v-if="recipe">
         <v-btn
           color="primary"
@@ -298,5 +318,15 @@ async function saveNewVersionWithNote(note: string) {
   await doSaveNewVersion(note);
 }
 
-defineExpose({ isValid, saveNewVersionWithNote });
+async function updateLatestVersion() {
+  await handleUpdateLatest();
+}
+
+defineExpose({
+  isValid,
+  saveNewVersionWithNote,
+  updateLatestVersion,
+  isUpdateLatestPending: updateLatestMutation.isPending,
+  isCreateVersionPending: createVersionMutation.isPending,
+});
 </script>

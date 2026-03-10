@@ -22,12 +22,40 @@
       <h1 class="flex-grow-1 text-h4">{{ t(strings.title) }}</h1>
       <v-btn
         variant="outlined"
-        color="primary"
         prepend-icon="mdi-eye"
         @click="showPreviewDialog = true"
       >
         {{ t(strings.preview_heading) }}
       </v-btn>
+      <v-menu location="bottom end" transition="scale-transition">
+        <template #activator="{ props: menuProps }">
+          <v-btn
+            v-bind="menuProps"
+            color="primary"
+            prepend-icon="mdi-content-save"
+            :disabled="!recipeFormRef?.isValid"
+            :loading="saveMenuLoading"
+          >
+            {{ t(strings.save_button) }}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            :disabled="!recipeFormRef?.isValid"
+            :loading="isUpdateLatestPending"
+            prepend-icon="mdi-pencil"
+            :title="t(strings.save_menu_update_current)"
+            @click="onUpdateCurrentVersion"
+          />
+          <v-list-item
+            :disabled="!recipeFormRef?.isValid"
+            :loading="isCreateVersionPending"
+            prepend-icon="mdi-plus-box"
+            :title="t(strings.save_menu_create_new)"
+            @click="onCreateNewVersion"
+          />
+        </v-list>
+      </v-menu>
     </div>
 
     <RecipeForm
@@ -93,7 +121,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import type { Ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { recipes_edit_page as strings } from "./Edit.strings.ts";
 import { useEditLoader } from "./Edit.loader.ts";
@@ -122,6 +151,31 @@ const showCommitDialog = ref(false);
 const commitMessage = ref("");
 const commitSaving = ref(false);
 const recipeFormRef = ref<InstanceType<typeof RecipeForm> | null>(null);
+
+const isUpdateLatestPending = computed(
+  () =>
+    (recipeFormRef.value?.isUpdateLatestPending as Ref<boolean> | undefined)
+      ?.value ?? false,
+);
+const isCreateVersionPending = computed(
+  () =>
+    (recipeFormRef.value?.isCreateVersionPending as Ref<boolean> | undefined)
+      ?.value ?? false,
+);
+const saveMenuLoading = computed(
+  () =>
+    isUpdateLatestPending.value ||
+    isCreateVersionPending.value ||
+    commitSaving.value,
+);
+
+function onUpdateCurrentVersion() {
+  void recipeFormRef.value?.updateLatestVersion();
+}
+
+function onCreateNewVersion() {
+  openCommitDialog();
+}
 
 function openCommitDialog() {
   const fields = getEditedFields(initialFormModel, formModel.value);

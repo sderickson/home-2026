@@ -11,4 +11,7 @@ export const recipes_edit_page = {
   commit_default_prefix: "update ",
   commit_confirm: "Save",
   commit_cancel: "Cancel",
+  save_button: "Save",
+  save_menu_update_current: "Update current version",
+  save_menu_create_new: "Create new version",
 };
