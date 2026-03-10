@@ -1,9 +1,19 @@
 <template>
   <v-container>
+    <v-breadcrumbs class="pl-0 mb-2">
+      <v-breadcrumbs-item :to="appLinks.home.path">
+        {{ t(strings.breadcrumb_home) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="appLinks.recipesList.path">
+        {{ t(strings.breadcrumb_recipes) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="`/recipes/${recipe.id}`">
+        {{ recipe.title }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
     <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <v-btn :to="'/recipes/list'" variant="text" prepend-icon="mdi-arrow-left">
-        {{ t(strings.back_to_list) }}
-      </v-btn>
       <v-spacer />
       <v-btn
         :to="`/recipes/${recipe.id}/edit`"
@@ -95,6 +105,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
+import { appLinks } from "@sderickson/recipes-links";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,

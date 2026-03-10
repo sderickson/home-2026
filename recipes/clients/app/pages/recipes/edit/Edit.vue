@@ -1,10 +1,25 @@
 <template>
   <v-container>
-    <v-btn :to="'/recipes/list'" variant="text" class="mb-4">
-      {{ t(strings.back_to_list) }}
-    </v-btn>
+    <v-breadcrumbs class="pl-0 mb-2">
+      <v-breadcrumbs-item :to="appLinks.home.path">
+        {{ t(strings.breadcrumb_home) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="appLinks.recipesList.path">
+        {{ t(strings.breadcrumb_recipes) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="`/recipes/${data.recipe.id}`">
+        {{ data.recipe.title }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item>
+        {{ t(strings.breadcrumb_edit) }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
+
     <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <h1 class="flex-grow-1">{{ t(strings.title) }}</h1>
+      <h1 class="flex-grow-1 text-h4">{{ t(strings.title) }}</h1>
       <v-btn
         variant="outlined"
         color="primary"
@@ -16,9 +31,12 @@
     </div>
 
     <RecipeForm
+      ref="recipeFormRef"
       v-model="formModel"
+      layout="tabs"
       :recipe="recipeQuery.data.value ?? null"
       :on-success="handleSuccess"
+      @request-save-new-version="openCommitDialog"
     />
 
     <v-dialog v-model="showPreviewDialog" max-width="600" persistent>
@@ -42,6 +60,35 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="showCommitDialog" max-width="500" persistent>
+      <v-card>
+        <v-card-title>{{ t(strings.commit_dialog_title) }}</v-card-title>
+        <v-card-text>
+          <v-textarea
+            v-model="commitMessage"
+            :label="t(strings.commit_message_label)"
+            :placeholder="t(strings.commit_message_placeholder)"
+            variant="outlined"
+            rows="3"
+            auto-grow
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="showCommitDialog = false">
+            {{ t(strings.commit_cancel) }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="commitSaving"
+            @click="confirmCommit"
+          >
+            {{ t(strings.commit_confirm) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -50,10 +97,16 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { recipes_edit_page as strings } from "./Edit.strings.ts";
 import { useEditLoader } from "./Edit.loader.ts";
-import { assertEditDataLoaded, recipeToFormModel } from "./Edit.logic.ts";
+import {
+  assertEditDataLoaded,
+  getEditedFields,
+  recipeToFormModel,
+} from "./Edit.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
+import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { appLinks } from "@sderickson/recipes-links";
 
 const { t } = useReverseT();
 const router = useRouter();
@@ -61,8 +114,34 @@ const { recipeQuery } = useEditLoader();
 
 assertEditDataLoaded(recipeQuery.data.value);
 
-const formModel = ref(recipeToFormModel(recipeQuery.data.value!));
+const data = recipeQuery.data.value!;
+const initialFormModel = recipeToFormModel(data);
+const formModel = ref<RecipeFormModel>(initialFormModel);
 const showPreviewDialog = ref(false);
+const showCommitDialog = ref(false);
+const commitMessage = ref("");
+const commitSaving = ref(false);
+const recipeFormRef = ref<InstanceType<typeof RecipeForm> | null>(null);
+
+function openCommitDialog() {
+  const fields = getEditedFields(initialFormModel, formModel.value);
+  commitMessage.value =
+    fields.length > 0
+      ? t(strings.commit_default_prefix) + fields.join(", ")
+      : "";
+  showCommitDialog.value = true;
+}
+
+async function confirmCommit() {
+  if (!recipeFormRef.value) return;
+  commitSaving.value = true;
+  try {
+    await recipeFormRef.value.saveNewVersionWithNote(commitMessage.value);
+    showCommitDialog.value = false;
+  } finally {
+    commitSaving.value = false;
+  }
+}
 
 function handleSuccess(recipeId: string) {
   router.push(`/recipes/${recipeId}`);

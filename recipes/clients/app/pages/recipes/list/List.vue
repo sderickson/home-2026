@@ -1,5 +1,14 @@
 <template>
   <v-container>
+    <v-breadcrumbs class="pl-0 mb-2">
+      <v-breadcrumbs-item :to="appLinks.home.path">
+        {{ t(strings.breadcrumb_home) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item>
+        {{ t(strings.breadcrumb_recipes) }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
     <div class="d-flex align-center flex-wrap gap-2 mb-4">
       <h1 class="text-h4">{{ t(strings.title) }}</h1>
       <v-spacer />

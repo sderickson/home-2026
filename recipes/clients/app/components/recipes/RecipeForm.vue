@@ -1,52 +1,119 @@
 <template>
   <form class="recipe-form" @submit.prevent>
-    <v-text-field
-      v-model="model.title"
-      :label="t(strings.title_label)"
-      :placeholder="t(strings.title_placeholder)"
-      variant="outlined"
-      class="mb-2"
-    />
-    <v-text-field
-      v-model="model.subtitle"
-      :label="t(strings.subtitle_label)"
-      :placeholder="t(strings.subtitle_placeholder)"
-      variant="outlined"
-      class="mb-2"
-    />
-    <v-textarea
-      v-model="model.description"
-      :label="t(strings.description_label)"
-      :placeholder="t(strings.description_placeholder)"
-      variant="outlined"
-      auto-grow
-      rows="2"
-      class="mb-2"
-    />
-    <v-checkbox
-      v-model="model.isPublic"
-      :label="t(strings.is_public_label)"
-      :hint="t(strings.is_public_hint)"
-      persistent-hint
-      class="mb-2"
-    />
-    <div class="mb-2">
-      <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
-      <RecipeIngredientsForm
-        :model-value="content().ingredients ?? []"
-        @update:model-value="setIngredients"
+    <!-- Tabbed layout (edit page) -->
+    <v-tabs v-if="layout === 'tabs'" v-model="activeTab" class="mb-4">
+      <v-tab :value="0">{{ t(strings.tab_metadata) }}</v-tab>
+      <v-tab :value="1">{{ t(strings.tab_contents) }}</v-tab>
+      <v-window v-model="activeTab">
+        <v-window-item :value="0">
+          <div class="pa-2">
+            <v-text-field
+              v-model="model.title"
+              :label="t(strings.title_label)"
+              :placeholder="t(strings.title_placeholder)"
+              variant="outlined"
+              class="mb-2"
+            />
+            <v-text-field
+              v-model="model.subtitle"
+              :label="t(strings.subtitle_label)"
+              :placeholder="t(strings.subtitle_placeholder)"
+              variant="outlined"
+              class="mb-2"
+            />
+            <v-textarea
+              v-model="model.description"
+              :label="t(strings.description_label)"
+              :placeholder="t(strings.description_placeholder)"
+              variant="outlined"
+              auto-grow
+              rows="2"
+              class="mb-2"
+            />
+            <v-switch
+              v-model="model.isPublic"
+              :label="t(strings.is_public_label)"
+              :hint="t(strings.is_public_hint)"
+              persistent-hint
+              color="primary"
+              class="mb-2"
+            />
+          </div>
+        </v-window-item>
+        <v-window-item :value="1">
+          <div class="pa-2">
+            <div class="mb-2">
+              <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
+              <RecipeIngredientsForm
+                :model-value="content().ingredients ?? []"
+                @update:model-value="setIngredients"
+              />
+            </div>
+            <v-textarea
+              v-model="content().instructionsMarkdown"
+              :label="t(strings.instructions_label)"
+              :placeholder="t(strings.instructions_placeholder)"
+              variant="outlined"
+              rows="6"
+              class="mb-2"
+            />
+          </div>
+        </v-window-item>
+      </v-window>
+    </v-tabs>
+
+    <!-- Default layout (create page) -->
+    <template v-if="layout !== 'tabs'">
+      <v-text-field
+        v-model="model.title"
+        :label="t(strings.title_label)"
+        :placeholder="t(strings.title_placeholder)"
+        variant="outlined"
+        class="mb-2"
       />
-    </div>
+      <v-text-field
+        v-model="model.subtitle"
+        :label="t(strings.subtitle_label)"
+        :placeholder="t(strings.subtitle_placeholder)"
+        variant="outlined"
+        class="mb-2"
+      />
+      <v-textarea
+        v-model="model.description"
+        :label="t(strings.description_label)"
+        :placeholder="t(strings.description_placeholder)"
+        variant="outlined"
+        auto-grow
+        rows="2"
+        class="mb-2"
+      />
+      <v-switch
+        v-model="model.isPublic"
+        :label="t(strings.is_public_label)"
+        :hint="t(strings.is_public_hint)"
+        persistent-hint
+        color="primary"
+        class="mb-2"
+      />
+      <div class="mb-2">
+        <div class="text-subtitle-2 mb-1">{{ t(strings.ingredients_label) }}</div>
+        <RecipeIngredientsForm
+          :model-value="content().ingredients ?? []"
+          @update:model-value="setIngredients"
+        />
+      </div>
+      <v-textarea
+        v-model="content().instructionsMarkdown"
+        :label="t(strings.instructions_label)"
+        :placeholder="t(strings.instructions_placeholder)"
+        variant="outlined"
+        rows="6"
+        class="mb-2"
+      />
+    </template>
+
     <v-textarea
-      v-model="content().instructionsMarkdown"
-      :label="t(strings.instructions_label)"
-      :placeholder="t(strings.instructions_placeholder)"
-      variant="outlined"
-      rows="6"
-      class="mb-2"
-    />
-    <v-textarea
-      v-if="recipe"
+      v-if="recipe && layout !== 'tabs'"
       v-model="model.note"
       :label="t(strings.note_label)"
       :placeholder="t(strings.note_placeholder)"
@@ -68,7 +135,7 @@
           variant="outlined"
           :disabled="!isValid"
           :loading="createVersionMutation.isPending.value"
-          @click="handleSaveNewVersion"
+          @click="onSaveNewVersionClick"
         >
           {{ t(strings.submit_save_new_version) }}
         </v-btn>
@@ -87,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
@@ -103,6 +170,10 @@ import {
 } from "@sderickson/recipes-sdk";
 
 const { t } = useReverseT();
+
+const emit = defineEmits<{
+  "request-save-new-version": [];
+}>();
 
 export type RecipeFormModel = Omit<
   RecipesServiceRequestBody["createRecipe"],
@@ -124,9 +195,13 @@ const props = withDefaults(
   defineProps<{
     recipe?: GetRecipeResponse | null;
     onSuccess?: (recipeId: string) => void;
+    /** When 'tabs', use tabbed layout and emit request-save-new-version instead of saving with inline note. */
+    layout?: "default" | "tabs";
   }>(),
-  { recipe: null, onSuccess: undefined },
+  { recipe: null, onSuccess: undefined, layout: "default" },
 );
+
+const activeTab = ref(0);
 
 const model = defineModel<RecipeFormModel>({ required: true });
 
@@ -186,7 +261,7 @@ async function handleUpdateLatest() {
   props.onSuccess?.(recipe.id);
 }
 
-async function handleSaveNewVersion() {
+async function doSaveNewVersion(noteBody: string) {
   if (!props.recipe || !isValid.value) return;
   const { recipe } = props.recipe;
   await updateMutation.mutateAsync({
@@ -200,16 +275,28 @@ async function handleSaveNewVersion() {
     id: recipe.id,
     ...content(),
   });
-  const noteBody = model.value.note?.trim();
-  if (noteBody) {
+  if (noteBody.trim()) {
     await notesCreateMutation.mutateAsync({
       id: recipe.id,
-      body: noteBody,
+      body: noteBody.trim(),
       recipeVersionId: version.id,
     });
   }
   props.onSuccess?.(recipe.id);
 }
 
-defineExpose({ isValid });
+function onSaveNewVersionClick() {
+  if (props.layout === "tabs") {
+    emit("request-save-new-version");
+  } else {
+    void doSaveNewVersion(model.value.note ?? "");
+  }
+}
+
+/** Called by parent (edit page) after user confirms commit message in dialog. */
+async function saveNewVersionWithNote(note: string) {
+  await doSaveNewVersion(note);
+}
+
+defineExpose({ isValid, saveNewVersionWithNote });
 </script>

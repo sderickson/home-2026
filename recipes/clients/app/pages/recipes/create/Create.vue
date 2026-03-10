@@ -1,13 +1,18 @@
 <template>
   <v-container>
-    <v-btn
-      :to="'/recipes/list'"
-      variant="text"
-      prepend-icon="mdi-arrow-left"
-      class="mb-4"
-    >
-      {{ t(strings.back_to_list) }}
-    </v-btn>
+    <v-breadcrumbs class="pl-0 mb-2">
+      <v-breadcrumbs-item :to="appLinks.home.path">
+        {{ t(strings.breadcrumb_home) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="appLinks.recipesList.path">
+        {{ t(strings.breadcrumb_recipes) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item>
+        {{ t(strings.breadcrumb_new) }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
 
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
@@ -50,6 +55,7 @@ import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { appLinks } from "@sderickson/recipes-links";
 
 const { t } = useReverseT();
 const router = useRouter();

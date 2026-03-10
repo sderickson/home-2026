@@ -12,6 +12,8 @@ export const recipe_form = {
   instructions_placeholder: "1. Preheat oven...\n2. Mix ingredients...",
   note_label: "Note (attached to this version when you save)",
   note_placeholder: "How it went, what to try next…",
+  tab_metadata: "Metadata",
+  tab_contents: "Contents",
   submit_create: "Create recipe",
   submit_update_latest: "Update latest version",
   submit_save_new_version: "Save as new version",
