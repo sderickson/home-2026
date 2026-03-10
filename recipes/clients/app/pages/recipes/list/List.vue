@@ -14,6 +14,15 @@
       <v-spacer />
       <v-btn
         v-if="showCreateRecipe"
+        variant="outlined"
+        color="primary"
+        prepend-icon="mdi-import"
+        @click="quickImportOpen = true"
+      >
+        {{ t(strings.quick_import) }}
+      </v-btn>
+      <v-btn
+        v-if="showCreateRecipe"
         v-bind="createLinkProps"
         color="primary"
         prepend-icon="mdi-plus"
@@ -23,11 +32,17 @@
     </div>
 
     <RecipeList :recipes="recipes" :get-recipe-link-props="getRecipeLinkProps" />
+
+    <QuickImportDialog
+      v-model="quickImportOpen"
+      @success="onQuickImportSuccess"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { RecipeList } from "@sderickson/recipes-sdk";
 import { linkToProps } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
@@ -40,8 +55,10 @@ import {
   getRecipesList,
 } from "./List.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import QuickImportDialog from "./QuickImportDialog.vue";
 
 const { t } = useReverseT();
+const router = useRouter();
 const { profileQuery, recipesQuery } = useListLoader();
 
 assertProfileLoaded(profileQuery.data.value);
@@ -51,11 +68,16 @@ const profile = profileQuery.data.value;
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));
 const showCreateRecipe = computed(() => canShowCreateRecipe(profile));
 const createLinkProps = linkToProps(appLinks.recipesCreate);
+const quickImportOpen = ref(false);
 
 function getRecipeLinkProps(recipeId: string) {
   return linkToProps({
     ...appLinks.recipesDetail,
     path: `/recipes/${recipeId}`,
   });
+}
+
+function onQuickImportSuccess(recipeId: string) {
+  router.push(`/recipes/${recipeId}`);
 }
 </script>
