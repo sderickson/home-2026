@@ -8,16 +8,16 @@
       class="mb-2"
     />
     <v-text-field
-      v-model="model.shortDescription"
-      :label="t(strings.short_description_label)"
-      :placeholder="t(strings.short_description_placeholder)"
+      v-model="model.subtitle"
+      :label="t(strings.subtitle_label)"
+      :placeholder="t(strings.subtitle_placeholder)"
       variant="outlined"
       class="mb-2"
     />
     <v-textarea
-      v-model="model.longDescription"
-      :label="t(strings.long_description_label)"
-      :placeholder="t(strings.long_description_placeholder)"
+      v-model="model.description"
+      :label="t(strings.description_label)"
+      :placeholder="t(strings.description_placeholder)"
       variant="outlined"
       auto-grow
       rows="2"
@@ -167,8 +167,8 @@ async function handleUpdateLatest() {
   await updateMutation.mutateAsync({
     id: recipe.id,
     title: model.value.title,
-    shortDescription: model.value.shortDescription,
-    longDescription: model.value.longDescription ?? undefined,
+    subtitle: model.value.subtitle,
+    description: model.value.description ?? undefined,
     isPublic: model.value.isPublic,
   });
   const version = await updateLatestMutation.mutateAsync({
@@ -192,8 +192,8 @@ async function handleSaveNewVersion() {
   await updateMutation.mutateAsync({
     id: recipe.id,
     title: model.value.title,
-    shortDescription: model.value.shortDescription,
-    longDescription: model.value.longDescription ?? undefined,
+    subtitle: model.value.subtitle,
+    description: model.value.description ?? undefined,
     isPublic: model.value.isPublic,
   });
   const version = await createVersionMutation.mutateAsync({

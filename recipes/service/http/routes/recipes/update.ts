@@ -38,12 +38,12 @@ export const updateRecipeHandler = createHandler(
     const existing = getOut.result.recipe;
     const merged = {
       title: data.title ?? existing.title,
-      shortDescription:
-        data.shortDescription ?? existing.shortDescription,
-      longDescription:
-        data.longDescription !== undefined
-          ? data.longDescription
-          : existing.longDescription,
+      subtitle:
+        data.subtitle ?? existing.subtitle,
+      description:
+        data.description !== undefined
+          ? data.description
+          : existing.description,
       isPublic: data.isPublic ?? existing.isPublic,
     };
 

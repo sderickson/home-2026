@@ -29,8 +29,8 @@ export const createRecipeHandler = createHandler(
         recipesDbKey,
         {
           title: data.title,
-          shortDescription: data.shortDescription,
-          longDescription: data.longDescription ?? null,
+          subtitle: data.subtitle,
+          description: data.description ?? null,
           isPublic: data.isPublic,
           createdBy: userId,
           updatedBy: userId,
@@ -59,8 +59,8 @@ export const createRecipeHandler = createHandler(
 
     const { result, error } = await recipeQueries.createRecipe(recipesDbKey, {
       title: data.title,
-      shortDescription: data.shortDescription,
-      longDescription: data.longDescription ?? null,
+      subtitle: data.subtitle,
+      description: data.description ?? null,
       isPublic: data.isPublic,
       createdBy: userId,
       updatedBy: userId,

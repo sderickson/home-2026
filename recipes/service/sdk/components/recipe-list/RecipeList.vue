@@ -14,7 +14,7 @@
           :key="recipe.id"
           v-bind="getRecipeLinkProps(recipe.id)"
           :title="recipe.title"
-          :subtitle="recipe.shortDescription"
+          :subtitle="recipe.subtitle"
           prepend-icon="mdi-book-open-page-variant-outline"
           append-icon="mdi-chevron-right"
           link

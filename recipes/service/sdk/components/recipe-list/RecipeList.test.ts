@@ -32,7 +32,7 @@ describe("RecipeList", () => {
     for (const recipe of recipes) {
       expect(getElementByString(wrapper, recipe.title).exists()).toBe(true);
       expect(
-        getElementByString(wrapper, recipe.shortDescription).exists(),
+        getElementByString(wrapper, recipe.subtitle).exists(),
       ).toBe(true);
     }
   });

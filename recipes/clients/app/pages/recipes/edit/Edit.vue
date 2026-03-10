@@ -35,8 +35,8 @@
         <v-card-text>
           <RecipeContentPreview
             :title="formModel.title"
-            :short-description="formModel.shortDescription"
-            :long-description="formModel.longDescription ?? undefined"
+            :subtitle="formModel.subtitle"
+            :description="formModel.description ?? undefined"
             :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
           />
         </v-card-text>

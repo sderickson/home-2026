@@ -18,8 +18,8 @@ describe("createWithVersionRecipe", () => {
   it("should create recipe and first version in a transaction", async () => {
     const params = {
       title: "Test Recipe",
-      shortDescription: "A short description",
-      longDescription: null,
+      subtitle: "A short description",
+      description: null,
       isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
@@ -33,8 +33,8 @@ describe("createWithVersionRecipe", () => {
     expect(out.result).toBeDefined();
     assert(out.result);
     expect(out.result.recipe.title).toBe(params.title);
-    expect(out.result.recipe.shortDescription).toBe(params.shortDescription);
-    expect(out.result.recipe.longDescription).toBe(params.longDescription);
+    expect(out.result.recipe.subtitle).toBe(params.subtitle);
+    expect(out.result.recipe.description).toBe(params.description);
     expect(out.result.recipe.isPublic).toBe(params.isPublic);
     expect(out.result.recipe.createdBy).toBe(params.createdBy);
     expect(out.result.recipe.updatedBy).toBe(params.updatedBy);
@@ -50,11 +50,11 @@ describe("createWithVersionRecipe", () => {
     expect(out.result.version.createdAt).toBeDefined();
   });
 
-  it("should persist recipe with longDescription and isPublic true", async () => {
+  it("should persist recipe with description and isPublic true", async () => {
     const params = {
       title: "Public Recipe",
-      shortDescription: "Short",
-      longDescription: "A longer description for the recipe.",
+      subtitle: "Short",
+      description: "A longer description for the recipe.",
       isPublic: true,
       createdBy: "user-2",
       updatedBy: "user-2",
@@ -70,7 +70,7 @@ describe("createWithVersionRecipe", () => {
     expect(out.error).toBeUndefined();
     expect(out.result).toBeDefined();
     assert(out.result);
-    expect(out.result.recipe.longDescription).toBe(params.longDescription);
+    expect(out.result.recipe.description).toBe(params.description);
     expect(out.result.recipe.isPublic).toBe(true);
     expect(out.result.version.content.ingredients).toHaveLength(2);
     expect(out.result.version.content.instructionsMarkdown).toBe(
@@ -86,8 +86,8 @@ describe("createWithVersionRecipe", () => {
   it("should assign distinct ids to each created recipe and version", async () => {
     const params1 = {
       title: "First",
-      shortDescription: "First short",
-      longDescription: null,
+      subtitle: "First short",
+      description: null,
       isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
@@ -98,8 +98,8 @@ describe("createWithVersionRecipe", () => {
     };
     const params2 = {
       title: "Second",
-      shortDescription: "Second short",
-      longDescription: null,
+      subtitle: "Second short",
+      description: null,
       isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",

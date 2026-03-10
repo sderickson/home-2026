@@ -20,8 +20,8 @@
 
         <RecipeContentPreview
           :title="recipe.title"
-          :short-description="recipe.shortDescription"
-          :long-description="recipe.longDescription ?? undefined"
+          :subtitle="recipe.subtitle"
+          :description="recipe.description ?? undefined"
           :content="content"
         />
 

@@ -43,8 +43,8 @@ describe("createVersionRecipe", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: now,

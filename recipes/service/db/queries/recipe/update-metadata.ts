@@ -11,7 +11,7 @@ export type UpdateMetadataRecipeError = RecipeNotFoundError;
 
 export type UpdateMetadataRecipeParams = Pick<
   typeof recipe.$inferSelect,
-  "id" | "title" | "shortDescription" | "longDescription" | "isPublic" | "updatedBy"
+  "id" | "title" | "subtitle" | "description" | "isPublic" | "updatedBy"
 >;
 
 export const updateMetadataRecipe = queryWrapper(
@@ -24,8 +24,8 @@ export const updateMetadataRecipe = queryWrapper(
       .update(recipe)
       .set({
         title: params.title,
-        shortDescription: params.shortDescription,
-        longDescription: params.longDescription,
+        subtitle: params.subtitle,
+        description: params.description,
         isPublic: params.isPublic,
         updatedBy: params.updatedBy,
         updatedAt: new Date(),

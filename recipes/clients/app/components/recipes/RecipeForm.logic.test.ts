@@ -4,13 +4,13 @@ import { isRecipeFormValid } from "./RecipeForm.logic.ts";
 describe("isRecipeFormValid", () => {
   it("returns false when title is empty", () => {
     expect(
-      isRecipeFormValid({ title: "", shortDescription: "A brief description" }),
+      isRecipeFormValid({ title: "", subtitle: "A brief description" }),
     ).toBe(false);
   });
 
-  it("returns false when shortDescription is empty", () => {
+  it("returns false when subtitle is empty", () => {
     expect(
-      isRecipeFormValid({ title: "Recipe title", shortDescription: "" }),
+      isRecipeFormValid({ title: "Recipe title", subtitle: "" }),
     ).toBe(false);
   });
 
@@ -18,7 +18,7 @@ describe("isRecipeFormValid", () => {
     expect(
       isRecipeFormValid({
         title: "  Recipe title  ",
-        shortDescription: " Brief description ",
+        subtitle: " Brief description ",
       }),
     ).toBe(true);
   });

@@ -20,8 +20,8 @@ describe("updateLatestVersionRecipe", () => {
   it("should update latest version content in place and return the updated version", async () => {
     const { result: created } = await createWithVersionRecipe(dbKey, {
       title: "Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
@@ -80,8 +80,8 @@ describe("updateLatestVersionRecipe", () => {
       .insert(recipe)
       .values({
         title: "Orphan Recipe",
-        shortDescription: "Short",
-        longDescription: null,
+        subtitle: "Short",
+        description: null,
         isPublic: false,
         createdBy: "user-1",
         createdAt: now,

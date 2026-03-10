@@ -29,8 +29,8 @@
           <v-card-text>
             <RecipeContentPreview
               :title="formModel.title"
-              :short-description="formModel.shortDescription"
-              :long-description="formModel.longDescription ?? undefined"
+              :subtitle="formModel.subtitle"
+              :description="formModel.description ?? undefined"
               :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
             />
           </v-card-text>
@@ -59,8 +59,8 @@ assertCreateDataLoaded(profileQuery.data.value);
 
 const formModel = ref<RecipeFormModel>({
   title: "",
-  shortDescription: "",
-  longDescription: null,
+  subtitle: "",
+  description: null,
   isPublic: false,
   initialVersion: {
     content: {

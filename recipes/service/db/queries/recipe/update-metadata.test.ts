@@ -19,8 +19,8 @@ describe("updateMetadataRecipe", () => {
   it("should update recipe metadata and return the updated recipe", async () => {
     const { result: created } = await createWithVersionRecipe(dbKey, {
       title: "Original Title",
-      shortDescription: "Short",
-      longDescription: "Long",
+      subtitle: "Short",
+      description: "Long",
       isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
@@ -36,8 +36,8 @@ describe("updateMetadataRecipe", () => {
     const { result, error } = await updateMetadataRecipe(dbKey, {
       id: recipeId,
       title: "Updated Title",
-      shortDescription: "Updated Short",
-      longDescription: "Updated Long",
+      subtitle: "Updated Short",
+      description: "Updated Long",
       isPublic: true,
       updatedBy: "user-2",
     });
@@ -47,8 +47,8 @@ describe("updateMetadataRecipe", () => {
     assert(result);
     expect(result.id).toBe(recipeId);
     expect(result.title).toBe("Updated Title");
-    expect(result.shortDescription).toBe("Updated Short");
-    expect(result.longDescription).toBe("Updated Long");
+    expect(result.subtitle).toBe("Updated Short");
+    expect(result.description).toBe("Updated Long");
     expect(result.isPublic).toBe(true);
     expect(result.updatedBy).toBe("user-2");
     expect(result.updatedAt).toBeInstanceOf(Date);
@@ -59,8 +59,8 @@ describe("updateMetadataRecipe", () => {
     const { result, error } = await updateMetadataRecipe(dbKey, {
       id: nonexistentId,
       title: "Title",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: false,
       updatedBy: "user-1",
     });

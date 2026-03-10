@@ -4,7 +4,7 @@
  */
 export function isRecipeFormValid(model: {
   title: string;
-  shortDescription: string;
+  subtitle: string;
 }): boolean {
-  return model.title.trim() !== "" && model.shortDescription.trim() !== "";
+  return model.title.trim() !== "" && model.subtitle.trim() !== "";
 }

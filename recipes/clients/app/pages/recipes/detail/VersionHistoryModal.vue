@@ -36,8 +36,8 @@
             <v-expansion-panel-text>
               <RecipeContentPreview
                 :title="recipe.title"
-                :short-description="recipe.shortDescription"
-                :long-description="recipe.longDescription ?? undefined"
+                :subtitle="recipe.subtitle"
+                :description="recipe.description ?? undefined"
                 :content="ver.content"
               />
               <template v-if="notesByVersionId.get(ver.id)?.length">
@@ -85,8 +85,8 @@ defineProps<{
   modelValue: boolean;
   recipe: {
     title: string;
-    shortDescription: string;
-    longDescription?: string | null;
+    subtitle: string;
+    description?: string | null;
   };
   versions: RecipeVersion[];
   notesByVersionId: Map<string, RecipeNote[]>;

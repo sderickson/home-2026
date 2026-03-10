@@ -23,8 +23,8 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
     dbKey = recipesDb.connect();
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,
@@ -114,8 +114,8 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
   it("should return 404 when note belongs to different recipe", async () => {
     const { result: otherRecipe } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Other Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,

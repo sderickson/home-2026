@@ -10,10 +10,10 @@ export const updateRecipesHandler = recipesHandler({
     if (!recipe) return undefined;
     if (body) {
       if (body.title !== undefined) recipe.title = body.title;
-      if (body.shortDescription !== undefined)
-        recipe.shortDescription = body.shortDescription;
-      if (body.longDescription !== undefined)
-        recipe.longDescription = body.longDescription;
+      if (body.subtitle !== undefined)
+        recipe.subtitle = body.subtitle;
+      if (body.description !== undefined)
+        recipe.description = body.description;
       if (body.isPublic !== undefined) recipe.isPublic = body.isPublic;
       recipe.updatedAt = new Date().toISOString();
     }

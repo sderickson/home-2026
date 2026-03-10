@@ -44,8 +44,8 @@ describe("insertRecipeNoteFile", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "Recipe A",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: now,
@@ -55,8 +55,8 @@ describe("insertRecipeNoteFile", () => {
     await db.insert(recipe).values({
       id: otherRecipeId,
       title: "Recipe B",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: now,
@@ -106,8 +106,8 @@ describe("insertRecipeNoteFile", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: now,
@@ -167,8 +167,8 @@ describe("insertRecipeNoteFile", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: now,

@@ -18,8 +18,8 @@ export const mockRecipes: Recipe[] = [
   {
     id: "123e4567-e89b-12d3-a456-426614174000",
     title: "Classic Chocolate Chip Cookies",
-    shortDescription: "Crispy edges, chewy centers",
-    longDescription:
+    subtitle: "Crispy edges, chewy centers",
+    description:
       "A crowd-pleasing recipe that works every time. Best with room-temperature butter.",
     isPublic: true,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
@@ -31,7 +31,7 @@ export const mockRecipes: Recipe[] = [
   {
     id: "223e4567-e89b-12d3-a456-426614174001",
     title: "Simple Salad",
-    shortDescription: "Quick and fresh",
+    subtitle: "Quick and fresh",
     isPublic: false,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
     createdAt: "2023-03-10T10:00:00Z",

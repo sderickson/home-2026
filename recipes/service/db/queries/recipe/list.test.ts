@@ -12,8 +12,8 @@ function makeRecipeRow(overrides: {
   const now = new Date();
   return {
     title: "Test Recipe",
-    shortDescription: "Short",
-    longDescription: null as string | null,
+    subtitle: "Short",
+    description: null as string | null,
     isPublic: true,
     createdBy: "user-1",
     createdAt: now,
@@ -94,8 +94,8 @@ describe("listRecipes", () => {
     const db = recipesDbManager.get(dbKey)!;
     const row = makeRecipeRow({
       title: "Shaped",
-      shortDescription: "Desc",
-      longDescription: "Long",
+      subtitle: "Desc",
+      description: "Long",
     });
     await db.insert(recipe).values(row);
     const out = await listRecipes(dbKey, { includePrivate: true });
@@ -105,8 +105,8 @@ describe("listRecipes", () => {
     const r = out.result[0];
     expect(r).toHaveProperty("id");
     expect(r).toHaveProperty("title", "Shaped");
-    expect(r).toHaveProperty("shortDescription", "Desc");
-    expect(r).toHaveProperty("longDescription", "Long");
+    expect(r).toHaveProperty("subtitle", "Desc");
+    expect(r).toHaveProperty("description", "Long");
     expect(r).toHaveProperty("isPublic", true);
     expect(r).toHaveProperty("createdBy");
     expect(r).toHaveProperty("createdAt");

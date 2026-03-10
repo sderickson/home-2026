@@ -24,8 +24,8 @@ describe("DELETE /recipes/:id/notes/:noteId/files/:fileId (notesFilesDeleteRecip
     dbKey = recipesDb.connect();
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,

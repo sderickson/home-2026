@@ -6,7 +6,7 @@
 
     <v-card-text>
       <p class="text-medium-emphasis">
-        {{ recipe.shortDescription }}
+        {{ recipe.subtitle }}
       </p>
     </v-card-text>
   </v-card>

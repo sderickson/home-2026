@@ -34,8 +34,8 @@ describe("versionsListRecipe", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: "user-1",
       createdAt: base,
@@ -88,8 +88,8 @@ describe("versionsListRecipe", () => {
     await db.insert(recipe).values({
       id: recipeId,
       title: "No Versions",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: false,
       createdBy: "user-1",
       createdAt: now,

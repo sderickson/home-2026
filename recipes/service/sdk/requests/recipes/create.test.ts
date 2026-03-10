@@ -16,7 +16,7 @@ describe("createRecipe", () => {
 
     const result = await mutation.mutateAsync({
       title: "New Recipe",
-      shortDescription: "A new test recipe",
+      subtitle: "A new test recipe",
       isPublic: true,
     });
 
@@ -39,7 +39,7 @@ describe("createRecipe", () => {
 
     await mutation.mutateAsync({
       title: "Cache Test Recipe",
-      shortDescription: "For invalidation test",
+      subtitle: "For invalidation test",
       isPublic: false,
     });
 

@@ -3,17 +3,17 @@
     <v-card-text class="pb-0">
       <h2 v-if="title" class="text-h5 font-weight-bold mb-1">{{ title }}</h2>
       <p
-        v-if="shortDescription"
+        v-if="subtitle"
         class="text-medium-emphasis text-body-2 mb-0 mt-0"
         style="line-height: 1.4"
       >
-        {{ shortDescription }}
+        {{ subtitle }}
       </p>
       <p
-        v-if="longDescription"
+        v-if="description"
         class="text-body-2 mt-3 mb-0 recipe-content-preview__description"
       >
-        {{ longDescription }}
+        {{ description }}
       </p>
     </v-card-text>
 
@@ -60,8 +60,8 @@ const { t } = useReverseT();
 
 const props = defineProps<{
   title?: string;
-  shortDescription?: string;
-  longDescription?: string;
+  subtitle?: string;
+  description?: string;
   content: {
     ingredients: { name: string; quantity: string; unit: string }[];
     instructionsMarkdown: string;

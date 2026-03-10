@@ -20,8 +20,8 @@ export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel 
   const { recipe, currentVersion } = response;
   return {
     title: recipe.title,
-    shortDescription: recipe.shortDescription,
-    longDescription: recipe.longDescription ?? null,
+    subtitle: recipe.subtitle,
+    description: recipe.description ?? null,
     isPublic: recipe.isPublic,
     initialVersion: {
       content: {

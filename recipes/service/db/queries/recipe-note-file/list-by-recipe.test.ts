@@ -24,8 +24,8 @@ describe("listRecipeNoteFilesByRecipeId", () => {
     await db.insert(recipe).values({
       id: "r1",
       title: "Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: seedUserId,
       createdAt: now,
@@ -44,8 +44,8 @@ describe("listRecipeNoteFilesByRecipeId", () => {
     await db.insert(recipe).values({
       id: "r1",
       title: "Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: seedUserId,
       createdAt: now,
