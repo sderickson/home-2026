@@ -15,14 +15,14 @@ export interface RecipeFormModelForDiff {
 }
 
 /**
- * Validation for the recipe form. Form can be submitted when required
- * fields are non-empty (after trim).
+ * Validation for the recipe form. Form can be submitted when the required
+ * field (title) is non-empty after trim. Subtitle is optional.
  */
 export function isRecipeFormValid(model: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }): boolean {
-  return model.title.trim() !== "" && model.subtitle.trim() !== "";
+  return model.title.trim() !== "";
 }
 
 const FIELD_LABELS: Record<string, string> = {
