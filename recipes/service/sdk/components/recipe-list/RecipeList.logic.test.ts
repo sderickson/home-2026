@@ -1,44 +1,42 @@
 import { describe, it, expect } from "vitest";
-import { filterKeyIngredients, getCardEnrichment } from "./RecipeList.logic.ts";
+import {
+  filterKeyIngredients,
+  formatKeyIngredientsDisplay,
+  getCardEnrichment,
+} from "./RecipeList.logic.ts";
 
 describe("filterKeyIngredients", () => {
   it("returns empty array for empty input", () => {
     expect(filterKeyIngredients([])).toEqual([]);
   });
 
-  it("filters out salt, pepper, water, oil by exact name", () => {
+  it("filters out ingredients whose name contains 'oil' (e.g. sesame oil, olive oil)", () => {
     const ingredients = [
-      { name: "salt", quantity: "1", unit: "tsp" },
-      { name: "pepper", quantity: "½", unit: "tsp" },
-      { name: "water", quantity: "1", unit: "cup" },
-      { name: "oil", quantity: "2", unit: "tbsp" },
+      { name: "sesame oil", quantity: "1", unit: "tsp" },
+      { name: "olive oil", quantity: "2", unit: "tbsp" },
       { name: "cauliflower", quantity: "1", unit: "head" },
     ];
     const result = filterKeyIngredients(ingredients);
     expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({
-      name: "cauliflower",
-      quantity: "1",
-      unit: "head",
-    });
+    expect(result[0].name).toBe("cauliflower");
   });
 
-  it("filters olive oil, sea salt, black pepper", () => {
+  it("filters out ingredients whose name contains 'garlic' or 'salt'", () => {
     const ingredients = [
-      { name: "olive oil", quantity: "2", unit: "tbsp" },
-      { name: "sea salt", quantity: "1", unit: "pinch" },
-      { name: "black pepper", quantity: "1", unit: "tsp" },
       { name: "garlic", quantity: "2", unit: "cloves" },
+      { name: "sea salt", quantity: "1", unit: "pinch" },
+      { name: "minced garlic", quantity: "1", unit: "tsp" },
+      { name: "onion", quantity: "½", unit: "cup" },
     ];
     const result = filterKeyIngredients(ingredients);
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("garlic");
+    expect(result[0].name).toBe("onion");
   });
 
   it("is case-insensitive", () => {
     const ingredients = [
       { name: "Salt", quantity: "1", unit: "tsp" },
-      { name: "WATER", quantity: "1", unit: "cup" },
+      { name: "SESAME OIL", quantity: "1", unit: "tsp" },
     ];
     expect(filterKeyIngredients(ingredients)).toHaveLength(0);
   });
@@ -53,6 +51,39 @@ describe("filterKeyIngredients", () => {
       quantity: "2",
       unit: "cups",
     });
+  });
+});
+
+describe("formatKeyIngredientsDisplay", () => {
+  it("returns empty string for empty input", () => {
+    expect(formatKeyIngredientsDisplay([])).toBe("");
+  });
+
+  it("joins names with commas", () => {
+    const ingredients = [
+      { name: "cauliflower", quantity: "1", unit: "head" },
+      { name: "onion", quantity: "½", unit: "cup" },
+    ];
+    expect(formatKeyIngredientsDisplay(ingredients)).toBe(
+      "cauliflower, onion",
+    );
+  });
+
+  it("uses only the first part of each name (before comma)", () => {
+    const ingredients = [
+      { name: "garlic, minced", quantity: "1", unit: "clove" },
+      { name: "cauliflower, trimmed and cut into florets", quantity: "1", unit: "head" },
+    ];
+    expect(formatKeyIngredientsDisplay(ingredients)).toBe(
+      "garlic, cauliflower",
+    );
+  });
+
+  it("trims whitespace around first part", () => {
+    const ingredients = [
+      { name: "  onion , diced  ", quantity: "1", unit: "cup" },
+    ];
+    expect(formatKeyIngredientsDisplay(ingredients)).toBe("onion");
   });
 });
 

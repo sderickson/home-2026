@@ -10,23 +10,12 @@ export interface KeyIngredient {
   unit: string;
 }
 
-/** Common ingredients to hide from list card "key ingredients" (lowercase match on name). */
-const COMMON_INGREDIENT_NAMES = new Set([
-  "salt",
-  "pepper",
-  "water",
-  "oil",
-  "olive oil",
-  "vegetable oil",
-  "extra-virgin olive oil",
-  "black pepper",
-  "sea salt",
-  "kosher salt",
-  "salt and pepper",
-]);
+/** Substrings (lowercase) in ingredient name that indicate common/pantry items to hide from list card. */
+const COMMON_INGREDIENT_SUBSTRINGS = ["oil", "garlic", "salt", "water"];
 
 /**
  * Returns ingredients with common/pantry items filtered out for list card preview.
+ * Excludes any ingredient whose name (case-insensitive) contains "oil", "garlic", or "salt".
  */
 export function filterKeyIngredients(
   ingredients: { name: string; quantity: string; unit: string }[],
@@ -34,8 +23,21 @@ export function filterKeyIngredients(
   return ingredients.filter((ing) => {
     const nameLower = ing.name.trim().toLowerCase();
     if (!nameLower) return false;
-    return !COMMON_INGREDIENT_NAMES.has(nameLower);
+    return !COMMON_INGREDIENT_SUBSTRINGS.some((sub) => nameLower.includes(sub));
   }) as KeyIngredient[];
+}
+
+/**
+ * For card display: take the first part of each ingredient name (before the first comma,
+ * e.g. "cauliflower, trimmed and cut into florets" → "cauliflower"), then join with commas.
+ */
+export function formatKeyIngredientsDisplay(
+  ingredients: KeyIngredient[],
+): string {
+  return ingredients
+    .map((ing) => (ing.name.split(",")[0] ?? "").trim())
+    .filter(Boolean)
+    .join(", ");
 }
 
 /** File-like shape with mimetype and downloadUrl (e.g. from files list API). */
@@ -66,10 +68,10 @@ export function getCardEnrichment(
   detail: RecipeDetailLike | undefined,
   files: RecipeFileLike[] | undefined,
 ): CardEnrichment {
-  const ingredients =
-    detail?.currentVersion?.content?.ingredients ?? [];
-  const firstImage =
-    files?.find((f) => (f.mimetype ?? "").startsWith("image/"));
+  const ingredients = detail?.currentVersion?.content?.ingredients ?? [];
+  const firstImage = files?.find((f) =>
+    (f.mimetype ?? "").startsWith("image/"),
+  );
   return {
     firstImageUrl: firstImage?.downloadUrl ?? null,
     keyIngredients: filterKeyIngredients(ingredients),
