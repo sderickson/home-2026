@@ -24,20 +24,31 @@
             :value="ver.id"
           >
             <v-expansion-panel-title>
-              {{
-                ver.isLatest
-                  ? t(strings.version_latest)
-                  : (t(strings.version_from_date) as string).replace(
-                      "{date}",
-                      formatVersionDate(ver.createdAt),
-                    )
-              }}
+              <div class="d-flex flex-column py-1">
+                <span class="text-body-1">
+                  <template v-if="firstNoteFirstLine(ver)">
+                    {{ firstNoteFirstLine(ver) }}
+                  </template>
+                  <i18n-t
+                    v-else
+                    scope="global"
+                    :keypath="lookupTKey(strings.version_from_date)"
+                  >
+                    <template #date>{{ formatVersionDate(ver.createdAt) }}</template>
+                  </i18n-t>
+                </span>
+                <span class="text-caption text-medium-emphasis mt-1">
+                  {{ t(strings.created_date) }}:
+                  {{ formatVersionDate(ver.createdAt) }}
+                  <template v-if="versionUpdatedAt(ver)">
+                    · {{ t(strings.updated_date) }}:
+                    {{ formatVersionDate(versionUpdatedAt(ver)!) }}
+                  </template>
+                </span>
+              </div>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <RecipeContentPreview
-                :recipe="recipe"
-                :current-version="ver"
-              />
+              <RecipeContentPreview :recipe="recipe" :current-version="ver" />
               <template v-if="notesByVersionId.get(ver.id)?.length">
                 <p class="text-caption text-medium-emphasis mt-2 mb-1">
                   {{ t(strings.notes_for_version) }}
@@ -73,15 +84,19 @@
 </template>
 
 <script setup lang="ts">
-import type { RecipeNote, RecipeVersion } from "@sderickson/recipes-spec";
+import type {
+  RecipeNote,
+  RecipeVersion,
+  Recipe,
+} from "@sderickson/recipes-spec";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { version_history_modal as strings } from "./VersionHistoryModal.strings.ts";
 import { formatVersionDate } from "./Detail.logic.ts";
 
-defineProps<{
+const props = defineProps<{
   modelValue: boolean;
-  recipe: import("@sderickson/recipes-spec").Recipe;
+  recipe: Recipe;
   versions: RecipeVersion[];
   notesByVersionId: Map<string, RecipeNote[]>;
 }>();
@@ -90,5 +105,23 @@ defineEmits<{
   "update:modelValue": [value: boolean];
 }>();
 
-const { t } = useReverseT();
+const { t, lookupTKey } = useReverseT();
+
+/** First line of the first note for this version (commit-message style), or null if none. */
+function firstNoteFirstLine(ver: RecipeVersion): string | null {
+  const notes = props.notesByVersionId.get(ver.id) ?? [];
+  const firstNote = [...notes].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  )[0];
+  if (!firstNote?.body?.trim()) return null;
+  const firstLine = firstNote.body.split(/\r?\n/)[0].trim();
+  return firstLine || null;
+}
+
+/** If the version was updated after creation, returns updatedAt (for when the API supports it). */
+function versionUpdatedAt(ver: RecipeVersion): string | undefined {
+  const v = ver as RecipeVersion & { updatedAt?: string };
+  if (!v.updatedAt || v.updatedAt === ver.createdAt) return undefined;
+  return v.updatedAt;
+}
 </script>
