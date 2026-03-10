@@ -256,15 +256,15 @@ export interface components {
              */
             title: string;
             /**
-             * @description Short description shown on menus and list views
+             * @description Subtitle shown on menus and list views
              * @example Crispy edges, chewy centers
              */
-            shortDescription: string;
+            subtitle: string;
             /**
              * @description Optional longer description shown on recipe detail (not on menu)
              * @example A crowd-pleasing recipe that works every time. Best with room-temperature butter.
              */
-            longDescription?: string | null;
+            description?: string | null;
             /**
              * @description Whether the recipe is visible to non-admin users
              * @example true
@@ -686,10 +686,10 @@ export interface operations {
                 "application/json": {
                     /** @description Recipe title */
                     title: string;
-                    /** @description Short description shown on menus and list views */
-                    shortDescription: string;
+                    /** @description Subtitle shown on menus and list views */
+                    subtitle: string;
                     /** @description Optional longer description shown on recipe detail */
-                    longDescription?: string | null;
+                    description?: string | null;
                     /** @description Whether the recipe is visible to non-admin users */
                     isPublic: boolean;
                     /** @description Optional initial version content for the first version */
@@ -787,10 +787,10 @@ export interface operations {
                 "application/json": {
                     /** @description Recipe title */
                     title?: string;
-                    /** @description Short description shown on menus and list views */
-                    shortDescription?: string;
+                    /** @description Subtitle shown on menus and list views */
+                    subtitle?: string;
                     /** @description Optional longer description shown on recipe detail */
-                    longDescription?: string | null;
+                    description?: string | null;
                     /** @description Whether the recipe is visible to non-admin users */
                     isPublic?: boolean;
                 };
