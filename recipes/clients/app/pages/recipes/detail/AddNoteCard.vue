@@ -1,28 +1,29 @@
 <template>
-  <v-card variant="outlined" class="mb-3">
-    <v-card-title class="text-subtitle-1">
-      {{ t(strings.title) }}
-    </v-card-title>
-    <v-card-text>
-      <v-textarea
-        v-model="newNoteBodyModel"
-        :placeholder="t(strings.note_body_placeholder)"
-        rows="3"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mb-2"
-      />
-      <v-btn
-        color="primary"
-        :loading="notesFlow.createMutation.isPending.value"
-        :disabled="!trimmedBody"
-        @click="notesFlow.submitNewNote()"
-      >
-        {{ t(strings.create_note) }}
-      </v-btn>
-    </v-card-text>
-  </v-card>
+  <div class="add-note-composer d-flex align-end gap-2">
+    <v-textarea
+      v-model="newNoteBodyModel"
+      :placeholder="t(strings.note_body_placeholder)"
+      rows="1"
+      auto-grow
+      variant="outlined"
+      density="compact"
+      hide-details
+      class="add-note-composer__input flex-grow-1"
+      @keydown.ctrl.enter="notesFlow.submitNewNote()"
+    />
+    <v-btn
+      icon
+      color="primary"
+      size="small"
+      class="add-note-composer__send flex-shrink-0"
+      :loading="notesFlow.createMutation.isPending.value"
+      :disabled="!trimmedBody"
+      :aria-label="t(strings.create_note)"
+      @click="notesFlow.submitNewNote()"
+    >
+      <v-icon>mdi-send</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -52,3 +53,9 @@ const { t } = useReverseT();
 
 const trimmedBody = computed(() => notesFlow.newNoteBody.value.trim());
 </script>
+
+<style scoped>
+.add-note-composer__input :deep(.v-field__input) {
+  min-height: 40px;
+}
+</style>

@@ -15,112 +15,110 @@
         </v-breadcrumbs-item>
       </v-breadcrumbs>
 
-      <v-card class="mb-4">
-        <v-toolbar density="comfortable">
-          <v-toolbar-title class="text-h6">{{ recipe.title }}</v-toolbar-title>
-          <v-spacer />
-          <template v-if="showVersionHistory">
-            <v-tooltip location="bottom" :text="t(strings.toolbar_version_history)">
-              <template #activator="{ props: tooltipProps }">
-                <v-btn
-                  v-bind="tooltipProps"
-                  icon
-                  variant="text"
-                  @click="versionHistoryModalOpen = true"
-                >
-                  <v-icon>mdi-history</v-icon>
-                </v-btn>
+      <v-row>
+        <!-- Main content: card + version history -->
+        <v-col cols="12" :md="notesDrawerOpen ? 8 : 12" :lg="notesDrawerOpen ? 9 : 12">
+          <v-card class="mb-4">
+            <v-toolbar density="comfortable">
+              <v-toolbar-title class="text-h6">{{ recipe.title }}</v-toolbar-title>
+              <v-spacer />
+              <template v-if="showVersionHistory">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_version_history)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      @click="versionHistoryModalOpen = true"
+                    >
+                      <v-icon>mdi-history</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
               </template>
-            </v-tooltip>
-          </template>
-          <v-tooltip location="bottom" :text="t(strings.toolbar_edit)">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                v-bind="tooltipProps"
-                icon
-                variant="text"
-                :to="`/recipes/${recipe.id}/edit`"
-              >
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-            </template>
-          </v-tooltip>
-          <v-tooltip location="bottom" :text="t(strings.toolbar_notes)">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                v-bind="tooltipProps"
-                icon
-                variant="text"
-                :class="{ 'v-btn--active': notesDrawerOpen }"
-                @click="notesDrawerOpen = !notesDrawerOpen"
-              >
-                <v-badge
-                  :model-value="notesForLatestVersion.length > 0"
-                  :content="notesForLatestVersion.length"
-                  color="primary"
-                >
-                  <v-icon>mdi-note-text</v-icon>
-                </v-badge>
-              </v-btn>
-            </template>
-          </v-tooltip>
-          <template v-if="showFilesEdit">
-            <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
-              <template #activator="{ props: tooltipProps }">
-                <v-btn
-                  v-bind="tooltipProps"
-                  icon
-                  variant="text"
-                  :disabled="filesFlow.uploadFileMutation.isPending.value"
-                  @click="imageFileInputRef?.click()"
-                >
-                  <v-icon>mdi-image-plus</v-icon>
-                </v-btn>
+              <v-tooltip location="bottom" :text="t(strings.toolbar_edit)">
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="tooltipProps"
+                    icon
+                    variant="text"
+                    :to="`/recipes/${recipe.id}/edit`"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="bottom" :text="t(strings.toolbar_notes)">
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="tooltipProps"
+                    icon
+                    variant="text"
+                    :class="{ 'v-btn--active': notesDrawerOpen }"
+                    @click="notesDrawerOpen = !notesDrawerOpen"
+                  >
+                    <v-badge
+                      :model-value="notesForLatestVersion.length > 0"
+                      :content="notesForLatestVersion.length"
+                      color="primary"
+                    >
+                      <v-icon>mdi-note-text</v-icon>
+                    </v-badge>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <template v-if="showFilesEdit">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      :disabled="filesFlow.uploadFileMutation.isPending.value"
+                      @click="imageFileInputRef?.click()"
+                    >
+                      <v-icon>mdi-image-plus</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+                <input
+                  :ref="(el) => { imageFileInputRef = el as HTMLInputElement | null; }"
+                  type="file"
+                  accept="image/*"
+                  class="d-none"
+                  @change="filesFlow.onFileInputChangeAndUpload"
+                />
               </template>
-            </v-tooltip>
-            <input
-              :ref="(el) => { imageFileInputRef = el as HTMLInputElement | null; }"
-              type="file"
-              accept="image/*"
-              class="d-none"
-              @change="filesFlow.onFileInputChangeAndUpload"
+              <template v-if="showFilesEdit">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_delete)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      color="error"
+                      :disabled="deleteRecipeMutation.isPending.value"
+                      @click="deleteRecipeDialogOpen = true"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </template>
+            </v-toolbar>
+
+            <RecipeContentPreview
+              :recipe="recipe"
+              :current-version="currentVersion"
+              :files="files"
+              :show-image-actions="showFilesEdit"
+              :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+              @click-image="expandedImageFile = $event"
+              @delete-image="filesFlow.confirmDeleteFile($event)"
             />
-          </template>
-          <template v-if="showFilesEdit">
-            <v-tooltip location="bottom" :text="t(strings.toolbar_delete)">
-              <template #activator="{ props: tooltipProps }">
-                <v-btn
-                  v-bind="tooltipProps"
-                  icon
-                  variant="text"
-                  color="error"
-                  :disabled="deleteRecipeMutation.isPending.value"
-                  @click="deleteRecipeDialogOpen = true"
-                >
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </v-tooltip>
-          </template>
-        </v-toolbar>
+          </v-card>
 
-        <RecipeContentPreview
-          :recipe="recipe"
-          :current-version="currentVersion"
-          :files="files"
-          :show-image-actions="showFilesEdit"
-          :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
-          @click-image="expandedImageFile = $event"
-          @delete-image="filesFlow.confirmDeleteFile($event)"
-        />
-      </v-card>
-    </v-container>
-
-    <v-container fluid>
-        <v-row>
-          <v-col cols="12" :md="notesDrawerOpen ? 8 : 12" :lg="notesDrawerOpen ? 9 : 12">
-            <template v-if="showVersionHistory">
-            <v-divider class="my-4" />
+          <template v-if="showVersionHistory">
             <v-btn
               variant="outlined"
               prepend-icon="mdi-history"
@@ -131,36 +129,43 @@
           </template>
         </v-col>
 
-        <!-- Notes drawer column -->
+        <!-- Notes panel: ~1/3 width to the right, chat style -->
         <v-col v-if="notesDrawerOpen" cols="12" md="4" lg="3">
-          <v-sheet rounded class="pa-3">
-            <h2 class="text-h6 mb-3">{{ t(strings.notes_section) }}</h2>
+          <v-sheet
+            variant="outlined"
+            rounded
+            class="detail-notes-panel d-flex flex-column"
+            height="calc(100vh - 180px)"
+            min-height="320"
+          >
+            <div class="text-subtitle-2 text-medium-emphasis px-3 py-2">
+              {{ t(strings.notes_section) }}
+            </div>
+            <v-divider />
+            <div class="detail-notes-list flex-grow-1 overflow-y-auto pa-2">
+              <template v-if="notesForLatestVersion.length === 0">
+                <p class="text-body-2 text-medium-emphasis pa-2">{{ t(strings.no_notes) }}</p>
+              </template>
+              <template v-else>
+                <NoteCard
+                  v-for="note in notesTimelineOrder"
+                  :key="note.id"
+                  :recipe-id="recipe.id"
+                  :latest-version-id="currentVersion?.id"
+                  :note="note"
+                  :files="getFilesForNote(note)"
+                  :show-notes-edit="showNotesEdit"
+                />
+              </template>
+            </div>
             <template v-if="showNotesEdit">
+              <v-divider />
+              <div class="detail-notes-composer pa-2">
               <AddNoteCard
                 :recipe-id="recipe.id"
                 :latest-version-id="currentVersion?.id"
               />
-              <v-divider class="my-3" />
-            </template>
-            <template v-if="notesForLatestVersion.length === 0">
-              <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
-            </template>
-            <template v-else>
-              <v-timeline side="end" density="compact" truncate-line="both">
-                <v-timeline-item
-                  v-for="note in notesTimelineOrder"
-                  :key="note.id"
-                  dot-color="primary"
-                >
-                  <NoteCard
-                    :recipe-id="recipe.id"
-                    :latest-version-id="currentVersion?.id"
-                    :note="note"
-                    :files="getFilesForNote(note)"
-                    :show-notes-edit="showNotesEdit"
-                  />
-                </v-timeline-item>
-              </v-timeline>
+              </div>
             </template>
           </v-sheet>
         </v-col>

@@ -4,6 +4,7 @@ export const note_card = {
   upload_file: "Upload file",
   note_no_files: "No files attached.",
   delete_file: "Remove file",
+  attach_file: "Attach file",
   edit_note: "Edit",
   delete_note: "Delete",
   save_note: "Save note",

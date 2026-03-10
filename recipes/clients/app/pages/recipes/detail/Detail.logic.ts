@@ -83,6 +83,18 @@ export function formatVersionDate(createdAt: string): string {
 }
 
 /**
+ * Formats an ISO date string for note display in chat style (e.g. "Mar 10, 2:30 PM").
+ */
+export function formatNoteDateTime(createdAt: string): string {
+  return new Date(createdAt).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/**
  * Groups notes by their recipeVersionId. Only notes with a non-null recipeVersionId
  * are included. Used to show "notes for this version" in the version history modal.
  */
