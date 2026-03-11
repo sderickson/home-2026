@@ -15,8 +15,8 @@ describe("assertEditDataLoaded", () => {
       recipe: {
         id: "r1",
         title: "Test",
-        shortDescription: "Short",
-        longDescription: null,
+        subtitle: "Short",
+        description: null,
         isPublic: false,
         createdBy: "u1",
         createdAt: "",
@@ -43,8 +43,8 @@ describe("recipeToFormModel", () => {
       recipe: {
         id: "r1",
         title: "Title",
-        shortDescription: "Short",
-        longDescription: "Long",
+        subtitle: "Short",
+        description: "Long",
         isPublic: true,
         createdBy: "u1",
         createdAt: "",
@@ -66,8 +66,8 @@ describe("recipeToFormModel", () => {
     };
     const model = recipeToFormModel(response);
     expect(model.title).toBe("Title");
-    expect(model.shortDescription).toBe("Short");
-    expect(model.longDescription).toBe("Long");
+    expect(model.subtitle).toBe("Short");
+    expect(model.description).toBe("Long");
     expect(model.isPublic).toBe(true);
     expect(model.initialVersion.content.ingredients).toHaveLength(1);
     expect(model.initialVersion.content.ingredients[0].name).toBe("Flour");

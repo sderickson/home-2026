@@ -17,8 +17,8 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
     dbKey = recipesDb.connect();
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: seedUserId,
       updatedBy: seedUserId,
@@ -68,8 +68,8 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
   it("should return 404 when not authenticated and recipe is private", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Private Recipe",
-      shortDescription: "Private",
-      longDescription: null,
+      subtitle: "Private",
+      description: null,
       isPublic: false,
       createdBy: seedUserId,
       updatedBy: seedUserId,

@@ -25,6 +25,7 @@
     "@sderickson/recipes-clients-common": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
+    "marked": "^15.0.12",
     "vue-router": "*"
   },
   "devDependencies": {

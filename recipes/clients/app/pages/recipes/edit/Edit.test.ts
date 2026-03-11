@@ -23,13 +23,17 @@ describe("RecipesEdit", () => {
     await router.push(`/recipes/${mockRecipes[0].id}/edit`);
     await router.isReady();
 
-    const wrapper = mountWithPlugins(RecipesEditAsync, {}, {
-      router,
-      i18nMessages: { ...app_strings },
-    });
+    const wrapper = mountWithPlugins(
+      RecipesEditAsync,
+      {},
+      {
+        router,
+        i18nMessages: { ...app_strings },
+      },
+    );
 
     await vi.waitFor(() =>
-      expect(wrapper.text()).toContain("Edit recipe"),
+      expect(wrapper.text()).toContain("EditClassic Chocolate Chip Cookies"),
     );
     wrapper.unmount();
   });

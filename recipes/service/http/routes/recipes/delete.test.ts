@@ -20,7 +20,7 @@ describe("DELETE /recipes/:id", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "To Delete",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
         initialVersion: {
           content: { ingredients: [], instructionsMarkdown: "" },
@@ -52,7 +52,7 @@ describe("DELETE /recipes/:id", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Recipe",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
         initialVersion: {
           content: { ingredients: [], instructionsMarkdown: "" },

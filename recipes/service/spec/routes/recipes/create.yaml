@@ -10,16 +10,16 @@ createRecipe:
           type: object
           required:
             - title
-            - shortDescription
+            - subtitle
             - isPublic
           properties:
             title:
               type: string
               description: Recipe title
-            shortDescription:
+            subtitle:
               type: string
-              description: Short description shown on menus and list views
-            longDescription:
+              description: Subtitle shown on menus and list views
+            description:
               type: string
               nullable: true
               description: Optional longer description shown on recipe detail

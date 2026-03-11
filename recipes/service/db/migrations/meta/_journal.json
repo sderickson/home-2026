@@ -29,6 +29,13 @@
       "when": 1772924645592,
       "tag": "0004_fancy_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1773156555217,
+      "tag": "0005_chunky_the_hand",
+      "breakpoints": true
     }
   ]
 }

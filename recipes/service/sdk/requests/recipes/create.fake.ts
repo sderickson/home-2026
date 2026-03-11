@@ -34,8 +34,8 @@ export const createRecipesHandler = recipesHandler({
     const recipe = {
       id: recipeId,
       title: body.title,
-      shortDescription: body.shortDescription,
-      longDescription: body.longDescription ?? null,
+      subtitle: body.subtitle,
+      description: body.description ?? null,
       isPublic: body.isPublic,
       createdBy: placeholderUserId,
       createdAt: now,

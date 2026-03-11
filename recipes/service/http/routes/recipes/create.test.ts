@@ -17,7 +17,7 @@ describe("POST /recipes", () => {
   it("should return 200 with recipe and initialVersion when admin and initialVersion supplied", async () => {
     const body = {
       title: "New Recipe",
-      shortDescription: "A short description",
+      subtitle: "A short description",
       isPublic: true,
       initialVersion: {
         content: {
@@ -36,7 +36,7 @@ describe("POST /recipes", () => {
     expect(response.body).toMatchObject({
       recipe: {
         title: body.title,
-        shortDescription: body.shortDescription,
+        subtitle: body.subtitle,
         isPublic: true,
         id: expect.any(String),
         createdBy: adminUserId,
@@ -59,7 +59,7 @@ describe("POST /recipes", () => {
   it("should return 200 with recipe only when admin and no initialVersion", async () => {
     const body = {
       title: "Recipe Without Version",
-      shortDescription: "Short",
+      subtitle: "Short",
       isPublic: false,
     } satisfies RecipesServiceRequestBody["createRecipe"];
 
@@ -72,7 +72,7 @@ describe("POST /recipes", () => {
     expect(response.body).toMatchObject({
       recipe: {
         title: body.title,
-        shortDescription: body.shortDescription,
+        subtitle: body.subtitle,
         isPublic: false,
         id: expect.any(String),
         createdBy: adminUserId,
@@ -89,7 +89,7 @@ describe("POST /recipes", () => {
       .post("/recipes")
       .send({
         title: "Test",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
@@ -102,7 +102,7 @@ describe("POST /recipes", () => {
       .set(makeUserHeaders())
       .send({
         title: "Test",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 

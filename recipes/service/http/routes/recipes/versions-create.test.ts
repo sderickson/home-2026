@@ -23,7 +23,7 @@ describe("POST /recipes/:id/versions", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Recipe",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: false,
         initialVersion: {
           content: {
@@ -74,7 +74,7 @@ describe("POST /recipes/:id/versions", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Recipe",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
         initialVersion: {
           content: { ingredients: [], instructionsMarkdown: "" },

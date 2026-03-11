@@ -16,8 +16,8 @@ export interface RecipeVersionContent {
 export interface RecipeEntity {
   id: string;
   title: string;
-  shortDescription: string;
-  longDescription: string | null;
+  subtitle: string;
+  description: string | null;
   isPublic: boolean;
   createdBy: string;
   createdAt: Date;
@@ -30,8 +30,8 @@ export const recipe = sqliteTable("recipe", {
     .primaryKey()
     .$defaultFn(() => generateShortId()),
   title: text("title").notNull(),
-  shortDescription: text("short_description").notNull(),
-  longDescription: text("long_description"),
+  subtitle: text("subtitle").notNull(),
+  description: text("description"),
   isPublic: integer("is_public", { mode: "boolean" }).notNull(),
   createdBy: text("created_by").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),

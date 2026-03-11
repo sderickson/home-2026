@@ -1,76 +1,188 @@
 <template>
-  <v-container>
-    <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <v-btn :to="'/recipes/list'" variant="text" prepend-icon="mdi-arrow-left">
-        {{ t(strings.back_to_list) }}
-      </v-btn>
-      <v-spacer />
-      <v-btn
-        :to="`/recipes/${recipe.id}/edit`"
-        color="primary"
-        prepend-icon="mdi-pencil"
-      >
-        {{ t(strings.edit_recipe) }}
-      </v-btn>
-    </div>
+  <div>
+    <v-container fluid class="pa-0">
+      <v-breadcrumbs class="pl-0 mb-2">
+        <v-breadcrumbs-item :to="appLinks.home.path">
+          {{ t(strings.breadcrumb_home) }}
+        </v-breadcrumbs-item>
+        <v-breadcrumbs-divider />
+        <v-breadcrumbs-item :to="appLinks.recipesList.path">
+          {{ t(strings.breadcrumb_recipes) }}
+        </v-breadcrumbs-item>
+        <v-breadcrumbs-divider />
+        <v-breadcrumbs-item :to="`/recipes/${recipe.id}`">
+          {{ recipe.title }}
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
 
-    <v-row>
-      <v-col cols="12" md="8" lg="9">
-        <RecipeFilesDisplay :files="files" />
+      <v-row>
+        <v-col cols="12">
+          <v-card class="mb-4">
+            <v-toolbar density="comfortable">
+              <v-toolbar-title class="text-h6">{{ recipe.title }}</v-toolbar-title>
+              <v-spacer />
+              <template v-if="showVersionHistory">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_version_history)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      @click="versionHistoryModalOpen = true"
+                    >
+                      <v-badge
+                        :model-value="versions.length > 0"
+                        :content="versions.length"
+                        color="primary"
+                      >
+                        <v-icon>mdi-history</v-icon>
+                      </v-badge>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </template>
+              <v-tooltip location="bottom" :text="t(strings.toolbar_edit)">
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="tooltipProps"
+                    icon
+                    variant="text"
+                    :to="`/recipes/${recipe.id}/edit`"
+                  >
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="bottom" :text="t(strings.toolbar_notes)">
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="tooltipProps"
+                    icon
+                    variant="text"
+                    :class="{ 'v-btn--active': notesDrawerOpen }"
+                    @click="notesDrawerOpen = !notesDrawerOpen"
+                  >
+                    <v-badge
+                      :model-value="!notesDrawerOpen && notesForLatestVersion.length > 0"
+                      :content="notesForLatestVersion.length"
+                      color="primary"
+                    >
+                      <v-icon>mdi-note-text</v-icon>
+                    </v-badge>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <template v-if="showFilesEdit">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      :disabled="filesFlow.uploadFileMutation.isPending.value"
+                      @click="imageFileInputRef?.click()"
+                    >
+                      <v-icon>mdi-image-plus</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+                <input
+                  :ref="(el) => { imageFileInputRef = el as HTMLInputElement | null; }"
+                  type="file"
+                  accept="image/*"
+                  class="d-none"
+                  @change="filesFlow.onFileInputChangeAndUpload"
+                />
+              </template>
+              <template v-if="showFilesEdit">
+                <v-tooltip location="bottom" :text="t(strings.toolbar_delete)">
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      icon
+                      variant="text"
+                      color="error"
+                      :disabled="deleteRecipeMutation.isPending.value"
+                      @click="deleteRecipeDialogOpen = true"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </template>
+            </v-toolbar>
 
-        <RecipeContentPreview
-          :title="recipe.title"
-          :short-description="recipe.shortDescription"
-          :long-description="recipe.longDescription ?? undefined"
-          :content="content"
+            <!-- Card body: content preview + notes panel side by side within border -->
+            <div class="detail-card-body d-flex">
+              <div class="detail-card-preview flex-grow-1 min-width-0">
+                <RecipeContentPreview
+                  :recipe="recipe"
+                  :current-version="currentVersion"
+                  :files="files"
+                  :show-image-actions="showFilesEdit"
+                  :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+                  @click-image="expandedImageFile = $event"
+                  @delete-image="filesFlow.confirmDeleteFile($event)"
+                />
+              </div>
+              <v-sheet
+                v-if="notesDrawerOpen"
+                variant="outlined"
+                class="detail-notes-panel d-flex flex-column flex-shrink-0"
+              >
+                <div class="text-subtitle-2 text-medium-emphasis px-3 py-2 flex-shrink-0">
+                  {{ t(strings.notes_section) }}
+                </div>
+                <v-divider />
+                <div class="detail-notes-list flex-grow-1 min-height-0 overflow-y-auto pa-2">
+                  <template v-if="notesForLatestVersion.length === 0">
+                    <p class="text-body-2 text-medium-emphasis pa-2">{{ t(strings.no_notes) }}</p>
+                  </template>
+                  <template v-else>
+                    <NoteCard
+                      v-for="note in notesTimelineOrder"
+                      :key="note.id"
+                      :recipe-id="recipe.id"
+                      :latest-version-id="currentVersion?.id"
+                      :note="note"
+                      :files="getFilesForNote(note)"
+                      :show-notes-edit="showNotesEdit"
+                    />
+                  </template>
+                </div>
+                <template v-if="showNotesEdit">
+                  <v-divider />
+                  <div class="detail-notes-composer pa-2 flex-shrink-0">
+                    <AddNoteCard
+                      :recipe-id="recipe.id"
+                      :latest-version-id="currentVersion?.id"
+                    />
+                  </div>
+                </template>
+              </v-sheet>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <!-- Image expand dialog -->
+    <v-dialog
+      v-model="expandedImageDialogOpen"
+      max-width="90vw"
+      max-height="90vh"
+      transition="dialog-transition"
+      @click:outside="expandedImageFile = null"
+    >
+      <v-card v-if="expandedImageFile" variant="flat" class="overflow-hidden">
+        <v-img
+          :src="expandedImageFile.downloadUrl"
+          :alt="expandedImageFile.fileOriginalName"
+          max-height="85vh"
+          contain
         />
-
-        <template v-if="showVersionHistory">
-          <v-divider class="my-4" />
-          <h2 class="text-h6 mb-2">{{ t(strings.version_history) }}</h2>
-          <v-btn
-            variant="outlined"
-            prepend-icon="mdi-history"
-            @click="versionHistoryModalOpen = true"
-          >
-            {{ t(strings.version_history_open) }}
-          </v-btn>
-        </template>
-      </v-col>
-
-      <v-col cols="12" md="4" lg="3">
-        <h2 class="text-h6 mb-2">{{ t(strings.notes_section) }}</h2>
-
-        <template v-if="showNotesEdit">
-          <AddNoteCard
-            :recipe-id="recipe.id"
-            :latest-version-id="currentVersion?.id"
-          />
-        </template>
-
-        <template v-if="notesForLatestVersion.length === 0">
-          <p class="text-medium-emphasis">{{ t(strings.no_notes) }}</p>
-        </template>
-        <template v-else>
-          <NoteCard
-            v-for="note in notesForLatestVersion"
-            :key="note.id"
-            :recipe-id="recipe.id"
-            :latest-version-id="currentVersion?.id"
-            :note="note"
-            :files="getFilesForNote(note)"
-            :show-notes-edit="showNotesEdit"
-          />
-        </template>
-
-        <v-divider class="my-4" />
-        <RecipeFilesSection
-          :files="files"
-          :show-files-edit="showFilesEdit"
-          :files-flow="filesFlow"
-        />
-      </v-col>
-    </v-row>
+      </v-card>
+    </v-dialog>
 
     <VersionHistoryModal
       v-model="versionHistoryModalOpen"
@@ -80,21 +192,34 @@
     />
 
     <ConfirmDialog
-      v-model="deleteFileDialogOpen"
+      :model-value="deleteFileDialogOpen"
       :title="t(strings.delete_file)"
       :message="t(strings.delete_file_confirm)"
       :confirm-label="t(strings.delete_file)"
       :cancel-label="t(strings.cancel)"
-      :loading="deleteFileMutation.isPending.value"
-      @confirm="doDeleteFile"
+      :loading="filesFlow.deleteFileMutation.isPending.value"
+      @update:model-value="setDeleteFileDialogOpen"
+      @confirm="filesFlow.doDeleteFile"
     />
 
-  </v-container>
+    <ConfirmDialog
+      v-model="deleteRecipeDialogOpen"
+      :title="t(strings.delete_recipe)"
+      :message="t(strings.delete_recipe_confirm)"
+      :confirm-label="t(strings.delete_recipe)"
+      :cancel-label="t(strings.cancel)"
+      :loading="deleteRecipeMutation.isPending.value"
+      @confirm="doDeleteRecipe"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import type { RecipeFileInfo } from "@sderickson/recipes-spec";
+import { computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
+import { appLinks } from "@sderickson/recipes-links";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
@@ -110,18 +235,15 @@ import {
   notesForLatestVersion as notesForLatestVersionFn,
 } from "./Detail.logic.ts";
 import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
-import {
-  RecipeContentPreview,
-  RecipeFilesDisplay,
-} from "@sderickson/recipes-sdk";
+import { RecipeContentPreview, useDeleteRecipeMutation } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import AddNoteCard from "./AddNoteCard.vue";
 import NoteCard from "./NoteCard.vue";
-import RecipeFilesSection from "./RecipeFilesSection.vue";
 import VersionHistoryModal from "./VersionHistoryModal.vue";
 import ConfirmDialog from "./ConfirmDialog.vue";
 
 const { t } = useReverseT();
+const router = useRouter();
 const {
   profileQuery,
   recipeQuery,
@@ -140,7 +262,6 @@ assertNoteFilesByRecipeLoaded(noteFilesByRecipeQuery.data.value);
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
-const content = computed(() => currentVersion.value.content);
 const profile = computed(() => profileQuery.data.value);
 const versions = computed(() => versionsQuery.data.value ?? []);
 const notes = computed(() => notesQuery.data.value ?? []);
@@ -157,14 +278,28 @@ const showFilesEdit = computed(() =>
 const files = computed(() => filesQuery.data.value ?? []);
 
 const filesFlow = useDetailFilesFlow(computed(() => recipe.value.id));
+const deleteRecipeMutation = useDeleteRecipeMutation();
 
 const versionHistoryModalOpen = ref(false);
-const versionsNewestFirst = computed(() => [...versions.value].reverse());
+const notesDrawerOpen = ref(false);
+const deleteRecipeDialogOpen = ref(false);
+const imageFileInputRef = ref<HTMLInputElement | null>(null);
+const expandedImageFile = ref<RecipeFileInfo | null>(null);
 
+const expandedImageDialogOpen = computed({
+  get: () => expandedImageFile.value != null,
+  set: (v) => {
+    if (!v) expandedImageFile.value = null;
+  },
+});
+
+const versionsNewestFirst = computed(() => [...versions.value].reverse());
 const notesByVersionId = computed(() => notesByVersionIdMap(notes.value));
 const notesForLatestVersion = computed(() =>
   notesForLatestVersionFn(notes.value, currentVersion.value?.id),
 );
+/** Timeline order: oldest first */
+const notesTimelineOrder = computed(() => [...notesForLatestVersion.value].reverse());
 
 const noteIdToFiles = computed(() =>
   groupNoteFilesByNoteId(noteFilesByRecipeQuery.data.value ?? []),
@@ -175,6 +310,40 @@ function getFilesForNote(note: { id: string }) {
 }
 
 const deleteFileDialogOpen = filesFlow.deleteFileDialogOpen;
-const deleteFileMutation = filesFlow.deleteFileMutation;
-const doDeleteFile = filesFlow.doDeleteFile;
+
+function setDeleteFileDialogOpen(v: boolean) {
+  deleteFileDialogOpen.value = v;
+}
+
+async function doDeleteRecipe() {
+  await deleteRecipeMutation.mutateAsync(recipe.value.id);
+  deleteRecipeDialogOpen.value = false;
+  await router.push(appLinks.recipesList.path);
+}
+
+// Reset file input after upload so same file can be selected again
+watch(
+  () => filesFlow.uploadFileMutation.isPending.value,
+  (pending, wasPending) => {
+    if (wasPending && !pending && imageFileInputRef.value) {
+      imageFileInputRef.value.value = "";
+    }
+  },
+);
 </script>
+
+<style scoped>
+.detail-card-body {
+  min-height: 420px;
+}
+.detail-notes-panel {
+  width: 33%;
+  min-width: 280px;
+  max-width: 400px;
+  min-height: 420px;
+  border-inline-start: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.detail-notes-list {
+  min-height: 0;
+}
+</style>

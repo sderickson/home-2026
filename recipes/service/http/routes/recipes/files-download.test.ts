@@ -26,8 +26,8 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     dbKey = recipesDb.connect();
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: seedUserId,
       updatedBy: seedUserId,
@@ -85,8 +85,8 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       dbKey,
       {
         title: "Private Recipe",
-        shortDescription: "Private",
-        longDescription: null,
+        subtitle: "Private",
+        description: null,
         isPublic: false,
         createdBy: seedUserId,
         updatedBy: seedUserId,
@@ -153,8 +153,8 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   it("should return 404 when recipe is private and user is not admin", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Private Recipe",
-      shortDescription: "Private",
-      longDescription: null,
+      subtitle: "Private",
+      description: null,
       isPublic: false,
       createdBy: seedUserId,
       updatedBy: seedUserId,

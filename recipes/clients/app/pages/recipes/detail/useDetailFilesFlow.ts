@@ -30,6 +30,14 @@ export function useDetailFilesFlow(recipeId: ComputedRef<string>) {
     selectedFile.value = file ?? null;
   }
 
+  /** On file input change, upload the selected file immediately (single-step upload). */
+  function onFileInputChangeAndUpload(event: Event) {
+    onFileInputChange(event);
+    if (selectedFile.value) {
+      void submitUploadFile();
+    }
+  }
+
   async function submitUploadFile() {
     const file = selectedFile.value;
     const id = recipeId.value;
@@ -60,6 +68,7 @@ export function useDetailFilesFlow(recipeId: ComputedRef<string>) {
     deleteFileMutation,
     triggerFileInputClick,
     onFileInputChange,
+    onFileInputChangeAndUpload,
     submitUploadFile,
     confirmDeleteFile,
     doDeleteFile,

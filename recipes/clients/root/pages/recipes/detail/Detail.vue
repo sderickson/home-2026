@@ -17,10 +17,8 @@
     />
 
     <RecipeContentPreview
-      :title="recipe.title"
-      :short-description="recipe.shortDescription"
-      :long-description="recipe.longDescription ?? undefined"
-      :content="content"
+      :recipe="recipe"
+      :current-version="currentVersion"
     />
   </v-container>
 </template>
@@ -49,6 +47,5 @@ if (!filesQuery.data.value) {
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
-const content = computed(() => currentVersion.value.content);
 const files = computed(() => filesQuery.data.value ?? []);
 </script>

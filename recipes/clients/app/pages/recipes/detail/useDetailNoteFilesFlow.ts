@@ -40,6 +40,14 @@ export function useDetailNoteFilesFlow(recipeId: ComputedRef<string>) {
     selectedFile.value = file ?? null;
   }
 
+  /** On file input change, upload immediately (single-step attach). */
+  function onFileInputChangeAndUpload(event: Event) {
+    onFileInputChange(event);
+    if (selectedFile.value && uploadTargetNoteId.value) {
+      void submitUploadFile();
+    }
+  }
+
   async function submitUploadFile() {
     const file = selectedFile.value;
     const noteId = uploadTargetNoteId.value;
@@ -80,6 +88,7 @@ export function useDetailNoteFilesFlow(recipeId: ComputedRef<string>) {
     setUploadTargetNote,
     triggerFileInputClick,
     onFileInputChange,
+    onFileInputChangeAndUpload,
     submitUploadFile,
     confirmDeleteFile,
     doDeleteFile,

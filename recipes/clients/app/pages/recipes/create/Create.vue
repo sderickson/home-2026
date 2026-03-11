@@ -1,42 +1,25 @@
 <template>
   <v-container>
-    <v-btn
-      :to="'/recipes/list'"
-      variant="text"
-      prepend-icon="mdi-arrow-left"
-      class="mb-4"
-    >
-      {{ t(strings.back_to_list) }}
-    </v-btn>
+    <v-breadcrumbs class="pl-0 mb-2">
+      <v-breadcrumbs-item :to="appLinks.home.path">
+        {{ t(strings.breadcrumb_home) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="appLinks.recipesList.path">
+        {{ t(strings.breadcrumb_recipes) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item>
+        {{ t(strings.breadcrumb_new) }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
 
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-card variant="outlined" class="pa-4">
-          <RecipeForm
-            v-model="formModel"
-            :on-success="handleSuccess"
-          />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-card variant="outlined">
-          <v-card-title class="text-subtitle-1 font-weight-medium">
-            {{ t(strings.preview_heading) }}
-          </v-card-title>
-          <v-divider />
-          <v-card-text>
-            <RecipeContentPreview
-              :title="formModel.title"
-              :short-description="formModel.shortDescription"
-              :long-description="formModel.longDescription ?? undefined"
-              :content="formModel.initialVersion?.content ?? { ingredients: [], instructionsMarkdown: '' }"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <RecipeForm
+      v-model="formModel"
+      @success="handleSuccess"
+    />
   </v-container>
 </template>
 
@@ -48,8 +31,8 @@ import { useCreateLoader } from "./Create.loader.ts";
 import { assertCreateDataLoaded } from "./Create.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
-import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { appLinks } from "@sderickson/recipes-links";
 
 const { t } = useReverseT();
 const router = useRouter();
@@ -59,8 +42,8 @@ assertCreateDataLoaded(profileQuery.data.value);
 
 const formModel = ref<RecipeFormModel>({
   title: "",
-  shortDescription: "",
-  longDescription: null,
+  subtitle: "",
+  description: null,
   isPublic: false,
   initialVersion: {
     content: {

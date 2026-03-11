@@ -20,7 +20,7 @@ describe("PUT /recipes/:id", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Original Title",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: false,
         initialVersion: {
           content: {
@@ -47,7 +47,7 @@ describe("PUT /recipes/:id", () => {
     expect(response.body).toMatchObject({
       id: recipeId,
       title: updateBody.title,
-      shortDescription: "Short",
+      subtitle: "Short",
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,
@@ -62,7 +62,7 @@ describe("PUT /recipes/:id", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Recipe",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
         initialVersion: {
           content: { ingredients: [], instructionsMarkdown: "" },
@@ -85,7 +85,7 @@ describe("PUT /recipes/:id", () => {
       .set(makeAdminHeaders(adminUserId))
       .send({
         title: "Recipe",
-        shortDescription: "Short",
+        subtitle: "Short",
         isPublic: true,
         initialVersion: {
           content: { ingredients: [], instructionsMarkdown: "" },

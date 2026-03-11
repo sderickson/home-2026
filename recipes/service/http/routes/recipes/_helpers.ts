@@ -129,8 +129,8 @@ export function recipeToApiRecipe(
   return {
     id: row.id,
     title: row.title,
-    shortDescription: row.shortDescription,
-    longDescription: row.longDescription ?? undefined,
+    subtitle: row.subtitle,
+    description: row.description ?? undefined,
     isPublic: row.isPublic,
     createdBy: row.createdBy,
     createdAt: row.createdAt.toISOString(),

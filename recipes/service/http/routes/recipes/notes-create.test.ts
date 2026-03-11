@@ -21,8 +21,8 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
     dbKey = recipesDb.connect();
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "Test Recipe",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,
@@ -66,8 +66,8 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
   it("should return 200 with note and recipeVersionId when provided", async () => {
     const { result: withVersion } = await recipeQueries.createWithVersionRecipe(dbKey, {
       title: "With version",
-      shortDescription: "Short",
-      longDescription: null,
+      subtitle: "Short",
+      description: null,
       isPublic: true,
       createdBy: adminUserId,
       updatedBy: adminUserId,

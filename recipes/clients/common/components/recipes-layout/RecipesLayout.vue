@@ -15,7 +15,7 @@
       <v-toolbar-items class="d-none d-md-block">
         <v-btn
           v-for="link in links"
-          :key="link.path"
+          :key="link.name"
           variant="text"
           class="text-uppercase font-weight-regular"
           v-bind="linkToProps(link, link.options)"

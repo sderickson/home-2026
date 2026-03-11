@@ -20,8 +20,8 @@ export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel 
   const { recipe, currentVersion } = response;
   return {
     title: recipe.title,
-    shortDescription: recipe.shortDescription,
-    longDescription: recipe.longDescription ?? null,
+    subtitle: recipe.subtitle,
+    description: recipe.description ?? null,
     isPublic: recipe.isPublic,
     initialVersion: {
       content: {
@@ -32,3 +32,5 @@ export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel 
     note: "",
   };
 }
+
+export { getEditedFields } from "../../../components/recipes/RecipeForm.logic";

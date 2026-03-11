@@ -40,7 +40,7 @@
                 "type": "object",
                 "required": [
                   "title",
-                  "shortDescription",
+                  "subtitle",
                   "isPublic"
                 ],
                 "properties": {
@@ -48,11 +48,11 @@
                     "type": "string",
                     "description": "Recipe title"
                   },
-                  "shortDescription": {
+                  "subtitle": {
                     "type": "string",
-                    "description": "Short description shown on menus and list views"
+                    "description": "Subtitle shown on menus and list views"
                   },
-                  "longDescription": {
+                  "description": {
                     "type": "string",
                     "nullable": true,
                     "description": "Optional longer description shown on recipe detail"
@@ -214,11 +214,11 @@
                     "type": "string",
                     "description": "Recipe title"
                   },
-                  "shortDescription": {
+                  "subtitle": {
                     "type": "string",
-                    "description": "Short description shown on menus and list views"
+                    "description": "Subtitle shown on menus and list views"
                   },
-                  "longDescription": {
+                  "description": {
                     "type": "string",
                     "nullable": true,
                     "description": "Optional longer description shown on recipe detail"
@@ -1404,12 +1404,12 @@
             "description": "Recipe title",
             "example": "Classic Chocolate Chip Cookies"
           },
-          "shortDescription": {
+          "subtitle": {
             "type": "string",
-            "description": "Short description shown on menus and list views",
+            "description": "Subtitle shown on menus and list views",
             "example": "Crispy edges, chewy centers"
           },
-          "longDescription": {
+          "description": {
             "type": "string",
             "nullable": true,
             "description": "Optional longer description shown on recipe detail (not on menu)",
@@ -1451,7 +1451,7 @@
         "required": [
           "id",
           "title",
-          "shortDescription",
+          "subtitle",
           "isPublic",
           "createdBy",
           "createdAt",

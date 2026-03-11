@@ -15,7 +15,7 @@ describe("RecipePreview", () => {
     });
 
     expect(getElementByString(wrapper, recipe.title).exists()).toBe(true);
-    expect(getElementByString(wrapper, recipe.shortDescription).exists()).toBe(
+    expect(getElementByString(wrapper, recipe.subtitle).exists()).toBe(
       true,
     );
   });
@@ -27,7 +27,7 @@ describe("RecipePreview", () => {
     });
 
     expect(getElementByString(wrapper, recipe.title).exists()).toBe(true);
-    expect(getElementByString(wrapper, recipe.shortDescription).exists()).toBe(
+    expect(getElementByString(wrapper, recipe.subtitle).exists()).toBe(
       true,
     );
   });
