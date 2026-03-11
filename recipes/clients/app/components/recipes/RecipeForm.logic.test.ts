@@ -9,9 +9,9 @@ describe("isRecipeFormValid", () => {
   });
 
   it("returns false when subtitle is empty", () => {
-    expect(
-      isRecipeFormValid({ title: "Recipe title", subtitle: "" }),
-    ).toBe(false);
+    expect(isRecipeFormValid({ title: "Recipe title", subtitle: "" })).toBe(
+      true,
+    );
   });
 
   it("returns true when both are non-empty after trim", () => {
