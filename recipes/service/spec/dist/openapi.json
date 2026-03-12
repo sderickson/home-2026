@@ -1539,6 +1539,9 @@
       "UnsplashAttribution": {
         "$ref": "#/components/schemas/unsplash-attribution"
       },
+      "Collection": {
+        "$ref": "#/components/schemas/collection"
+      },
       "recipe": {
         "type": "object",
         "properties": {
@@ -2209,6 +2212,47 @@
         },
         "required": [
           "event"
+        ]
+      },
+      "collection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier; user-specified (URL-safe) on create or server-generated short id",
+            "example": "my-kitchen",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the collection",
+            "example": "My Kitchen",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the collection creator (short id)",
+            "example": "K3m9_xR2"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
         ]
       }
     }

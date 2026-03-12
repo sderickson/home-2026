@@ -281,6 +281,7 @@ export interface components {
         UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
         AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
         UnsplashAttribution: components["schemas"]["unsplash-attribution"];
+        Collection: components["schemas"]["collection"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -750,6 +751,35 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
+        collection: {
+            /**
+             * @description Unique identifier; user-specified (URL-safe) on create or server-generated short id
+             * @example my-kitchen
+             */
+            id: string;
+            /**
+             * @description Human-readable name for the collection
+             * @example My Kitchen
+             */
+            name: string;
+            /**
+             * @description User id of the collection creator (short id)
+             * @example K3m9_xR2
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the collection was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When the collection was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+        };
     };
     responses: never;
     parameters: never;

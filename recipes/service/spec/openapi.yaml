@@ -93,4 +93,6 @@ components:
       $ref: "./schemas/add-recipe-file-from-unsplash-request.yaml"
     UnsplashAttribution:
       $ref: "./schemas/unsplash-attribution.yaml"
+    Collection:
+      $ref: "./schemas/collection.yaml"
     # END WORKFLOW AREA
