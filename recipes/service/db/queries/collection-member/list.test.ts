@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { listCollectionMember } from "./list.ts";
 
 describe("listCollectionMember", () => {
@@ -31,13 +32,10 @@ describe("listCollectionMember", () => {
 
   it("returns empty array when collection exists but has no members", async () => {
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "empty-col",
       name: "Empty",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
 
     const { result, error } = await listCollectionMember(dbKey, {
@@ -52,12 +50,10 @@ describe("listCollectionMember", () => {
   it("returns all members when collection has members", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-with-members",
       name: "With Members",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
     await db.insert(collectionMember).values([
       {

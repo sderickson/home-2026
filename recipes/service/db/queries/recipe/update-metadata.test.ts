@@ -2,11 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError } from "../../errors.ts";
-import { collection } from "../../schemas/collection.ts";
+import { insertTestCollection, TEST_COLLECTION_ID } from "../../test-fixtures.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { updateMetadataRecipe } from "./update-metadata.ts";
-
-const TEST_COLLECTION_ID = "test-collection";
 
 describe("updateMetadataRecipe", () => {
   let dbKey: DbKey;
@@ -14,14 +12,7 @@ describe("updateMetadataRecipe", () => {
   beforeEach(async () => {
     dbKey = recipesDbManager.connect();
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
-      id: TEST_COLLECTION_ID,
-      name: "Test",
-      createdBy: "user-1",
-      createdAt: now,
-      updatedAt: now,
-    });
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {

@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionMemberNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { updateRoleCollectionMember } from "./update-role.ts";
 import { getByCollectionAndEmailCollectionMember } from "./get-by-collection-and-email.ts";
 
@@ -34,12 +35,10 @@ describe("updateRoleCollectionMember", () => {
   it("updates role and returns member when found", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-role",
       name: "Role Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
     const [inserted] = await db
       .insert(collectionMember)

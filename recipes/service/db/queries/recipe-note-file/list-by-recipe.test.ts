@@ -1,13 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
-import { collection } from "../../schemas/collection.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { recipeNote } from "../../schemas/recipe-note.ts";
 import { recipeNoteFile } from "../../schemas/recipe-note-file.ts";
 import { listRecipeNoteFilesByRecipeId } from "./list-by-recipe.ts";
-
-const TEST_COLLECTION_ID = "test-collection";
 
 describe("listRecipeNoteFilesByRecipeId", () => {
   let dbKey: DbKey;
@@ -16,14 +14,7 @@ describe("listRecipeNoteFilesByRecipeId", () => {
   beforeEach(async () => {
     dbKey = recipesDbManager.connect();
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
-      id: TEST_COLLECTION_ID,
-      name: "Test",
-      createdBy: seedUserId,
-      createdAt: now,
-      updatedAt: now,
-    });
+    await insertTestCollection(db, { createdBy: seedUserId });
   });
 
   afterEach(() => {
@@ -32,18 +23,9 @@ describe("listRecipeNoteFilesByRecipeId", () => {
 
   it("returns empty array when recipe has no notes", async () => {
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
     await db.insert(recipe).values({
+      ...makeRecipeRow({ createdBy: seedUserId, updatedBy: seedUserId }),
       id: "r1",
-      collectionId: TEST_COLLECTION_ID,
-      title: "Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: seedUserId,
-      createdAt: now,
-      updatedBy: seedUserId,
-      updatedAt: now,
     });
     const { result } = await listRecipeNoteFilesByRecipeId(dbKey, {
       recipeId: "r1",
@@ -55,16 +37,8 @@ describe("listRecipeNoteFilesByRecipeId", () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
     await db.insert(recipe).values({
+      ...makeRecipeRow({ createdBy: seedUserId, updatedBy: seedUserId }),
       id: "r1",
-      collectionId: TEST_COLLECTION_ID,
-      title: "Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: seedUserId,
-      createdAt: now,
-      updatedBy: seedUserId,
-      updatedAt: now,
     });
     await db.insert(recipeNote).values([
       {

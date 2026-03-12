@@ -2,11 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError } from "../../errors.ts";
-import { collection } from "../../schemas/collection.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { insertRecipeFile } from "./insert.ts";
-
-const TEST_COLLECTION_ID = "test-collection";
 
 describe("insertRecipeFile", () => {
   let dbKey: DbKey;
@@ -14,14 +12,7 @@ describe("insertRecipeFile", () => {
   beforeEach(async () => {
     dbKey = recipesDbManager.connect();
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
-      id: TEST_COLLECTION_ID,
-      name: "Test",
-      createdBy: "user-1",
-      createdAt: now,
-      updatedAt: now,
-    });
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -51,16 +42,8 @@ describe("insertRecipeFile", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      collectionId: TEST_COLLECTION_ID,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     await db.insert(recipeVersion).values({
@@ -100,16 +83,8 @@ describe("insertRecipeFile", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      collectionId: TEST_COLLECTION_ID,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     await db.insert(recipeVersion).values({

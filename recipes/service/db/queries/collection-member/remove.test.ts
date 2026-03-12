@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionMemberNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { removeCollectionMember } from "./remove.ts";
 import { getByCollectionAndEmailCollectionMember } from "./get-by-collection-and-email.ts";
 import { listCollectionMember } from "./list.ts";
@@ -35,12 +36,10 @@ describe("removeCollectionMember", () => {
   it("removes member and returns the deleted row when found", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-remove",
       name: "Remove Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
     const [inserted] = await db
       .insert(collectionMember)

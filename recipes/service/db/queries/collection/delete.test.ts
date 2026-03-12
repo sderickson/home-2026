@@ -3,7 +3,8 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { deleteCollection } from "./delete.ts";
 import { getByIdCollection } from "./get-by-id.ts";
 
@@ -32,7 +33,7 @@ describe("deleteCollection", () => {
   it("deletes collection and its members and returns the collection when found", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date("2025-06-01T12:00:00Z");
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-to-delete",
       name: "To Delete",
       createdBy: "owner@example.com",

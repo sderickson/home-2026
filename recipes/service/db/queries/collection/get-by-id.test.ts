@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionNotFoundError } from "../../errors.ts";
-import { collection } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
 import { getByIdCollection } from "./get-by-id.ts";
 
 describe("getByIdCollection", () => {
@@ -28,7 +28,7 @@ describe("getByIdCollection", () => {
   it("returns collection when found", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date("2025-06-01T12:00:00Z");
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "my-collection",
       name: "My Collection",
       createdBy: "owner@example.com",

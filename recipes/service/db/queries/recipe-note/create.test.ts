@@ -3,11 +3,9 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError, RecipeVersionNotFoundError } from "../../errors.ts";
-import { collection } from "../../schemas/collection.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { createRecipeNote } from "./create.ts";
-
-const TEST_COLLECTION_ID = "test-collection";
 
 describe("createRecipeNote", () => {
   let dbKey: DbKey;
@@ -15,14 +13,7 @@ describe("createRecipeNote", () => {
   beforeEach(async () => {
     dbKey = recipesDbManager.connect();
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
-      id: TEST_COLLECTION_ID,
-      name: "Test",
-      createdBy: "user-1",
-      createdAt: now,
-      updatedAt: now,
-    });
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -46,20 +37,11 @@ describe("createRecipeNote", () => {
 
   it("returns error when recipe version not found (nonexistent id)", async () => {
     const recipeId = "test-recipe-create-note-version-check";
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      collectionId: TEST_COLLECTION_ID,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     const out = await createRecipeNote(dbKey, {
@@ -77,36 +59,13 @@ describe("createRecipeNote", () => {
   });
 
   it("returns error when recipe version belongs to another recipe", async () => {
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
     const recipeIdA = "test-recipe-create-note-recipe-a";
     const recipeIdB = "test-recipe-create-note-recipe-b";
 
     await db.insert(recipe).values([
-      {
-        id: recipeIdA,
-        collectionId: TEST_COLLECTION_ID,
-        title: "Recipe A",
-        subtitle: "Short",
-        description: null,
-        isPublic: true,
-        createdBy: "user-1",
-        createdAt: now,
-        updatedBy: "user-1",
-        updatedAt: now,
-      },
-      {
-        id: recipeIdB,
-        collectionId: TEST_COLLECTION_ID,
-        title: "Recipe B",
-        subtitle: "Short",
-        description: null,
-        isPublic: true,
-        createdBy: "user-1",
-        createdAt: now,
-        updatedBy: "user-1",
-        updatedAt: now,
-      },
+      { ...makeRecipeRow({ title: "Recipe A" }), id: recipeIdA },
+      { ...makeRecipeRow({ title: "Recipe B" }), id: recipeIdB },
     ]);
     await db.insert(recipeVersion).values([
       {
@@ -152,16 +111,8 @@ describe("createRecipeNote", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      collectionId: TEST_COLLECTION_ID,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     await db.insert(recipeVersion).values({
@@ -206,20 +157,11 @@ describe("createRecipeNote", () => {
 
   it("creates a recipe note with null recipeVersionId", async () => {
     const recipeId = "test-recipe-create-note-null-version";
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      collectionId: TEST_COLLECTION_ID,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     const out = await createRecipeNote(dbKey, {

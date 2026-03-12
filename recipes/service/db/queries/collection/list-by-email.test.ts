@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { listByEmailCollection } from "./list-by-email.ts";
 
 describe("listByEmailCollection", () => {
@@ -28,29 +29,27 @@ describe("listByEmailCollection", () => {
   it("returns collections where the given email is a member", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values([
-      {
-        id: "col-a",
-        name: "Collection A",
-        createdBy: "owner@example.com",
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        id: "col-b",
-        name: "Collection B",
-        createdBy: "other@example.com",
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        id: "col-c",
-        name: "Collection C",
-        createdBy: "owner@example.com",
-        createdAt: now,
-        updatedAt: now,
-      },
-    ]);
+    await insertTestCollection(db, {
+      id: "col-a",
+      name: "Collection A",
+      createdBy: "owner@example.com",
+      createdAt: now,
+      updatedAt: now,
+    });
+    await insertTestCollection(db, {
+      id: "col-b",
+      name: "Collection B",
+      createdBy: "other@example.com",
+      createdAt: now,
+      updatedAt: now,
+    });
+    await insertTestCollection(db, {
+      id: "col-c",
+      name: "Collection C",
+      createdBy: "owner@example.com",
+      createdAt: now,
+      updatedAt: now,
+    });
     await db.insert(collectionMember).values([
       {
         collectionId: "col-a",
@@ -84,7 +83,7 @@ describe("listByEmailCollection", () => {
   it("returns collection entity with full shape when email is member of one collection", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date("2025-06-01T12:00:00Z");
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "single-col",
       name: "Solo Collection",
       createdBy: "creator@example.com",

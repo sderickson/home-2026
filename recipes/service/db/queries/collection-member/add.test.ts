@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { addCollectionMember } from "./add.ts";
 import { getByCollectionAndEmailCollectionMember } from "./get-by-collection-and-email.ts";
 
@@ -34,13 +35,10 @@ describe("addCollectionMember", () => {
 
   it("inserts new member when email does not exist for collection", async () => {
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-add",
       name: "Add Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
 
     const { result, error } = await addCollectionMember(dbKey, {
@@ -69,12 +67,10 @@ describe("addCollectionMember", () => {
   it("updates role when email already exists for collection and does not change is_creator", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-upsert",
       name: "Upsert Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
     await db.insert(collectionMember).values({
       collectionId: "col-upsert",

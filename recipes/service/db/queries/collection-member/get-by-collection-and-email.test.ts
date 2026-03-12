@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { CollectionMemberNotFoundError } from "../../errors.ts";
-import { collection, collectionMember } from "../../schemas/collection.ts";
+import { insertTestCollection } from "../../test-fixtures.ts";
+import { collectionMember } from "../../schemas/collection.ts";
 import { getByCollectionAndEmailCollectionMember } from "./get-by-collection-and-email.ts";
 
 describe("getByCollectionAndEmailCollectionMember", () => {
@@ -18,13 +19,10 @@ describe("getByCollectionAndEmailCollectionMember", () => {
 
   it("returns CollectionMemberNotFoundError when no member for collection and email", async () => {
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-1",
       name: "Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
 
     const { result, error } = await getByCollectionAndEmailCollectionMember(
@@ -43,12 +41,10 @@ describe("getByCollectionAndEmailCollectionMember", () => {
   it("returns member when found for collection and email", async () => {
     const db = recipesDbManager.get(dbKey)!;
     const now = new Date();
-    await db.insert(collection).values({
+    await insertTestCollection(db, {
       id: "col-auth",
       name: "Auth Check Col",
       createdBy: "owner@example.com",
-      createdAt: now,
-      updatedAt: now,
     });
     await db.insert(collectionMember).values({
       collectionId: "col-auth",
