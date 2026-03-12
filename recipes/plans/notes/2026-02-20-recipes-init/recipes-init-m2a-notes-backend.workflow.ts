@@ -1,5 +1,5 @@
 /**
- * Phase 2: Recipe notes — spec, db, http.
+ * Milestone 2 — Notes backend: spec, db, http.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
  */
 import {
@@ -23,12 +23,12 @@ import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
+export const RecipesInitM2aNotesBackendWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-2",
-  description: "Recipe notes: spec, db, http (notes CRUD).",
+  id: "plans/recipes-init-m2a-notes-backend",
+  description: "Notes backend: spec, db, http (notes CRUD).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -44,7 +44,7 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 2: recipe notes — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M2a: notes backend — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",
@@ -114,4 +114,4 @@ export const RecipesInitPhase2WorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase2WorkflowDefinition;
+export default RecipesInitM2aNotesBackendWorkflowDefinition;

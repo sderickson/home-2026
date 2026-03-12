@@ -4,19 +4,19 @@ This plan breaks the spec into **milestones** that alternate backend and fronten
 
 ---
 
-## Phase 1: Recipes backend (core)
+## Milestone 1 — Recipes backend
 
 **Packages:** `recipes/service/spec`, `recipes/service/db`, `recipes/service/http`.
 
-**Goal:** Recipe CRUD + versioning API (list, get, create, update metadata, delete; versions list; update latest in place; create new version). Often run in three parts (1, 1b, 1c) to keep context manageable.
+**Goal:** Recipe CRUD + versioning API (list, get, create, update metadata, delete; versions list; update latest in place; create new version). Run in three workflows (spec, db, http) to keep context manageable.
 
-**Workflows:** `recipes-init-phase-1.workflow.ts`, `recipes-init-phase-1b.workflow.ts`, `recipes-init-phase-1c.workflow.ts`.
+**Workflows:** `recipes-init-m1-spec.workflow.ts`, `recipes-init-m1-db.workflow.ts`, `recipes-init-m1-http.workflow.ts`.
 
 **Stopping point:** Recipe API works (no notes, files, or menus yet).
 
 ---
 
-## Milestone 1: Recipes frontend
+## Milestone 1 — Recipes frontend
 
 Backend is done; no new backend work. Three workflows for the recipe user experience.
 
@@ -60,7 +60,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Goal:** Notes CRUD API (list, create, update, delete) for a recipe; optional link to version; `ever_edited` on update.
 
-**Workflow:** `recipes-init-phase-2.workflow.ts` (same as current Phase 2).
+**Workflow:** `recipes-init-m2a-notes-backend.workflow.ts`.
 
 **Stopping point:** Notes API works.
 
@@ -84,7 +84,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Goal:** Multiple files per recipe; list, upload (Azure), delete. Use SAF file metadata and upload workflows.
 
-**Workflow:** `recipes-init-phase-3.workflow.ts` (same as current Phase 3).
+**Workflow:** `recipes-init-m3a-recipe-files-backend.workflow.ts`.
 
 **Stopping point:** Recipe file API works.
 
@@ -118,7 +118,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Goal:** Multiple files per note; list, upload, delete, and GET .../files/:fileId/blob to serve file binary. Update _helpers so the note file list mapper includes downloadUrl. Same pattern as recipe files (M3a + blob from M3c).
 
-**Workflow:** `recipes-init-phase-4.workflow.ts`.
+**Workflow:** `recipes-init-m4a-note-files-backend.workflow.ts`.
 
 **Stopping point:** Note file API works (including blob serve and downloadUrl in list).
 
@@ -132,7 +132,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Stopping point:** Admins can manage files on notes in the app.
 
-**Init scope:** The recipes-init implementation ends at M4b. Menus (Phase 5) were not implemented.
+**Init scope:** The recipes-init implementation ends at M4b. Menus (M5) were not implemented.
 
 ---
 
@@ -141,18 +141,18 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 | Workflow file | Scope | Packages |
 |---------------|--------|----------|
 | **recipes-init.workflow.ts** | Orchestrator: runs all below in order | — |
-| **recipes-init-phase-1.workflow.ts** | Recipes backend (spec) | service/spec |
-| **recipes-init-phase-1b.workflow.ts** | Recipes backend (db) | service/db |
-| **recipes-init-phase-1c.workflow.ts** | Recipes backend (http) | service/http |
+| **recipes-init-m1-spec.workflow.ts** | Recipes backend (spec) | service/spec |
+| **recipes-init-m1-db.workflow.ts** | Recipes backend (db) | service/db |
+| **recipes-init-m1-http.workflow.ts** | Recipes backend (http) | service/http |
 | **recipes-init-m1a-app-recipes.workflow.ts** | SDK recipes + App list/detail/edit/delete | service/sdk, clients/app |
 | **recipes-init-m1b-root-recipes.workflow.ts** | Root recipe list + detail, refactor to SDK | clients/root, service/sdk |
 | **recipes-init-m1c-versions.workflow.ts** | App version history | clients/app |
-| **recipes-init-phase-2.workflow.ts** | Notes backend | service/spec, db, http |
+| **recipes-init-m2a-notes-backend.workflow.ts** | Notes backend | service/spec, db, http |
 | **recipes-init-m2b-notes-frontend.workflow.ts** | SDK notes + App notes section | service/sdk, clients/app |
-| **recipes-init-phase-3.workflow.ts** | Recipe files backend | service/spec, db, http |
+| **recipes-init-m3a-recipe-files-backend.workflow.ts** | Recipe files backend | service/spec, db, http |
 | **recipes-init-m3b-recipe-files-frontend.workflow.ts** | SDK recipe files + App UI | service/sdk, clients/app |
 | **recipes-init-m3c-recipe-files-visible.workflow.ts** | Recipe file serve (route + handler + downloadUrl in _helpers) + Root show files | service/spec, http, clients/root |
-| **recipes-init-phase-4.workflow.ts** | Note files backend | service/spec, db, http |
+| **recipes-init-m4a-note-files-backend.workflow.ts** | Note files backend | service/spec, db, http |
 | **recipes-init-m4b-note-files-frontend.workflow.ts** | SDK note files + App UI | service/sdk, clients/app |
 
 - **Full run:** `npm exec saf-workflow run processes/spec-project recipes-init` (or run the orchestrator workflow).

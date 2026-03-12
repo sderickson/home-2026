@@ -1,5 +1,5 @@
 /**
- * Phase 1: Recipes (core) — OpenAPI spec, Drizzle schema/queries, Express handlers.
+ * Milestone 1 — Recipes backend (spec): OpenAPI schemas and routes.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
  * Run from recipes/plans so Cd paths resolve (e.g. ../service/spec).
  */
@@ -18,12 +18,12 @@ import path from "path";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
+export const RecipesInitM1SpecWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-1",
-  description: "Recipes core: spec, db, http (recipe CRUD + versioning).",
+  id: "plans/recipes-init-m1-spec",
+  description: "Recipes backend (spec): recipe CRUD + versioning — OpenAPI.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -39,7 +39,7 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Milestone 1: recipes backend — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
     })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
       name: "recipe-version",
@@ -96,4 +96,4 @@ export const RecipesInitPhase1WorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase1WorkflowDefinition;
+export default RecipesInitM1SpecWorkflowDefinition;

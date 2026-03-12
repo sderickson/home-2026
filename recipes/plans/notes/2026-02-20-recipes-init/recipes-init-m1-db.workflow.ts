@@ -1,7 +1,7 @@
 /**
- * Phase 1: Recipes (core) — OpenAPI spec, Drizzle schema/queries, Express handlers.
+ * Milestone 1 — Recipes backend (db): Drizzle schema and queries.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
- * Run from recipes/plans so Cd paths resolve (e.g. ../service/spec).
+ * Run from recipes/plans so Cd paths resolve (e.g. ../service/db).
  */
 import {
   defineWorkflow,
@@ -18,12 +18,12 @@ import path from "path";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase1bWorkflowDefinition = defineWorkflow<
+export const RecipesInitM1DbWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-1",
-  description: "Recipes core: spec, db, http (recipe CRUD + versioning).",
+  id: "plans/recipes-init-m1-db",
+  description: "Recipes backend (db): recipe CRUD + versioning — Drizzle.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -41,7 +41,7 @@ export const RecipesInitPhase1bWorkflowDefinition = defineWorkflow<
       makeWorkflowMachine(UpdateSchemaWorkflowDefinition),
       ({ context }) => ({
         path: "./schemas/recipe.ts",
-        prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Add tables recipe and recipe_version per spec. recipe: id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at. recipe_version: id, recipe_id, content (JSON), is_latest, created_by, created_at. Index (recipe_id, is_latest). See docFiles.spec and plan Phase 1.`,
+        prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Milestone 1: recipes backend — spec, db, http for recipe CRUD and versioning). Then: Add tables recipe and recipe_version per spec. recipe: id, title, short_description, long_description, is_public, created_by, created_at, updated_by, updated_at. recipe_version: id, recipe_id, content (JSON), is_latest, created_by, created_at. Index (recipe_id, is_latest). See docFiles.spec and plan Milestone 1.`,
       }),
     ),
     step(makeWorkflowMachine(AddDrizzleQueryWorkflowDefinition), () => ({
@@ -79,4 +79,4 @@ export const RecipesInitPhase1bWorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase1bWorkflowDefinition;
+export default RecipesInitM1DbWorkflowDefinition;

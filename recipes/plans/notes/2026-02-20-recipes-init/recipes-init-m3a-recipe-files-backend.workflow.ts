@@ -1,5 +1,5 @@
 /**
- * Phase 3: Recipe files — upload/list/delete (Azure). Spec, db, http.
+ * Milestone 3 — Recipe files backend: list, upload, delete (Azure). Spec, db, http.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
  */
 import {
@@ -23,12 +23,12 @@ import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
+export const RecipesInitM3aRecipeFilesBackendWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-3",
-  description: "Recipe files: list, upload, delete (Azure).",
+  id: "plans/recipes-init-m3a-recipe-files-backend",
+  description: "Recipe files backend: list, upload, delete (Azure).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -44,7 +44,7 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-file-info",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 3: recipe files — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M3a: recipe files backend — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",
@@ -103,4 +103,4 @@ export const RecipesInitPhase3WorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase3WorkflowDefinition;
+export default RecipesInitM3aRecipeFilesBackendWorkflowDefinition;

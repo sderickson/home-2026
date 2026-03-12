@@ -1,5 +1,5 @@
 /**
- * Phase 4: Recipe note files — list, upload, delete. Spec, db, http.
+ * Milestone 4 — Note files backend: list, upload, delete. Spec, db, http.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
  */
 import {
@@ -23,12 +23,12 @@ import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
+export const RecipesInitM4aNoteFilesBackendWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-4",
-  description: "Recipe note files: list, upload, delete.",
+  id: "plans/recipes-init-m4a-note-files-backend",
+  description: "Note files backend: list, upload, delete.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -44,7 +44,7 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/spec" })),
     step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note-file-info",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 4: recipe note files — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M4a: note files backend — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
     })),
     step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",
@@ -115,4 +115,4 @@ export const RecipesInitPhase4WorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase4WorkflowDefinition;
+export default RecipesInitM4aNoteFilesBackendWorkflowDefinition;
