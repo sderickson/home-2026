@@ -15,6 +15,7 @@ describe("createRecipe", () => {
     const [mutation, app] = withVueQuery(() => useCreateRecipeMutation());
 
     const result = await mutation.mutateAsync({
+      collectionId: "my-kitchen",
       title: "New Recipe",
       subtitle: "A new test recipe",
       isPublic: true,
@@ -38,6 +39,7 @@ describe("createRecipe", () => {
     const countBefore = listQuery.data.value?.length ?? 0;
 
     await mutation.mutateAsync({
+      collectionId: "my-kitchen",
       title: "Cache Test Recipe",
       subtitle: "For invalidation test",
       isPublic: false,
