@@ -1,29 +1,26 @@
 /**
  * Orchestrator: runs recipes-init workflows in milestone order.
  * Each workflow can use a different agent (better context fit).
- * Run from recipes/plans so phase Cd paths (e.g. ../service/spec) resolve.
+ * Run from recipes/plans so Cd paths (e.g. ../service/spec) resolve.
  *
- * Order: Phase 1 (recipes backend) → M1a, M1b, M1c (recipes frontend) →
- * Phase 2 → M2b (notes) → Phase 3 → M3b, M3c (recipe files) → Phase 4 → M4b (note files) →
- * Phase 5 → M5b, M5c (menus).
+ * Order: M1 (recipes backend: spec, db, http) → M1a, M1b, M1c (recipes frontend) →
+ * M2a (notes backend) → M2b (notes frontend) → M3a (recipe files backend) → M3b, M3c →
+ * M4a (note files backend) → M4b.
  */
 import { defineWorkflow, step, makeWorkflowMachine } from "@saflib/workflows";
-import { RecipesInitPhase1WorkflowDefinition } from "./recipes-init-phase-1.workflow.ts";
-import { RecipesInitPhase1bWorkflowDefinition } from "./recipes-init-phase-1b.workflow.ts";
-import { RecipesInitPhase1cWorkflowDefinition } from "./recipes-init-phase-1c.workflow.ts";
+import { RecipesInitM1SpecWorkflowDefinition } from "./recipes-init-m1-spec.workflow.ts";
+import { RecipesInitM1DbWorkflowDefinition } from "./recipes-init-m1-db.workflow.ts";
+import { RecipesInitM1HttpWorkflowDefinition } from "./recipes-init-m1-http.workflow.ts";
 import { RecipesInitM1aAppRecipesWorkflowDefinition } from "./recipes-init-m1a-app-recipes.workflow.ts";
 import { RecipesInitM1bRootRecipesWorkflowDefinition } from "./recipes-init-m1b-root-recipes.workflow.ts";
 import { RecipesInitM1cVersionsWorkflowDefinition } from "./recipes-init-m1c-versions.workflow.ts";
-import { RecipesInitPhase2WorkflowDefinition } from "./recipes-init-phase-2.workflow.ts";
+import { RecipesInitM2aNotesBackendWorkflowDefinition } from "./recipes-init-m2a-notes-backend.workflow.ts";
 import { RecipesInitM2bNotesFrontendWorkflowDefinition } from "./recipes-init-m2b-notes-frontend.workflow.ts";
-import { RecipesInitPhase3WorkflowDefinition } from "./recipes-init-phase-3.workflow.ts";
+import { RecipesInitM3aRecipeFilesBackendWorkflowDefinition } from "./recipes-init-m3a-recipe-files-backend.workflow.ts";
 import { RecipesInitM3bRecipeFilesFrontendWorkflowDefinition } from "./recipes-init-m3b-recipe-files-frontend.workflow.ts";
 import { RecipesInitM3cRecipeFilesVisibleWorkflowDefinition } from "./recipes-init-m3c-recipe-files-visible.workflow.ts";
-import { RecipesInitPhase4WorkflowDefinition } from "./recipes-init-phase-4.workflow.ts";
+import { RecipesInitM4aNoteFilesBackendWorkflowDefinition } from "./recipes-init-m4a-note-files-backend.workflow.ts";
 import { RecipesInitM4bNoteFilesFrontendWorkflowDefinition } from "./recipes-init-m4b-note-files-frontend.workflow.ts";
-import { RecipesInitPhase5WorkflowDefinition } from "./recipes-init-phase-5.workflow.ts";
-import { RecipesInitM5bMenusAppWorkflowDefinition } from "./recipes-init-m5b-menus-app.workflow.ts";
-import { RecipesInitM5cMenusRootWorkflowDefinition } from "./recipes-init-m5c-menus-root.workflow.ts";
 import path from "path";
 
 const input = [] as const;
@@ -54,22 +51,19 @@ export const RecipesInitWorkflowDefinition = defineWorkflow<
     commitEachStep: true,
   },
   steps: [
-    step(makeWorkflowMachine(RecipesInitPhase1WorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase1bWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase1cWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM1SpecWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM1DbWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM1HttpWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM1aAppRecipesWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM1bRootRecipesWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM1cVersionsWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase2WorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM2aNotesBackendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM2bNotesFrontendWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase3WorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM3aRecipeFilesBackendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM3bRecipeFilesFrontendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM3cRecipeFilesVisibleWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase4WorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(RecipesInitM4aNoteFilesBackendWorkflowDefinition), () => ({})),
     step(makeWorkflowMachine(RecipesInitM4bNoteFilesFrontendWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitPhase5WorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitM5bMenusAppWorkflowDefinition), () => ({})),
-    step(makeWorkflowMachine(RecipesInitM5cMenusRootWorkflowDefinition), () => ({})),
   ],
 });
 

@@ -1,7 +1,7 @@
 /**
- * Phase 1: Recipes (core) — OpenAPI spec, Drizzle schema/queries, Express handlers.
+ * Milestone 1 — Recipes backend (http): Express handlers.
  * Packages: recipes/service/spec, recipes/service/db, recipes/service/http.
- * Run from recipes/plans so Cd paths resolve (e.g. ../service/spec).
+ * Run from recipes/plans so Cd paths resolve (e.g. ../service/http).
  */
 import {
   defineWorkflow,
@@ -16,12 +16,12 @@ import { GetFeedbackStep } from "@saflib/processes/workflows";
 const input = [] as const;
 interface Context {}
 
-export const RecipesInitPhase1cWorkflowDefinition = defineWorkflow<
+export const RecipesInitM1HttpWorkflowDefinition = defineWorkflow<
   typeof input,
   Context
 >({
-  id: "plans/recipes-init-phase-1",
-  description: "Recipes core: spec, db, http (recipe CRUD + versioning).",
+  id: "plans/recipes-init-m1-http",
+  description: "Recipes backend (http): recipe CRUD + versioning — handlers.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -37,7 +37,7 @@ export const RecipesInitPhase1cWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: "../service/http" })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), ({ context }) => ({
       path: "./routes/recipes/list.ts",
-      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Phase 1: recipes core — spec, db, http for recipe CRUD and versioning). Then: Handler for GET /recipes. Use list query; enforce public-only for non-admin.`,
+      prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Milestone 1: recipes backend — spec, db, http for recipe CRUD and versioning). Then: Handler for GET /recipes. Use list query; enforce public-only for non-admin.`,
     })),
     step(makeWorkflowMachine(AddHandlerWorkflowDefinition), () => ({
       path: "./routes/recipes/get.ts",
@@ -71,4 +71,4 @@ export const RecipesInitPhase1cWorkflowDefinition = defineWorkflow<
   ],
 });
 
-export default RecipesInitPhase1cWorkflowDefinition;
+export default RecipesInitM1HttpWorkflowDefinition;
