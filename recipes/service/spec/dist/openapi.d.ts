@@ -245,6 +245,7 @@ export interface components {
         RecipeFileInfo: components["schemas"]["recipe-file-info"];
         RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
         UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
+        AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -671,6 +672,26 @@ export interface components {
              * @example https://api.unsplash.com/photos/abc123/download
              */
             downloadLocation: string;
+        };
+        /** @description Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage. */
+        "add-recipe-file-from-unsplash-request": {
+            /**
+             * @description Unsplash photo id (short id) of the chosen photo
+             * @example K3m9_xR2
+             */
+            unsplashPhotoId: string;
+            /**
+             * Format: uri
+             * @description Unsplash download tracking URL; backend calls trackDownload with this
+             * @example https://api.unsplash.com/photos/abc123/download
+             */
+            downloadLocation: string;
+            /**
+             * Format: uri
+             * @description URL to fetch image bytes (e.g. regular or full size from search result)
+             * @example https://images.unsplash.com/photo-123/regular
+             */
+            imageUrl: string;
         };
     };
     responses: never;

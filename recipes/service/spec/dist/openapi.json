@@ -1394,6 +1394,9 @@
       "UnsplashPhotoSearchItem": {
         "$ref": "#/components/schemas/unsplash-photo-search-item"
       },
+      "AddRecipeFileFromUnsplashRequest": {
+        "$ref": "#/components/schemas/add-recipe-file-from-unsplash-request"
+      },
       "recipe": {
         "type": "object",
         "properties": {
@@ -2004,6 +2007,34 @@
           "thumbUrl",
           "regularUrl",
           "downloadLocation"
+        ]
+      },
+      "add-recipe-file-from-unsplash-request": {
+        "type": "object",
+        "description": "Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage.",
+        "properties": {
+          "unsplashPhotoId": {
+            "type": "string",
+            "description": "Unsplash photo id (short id) of the chosen photo",
+            "example": "K3m9_xR2"
+          },
+          "downloadLocation": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unsplash download tracking URL; backend calls trackDownload with this",
+            "example": "https://api.unsplash.com/photos/abc123/download"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to fetch image bytes (e.g. regular or full size from search result)",
+            "example": "https://images.unsplash.com/photo-123/regular"
+          }
+        },
+        "required": [
+          "unsplashPhotoId",
+          "downloadLocation",
+          "imageUrl"
         ]
       }
     }

@@ -15,6 +15,7 @@ export type Error = components["schemas"]["Error"];
 export type ProductEvent = components["schemas"]["ProductEvent"];
 
 // BEGIN SORTED WORKFLOW AREA schema-exports FOR openapi/add-schema
+export type AddRecipeFileFromUnsplashRequest = components["schemas"]["AddRecipeFileFromUnsplashRequest"];
 export type Recipe = components["schemas"]["Recipe"];
 export type RecipeFileInfo = components["schemas"]["RecipeFileInfo"];
 export type RecipeNote = components["schemas"]["RecipeNote"];
