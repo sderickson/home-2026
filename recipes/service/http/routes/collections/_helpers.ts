@@ -35,3 +35,14 @@ export function createCollectionResultToCreateCollectionsResponse(
     collection: collectionToApiCollection(row),
   };
 }
+
+type GetCollections200 =
+  RecipesServiceResponseBody["getCollections"][200];
+
+export function getCollectionResultToGetCollectionsResponse(
+  row: CollectionEntity,
+): GetCollections200 {
+  return {
+    collection: collectionToApiCollection(row),
+  };
+}
