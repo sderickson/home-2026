@@ -333,7 +333,8 @@ export interface paths {
         /** Update a member's role. Owner only. Cannot demote the creator (permanent owner). */
         put: operations["membersUpdateCollections"];
         post?: never;
-        delete?: never;
+        /** Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 409 if attempted. */
+        delete: operations["membersRemoveCollections"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2445,6 +2446,65 @@ export interface operations {
             };
             /** @description Not Found - collection or member does not exist. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersRemoveCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+                /** @description Member record id */
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Member removed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection or member does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Conflict - cannot remove the creator (permanent owner). */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
