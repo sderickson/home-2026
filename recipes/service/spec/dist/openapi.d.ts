@@ -333,7 +333,7 @@ export interface paths {
         /** Update a member's role. Owner only. Cannot demote the creator (permanent owner). */
         put: operations["membersUpdateCollections"];
         post?: never;
-        /** Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 409 if attempted. */
+        /** Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted. */
         delete: operations["membersRemoveCollections"];
         options?: never;
         head?: never;
@@ -2073,6 +2073,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Bad Request - e.g. id not URL-safe or id already in use (when id provided). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
                 headers: {
@@ -2426,6 +2435,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Bad Request - cannot demote the creator (permanent owner). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
                 headers: {
@@ -2435,7 +2453,7 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Forbidden - caller must be owner; cannot demote the creator (permanent owner). */
+            /** @description Forbidden - caller must be an owner of the collection. */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2476,6 +2494,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Bad Request - cannot remove the creator (permanent owner). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
                 headers: {
@@ -2496,15 +2523,6 @@ export interface operations {
             };
             /** @description Not Found - collection or member does not exist. */
             404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["error"];
-                };
-            };
-            /** @description Conflict - cannot remove the creator (permanent owner). */
-            409: {
                 headers: {
                     [name: string]: unknown;
                 };

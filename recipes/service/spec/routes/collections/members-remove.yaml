@@ -1,5 +1,5 @@
 membersRemoveCollections:
-  summary: "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 409 if attempted."
+  summary: "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted."
   operationId: "membersRemoveCollections"
 
   parameters:
@@ -41,8 +41,8 @@ membersRemoveCollections:
           schema:
             $ref: "../../schemas/error.yaml"
 
-    "409":
-      description: "Conflict - cannot remove the creator (permanent owner)."
+    "400":
+      description: "Bad Request - cannot remove the creator (permanent owner)."
       content:
         application/json:
           schema:

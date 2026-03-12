@@ -48,6 +48,13 @@ membersUpdateCollections:
                 $ref: "../../schemas/collection-member.yaml"
                 description: "The updated collection member."
 
+    "400":
+      description: "Bad Request - cannot demote the creator (permanent owner)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."
       content:
@@ -56,7 +63,7 @@ membersUpdateCollections:
             $ref: "../../schemas/error.yaml"
 
     "403":
-      description: "Forbidden - caller must be owner; cannot demote the creator (permanent owner)."
+      description: "Forbidden - caller must be an owner of the collection."
       content:
         application/json:
           schema:

@@ -36,6 +36,13 @@ createCollections:
                 $ref: "../../schemas/collection.yaml"
                 description: "The created collection."
 
+    "400":
+      description: "Bad Request - e.g. id not URL-safe or id already in use (when id provided)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."
       content:

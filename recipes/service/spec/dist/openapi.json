@@ -1605,6 +1605,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - e.g. id not URL-safe or id already in use (when id provided).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
             "content": {
@@ -2081,8 +2091,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+          "400": {
+            "description": "Bad Request - cannot demote the creator (permanent owner).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2090,55 +2100,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "Forbidden - caller must be owner; cannot demote the creator (permanent owner).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found - collection or member does not exist.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 409 if attempted.",
-        "operationId": "membersRemoveCollections",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Collection id"
-          },
-          {
-            "name": "memberId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Member record id"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Member removed."
           },
           "401": {
             "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
@@ -2169,9 +2130,68 @@
                 }
               }
             }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted.",
+        "operationId": "membersRemoveCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
           },
-          "409": {
-            "description": "Conflict - cannot remove the creator (permanent owner).",
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Member record id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Member removed."
+          },
+          "400": {
+            "description": "Bad Request - cannot remove the creator (permanent owner).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection or member does not exist.",
             "content": {
               "application/json": {
                 "schema": {
