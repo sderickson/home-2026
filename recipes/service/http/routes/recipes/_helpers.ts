@@ -7,7 +7,31 @@ import type {
   RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
-import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
+import type {
+  RecipesServiceResponseBody,
+  UnsplashAttribution,
+} from "@sderickson/recipes-spec";
+
+/** App name for Unsplash UTM params (utm_source). */
+const UTM_APP_NAME = "recipes";
+
+function appendUtmParams(url: string): string {
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}utm_source=${encodeURIComponent(UTM_APP_NAME)}&utm_medium=referral`;
+}
+
+/** Build UnsplashAttribution from stored full Unsplash user object. */
+function unsplashUserToAttribution(user: Record<string, unknown>): UnsplashAttribution {
+  const name = typeof user.name === "string" ? user.name : "Unknown";
+  const links = user.links as Record<string, unknown> | undefined;
+  const profileHtml =
+    links && typeof links.html === "string" ? links.html : "https://unsplash.com";
+  return {
+    photographerName: name,
+    photographerProfileUrl: appendUtmParams(profileHtml),
+    unsplashSourceUrl: appendUtmParams("https://unsplash.com"),
+  };
+}
 
 type RecipeListResponseItem =
   RecipesServiceResponseBody["listRecipes"][200][number];
@@ -47,6 +71,9 @@ export function recipeFileToApiRecipeFile(row: RecipeFileEntity): RecipeFileInfo
     updatedAt: row.updated_at,
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
     downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
+    ...(row.unsplash_user !== null && {
+      unsplashAttribution: unsplashUserToAttribution(row.unsplash_user),
+    }),
   };
 }
 
