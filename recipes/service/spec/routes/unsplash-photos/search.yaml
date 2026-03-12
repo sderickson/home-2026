@@ -1,0 +1,48 @@
+# GET /unsplash-photos/search — search Unsplash for photos (e.g. recipe title); used by Unsplash picker modal.
+searchUnsplashPhotos:
+  summary: "Search Unsplash for photos by query (e.g. recipe title). Not recipe-scoped; general Unsplash search. Used by the Unsplash picker modal."
+  operationId: "searchUnsplashPhotos"
+
+  parameters:
+    - name: "q"
+      in: "query"
+      required: true
+      schema:
+        type: string
+      description: "Search query (e.g. recipe title)."
+    - name: "perPage"
+      in: "query"
+      required: false
+      schema:
+        type: integer
+        default: 10
+      description: "Number of results to return (default 10)."
+
+  responses:
+    "200":
+      description: "Search results: array of Unsplash photo search items."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - unsplashPhotos
+            properties:
+              unsplashPhotos:
+                type: array
+                items:
+                  $ref: "../../schemas/unsplash-photo-search-item.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

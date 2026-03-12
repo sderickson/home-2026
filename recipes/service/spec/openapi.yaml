@@ -61,6 +61,9 @@ paths:
   /recipes/{id}/notes/{noteId}/files/{fileId}/blob:
     get:
       $ref: "./routes/recipes/notes-files-download.yaml#/notesFilesDownloadRecipes"
+  /unsplash-photos/search:
+    get:
+      $ref: "./routes/unsplash-photos/search.yaml#/searchUnsplashPhotos"
   # END WORKFLOW AREA
 
 components:

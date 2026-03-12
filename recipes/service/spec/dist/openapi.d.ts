@@ -233,6 +233,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unsplash-photos/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Unsplash for photos by query (e.g. recipe title). Not recipe-scoped; general Unsplash search. Used by the Unsplash picker modal. */
+        get: operations["searchUnsplashPhotos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -615,6 +632,32 @@ export interface components {
              */
             downloadUrl: string;
         };
+        /** @description One photo returned from Unsplash search, enough to show a thumbnail and to request "add from Unsplash" later. */
+        "unsplash-photo-search-item": {
+            /**
+             * @description Unsplash photo id (short id, e.g. from generateShortId)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * Format: uri
+             * @description URL of the thumbnail image for grid display
+             * @example https://images.unsplash.com/photo-123/thumb
+             */
+            thumbUrl: string;
+            /**
+             * Format: uri
+             * @description URL of the regular-size image (e.g. for add-from-Unsplash)
+             * @example https://images.unsplash.com/photo-123/regular
+             */
+            regularUrl: string;
+            /**
+             * Format: uri
+             * @description Unsplash download tracking URL; required when adding the photo via the API
+             * @example https://api.unsplash.com/photos/abc123/download
+             */
+            downloadLocation: string;
+        };
         login: {
             /** @enum {string} */
             event: "login";
@@ -648,32 +691,6 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
-        /** @description One photo returned from Unsplash search, enough to show a thumbnail and to request "add from Unsplash" later. */
-        "unsplash-photo-search-item": {
-            /**
-             * @description Unsplash photo id (short id, e.g. from generateShortId)
-             * @example K3m9_xR2
-             */
-            id: string;
-            /**
-             * Format: uri
-             * @description URL of the thumbnail image for grid display
-             * @example https://images.unsplash.com/photo-123/thumb
-             */
-            thumbUrl: string;
-            /**
-             * Format: uri
-             * @description URL of the regular-size image (e.g. for add-from-Unsplash)
-             * @example https://images.unsplash.com/photo-123/regular
-             */
-            regularUrl: string;
-            /**
-             * Format: uri
-             * @description Unsplash download tracking URL; required when adding the photo via the API
-             * @example https://api.unsplash.com/photos/abc123/download
-             */
-            downloadLocation: string;
-        };
         /** @description Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage. */
         "add-recipe-file-from-unsplash-request": {
             /**
@@ -1713,6 +1730,51 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    searchUnsplashPhotos: {
+        parameters: {
+            query: {
+                /** @description Search query (e.g. recipe title). */
+                q: string;
+                /** @description Number of results to return (default 10). */
+                perPage?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Search results: array of Unsplash photo search items. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        unsplashPhotos: components["schemas"]["unsplash-photo-search-item"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
