@@ -64,6 +64,9 @@ paths:
   /unsplash-photos/search:
     get:
       $ref: "./routes/unsplash-photos/search.yaml#/searchUnsplashPhotos"
+  /recipes/{id}/files/from-unsplash:
+    post:
+      $ref: "./routes/recipes/files-from-unsplash.yaml#/filesFromUnsplashRecipes"
   # END WORKFLOW AREA
 
 components:
