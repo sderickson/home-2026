@@ -101,17 +101,19 @@ Existing business objects (RecipeVersion, RecipeNote, RecipeFileInfo, RecipeNote
    - Purpose: Remove a member from the collection.
    - Authorization: Owner only. Constraint: cannot remove the creator (permanent owner); return 400 or 409 if attempted.
 
-### Collection-scoped recipe endpoints
+### Collection-scoped recipe endpoints (flat paths + required collectionId)
 
-All existing recipe endpoints are re-scoped under the collection. Use **path prefix** `/c/:collectionId/recipes`, `/c/:collectionId/recipes/:id`, etc. Permission: caller must have at least viewer on the collection (and validated email unless creator); mutations require editor or owner.
+Keep existing recipe API paths; do not add a `/c/:collectionId/` prefix. Require **collectionId** via query params (for GET/list) or request body (for POST/create). Permission: caller must have at least viewer on the collection (and validated email unless creator); mutations require editor or owner.
 
-- **GET /c/:collectionId/recipes** — List recipes in this collection. Response: `{ recipes: Recipe[] }`. Authorization: at least viewer on collection. Filter: only recipes where recipe.collection_id = collectionId (and optionally public/private as today).
-- **GET /c/:collectionId/recipes/:id** — Get recipe; must belong to this collection (recipe.collection_id = collectionId). Authorization: at least viewer.
-- **POST /c/:collectionId/recipes** — Create recipe in this collection (set recipe.collection_id = collectionId). Authorization: editor or owner.
-- **PUT /c/:collectionId/recipes/:id** — Update recipe; must belong to this collection. Authorization: editor or owner.
-- **DELETE /c/:collectionId/recipes/:id** — Delete recipe; must belong to this collection. Authorization: editor or owner.
-- Similarly: **GET/POST/PUT/DELETE** for versions, notes, files, note-files under `/c/:collectionId/recipes/:id/...`.
-  Legacy **unscoped** endpoints (e.g. GET /recipes without collectionId) can be deprecated or removed: list could return 400 “collectionId required” or redirect to “pick a collection.” Spec recommends: **all recipe API usage goes through `/c/:collectionId/...`**; no query params for collection.
+- **GET /recipes** — Required query: `collectionId`. List recipes in that collection. Response: `{ recipes: Recipe[] }`. Filter: recipe.collection_id = collectionId (and optionally public/private as today). Return 400 if collectionId missing.
+- **GET /recipes/:id** — Required query: `collectionId`. Get recipe; must belong to that collection. Return 404 if recipe.collection_id != collectionId.
+- **POST /recipes** — Required in body: `collectionId`. Create recipe in that collection (set recipe.collection_id). Return 400 if collectionId missing.
+- **PUT /recipes/:id** — Required query or body: `collectionId`. Update recipe; must belong to that collection.
+- **DELETE /recipes/:id** — Required query or body: `collectionId`. Delete recipe; must belong to that collection.
+- **Versions, notes, files, note-files** — Same idea: require `collectionId` (query or body as appropriate) and verify the parent recipe belongs to that collection before operating.
+
+All recipe (and nested) endpoints require collectionId; return 400 when missing. Frontend URLs stay under `/c/:collectionId/...`; the app passes collectionId from the route into each API call as query or body.
+
 
 Error responses: 400 validation, 401 unauthenticated, 403 forbidden (e.g. not a member or insufficient role), 404 not found (collection or resource not in collection). Use existing Error schema where applicable.
 
@@ -125,7 +127,7 @@ Error responses: 400 validation, 401 unauthenticated, 403 forbidden (e.g. not a 
 
 2. **Collection-scoped recipe list** (path: `/c/:collectionId/recipes/list`)
    - Purpose: List recipes for this collection only. Replaces current “recipes list” when in collection context.
-   - Key features: Loader calls GET /c/:collectionId/recipes; breadcrumb shows collection name (e.g. “My Kitchen” instead of “recipes”); create/edit/delete gated by editor/owner role.
+   - Key features: Loader calls GET /recipes?collectionId=...; breadcrumb shows collection name (e.g. “My Kitchen” instead of “recipes”); create/edit/delete gated by editor/owner role.
 
 3. **Collection-scoped recipe detail** (path: `/c/:collectionId/recipes/:id`)
    - Purpose: View/edit one recipe in the collection. Same as current detail but URL includes collectionId; breadcrumb: collection name → recipe title.
