@@ -3,6 +3,7 @@ import { appLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+import CollectionsListAsync from "./pages/collections/list/ListAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
@@ -33,6 +34,10 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
     {
       path: appLinks.recipesEdit.path,
       component: RecipesEditAsync,
+    },
+    {
+      path: appLinks.collectionsList.path,
+      component: CollectionsListAsync,
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

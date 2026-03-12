@@ -1,0 +1,16 @@
+export const members_management_dialog = {
+  title: "Members",
+  add_member: "Add member",
+  email_label: "Email",
+  email_placeholder: "email@example.com",
+  role_label: "Role",
+  creator_badge: "Creator",
+  change_role: "Change role",
+  remove_member: "Remove",
+  cancel: "Cancel",
+  no_members: "No members.",
+  role_owner: "Owner",
+  role_editor: "Editor",
+  role_viewer: "Viewer",
+  actions_column: "Actions",
+};
