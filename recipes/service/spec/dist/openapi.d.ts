@@ -294,7 +294,8 @@ export interface paths {
         };
         /** Get one collection by id. Caller must be a member (any role) and have validated email; creator always has access. */
         get: operations["getCollections"];
-        put?: never;
+        /** Update collection name. Owner only. */
+        put: operations["updateCollections"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2089,6 +2090,69 @@ export interface operations {
                 };
             };
             /** @description Forbidden - not a member or unvalidated email (creator excepted). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Human-readable name for the collection
+                     * @example My Kitchen
+                     */
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Updated collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The updated collection. */
+                        collection: components["schemas"]["collection"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
             403: {
                 headers: {
                     [name: string]: unknown;

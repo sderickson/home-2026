@@ -75,6 +75,8 @@ paths:
   /collections/{id}:
     get:
       $ref: "./routes/collections/get.yaml#/getCollections"
+    put:
+      $ref: "./routes/collections/update.yaml#/updateCollections"
   # END WORKFLOW AREA
 
 components:

@@ -1,0 +1,61 @@
+updateCollections:
+  summary: "Update collection name. Owner only."
+  operationId: "updateCollections"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+      description: "Collection id"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Human-readable name for the collection
+              minLength: 1
+              example: "My Kitchen"
+
+  responses:
+    "200":
+      description: "Updated collection."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - collection
+            properties:
+              collection:
+                $ref: "../../schemas/collection.yaml"
+                description: "The updated collection."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - caller must be an owner of the collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found - collection does not exist."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
