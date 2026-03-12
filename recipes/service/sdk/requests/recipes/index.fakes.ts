@@ -12,6 +12,7 @@ import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 import { createRecipesHandler } from "./create.fake.ts";
 import { deleteRecipesHandler } from "./delete.fake.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.fake.ts";
+import { filesFromUnsplashRecipesHandler } from "./files-from-unsplash.fake.ts";
 import { filesUploadRecipesHandler } from "./files-upload.fake.ts";
 import { notesCreateRecipesHandler } from "./notes-create.fake.ts";
 import { notesDeleteRecipesHandler } from "./notes-delete.fake.ts";
@@ -39,6 +40,7 @@ export const recipesFakeHandlers = [
   createRecipesHandler,
   deleteRecipesHandler,
   filesDeleteRecipesHandler,
+  filesFromUnsplashRecipesHandler,
   filesUploadRecipesHandler,
   notesCreateRecipesHandler,
   notesDeleteRecipesHandler,
