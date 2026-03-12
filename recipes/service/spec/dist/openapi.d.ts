@@ -612,7 +612,7 @@ export interface components {
              * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl?: string;
-            /** @description When present, the file was sourced from Unsplash; frontend must show attribution (e.g. full-size view). Null or omitted when file is from upload. */
+            /** @description When present, the file was sourced from Unsplash; frontend must show attribution (e.g. full-size view). Omitted when file is from upload. */
             unsplashAttribution?: components["schemas"]["unsplash-attribution"];
         };
         /** @description Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
