@@ -3,14 +3,26 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError, RecipeVersionNotFoundError } from "../../errors.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { createRecipeNote } from "./create.ts";
+
+const TEST_COLLECTION_ID = "test-collection";
 
 describe("createRecipeNote", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {
@@ -39,6 +51,7 @@ describe("createRecipeNote", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -72,9 +85,10 @@ describe("createRecipeNote", () => {
     await db.insert(recipe).values([
       {
         id: recipeIdA,
+        collectionId: TEST_COLLECTION_ID,
         title: "Recipe A",
-subtitle: "Short",
-      description: null,
+        subtitle: "Short",
+        description: null,
         isPublic: true,
         createdBy: "user-1",
         createdAt: now,
@@ -83,9 +97,10 @@ subtitle: "Short",
       },
       {
         id: recipeIdB,
+        collectionId: TEST_COLLECTION_ID,
         title: "Recipe B",
-subtitle: "Short",
-      description: null,
+        subtitle: "Short",
+        description: null,
         isPublic: true,
         createdBy: "user-1",
         createdAt: now,
@@ -138,6 +153,7 @@ subtitle: "Short",
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -195,6 +211,7 @@ subtitle: "Short",
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,

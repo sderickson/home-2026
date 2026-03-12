@@ -1,8 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { listRecipes } from "./list.ts";
+
+const TEST_COLLECTION_ID = "test-collection";
 
 function makeRecipeRow(overrides: {
   title?: string;
@@ -11,6 +14,7 @@ function makeRecipeRow(overrides: {
 } = {}) {
   const now = new Date();
   return {
+    collectionId: TEST_COLLECTION_ID,
     title: "Test Recipe",
     subtitle: "Short",
     description: null as string | null,
@@ -26,8 +30,17 @@ function makeRecipeRow(overrides: {
 describe("listRecipes", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {

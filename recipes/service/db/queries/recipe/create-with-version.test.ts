@@ -1,14 +1,26 @@
 import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
+import { collection } from "../../schemas/collection.ts";
 import { getByIdRecipe } from "./get-by-id.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
+
+const TEST_COLLECTION_ID = "test-collection";
 
 describe("createWithVersionRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {
@@ -17,6 +29,7 @@ describe("createWithVersionRecipe", () => {
 
   it("should create recipe and first version in a transaction", async () => {
     const params = {
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "A short description",
       description: null,
@@ -52,6 +65,7 @@ describe("createWithVersionRecipe", () => {
 
   it("should persist recipe with description and isPublic true", async () => {
     const params = {
+      collectionId: TEST_COLLECTION_ID,
       title: "Public Recipe",
       subtitle: "Short",
       description: "A longer description for the recipe.",
@@ -85,6 +99,7 @@ describe("createWithVersionRecipe", () => {
 
   it("should assign distinct ids to each created recipe and version", async () => {
     const params1 = {
+      collectionId: TEST_COLLECTION_ID,
       title: "First",
       subtitle: "First short",
       description: null,
@@ -97,6 +112,7 @@ describe("createWithVersionRecipe", () => {
       },
     };
     const params2 = {
+      collectionId: TEST_COLLECTION_ID,
       title: "Second",
       subtitle: "Second short",
       description: null,

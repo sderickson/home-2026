@@ -2,16 +2,28 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNoteNotFoundError } from "../../errors.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { createRecipeNote } from "./create.ts";
 import { deleteRecipeNote } from "./delete.ts";
 import { listRecipeNote } from "./list.ts";
 
+const TEST_COLLECTION_ID = "test-collection";
+
 describe("deleteRecipeNote", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {
@@ -36,6 +48,7 @@ describe("deleteRecipeNote", () => {
 
     await db.insert(recipe).values({
       id: "test-recipe-delete-note",
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,

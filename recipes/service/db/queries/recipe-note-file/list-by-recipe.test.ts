@@ -1,17 +1,29 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { recipeNote } from "../../schemas/recipe-note.ts";
 import { recipeNoteFile } from "../../schemas/recipe-note-file.ts";
 import { listRecipeNoteFilesByRecipeId } from "./list-by-recipe.ts";
 
+const TEST_COLLECTION_ID = "test-collection";
+
 describe("listRecipeNoteFilesByRecipeId", () => {
   let dbKey: DbKey;
   const seedUserId = "11111111-1111-1111-1111-111111111111";
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: seedUserId,
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(() => {
@@ -23,6 +35,7 @@ describe("listRecipeNoteFilesByRecipeId", () => {
     const now = new Date();
     await db.insert(recipe).values({
       id: "r1",
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe",
       subtitle: "Short",
       description: null,
@@ -43,6 +56,7 @@ describe("listRecipeNoteFilesByRecipeId", () => {
     const now = new Date();
     await db.insert(recipe).values({
       id: "r1",
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe",
       subtitle: "Short",
       description: null,

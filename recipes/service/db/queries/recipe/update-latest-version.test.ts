@@ -2,15 +2,27 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeVersionNotFoundError } from "../../errors.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 
+const TEST_COLLECTION_ID = "test-collection";
+
 describe("updateLatestVersionRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {
@@ -19,6 +31,7 @@ describe("updateLatestVersionRecipe", () => {
 
   it("should update latest version content in place and return the updated version", async () => {
     const { result: created } = await createWithVersionRecipe(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe",
       subtitle: "Short",
       description: null,
@@ -79,6 +92,7 @@ describe("updateLatestVersionRecipe", () => {
     const [inserted] = await db
       .insert(recipe)
       .values({
+        collectionId: TEST_COLLECTION_ID,
         title: "Orphan Recipe",
         subtitle: "Short",
         description: null,

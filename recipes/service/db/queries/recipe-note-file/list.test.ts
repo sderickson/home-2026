@@ -2,16 +2,28 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNoteNotFoundError } from "../../errors.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { recipeNote } from "../../schemas/recipe-note.ts";
 import { recipeNoteFile } from "../../schemas/recipe-note-file.ts";
 import { listRecipeNoteFile } from "./list.ts";
 
+const TEST_COLLECTION_ID = "test-collection";
+
 describe("listRecipeNoteFile", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(() => {
@@ -26,6 +38,7 @@ describe("listRecipeNoteFile", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -54,6 +67,7 @@ describe("listRecipeNoteFile", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe A",
       subtitle: "Short",
       description: null,
@@ -65,6 +79,7 @@ describe("listRecipeNoteFile", () => {
     });
     await db.insert(recipe).values({
       id: otherRecipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe B",
       subtitle: "Short",
       description: null,
@@ -109,6 +124,7 @@ describe("listRecipeNoteFile", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -153,6 +169,7 @@ describe("listRecipeNoteFile", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -210,6 +227,7 @@ describe("listRecipeNoteFile", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,

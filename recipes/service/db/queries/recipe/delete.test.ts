@@ -3,6 +3,7 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError } from "../../errors.ts";
+import { collection } from "../../schemas/collection.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { recipeFile } from "../../schemas/recipe-file.ts";
 import { recipeNote } from "../../schemas/recipe-note.ts";
@@ -10,11 +11,22 @@ import { recipeNoteFile } from "../../schemas/recipe-note-file.ts";
 import { deleteRecipe } from "./delete.ts";
 import { getByIdRecipe } from "./get-by-id.ts";
 
+const TEST_COLLECTION_ID = "test-collection";
+
 describe("deleteRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
+    await db.insert(collection).values({
+      id: TEST_COLLECTION_ID,
+      name: "Test",
+      createdBy: "user-1",
+      createdAt: now,
+      updatedAt: now,
+    });
   });
 
   afterEach(async () => {
@@ -38,6 +50,7 @@ describe("deleteRecipe", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
@@ -78,6 +91,7 @@ describe("deleteRecipe", () => {
 
     await db.insert(recipe).values({
       id: recipeId,
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe with files and notes",
       subtitle: "Short",
       description: null,
