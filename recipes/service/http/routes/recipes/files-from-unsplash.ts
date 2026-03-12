@@ -58,7 +58,6 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const trackResult = await unsplash.photos.trackDownload({
       downloadLocation,
     });
-    console.log("trackResult", trackResult);
     if (trackResult.type !== "success") {
       throw createError(502, "Failed to track Unsplash download", {
         code: "UNSPLASH_ERROR",
