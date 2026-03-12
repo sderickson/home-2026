@@ -1,18 +1,21 @@
-import {
-  defineWorkflow,
-  // step,
-  // makeWorkflowMachine,
-  // CdStepMachine,
-  // CommandStepMachine,
-} from "@saflib/workflows";
-import { GetFeedbackStep } from "@saflib/processes/workflows";
-
-// TODO: Import workflows from the appropriate packages
-
+/**
+ * Orchestrator: runs collections-multi-tenant workflows in milestone order.
+ * Each workflow can use a different agent (better context fit).
+ * Run from recipes/plans so Cd paths (e.g. ../service/spec) resolve.
+ *
+ * Order: M1 (spec, db, http) → M2 (collections frontend) →
+ * M3 (recipe scoping backend) → M4 (recipe scoping frontend).
+ */
+import { defineWorkflow, step, makeWorkflowMachine } from "@saflib/workflows";
+import { CollectionsM1SpecWorkflowDefinition } from "./collections-m1-spec.workflow.ts";
+import { CollectionsM1DbWorkflowDefinition } from "./collections-m1-db.workflow.ts";
+import { CollectionsM1HttpWorkflowDefinition } from "./collections-m1-http.workflow.ts";
+import { CollectionsM2CollectionsFrontendWorkflowDefinition } from "./collections-m2-collections-frontend.workflow.ts";
+import { CollectionsM3RecipeScopingBackendWorkflowDefinition } from "./collections-m3-recipe-scoping-backend.workflow.ts";
+import { CollectionsM4RecipeScopingFrontendWorkflowDefinition } from "./collections-m4-recipe-scoping-frontend.workflow.ts";
 import path from "path";
 
 const input = [] as const;
-
 interface CollectionsMultiTenantWorkflowContext {}
 
 export const CollectionsMultiTenantWorkflowDefinition = defineWorkflow<
@@ -20,41 +23,50 @@ export const CollectionsMultiTenantWorkflowDefinition = defineWorkflow<
   CollectionsMultiTenantWorkflowContext
 >({
   id: "plans/collections-multi-tenant",
-  description: "Project collections-multi-tenant workflow",
+  description:
+    "Orchestrator: run all collections-multi-tenant workflows in milestone order (each can use a different agent).",
   input,
   context: ({ input }) => ({
     agentConfig: {
       ...input.agentConfig,
+      resetTimeoutEachStep: true,
     },
   }),
   sourceUrl: import.meta.url,
   templateFiles: {},
   docFiles: {
     spec: path.join(import.meta.dirname, "collections-multi-tenant.spec.md"),
+    plan: path.join(import.meta.dirname, "collections-multi-tenant.plan.md"),
   },
 
   versionControl: {
-    allowPaths: ["**/*"], // TODO: Make this more specific if you can. You only need to specify changes made in this specific workflow (e.g. prompt steps, command steps, etc), not other workflows which you invoke.
+    allowPaths: ["**/*"],
     commitEachStep: true,
   },
 
   steps: [
-    // TODO: Add steps here for implement the spec.
-    // Mostly it should be Cd steps to move into the appropriate directory, then
-    // makeWorkflowMachine calls to the appropriate workflows to implement the spec.
+    // M1: Collections backend
+    step(makeWorkflowMachine(CollectionsM1SpecWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(CollectionsM1DbWorkflowDefinition), () => ({})),
+    step(makeWorkflowMachine(CollectionsM1HttpWorkflowDefinition), () => ({})),
 
-    // step(CdStepMachine, () => ({
-    //   path: "./secrets/secrets-db",
-    // })),
+    // M2: Collections frontend
+    step(
+      makeWorkflowMachine(CollectionsM2CollectionsFrontendWorkflowDefinition),
+      () => ({}),
+    ),
 
-    // TODO: For each workflow, include a prompt which guides the agent doing the implementation.
-    // step(makeWorkflowMachine(UpdateSchemaWorkflowDefinition), () => ({
-    //   path: "schemas/foo.ts",
-    //   prompt: `...`,
-    // })),
+    // M3: Recipe scoping backend
+    step(
+      makeWorkflowMachine(CollectionsM3RecipeScopingBackendWorkflowDefinition),
+      () => ({}),
+    ),
 
-    // Leave this in here, it's for the agent to report how things went.
-    GetFeedbackStep,
+    // M4: Recipe scoping frontend
+    step(
+      makeWorkflowMachine(CollectionsM4RecipeScopingFrontendWorkflowDefinition),
+      () => ({}),
+    ),
   ],
 });
 
