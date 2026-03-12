@@ -21,6 +21,7 @@ export type RecipeFileInfo = components["schemas"]["RecipeFileInfo"];
 export type RecipeNote = components["schemas"]["RecipeNote"];
 export type RecipeNoteFileInfo = components["schemas"]["RecipeNoteFileInfo"];
 export type RecipeVersion = components["schemas"]["RecipeVersion"];
+export type UnsplashAttribution = components["schemas"]["UnsplashAttribution"];
 export type UnsplashPhotoSearchItem = components["schemas"]["UnsplashPhotoSearchItem"];
 // END WORKFLOW AREA
 

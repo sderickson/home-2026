@@ -246,6 +246,7 @@ export interface components {
         RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
         UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
         AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
+        UnsplashAttribution: components["schemas"]["unsplash-attribution"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -692,6 +693,26 @@ export interface components {
              * @example https://images.unsplash.com/photo-123/regular
              */
             imageUrl: string;
+        };
+        /** @description Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view). */
+        "unsplash-attribution": {
+            /**
+             * @description Display name of the photographer
+             * @example Jane Doe
+             */
+            photographerName: string;
+            /**
+             * Format: uri
+             * @description Unsplash profile URL with UTM params (utm_source, utm_medium=referral)
+             * @example https://unsplash.com/@janedoe?utm_source=your_app_name&utm_medium=referral
+             */
+            photographerProfileUrl: string;
+            /**
+             * Format: uri
+             * @description Unsplash source link with UTM params for "on Unsplash" attribution
+             * @example https://unsplash.com?utm_source=your_app_name&utm_medium=referral
+             */
+            unsplashSourceUrl: string;
         };
     };
     responses: never;
