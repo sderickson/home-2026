@@ -1505,6 +1505,56 @@
           }
         }
       }
+    },
+    "/collections": {
+      "get": {
+        "summary": "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator).",
+        "operationId": "listCollections",
+        "responses": {
+          "200": {
+            "description": "Collections the current user is a member of.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collections"
+                  ],
+                  "properties": {
+                    "collections": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection"
+                      },
+                      "description": "List of collections the user is a member of."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2110,6 +2160,47 @@
           "imageUrl"
         ]
       },
+      "collection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier; user-specified (URL-safe) on create or server-generated short id",
+            "example": "my-kitchen",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the collection",
+            "example": "My Kitchen",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the collection creator (short id)",
+            "example": "K3m9_xR2"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "login": {
         "type": "object",
         "properties": {
@@ -2215,47 +2306,6 @@
         },
         "required": [
           "event"
-        ]
-      },
-      "collection": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier; user-specified (URL-safe) on create or server-generated short id",
-            "example": "my-kitchen",
-            "minLength": 1
-          },
-          "name": {
-            "type": "string",
-            "description": "Human-readable name for the collection",
-            "example": "My Kitchen",
-            "minLength": 1
-          },
-          "createdBy": {
-            "type": "string",
-            "description": "User id of the collection creator (short id)",
-            "example": "K3m9_xR2"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the collection was created",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the collection was last updated",
-            "example": "2023-02-01T09:00:00Z"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "createdBy",
-          "createdAt",
-          "updatedAt"
         ]
       },
       "collection-member": {

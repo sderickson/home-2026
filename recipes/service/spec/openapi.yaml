@@ -67,6 +67,9 @@ paths:
   /recipes/{id}/files/from-unsplash:
     post:
       $ref: "./routes/recipes/files-from-unsplash.yaml#/filesFromUnsplashRecipes"
+  /collections:
+    get:
+      $ref: "./routes/collections/list.yaml#/listCollections"
   # END WORKFLOW AREA
 
 components:
