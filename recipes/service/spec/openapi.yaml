@@ -95,4 +95,6 @@ components:
       $ref: "./schemas/unsplash-attribution.yaml"
     Collection:
       $ref: "./schemas/collection.yaml"
+    CollectionMember:
+      $ref: "./schemas/collection-member.yaml"
     # END WORKFLOW AREA

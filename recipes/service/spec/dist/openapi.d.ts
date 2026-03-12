@@ -282,6 +282,7 @@ export interface components {
         AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
         UnsplashAttribution: components["schemas"]["unsplash-attribution"];
         Collection: components["schemas"]["collection"];
+        CollectionMember: components["schemas"]["collection-member"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -779,6 +780,41 @@ export interface components {
              * @example 2023-02-01T09:00:00Z
              */
             updatedAt: string;
+        };
+        "collection-member": {
+            /**
+             * @description Unique identifier for the member record (short id)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * @description Id of the collection this member belongs to
+             * @example my-kitchen
+             */
+            collectionId: string;
+            /**
+             * Format: email
+             * @description Member's email address; must be validated for access (except creator)
+             * @example alice@example.com
+             */
+            email: string;
+            /**
+             * @description Member's role in the collection; creator is always owner and cannot be demoted
+             * @example editor
+             * @enum {string}
+             */
+            role: "owner" | "editor" | "viewer";
+            /**
+             * @description True if this member created the collection; permanent owner, cannot be removed or demoted
+             * @example false
+             */
+            isCreator: boolean;
+            /**
+             * Format: date-time
+             * @description When the member was added to the collection
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
         };
     };
     responses: never;
