@@ -7,6 +7,7 @@ export interface RecipeFileEntity extends FileMetadataFields {
   id: string;
   recipe_id: string;
   uploaded_by: string | null;
+  unsplash_user: Record<string, unknown> | null;
 }
 
 export const recipeFile = sqliteTable(
@@ -20,6 +21,8 @@ export const recipeFile = sqliteTable(
       .references(() => recipe.id),
     ...fileMetadataColumns,
     uploaded_by: text("uploaded_by"),
+    unsplash_user: text("unsplash_user", { mode: "json" })
+      .$type<Record<string, unknown>>(),
   },
   (table) => [index("recipe_file_recipe_id_idx").on(table.recipe_id)],
 );

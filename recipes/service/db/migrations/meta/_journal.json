@@ -36,6 +36,13 @@
       "when": 1773156555217,
       "tag": "0005_chunky_the_hand",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1773284774535,
+      "tag": "0006_talented_firedrake",
+      "breakpoints": true
     }
   ]
 }
