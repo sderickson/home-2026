@@ -50,6 +50,13 @@
       "when": 1773337110605,
       "tag": "0007_motionless_ted_forrester",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1773337131861,
+      "tag": "0008_stormy_diamondback",
+      "breakpoints": true
     }
   ]
 }
