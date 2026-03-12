@@ -46,3 +46,14 @@ export function getCollectionResultToGetCollectionsResponse(
     collection: collectionToApiCollection(row),
   };
 }
+
+type UpdateCollections200 =
+  RecipesServiceResponseBody["updateCollections"][200];
+
+export function updateCollectionResultToUpdateCollectionsResponse(
+  row: CollectionEntity,
+): UpdateCollections200 {
+  return {
+    collection: collectionToApiCollection(row),
+  };
+}
