@@ -7,6 +7,7 @@ import { createCollectionsHandler } from "./create.ts";
 import { deleteCollectionsHandler } from "./delete.ts";
 import { getCollectionsHandler } from "./get.ts";
 import { listCollectionsHandler } from "./list.ts";
+import { membersListCollectionsHandler } from "./members-list.ts";
 import { updateCollectionsHandler } from "./update.ts";
 // END WORKFLOW AREA
 
@@ -25,6 +26,7 @@ export const createCollectionsRouter = () => {
   router.get("/collections/:id", getCollectionsHandler);
   router.put("/collections/:id", updateCollectionsHandler);
   router.delete("/collections/:id", deleteCollectionsHandler);
+  router.get("/collections/:id/members", membersListCollectionsHandler);
 
   return router;
 };

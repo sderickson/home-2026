@@ -1,5 +1,8 @@
 // Shared mappers between database models and API response types.
-import type { CollectionEntity } from "@sderickson/recipes-db";
+import type {
+  CollectionEntity,
+  CollectionMemberEntity,
+} from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 
 type ListCollections200 =
@@ -63,4 +66,28 @@ export function deleteCollectionResultToDeleteCollectionsResponse(
   _row: CollectionEntity,
 ): void {
   // 204 No Content - no body to map
+}
+
+type MembersListCollections200 =
+  RecipesServiceResponseBody["membersListCollections"][200];
+
+export function collectionMemberToApiCollectionMember(
+  row: CollectionMemberEntity,
+): MembersListCollections200["members"][number] {
+  return {
+    id: row.id,
+    collectionId: row.collectionId,
+    email: row.email,
+    role: row.role,
+    isCreator: row.isCreator,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+export function membersListResultToMembersListCollectionsResponse(
+  rows: CollectionMemberEntity[],
+): MembersListCollections200 {
+  return {
+    members: rows.map(collectionMemberToApiCollectionMember),
+  };
 }
