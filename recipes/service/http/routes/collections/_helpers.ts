@@ -102,3 +102,14 @@ export function addCollectionMemberResultToMembersAddCollectionsResponse(
     member: collectionMemberToApiCollectionMember(row),
   };
 }
+
+type MembersUpdateCollections200 =
+  RecipesServiceResponseBody["membersUpdateCollections"][200];
+
+export function updateRoleCollectionMemberResultToMembersUpdateCollectionsResponse(
+  row: CollectionMemberEntity,
+): MembersUpdateCollections200 {
+  return {
+    member: collectionMemberToApiCollectionMember(row),
+  };
+}
