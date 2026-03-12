@@ -57,3 +57,10 @@ export function updateCollectionResultToUpdateCollectionsResponse(
     collection: collectionToApiCollection(row),
   };
 }
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteCollectionResultToDeleteCollectionsResponse(
+  _row: CollectionEntity,
+): void {
+  // 204 No Content - no body to map
+}
