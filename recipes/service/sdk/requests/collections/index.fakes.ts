@@ -8,6 +8,7 @@ import { membersListCollectionsHandler } from "./members-list.fake.ts";
 import { createCollectionsHandler } from "./create.fake.ts";
 import { deleteCollectionsHandler } from "./delete.fake.ts";
 import { membersAddCollectionsHandler } from "./members-add.fake.ts";
+import { membersRemoveCollectionsHandler } from "./members-remove.fake.ts";
 import { membersUpdateCollectionsHandler } from "./members-update.fake.ts";
 import { updateCollectionsHandler } from "./update.fake.ts";
 // END WORKFLOW AREA
@@ -24,6 +25,7 @@ export const collectionsFakeHandlers = [
   createCollectionsHandler,
   deleteCollectionsHandler,
   membersAddCollectionsHandler,
+  membersRemoveCollectionsHandler,
   membersUpdateCollectionsHandler,
   updateCollectionsHandler,
   // END WORKFLOW AREA
