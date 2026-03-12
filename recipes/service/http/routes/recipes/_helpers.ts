@@ -13,7 +13,7 @@ import type {
 } from "@sderickson/recipes-spec";
 
 /** App name for Unsplash UTM params (utm_source). */
-const UTM_APP_NAME = "recipes";
+const UTM_APP_NAME = "893198";
 
 function appendUtmParams(url: string): string {
   const separator = url.includes("?") ? "&" : "?";
@@ -21,11 +21,15 @@ function appendUtmParams(url: string): string {
 }
 
 /** Build UnsplashAttribution from stored full Unsplash user object. */
-function unsplashUserToAttribution(user: Record<string, unknown>): UnsplashAttribution {
+function unsplashUserToAttribution(
+  user: Record<string, unknown>,
+): UnsplashAttribution {
   const name = typeof user.name === "string" ? user.name : "Unknown";
   const links = user.links as Record<string, unknown> | undefined;
   const profileHtml =
-    links && typeof links.html === "string" ? links.html : "https://unsplash.com";
+    links && typeof links.html === "string"
+      ? links.html
+      : "https://unsplash.com";
   return {
     photographerName: name,
     photographerProfileUrl: appendUtmParams(profileHtml),
@@ -40,7 +44,8 @@ type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
 type RecipeVersionApi = GetRecipe200["currentVersion"];
 type CreateRecipe200 = RecipesServiceResponseBody["createRecipe"][200];
 type UpdateRecipe200 = RecipesServiceResponseBody["updateRecipe"][200];
-type ListRecipeVersions200 = RecipesServiceResponseBody["listRecipeVersions"][200];
+type ListRecipeVersions200 =
+  RecipesServiceResponseBody["listRecipeVersions"][200];
 type UpdateRecipeVersionLatest200 =
   RecipesServiceResponseBody["updateRecipeVersionLatest"][200];
 type CreateRecipeVersion200 =
@@ -59,7 +64,9 @@ type NotesCreateRecipes200 =
 type NotesUpdateRecipes200 =
   RecipesServiceResponseBody["notesUpdateRecipes"][200];
 
-export function recipeFileToApiRecipeFile(row: RecipeFileEntity): RecipeFileInfoApi {
+export function recipeFileToApiRecipeFile(
+  row: RecipeFileEntity,
+): RecipeFileInfoApi {
   return {
     id: row.id,
     recipeId: row.recipe_id,
@@ -115,7 +122,9 @@ export function insertNoteFileResultToNotesFilesUploadRecipesResponse(
   return recipeNoteFileToApiRecipeNoteFile(row, recipeId);
 }
 
-export function recipeNoteToApiRecipeNote(row: RecipeNoteEntity): RecipeNoteApi {
+export function recipeNoteToApiRecipeNote(
+  row: RecipeNoteEntity,
+): RecipeNoteApi {
   return {
     id: row.id,
     recipeId: row.recipeId,

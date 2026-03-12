@@ -42,9 +42,12 @@ export const recipes_detail_page = {
   toolbar_edit: "Edit",
   toolbar_notes: "Notes",
   toolbar_images: "Add image",
+  toolbar_upload_image: "Upload from computer",
+  toolbar_choose_unsplash: "Choose from Unsplash",
   toolbar_delete: "Delete recipe",
   image_expand: "View full size",
   image_remove: "Remove image",
+  unsplash_photo_by: "Photo by {name}",
 };
 
 export { recipes_detail_page as recipes_detail };

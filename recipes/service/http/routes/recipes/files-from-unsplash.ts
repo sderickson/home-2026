@@ -26,7 +26,8 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     }
 
     const id = req.params.id as string;
-    const body = req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
+    const body =
+      req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
     const { unsplashPhotoId, downloadLocation, imageUrl } = body;
 
     const { recipesDbKey, recipesFileContainer } =
@@ -49,11 +50,15 @@ export const filesFromUnsplashRecipesHandler = createHandler(
         code: "UNSPLASH_ERROR",
       });
     }
-    const user = photoResult.response.user as unknown as Record<string, unknown>;
+    const user = photoResult.response.user as unknown as Record<
+      string,
+      unknown
+    >;
 
     const trackResult = await unsplash.photos.trackDownload({
       downloadLocation,
     });
+    console.log("trackResult", trackResult);
     if (trackResult.type !== "success") {
       throw createError(502, "Failed to track Unsplash download", {
         code: "UNSPLASH_ERROR",
@@ -69,8 +74,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const imageBytes = new Uint8Array(await imageResponse.arrayBuffer());
     const size = imageBytes.length;
     const contentType = imageResponse.headers.get("content-type");
-    const mimetype =
-      contentType?.split(";")[0]?.trim() || "image/jpeg";
+    const mimetype = contentType?.split(";")[0]?.trim() || "image/jpeg";
     const ext = mimetype === "image/png" ? "png" : "jpg";
     const fileOriginalName = `unsplash-${unsplashPhotoId}.${ext}`;
 
@@ -108,7 +112,10 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     );
 
     if (uploadResult.error) {
-      await recipeFileQueries.deleteRecipeFile(recipesDbKey, insertOut.result.id);
+      await recipeFileQueries.deleteRecipeFile(
+        recipesDbKey,
+        insertOut.result.id,
+      );
       throw createError(500, "Failed to upload file to storage", {
         code: "FILE_UPLOAD_FAILED",
       });
