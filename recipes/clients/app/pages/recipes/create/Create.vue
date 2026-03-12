@@ -41,6 +41,7 @@ const { profileQuery } = useCreateLoader();
 assertCreateDataLoaded(profileQuery.data.value);
 
 const formModel = ref<RecipeFormModel>({
+  collectionId: "my-kitchen",
   title: "",
   subtitle: "",
   description: null,

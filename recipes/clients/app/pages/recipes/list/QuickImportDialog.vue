@@ -140,6 +140,7 @@ async function handleSave() {
   saving.value = true;
   try {
     const data = await createMutation.mutateAsync({
+      collectionId: "my-kitchen",
       title: title.value.trim(),
       subtitle: "",
       isPublic: true,
