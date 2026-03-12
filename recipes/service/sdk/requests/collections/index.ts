@@ -6,5 +6,6 @@ export * from "./members-list.ts";
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
 export * from "./create.ts";
 export * from "./delete.ts";
+export * from "./members-add.ts";
 export * from "./update.ts";
 // END WORKFLOW AREA
