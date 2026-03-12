@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import * as exports from "@vendata/iform-unsplash";
+import * as exports from "@sderickson/recipes-unsplash";
 
-describe("@vendata/iform-unsplash", () => {
+describe("@sderickson/recipes-unsplash", () => {
   it("should export the client", () => {
     expect(exports.unsplash).toBeDefined();
   });

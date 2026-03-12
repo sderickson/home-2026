@@ -2,7 +2,6 @@ import { createApi } from "unsplash-js";
 import { typedEnv } from "./env.ts";
 
 const apiKey = typedEnv.UNSPLASH_API_KEY;
-console.log("apiKey", apiKey);
 const isTest = typedEnv.NODE_ENV === "test";
 export const isMocked = !apiKey || apiKey === "mock" || isTest;
 if (!apiKey && !isTest) {

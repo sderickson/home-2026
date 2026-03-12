@@ -35,7 +35,8 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
         instructionsMarkdown: "Mix and bake.",
       },
     });
-    if (!result) throw new Error("Expected createWithVersionRecipe to return result");
+    if (!result)
+      throw new Error("Expected createWithVersionRecipe to return result");
     recipeId = result.recipe.id;
     app = createRecipesHttpApp({ recipesDbKey: dbKey });
   });
@@ -50,7 +51,8 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeAdminHeaders(adminUserId))
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation: "https://api.unsplash.com/photos/mock-photo-id/download",
+        downloadLocation:
+          "https://api.unsplash.com/photos/mock-photo-id/download",
         imageUrl: minimalJpegDataUrl,
       });
 
@@ -62,15 +64,17 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       uploadedBy: adminUserId,
       unsplashAttribution: {
         photographerName: "Mock Photographer",
-        photographerProfileUrl: expect.stringContaining("unsplash.com/@mockphotographer"),
+        photographerProfileUrl: expect.stringContaining(
+          "unsplash.com/@mockphotographer",
+        ),
         unsplashSourceUrl: expect.stringContaining("unsplash.com"),
       },
     });
     expect(response.body.unsplashAttribution.photographerProfileUrl).toMatch(
-      /utm_source=recipes&utm_medium=referral/,
+      /utm_source=893198&utm_medium=referral/,
     );
     expect(response.body.unsplashAttribution.unsplashSourceUrl).toMatch(
-      /utm_source=recipes&utm_medium=referral/,
+      /utm_source=893198&utm_medium=referral/,
     );
     expect(response.body.id).toBeDefined();
     expect(response.body.blobName).toBeDefined();
@@ -91,7 +95,8 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .post(`/recipes/${recipeId}/files/from-unsplash`)
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation: "https://api.unsplash.com/photos/mock-photo-id/download",
+        downloadLocation:
+          "https://api.unsplash.com/photos/mock-photo-id/download",
         imageUrl: minimalJpegDataUrl,
       });
 
@@ -104,7 +109,8 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeUserHeaders())
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation: "https://api.unsplash.com/photos/mock-photo-id/download",
+        downloadLocation:
+          "https://api.unsplash.com/photos/mock-photo-id/download",
         imageUrl: minimalJpegDataUrl,
       });
 
@@ -118,7 +124,8 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeAdminHeaders(adminUserId))
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation: "https://api.unsplash.com/photos/mock-photo-id/download",
+        downloadLocation:
+          "https://api.unsplash.com/photos/mock-photo-id/download",
         imageUrl: minimalJpegDataUrl,
       });
 
