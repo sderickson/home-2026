@@ -7,5 +7,6 @@ export * from "./members-list.ts";
 export * from "./create.ts";
 export * from "./delete.ts";
 export * from "./members-add.ts";
+export * from "./members-update.ts";
 export * from "./update.ts";
 // END WORKFLOW AREA
