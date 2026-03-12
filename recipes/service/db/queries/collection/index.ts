@@ -1,5 +1,6 @@
 // BEGIN SORTED WORKFLOW AREA query-exports FOR drizzle/add-query
 import { createCollection } from "./create.ts";
+import { deleteCollection } from "./delete.ts";
 import { getByIdCollection } from "./get-by-id.ts";
 import { listByEmailCollection } from "./list-by-email.ts";
 import { updateCollection } from "./update.ts";
@@ -8,6 +9,7 @@ import { updateCollection } from "./update.ts";
 export const collectionQueries = {
   // BEGIN SORTED WORKFLOW AREA query-object FOR drizzle/add-query
   createCollection,
+  deleteCollection,
   getByIdCollection,
   listByEmailCollection,
   updateCollection,
