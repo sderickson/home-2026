@@ -1,5 +1,9 @@
 # Recipes Site — Product & Technical Specification
 
+## Implementation status
+
+The initial implementation (recipes-init) covers **recipes** (with versioning), **notes**, **recipe files**, and **note files** through milestone M4b. **Menus** (API endpoints 19–23, frontend pages 3 and 6) are specified below but were not implemented in the initial release.
+
 ## Overview
 
 Personal recipe site for storing, sharing, updating, and tracking changes to recipes. The main value is **version control and notes**: change a recipe over time, see history, and attach notes (how it went, what to try next) so that attempts weeks or months apart can build on prior experience. Notes can stand alone or be tied to a specific recipe change. A secondary feature is **menus**: named menus with custom groupings (e.g. drinks, appetizers, mains) and ordered recipe ids; each recipe has a short description (shown on menus) and an optional long description (on recipe detail). The site has a **public (logged-out)** experience and an **authenticated (logged-in)** experience; both use shared SDK components and the same API, with access and mutability governed by public/private flags and admin role. Multiple admins can collaborate (edit each other’s recipes and menus). File storage uses **Azure** (workflows with upload/file flags handle this). Logged-in non-admins see the same read-only public experience as logged-out users; the app hides edit/create UI for non-admins.

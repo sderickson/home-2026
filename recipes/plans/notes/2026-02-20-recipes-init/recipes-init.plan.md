@@ -132,48 +132,7 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 
 **Stopping point:** Admins can manage files on notes in the app.
 
----
-
-## Milestone 5: Menus
-
-### M5a — Menus backend
-
-**Packages:** `recipes/service/spec`, `recipes/service/db`, `recipes/service/http`.
-
-**Goal:** Menu CRUD API with nested groupings (JSON). No separate grouping tables; `editedByUserIds` appended on update.
-
-**Workflow:** `recipes-init-phase-5.workflow.ts` (same as current Phase 5).
-
-**Stopping point:** Menus API works.
-
-### M5b — Menus logged-in (App)
-
-**Packages:** `recipes/service/sdk`, `recipes/clients/app`.
-
-**Goal:** SDK for menus (queries + mutations); app client: menu list (admin sees all, non-admin public; hide create for non-admin), menu create/edit (name, is_public, groupings with name + ordered recipe ids). Admin only for create/edit.
-
-**Workflow:** `recipes-init-m5b-menus-app.workflow.ts`.
-
-**Stopping point:** Admins can create and edit menus in the app.
-
-### M5c — Menus logged-out (Root)
-
-**Packages:** `recipes/service/sdk`, `recipes/clients/root`.
-
-**Goal:** SDK menu components first (add-component), then root menu list and detail views — same pattern as M1b. Shared menu display lives in SDK so app can reuse.
-
-**Workflow:** `recipes-init-m5c-menus-root.workflow.ts`.
-
-**Component-first flow:** (1) Create **menu preview** component in SDK (one menu for list/card). (2) Create **menu detail** component in SDK (full menu with groupings and recipe lines). (3) Add root menu list page; (4) Add root menu detail page.
-
-**Interface sketch (avoid recipe-preview-style gaps):**
-
-- **Menu preview** (list item): Accept the full **Menu** as a prop: `menu: { id, name, isPublic, groupings?: { name, recipeIds }[] }`. No need for resolved recipe data on the list item; optional groupings for e.g. “3 sections” or similar.
-- **Menu detail** (full display): Accept the **entire structure needed to render** — no “just ids” or “just markdown.” Prefer a single prop such as:
-  - `menuDetail: { id, name, isPublic, groupings: { name, recipes: { id, title, shortDescription }[] }[] }`
-  so each grouping has an ordered array of **resolved recipe display items** (id, title, shortDescription). The page/loader is responsible for fetching the menu (GET /menus/:id) and resolving recipe summaries (from API or local lookup); the component only receives this fully resolved shape. That way the menu detail component does not need to fetch or accept a separate map of recipe id → summary.
-
-**Stopping point:** Logged-out users can browse public menus; full app is complete.
+**Init scope:** The recipes-init implementation ends at M4b. Menus (Phase 5) were not implemented.
 
 ---
 
@@ -195,15 +154,10 @@ Backend is done; no new backend work. Three workflows for the recipe user experi
 | **recipes-init-m3c-recipe-files-visible.workflow.ts** | Recipe file serve (route + handler + downloadUrl in _helpers) + Root show files | service/spec, http, clients/root |
 | **recipes-init-phase-4.workflow.ts** | Note files backend | service/spec, db, http |
 | **recipes-init-m4b-note-files-frontend.workflow.ts** | SDK note files + App UI | service/sdk, clients/app |
-| **recipes-init-phase-5.workflow.ts** | Menus backend | service/spec, db, http |
-| **recipes-init-m5b-menus-app.workflow.ts** | SDK menus + App list/edit | service/sdk, clients/app |
-| **recipes-init-m5c-menus-root.workflow.ts** | SDK menu-preview + menu-detail, then root list + detail | service/sdk, clients/root |
 
 - **Full run:** `npm exec saf-workflow run processes/spec-project recipes-init` (or run the orchestrator workflow).
 - **Single workflow:** e.g. `npm exec saf-workflow run ./notes/2026-02-20-recipes-init/recipes-init-m1a-app-recipes.workflow.ts`.
 - **Dry-run:** `npm exec saf-workflow dry-run ./notes/2026-02-20-recipes-init/recipes-init.workflow.ts`.
-
-The old Phase 6–8 workflows (6a, 6b, 7, 8a, 8b, 8c) are superseded by the milestone-based workflows above; SDK and views are added incrementally per milestone.
 
 ---
 
