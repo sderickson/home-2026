@@ -91,3 +91,14 @@ export function membersListResultToMembersListCollectionsResponse(
     members: rows.map(collectionMemberToApiCollectionMember),
   };
 }
+
+type MembersAddCollections200 =
+  RecipesServiceResponseBody["membersAddCollections"][200];
+
+export function addCollectionMemberResultToMembersAddCollectionsResponse(
+  row: CollectionMemberEntity,
+): MembersAddCollections200 {
+  return {
+    member: collectionMemberToApiCollectionMember(row),
+  };
+}
