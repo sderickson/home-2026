@@ -18,7 +18,10 @@ describe("hasRecipesCollection", () => {
   });
 
   it("returns CollectionNotFoundError when collection does not exist", async () => {
-    const { result, error } = await hasRecipesCollection(dbKey, "non-existent-id");
+    const { result, error } = await hasRecipesCollection(
+      dbKey,
+      "non-existent-id",
+    );
     expect(result).toBeUndefined();
     expect(error).toBeDefined();
     assert(error);
@@ -36,14 +39,16 @@ describe("hasRecipesCollection", () => {
       createdBy: "owner@example.com",
     });
 
-    const { result, error } = await hasRecipesCollection(dbKey, "empty-collection");
+    const { result, error } = await hasRecipesCollection(
+      dbKey,
+      "empty-collection",
+    );
     expect(error).toBeUndefined();
     expect(result).toBe(false);
   });
 
   it("returns true when collection has at least one recipe", async () => {
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
     await insertTestCollection(db, {
       id: "col-with-recipes",
       name: "With Recipes",
@@ -58,7 +63,10 @@ describe("hasRecipesCollection", () => {
       }),
     );
 
-    const { result, error } = await hasRecipesCollection(dbKey, "col-with-recipes");
+    const { result, error } = await hasRecipesCollection(
+      dbKey,
+      "col-with-recipes",
+    );
     expect(error).toBeUndefined();
     expect(result).toBe(true);
   });

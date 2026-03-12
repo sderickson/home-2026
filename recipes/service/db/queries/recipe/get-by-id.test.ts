@@ -62,7 +62,6 @@ describe("getByIdRecipe", () => {
 
   it("returns recipe with placeholder version when recipe exists but has no versions (partial state)", async () => {
     const recipeId = "test-recipe-partial-state";
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({

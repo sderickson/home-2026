@@ -9,8 +9,7 @@ import {
   recipeFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-
-const adminUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 /** Minimal valid JPEG (1x1) as data URL so fetch works without network. */
 const minimalJpegDataUrl =
@@ -23,13 +22,15 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    const collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -48,7 +49,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
   it("should return 200 with file metadata and unsplashAttribution when admin sends valid body", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/files/from-unsplash`)
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
         downloadLocation:
@@ -61,7 +62,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       recipeId,
       fileOriginalName: "unsplash-mock-photo-id.jpg",
       mimetype: "image/jpeg",
-      uploadedBy: adminUserId,
+      uploadedBy: SEED_USER_ID,
       unsplashAttribution: {
         photographerName: "Mock Photographer",
         photographerProfileUrl: expect.stringContaining(
@@ -121,7 +122,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .post("/recipes/nonexistent-recipe-id/files/from-unsplash")
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
         downloadLocation:

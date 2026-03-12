@@ -12,12 +12,12 @@ import {
   recipeNoteFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-
-const seedUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
   let noteId: string;
   let fileId: string;
@@ -26,13 +26,15 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
   beforeEach(async () => {
     container = createObjectStore({ type: "test" });
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [],
         instructionsMarkdown: "Mix.",
@@ -43,10 +45,11 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
 
     const { result: note } = await recipeNoteQueries.createRecipeNote(dbKey, {
       recipeId,
+      recipeVersionId: null,
       body: "Test note.",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note) throw new Error("Expected createRecipeNote to return result");
     noteId = note.id;
@@ -58,7 +61,7 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       file_original_name: "note-doc.pdf",
       mimetype: "application/pdf",
       size: 14,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!insertOut.result) throw new Error("Expected insertRecipeNoteFile to return result");
     fileId = insertOut.result.id;
@@ -97,12 +100,13 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
     const { result: privateResult } = await recipeQueries.createWithVersionRecipe(
       dbKey,
       {
+        collectionId,
         title: "Private Recipe",
-subtitle: "Private",
-      description: null,
+        subtitle: "Private",
+        description: null,
         isPublic: false,
-        createdBy: seedUserId,
-        updatedBy: seedUserId,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
       },
     );
@@ -114,8 +118,8 @@ subtitle: "Private",
         recipeId: privateRecipeId,
         body: "Private note.",
         everEdited: false,
-        createdBy: seedUserId,
-        updatedBy: seedUserId,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
       },
     );
     if (!privateNote) throw new Error("Expected createRecipeNote to return result");
@@ -126,7 +130,7 @@ subtitle: "Private",
       file_original_name: "priv.pdf",
       mimetype: "application/pdf",
       size: 0,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!privFile.result) throw new Error("Expected insertRecipeNoteFile to return result");
     const uploadPriv = await container.uploadFile(
@@ -140,7 +144,7 @@ subtitle: "Private",
       .get(
         `/recipes/${privateRecipeId}/notes/${privateNote.id}/files/${privFile.result.id}/blob`,
       )
-      .set(makeAdminHeaders(seedUserId));
+      .set(makeAdminHeaders(SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -190,12 +194,13 @@ subtitle: "Private",
 
   it("should return 404 when recipe is private and user is not admin", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
       isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
@@ -206,8 +211,8 @@ subtitle: "Private",
         recipeId: privateRecipeId,
         body: "Private note.",
         everEdited: false,
-        createdBy: seedUserId,
-        updatedBy: seedUserId,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
       },
     );
     if (!privateNote) throw new Error("Expected createRecipeNote to return result");
@@ -218,7 +223,7 @@ subtitle: "Private",
       file_original_name: "priv.pdf",
       mimetype: "application/pdf",
       size: 0,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!privFile.result) throw new Error("Expected insertRecipeNoteFile to return result");
     const uploadPriv = await container.uploadFile(

@@ -3,8 +3,9 @@
  * Use insertTestCollection(db) in beforeEach when tests need a collection (e.g. for recipe inserts).
  * Use makeRecipeRow(overrides) when building recipe insert payloads.
  */
-import type { SQLiteDatabase } from "drizzle-orm/sqlite-core";
+import type { DbConnection } from "@saflib/drizzle";
 import { collection } from "./schemas/collection.ts";
+import * as schema from "./schema.ts";
 
 export const TEST_COLLECTION_ID = "test-collection";
 
@@ -13,7 +14,7 @@ export const TEST_COLLECTION_ID = "test-collection";
  * when tests need a collection to exist (e.g. before inserting recipes).
  */
 export async function insertTestCollection(
-  db: SQLiteDatabase,
+  db: DbConnection<typeof schema>,
   overrides?: {
     id?: string;
     name?: string;
@@ -37,15 +38,17 @@ export async function insertTestCollection(
  * Returns a recipe insert row with collectionId and defaults.
  * Spread overrides to customize (e.g. makeRecipeRow({ title: "Other" })).
  */
-export function makeRecipeRow(overrides: {
-  title?: string;
-  subtitle?: string;
-  description?: string | null;
-  isPublic?: boolean;
-  createdBy?: string;
-  updatedBy?: string;
-  [k: string]: unknown;
-} = {}): {
+export function makeRecipeRow(
+  overrides: {
+    title?: string;
+    subtitle?: string;
+    description?: string | null;
+    isPublic?: boolean;
+    createdBy?: string;
+    updatedBy?: string;
+    [k: string]: unknown;
+  } = {},
+): {
   collectionId: string;
   title: string;
   subtitle: string;

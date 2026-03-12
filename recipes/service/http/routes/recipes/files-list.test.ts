@@ -13,23 +13,25 @@ import {
   recipeFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/files (filesListRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
-
-  const seedUserId = "11111111-1111-1111-1111-111111111111";
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -61,7 +63,7 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
       file_original_name: "recipe.pdf",
       mimetype: "application/pdf",
       size: 1024,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!file) throw new Error("Expected insertRecipeFile to return result");
 
@@ -79,7 +81,7 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
       fileOriginalName: "recipe.pdf",
       mimetype: "application/pdf",
       size: 1024,
-      uploadedBy: seedUserId,
+      uploadedBy: SEED_USER_ID,
     });
     expect(response.body[0].createdAt).toBeDefined();
     expect(response.body[0].updatedAt).toBeDefined();
@@ -95,12 +97,13 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
 
   it("should return 404 when recipe is private and user is not admin", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
       isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");

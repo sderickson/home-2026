@@ -11,12 +11,12 @@ import {
   recipeFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-
-const seedUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
   let fileId: string;
   let container: ReturnType<typeof createObjectStore>;
@@ -24,13 +24,15 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   beforeEach(async () => {
     container = createObjectStore({ type: "test" });
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [],
         instructionsMarkdown: "Mix.",
@@ -45,7 +47,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       file_original_name: "test-doc.pdf",
       mimetype: "application/pdf",
       size: 13,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!insertOut.result) throw new Error("Expected insertRecipeFile to return result");
     fileId = insertOut.result.id;
@@ -84,12 +86,13 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     const { result: privateResult } = await recipeQueries.createWithVersionRecipe(
       dbKey,
       {
+        collectionId,
         title: "Private Recipe",
         subtitle: "Private",
         description: null,
         isPublic: false,
-        createdBy: seedUserId,
-        updatedBy: seedUserId,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
       },
     );
@@ -101,7 +104,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       file_original_name: "priv.pdf",
       mimetype: "application/pdf",
       size: 0,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!privFile.result) throw new Error("Expected insertRecipeFile to return result");
     const uploadPriv = await container.uploadFile(
@@ -113,7 +116,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${privateRecipeId}/files/${privFile.result.id}/blob`)
-      .set(makeAdminHeaders(seedUserId));
+      .set(makeAdminHeaders(SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -152,12 +155,13 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
 
   it("should return 404 when recipe is private and user is not admin", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
       isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
@@ -168,7 +172,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       file_original_name: "priv.pdf",
       mimetype: "application/pdf",
       size: 0,
-      uploaded_by: seedUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!privFile.result) throw new Error("Expected insertRecipeFile to return result");
     const uploadPriv = await container.uploadFile(

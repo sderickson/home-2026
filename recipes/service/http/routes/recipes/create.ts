@@ -28,6 +28,7 @@ export const createRecipeHandler = createHandler(
       const { result, error } = await recipeQueries.createWithVersionRecipe(
         recipesDbKey,
         {
+          collectionId: data.collectionId,
           title: data.title,
           subtitle: data.subtitle,
           description: data.description ?? null,
@@ -58,6 +59,7 @@ export const createRecipeHandler = createHandler(
     }
 
     const { result, error } = await recipeQueries.createRecipe(recipesDbKey, {
+      collectionId: data.collectionId,
       title: data.title,
       subtitle: data.subtitle,
       description: data.description ?? null,

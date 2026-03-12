@@ -9,10 +9,14 @@ createRecipe:
         schema:
           type: object
           required:
+            - collectionId
             - title
             - subtitle
             - isPublic
           properties:
+            collectionId:
+              type: string
+              description: Id of the collection this recipe belongs to
             title:
               type: string
               description: Recipe title

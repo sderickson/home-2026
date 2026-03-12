@@ -14,6 +14,7 @@ import {
   recipeNoteFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
   let app: express.Express;
@@ -22,17 +23,17 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
   let noteId1: string;
   let noteId2: string;
 
-  const seedUserId = "11111111-1111-1111-1111-111111111111";
-
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    const collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [],
         instructionsMarkdown: "Steps.",
@@ -43,20 +44,22 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
 
     const { result: note1 } = await recipeNoteQueries.createRecipeNote(dbKey, {
       recipeId,
+      recipeVersionId: null,
       body: "Note 1",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note1) throw new Error("Expected createRecipeNote to return result");
     noteId1 = note1.id;
 
     const { result: note2 } = await recipeNoteQueries.createRecipeNote(dbKey, {
       recipeId,
+      recipeVersionId: null,
       body: "Note 2",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note2) throw new Error("Expected createRecipeNote to return result");
     noteId2 = note2.id;
@@ -88,7 +91,7 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
         file_original_name: "a.pdf",
         mimetype: "application/pdf",
         size: 100,
-        uploaded_by: seedUserId,
+        uploaded_by: SEED_USER_ID,
       },
     );
     if (!file1) throw new Error("Expected insertRecipeNoteFile to return result");
@@ -102,7 +105,7 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
         file_original_name: "b.jpg",
         mimetype: "image/jpeg",
         size: 200,
-        uploaded_by: seedUserId,
+        uploaded_by: SEED_USER_ID,
       },
     );
     if (!file2) throw new Error("Expected insertRecipeNoteFile to return result");

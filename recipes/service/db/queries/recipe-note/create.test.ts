@@ -60,6 +60,7 @@ describe("createRecipeNote", () => {
 
   it("returns error when recipe version belongs to another recipe", async () => {
     const db = recipesDbManager.get(dbKey)!;
+    const now = new Date();
     const recipeIdA = "test-recipe-create-note-recipe-a";
     const recipeIdB = "test-recipe-create-note-recipe-b";
 

@@ -928,6 +928,8 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /** @description Id of the collection this recipe belongs to */
+                    collectionId: string;
                     /** @description Recipe title */
                     title: string;
                     /** @description Subtitle shown on menus and list views */
