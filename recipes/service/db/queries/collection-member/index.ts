@@ -2,6 +2,7 @@
 import { addCollectionMember } from "./add.ts";
 import { getByCollectionAndEmailCollectionMember } from "./get-by-collection-and-email.ts";
 import { listCollectionMember } from "./list.ts";
+import { removeCollectionMember } from "./remove.ts";
 import { updateRoleCollectionMember } from "./update-role.ts";
 // END WORKFLOW AREA
 
@@ -10,6 +11,7 @@ export const collectionMemberQueries = {
   addCollectionMember,
   getByCollectionAndEmailCollectionMember,
   listCollectionMember,
+  removeCollectionMember,
   updateRoleCollectionMember,
   // END WORKFLOW AREA
 };
