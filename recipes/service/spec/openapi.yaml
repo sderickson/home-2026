@@ -84,6 +84,9 @@ paths:
       $ref: "./routes/collections/members-list.yaml#/membersListCollections"
     post:
       $ref: "./routes/collections/members-add.yaml#/membersAddCollections"
+  /collections/{id}/members/{memberId}:
+    put:
+      $ref: "./routes/collections/members-update.yaml#/membersUpdateCollections"
   # END WORKFLOW AREA
 
 components:

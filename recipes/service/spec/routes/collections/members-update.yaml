@@ -1,0 +1,70 @@
+membersUpdateCollections:
+  summary: "Update a member's role. Owner only. Cannot demote the creator (permanent owner)."
+  operationId: "membersUpdateCollections"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+      description: "Collection id"
+    - name: "memberId"
+      in: "path"
+      required: true
+      schema:
+        type: string
+      description: "Member record id"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - role
+          properties:
+            role:
+              type: string
+              enum:
+                - owner
+                - editor
+                - viewer
+              description: New role for the member (creator's role cannot be changed from owner)
+              example: "viewer"
+
+  responses:
+    "200":
+      description: "Updated member."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - member
+            properties:
+              member:
+                $ref: "../../schemas/collection-member.yaml"
+                description: "The updated collection member."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - caller must be owner; cannot demote the creator (permanent owner)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found - collection or member does not exist."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
