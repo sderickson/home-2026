@@ -314,7 +314,8 @@ export interface paths {
         /** List members of a collection (email, role, isCreator). Caller must be a member (any role) with validated email; creator always has access. */
         get: operations["membersListCollections"];
         put?: never;
-        post?: never;
+        /** Add a member to a collection (or update role if email already exists). Owner only. */
+        post: operations["membersAddCollections"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2281,6 +2282,76 @@ export interface operations {
                 };
             };
             /** @description Forbidden - not a member or unvalidated email (creator excepted). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersAddCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @description Member's email address
+                     * @example alice@example.com
+                     */
+                    email: string;
+                    /**
+                     * @description Role to assign (or update if member already exists)
+                     * @example editor
+                     * @enum {string}
+                     */
+                    role: "owner" | "editor" | "viewer";
+                };
+            };
+        };
+        responses: {
+            /** @description Added or updated member. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The added or updated collection member. */
+                        member: components["schemas"]["collection-member"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
             403: {
                 headers: {
                     [name: string]: unknown;
