@@ -77,6 +77,8 @@ paths:
       $ref: "./routes/collections/get.yaml#/getCollections"
     put:
       $ref: "./routes/collections/update.yaml#/updateCollections"
+    delete:
+      $ref: "./routes/collections/delete.yaml#/deleteCollections"
   # END WORKFLOW AREA
 
 components:

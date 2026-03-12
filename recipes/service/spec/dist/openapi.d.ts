@@ -297,7 +297,8 @@ export interface paths {
         /** Update collection name. Owner only. */
         put: operations["updateCollections"];
         post?: never;
-        delete?: never;
+        /** Delete collection. Owner only. Forbidden if collection has any recipes (409). */
+        delete: operations["deleteCollections"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2163,6 +2164,63 @@ export interface operations {
             };
             /** @description Not Found - collection does not exist. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    deleteCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Collection deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Conflict - collection has recipes; delete recipes first or use empty collection. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
