@@ -3,6 +3,7 @@ import { createScopedMiddleware } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+import { createCollectionsHandler } from "./create.ts";
 import { listCollectionsHandler } from "./list.ts";
 // END WORKFLOW AREA
 
@@ -17,6 +18,7 @@ export const createCollectionsRouter = () => {
     }),
   );
   router.get("/collections", listCollectionsHandler);
+  router.post("/collections", createCollectionsHandler);
 
   return router;
 };

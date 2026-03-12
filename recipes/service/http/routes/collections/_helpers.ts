@@ -24,3 +24,14 @@ export function collectionsListResultToListCollectionsResponse(
     collections: rows.map(collectionToApiCollection),
   };
 }
+
+type CreateCollections200 =
+  RecipesServiceResponseBody["createCollections"][200];
+
+export function createCollectionResultToCreateCollectionsResponse(
+  row: CollectionEntity,
+): CreateCollections200 {
+  return {
+    collection: collectionToApiCollection(row),
+  };
+}
