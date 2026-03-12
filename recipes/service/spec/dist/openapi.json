@@ -1391,6 +1391,9 @@
       "RecipeNoteFileInfo": {
         "$ref": "#/components/schemas/recipe-note-file-info"
       },
+      "UnsplashPhotoSearchItem": {
+        "$ref": "#/components/schemas/unsplash-photo-search-item"
+      },
       "recipe": {
         "type": "object",
         "properties": {
@@ -1966,6 +1969,41 @@
         },
         "required": [
           "event"
+        ]
+      },
+      "unsplash-photo-search-item": {
+        "type": "object",
+        "description": "One photo returned from Unsplash search, enough to show a thumbnail and to request \"add from Unsplash\" later.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unsplash photo id (short id, e.g. from generateShortId)",
+            "example": "K3m9_xR2"
+          },
+          "thumbUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the thumbnail image for grid display",
+            "example": "https://images.unsplash.com/photo-123/thumb"
+          },
+          "regularUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the regular-size image (e.g. for add-from-Unsplash)",
+            "example": "https://images.unsplash.com/photo-123/regular"
+          },
+          "downloadLocation": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unsplash download tracking URL; required when adding the photo via the API",
+            "example": "https://api.unsplash.com/photos/abc123/download"
+          }
+        },
+        "required": [
+          "id",
+          "thumbUrl",
+          "regularUrl",
+          "downloadLocation"
         ]
       }
     }

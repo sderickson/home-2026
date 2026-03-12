@@ -244,6 +244,7 @@ export interface components {
         RecipeNote: components["schemas"]["recipe-note"];
         RecipeFileInfo: components["schemas"]["recipe-file-info"];
         RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
+        UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -645,6 +646,32 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
+        /** @description One photo returned from Unsplash search, enough to show a thumbnail and to request "add from Unsplash" later. */
+        "unsplash-photo-search-item": {
+            /**
+             * @description Unsplash photo id (short id, e.g. from generateShortId)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * Format: uri
+             * @description URL of the thumbnail image for grid display
+             * @example https://images.unsplash.com/photo-123/thumb
+             */
+            thumbUrl: string;
+            /**
+             * Format: uri
+             * @description URL of the regular-size image (e.g. for add-from-Unsplash)
+             * @example https://images.unsplash.com/photo-123/regular
+             */
+            regularUrl: string;
+            /**
+             * Format: uri
+             * @description Unsplash download tracking URL; required when adding the photo via the API
+             * @example https://api.unsplash.com/photos/abc123/download
+             */
+            downloadLocation: string;
+        };
     };
     responses: never;
     parameters: never;

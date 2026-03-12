@@ -81,4 +81,6 @@ components:
       $ref: "./schemas/recipe-file-info.yaml"
     RecipeNoteFileInfo:
       $ref: "./schemas/recipe-note-file-info.yaml"
+    UnsplashPhotoSearchItem:
+      $ref: "./schemas/unsplash-photo-search-item.yaml"
     # END WORKFLOW AREA
