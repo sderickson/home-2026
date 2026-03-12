@@ -6,6 +6,7 @@ import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
 import { recipes_create_page } from "./pages/recipes/create/Create.strings.ts";
 import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
+import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
 import { recipes_edit_page } from "./pages/recipes/edit/Edit.strings.ts";
 import { recipes_list_page } from "./pages/recipes/list/List.strings.ts";
 // END WORKFLOW AREA
@@ -18,6 +19,7 @@ export const app_strings = {
   recipes_create_page,
   recipes_detail,
   recipes_detail_page,
+  unsplash_picker_dialog,
   recipes_edit_page,
   recipes_list_page,
   // END WORKFLOW AREA

@@ -8,6 +8,7 @@ import {
 
 // BEGIN SORTED WORKFLOW AREA router-imports FOR express/add-handler
 import { createRecipesRouter } from "./routes/recipes/index.ts";
+import { createUnsplashPhotosRouter } from "./routes/unsplash-photos/index.ts";
 // END WORKFLOW AREA
 
 /**
@@ -33,6 +34,7 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions = {})
   // BEGIN WORKFLOW AREA app-use-routes FOR express/add-handler
 
   app.use(createRecipesRouter());
+  app.use(createUnsplashPhotosRouter());
   // END WORKFLOW AREA
 
   app.use(createErrorMiddleware());

@@ -11,6 +11,7 @@ export * from "./versions-list.ts";
 export * from "./create.ts";
 export * from "./delete.ts";
 export * from "./files-delete.ts";
+export * from "./files-from-unsplash.ts";
 export * from "./files-upload.ts";
 export * from "./notes-create.ts";
 export * from "./notes-delete.ts";

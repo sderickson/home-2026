@@ -19,10 +19,15 @@
         <v-col cols="12">
           <v-card class="mb-4">
             <v-toolbar density="comfortable">
-              <v-toolbar-title class="text-h6">{{ recipe.title }}</v-toolbar-title>
+              <v-toolbar-title class="text-h6">{{
+                recipe.title
+              }}</v-toolbar-title>
               <v-spacer />
               <template v-if="showVersionHistory">
-                <v-tooltip location="bottom" :text="t(strings.toolbar_version_history)">
+                <v-tooltip
+                  location="bottom"
+                  :text="t(strings.toolbar_version_history)"
+                >
                   <template #activator="{ props: tooltipProps }">
                     <v-btn
                       v-bind="tooltipProps"
@@ -63,7 +68,9 @@
                     @click="notesDrawerOpen = !notesDrawerOpen"
                   >
                     <v-badge
-                      :model-value="!notesDrawerOpen && notesForLatestVersion.length > 0"
+                      :model-value="
+                        !notesDrawerOpen && notesForLatestVersion.length > 0
+                      "
                       :content="notesForLatestVersion.length"
                       color="primary"
                     >
@@ -75,19 +82,40 @@
               <template v-if="showFilesEdit">
                 <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
                   <template #activator="{ props: tooltipProps }">
-                    <v-btn
-                      v-bind="tooltipProps"
-                      icon
-                      variant="text"
-                      :disabled="filesFlow.uploadFileMutation.isPending.value"
-                      @click="imageFileInputRef?.click()"
-                    >
-                      <v-icon>mdi-image-plus</v-icon>
-                    </v-btn>
+                    <v-menu location="bottom">
+                      <template #activator="{ props: menuProps }">
+                        <v-btn
+                          v-bind="{ ...tooltipProps, ...menuProps }"
+                          icon
+                          variant="text"
+                          :disabled="
+                            filesFlow.uploadFileMutation.isPending.value
+                          "
+                        >
+                          <v-icon>mdi-image-plus</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list density="compact">
+                        <v-list-item
+                          :title="t(strings.toolbar_upload_image)"
+                          prepend-icon="mdi-upload"
+                          @click="imageFileInputRef?.click()"
+                        />
+                        <v-list-item
+                          :title="t(strings.toolbar_choose_unsplash)"
+                          prepend-icon="mdi-image-search"
+                          @click="unsplashPickerOpen = true"
+                        />
+                      </v-list>
+                    </v-menu>
                   </template>
                 </v-tooltip>
                 <input
-                  :ref="(el) => { imageFileInputRef = el as HTMLInputElement | null; }"
+                  :ref="
+                    (el) => {
+                      imageFileInputRef = el as HTMLInputElement | null;
+                    }
+                  "
                   type="file"
                   accept="image/*"
                   class="d-none"
@@ -120,7 +148,9 @@
                   :current-version="currentVersion"
                   :files="files"
                   :show-image-actions="showFilesEdit"
-                  :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+                  :image-delete-disabled="
+                    filesFlow.deleteFileMutation.isPending.value
+                  "
                   @click-image="expandedImageFile = $event"
                   @delete-image="filesFlow.confirmDeleteFile($event)"
                 />
@@ -130,13 +160,19 @@
                 variant="outlined"
                 class="detail-notes-panel d-flex flex-column flex-shrink-0"
               >
-                <div class="text-subtitle-2 text-medium-emphasis px-3 py-2 flex-shrink-0">
+                <div
+                  class="text-subtitle-2 text-medium-emphasis px-3 py-2 flex-shrink-0"
+                >
                   {{ t(strings.notes_section) }}
                 </div>
                 <v-divider />
-                <div class="detail-notes-list flex-grow-1 min-height-0 overflow-y-auto pa-2">
+                <div
+                  class="detail-notes-list flex-grow-1 min-height-0 overflow-y-auto pa-2"
+                >
                   <template v-if="notesForLatestVersion.length === 0">
-                    <p class="text-body-2 text-medium-emphasis pa-2">{{ t(strings.no_notes) }}</p>
+                    <p class="text-body-2 text-medium-emphasis pa-2">
+                      {{ t(strings.no_notes) }}
+                    </p>
                   </template>
                   <template v-else>
                     <NoteCard
@@ -181,8 +217,42 @@
           max-height="85vh"
           contain
         />
+        <v-card-text
+          v-if="expandedImageFile.unsplashAttribution"
+          class="text-caption text-medium-emphasis py-2 px-3"
+        >
+          <i18n-t
+            scope="global"
+            :keypath="lookupTKey(strings.unsplash_photo_by)"
+          >
+            <template #name>
+              <a
+                :href="expandedImageFile.unsplashAttribution.photographerProfileUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary text-decoration-none"
+              >
+                {{ expandedImageFile.unsplashAttribution.photographerName }}
+              </a>
+            </template>
+          </i18n-t>
+          <a
+            :href="expandedImageFile.unsplashAttribution.unsplashSourceUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary text-decoration-none ms-1"
+          >
+            on Unsplash
+          </a>
+        </v-card-text>
       </v-card>
     </v-dialog>
+
+    <UnsplashPickerDialog
+      v-model="unsplashPickerOpen"
+      :recipe-id="recipe.id"
+      :recipe-title="recipe.title"
+    />
 
     <VersionHistoryModal
       v-model="versionHistoryModalOpen"
@@ -235,14 +305,18 @@ import {
   notesForLatestVersion as notesForLatestVersionFn,
 } from "./Detail.logic.ts";
 import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
-import { RecipeContentPreview, useDeleteRecipeMutation } from "@sderickson/recipes-sdk";
+import {
+  RecipeContentPreview,
+  useDeleteRecipeMutation,
+} from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import AddNoteCard from "./AddNoteCard.vue";
 import NoteCard from "./NoteCard.vue";
 import VersionHistoryModal from "./VersionHistoryModal.vue";
 import ConfirmDialog from "./ConfirmDialog.vue";
+import UnsplashPickerDialog from "./UnsplashPickerDialog.vue";
 
-const { t } = useReverseT();
+const { t, lookupTKey } = useReverseT();
 const router = useRouter();
 const {
   profileQuery,
@@ -283,6 +357,7 @@ const deleteRecipeMutation = useDeleteRecipeMutation();
 const versionHistoryModalOpen = ref(false);
 const notesDrawerOpen = ref(false);
 const deleteRecipeDialogOpen = ref(false);
+const unsplashPickerOpen = ref(false);
 const imageFileInputRef = ref<HTMLInputElement | null>(null);
 const expandedImageFile = ref<RecipeFileInfo | null>(null);
 
@@ -299,7 +374,9 @@ const notesForLatestVersion = computed(() =>
   notesForLatestVersionFn(notes.value, currentVersion.value?.id),
 );
 /** Timeline order: oldest first */
-const notesTimelineOrder = computed(() => [...notesForLatestVersion.value].reverse());
+const notesTimelineOrder = computed(() =>
+  [...notesForLatestVersion.value].reverse(),
+);
 
 const noteIdToFiles = computed(() =>
   groupNoteFilesByNoteId(noteFilesByRecipeQuery.data.value ?? []),
@@ -341,7 +418,8 @@ watch(
   min-width: 280px;
   max-width: 400px;
   min-height: 420px;
-  border-inline-start: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-inline-start: 1px solid
+    rgba(var(--v-border-color), var(--v-border-opacity));
 }
 .detail-notes-list {
   min-height: 0;

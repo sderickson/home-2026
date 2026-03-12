@@ -1,0 +1,22 @@
+# UnsplashAttribution — minimal fields for attributing Unsplash photos (display only)
+type: object
+description: "Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view)."
+properties:
+  photographerName:
+    type: string
+    description: Display name of the photographer
+    example: "Jane Doe"
+  photographerProfileUrl:
+    type: string
+    format: uri
+    description: Unsplash profile URL with UTM params (utm_source, utm_medium=referral)
+    example: "https://unsplash.com/@janedoe?utm_source=your_app_name&utm_medium=referral"
+  unsplashSourceUrl:
+    type: string
+    format: uri
+    description: Unsplash source link with UTM params for "on Unsplash" attribution
+    example: "https://unsplash.com?utm_source=your_app_name&utm_medium=referral"
+required:
+  - photographerName
+  - photographerProfileUrl
+  - unsplashSourceUrl

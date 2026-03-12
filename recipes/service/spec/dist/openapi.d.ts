@@ -233,6 +233,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unsplash-photos/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Unsplash for photos by query (e.g. recipe title). Not recipe-scoped; general Unsplash search. Used by the Unsplash picker modal. */
+        get: operations["searchUnsplashPhotos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}/files/from-unsplash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a recipe file from an Unsplash photo. Backend fetches photo, tracks download, stores file and Unsplash user; returns RecipeFileInfo with unsplashAttribution when applicable. */
+        post: operations["filesFromUnsplashRecipes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -244,6 +278,9 @@ export interface components {
         RecipeNote: components["schemas"]["recipe-note"];
         RecipeFileInfo: components["schemas"]["recipe-file-info"];
         RecipeNoteFileInfo: components["schemas"]["recipe-note-file-info"];
+        UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
+        AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
+        UnsplashAttribution: components["schemas"]["unsplash-attribution"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -500,6 +537,26 @@ export interface components {
          * @example b2c3d4e5-e89b-12d3-a456-426614174002
          */
         recipeVersionId: string | null;
+        /** @description Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view). */
+        "unsplash-attribution": {
+            /**
+             * @description Display name of the photographer
+             * @example Jane Doe
+             */
+            photographerName: string;
+            /**
+             * Format: uri
+             * @description Unsplash profile URL with UTM params (utm_source, utm_medium=referral)
+             * @example https://unsplash.com/@janedoe?utm_source=your_app_name&utm_medium=referral
+             */
+            photographerProfileUrl: string;
+            /**
+             * Format: uri
+             * @description Unsplash source link with UTM params for "on Unsplash" attribution
+             * @example https://unsplash.com?utm_source=your_app_name&utm_medium=referral
+             */
+            unsplashSourceUrl: string;
+        };
         /** @description Metadata for one file attached to a recipe. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
         "recipe-file-info": {
             /**
@@ -555,6 +612,8 @@ export interface components {
              * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl?: string;
+            /** @description When present, the file was sourced from Unsplash; frontend must show attribution (e.g. full-size view). Omitted when file is from upload. */
+            unsplashAttribution?: components["schemas"]["unsplash-attribution"];
         };
         /** @description Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at). */
         "recipe-note-file-info": {
@@ -611,6 +670,52 @@ export interface components {
              * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/notes/b2c3d4e5-f90c-23e4-b567-537725285002/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl: string;
+        };
+        /** @description One photo returned from Unsplash search, enough to show a thumbnail and to request "add from Unsplash" later. */
+        "unsplash-photo-search-item": {
+            /**
+             * @description Unsplash photo id (short id, e.g. from generateShortId)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * Format: uri
+             * @description URL of the thumbnail image for grid display
+             * @example https://images.unsplash.com/photo-123/thumb
+             */
+            thumbUrl: string;
+            /**
+             * Format: uri
+             * @description URL of the regular-size image (e.g. for add-from-Unsplash)
+             * @example https://images.unsplash.com/photo-123/regular
+             */
+            regularUrl: string;
+            /**
+             * Format: uri
+             * @description Unsplash download tracking URL; required when adding the photo via the API
+             * @example https://api.unsplash.com/photos/abc123/download
+             */
+            downloadLocation: string;
+        };
+        /** @description Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage. */
+        "add-recipe-file-from-unsplash-request": {
+            /**
+             * @description Unsplash photo id (short id) of the chosen photo
+             * @example K3m9_xR2
+             */
+            unsplashPhotoId: string;
+            /**
+             * Format: uri
+             * @description Unsplash download tracking URL; backend calls trackDownload with this
+             * @example https://api.unsplash.com/photos/abc123/download
+             */
+            downloadLocation: string;
+            /**
+             * Format: uri
+             * @description URL to fetch image bytes (e.g. regular or full size from search result)
+             * @example https://images.unsplash.com/photo-123/regular
+             */
+            imageUrl: string;
         };
         login: {
             /** @enum {string} */
@@ -1643,6 +1748,105 @@ export interface operations {
                 };
             };
             /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    searchUnsplashPhotos: {
+        parameters: {
+            query: {
+                /** @description Search query (e.g. recipe title). */
+                q: string;
+                /** @description Number of results to return (default 10). */
+                perPage?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Search results: array of Unsplash photo search items. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        unsplashPhotos: components["schemas"]["unsplash-photo-search-item"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    filesFromUnsplashRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["add-recipe-file-from-unsplash-request"];
+            };
+        };
+        responses: {
+            /** @description Created recipe file metadata (includes unsplashAttribution when from Unsplash). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["recipe-file-info"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - recipe not found. */
             404: {
                 headers: {
                     [name: string]: unknown;

@@ -61,6 +61,12 @@ paths:
   /recipes/{id}/notes/{noteId}/files/{fileId}/blob:
     get:
       $ref: "./routes/recipes/notes-files-download.yaml#/notesFilesDownloadRecipes"
+  /unsplash-photos/search:
+    get:
+      $ref: "./routes/unsplash-photos/search.yaml#/searchUnsplashPhotos"
+  /recipes/{id}/files/from-unsplash:
+    post:
+      $ref: "./routes/recipes/files-from-unsplash.yaml#/filesFromUnsplashRecipes"
   # END WORKFLOW AREA
 
 components:
@@ -81,4 +87,10 @@ components:
       $ref: "./schemas/recipe-file-info.yaml"
     RecipeNoteFileInfo:
       $ref: "./schemas/recipe-note-file-info.yaml"
+    UnsplashPhotoSearchItem:
+      $ref: "./schemas/unsplash-photo-search-item.yaml"
+    AddRecipeFileFromUnsplashRequest:
+      $ref: "./schemas/add-recipe-file-from-unsplash-request.yaml"
+    UnsplashAttribution:
+      $ref: "./schemas/unsplash-attribution.yaml"
     # END WORKFLOW AREA
