@@ -9,11 +9,16 @@ export interface ListByEmailCollectionParams {
   email: string;
 }
 
+/** Row shape: collection fields plus isCreator from the joining member. */
+export type ListByEmailCollectionRow = typeof collection.$inferSelect & {
+  isCreator: boolean;
+};
+
 export const listByEmailCollection = queryWrapper(
   async (
     dbKey: DbKey,
     params: ListByEmailCollectionParams,
-  ): Promise<ReturnsError<typeof collection.$inferSelect[], never>> => {
+  ): Promise<ReturnsError<ListByEmailCollectionRow[], never>> => {
     const db = recipesDbManager.get(dbKey)!;
     const rows = await db
       .select({
@@ -22,6 +27,7 @@ export const listByEmailCollection = queryWrapper(
         createdBy: collection.createdBy,
         createdAt: collection.createdAt,
         updatedAt: collection.updatedAt,
+        isCreator: collectionMember.isCreator,
       })
       .from(collection)
       .innerJoin(
