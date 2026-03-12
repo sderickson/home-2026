@@ -1627,6 +1627,74 @@
           }
         }
       }
+    },
+    "/collections/{id}": {
+      "get": {
+        "summary": "Get one collection by id. Caller must be a member (any role) and have validated email; creator always has access.",
+        "operationId": "getCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collection"
+                  ],
+                  "properties": {
+                    "collection": {
+                      "$ref": "#/components/schemas/collection",
+                      "description": "The collection."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member or unvalidated email (creator excepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
