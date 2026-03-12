@@ -6,6 +6,7 @@ export * from "./ingredient.ts";
 
 // BEGIN SORTED WORKFLOW AREA query-group-exports FOR sdk/add-query sdk/add-mutation
 export * from "./requests/recipes/index.ts";
+export * from "./requests/unsplash-photos/index.ts";
 // END WORKFLOW AREA
 
 // BEGIN SORTED WORKFLOW AREA component-exports FOR sdk/add-component
