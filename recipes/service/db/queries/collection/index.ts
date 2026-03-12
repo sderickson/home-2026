@@ -2,6 +2,7 @@
 import { createCollection } from "./create.ts";
 import { getByIdCollection } from "./get-by-id.ts";
 import { listByEmailCollection } from "./list-by-email.ts";
+import { updateCollection } from "./update.ts";
 // END WORKFLOW AREA
 
 export const collectionQueries = {
@@ -9,5 +10,6 @@ export const collectionQueries = {
   createCollection,
   getByIdCollection,
   listByEmailCollection,
+  updateCollection,
   // END WORKFLOW AREA
 };
