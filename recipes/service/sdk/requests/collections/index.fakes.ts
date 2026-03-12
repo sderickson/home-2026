@@ -5,6 +5,7 @@ import { listCollectionsHandler } from "./list.fake.ts";
 
 // BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
 import { createCollectionsHandler } from "./create.fake.ts";
+import { updateCollectionsHandler } from "./update.fake.ts";
 // END WORKFLOW AREA
 
 // export all fake handlers for this group
@@ -16,5 +17,6 @@ export const collectionsFakeHandlers = [
 
   // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
   createCollectionsHandler,
+  updateCollectionsHandler,
   // END WORKFLOW AREA
 ];
