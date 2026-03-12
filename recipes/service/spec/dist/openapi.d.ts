@@ -277,7 +277,8 @@ export interface paths {
         /** List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). */
         get: operations["listCollections"];
         put?: never;
-        post?: never;
+        /** Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one. */
+        post: operations["createCollections"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1958,6 +1959,62 @@ export interface operations {
                     "application/json": {
                         /** @description List of collections the user is a member of. */
                         collections: components["schemas"]["collection"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Human-readable name for the collection
+                     * @example My Kitchen
+                     */
+                    name: string;
+                    /**
+                     * @description Optional id (URL-safe, unique); if omitted, server generates a short id
+                     * @example my-kitchen
+                     */
+                    id?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The created collection. */
+                        collection: components["schemas"]["collection"];
                     };
                 };
             };

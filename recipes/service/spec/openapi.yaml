@@ -70,6 +70,8 @@ paths:
   /collections:
     get:
       $ref: "./routes/collections/list.yaml#/listCollections"
+    post:
+      $ref: "./routes/collections/create.yaml#/createCollections"
   # END WORKFLOW AREA
 
 components:

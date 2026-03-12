@@ -1,0 +1,51 @@
+createCollections:
+  summary: "Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one."
+  operationId: "createCollections"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Human-readable name for the collection
+              minLength: 1
+              example: "My Kitchen"
+            id:
+              type: string
+              description: Optional id (URL-safe, unique); if omitted, server generates a short id
+              minLength: 1
+              example: "my-kitchen"
+
+  responses:
+    "200":
+      description: "Created collection."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - collection
+            properties:
+              collection:
+                $ref: "../../schemas/collection.yaml"
+                description: "The created collection."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
