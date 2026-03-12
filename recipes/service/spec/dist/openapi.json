@@ -1842,6 +1842,77 @@
           }
         }
       }
+    },
+    "/collections/{id}/members": {
+      "get": {
+        "summary": "List members of a collection (email, role, isCreator). Caller must be a member (any role) with validated email; creator always has access.",
+        "operationId": "membersListCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "members"
+                  ],
+                  "properties": {
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection-member"
+                      },
+                      "description": "List of collection members (email, role, isCreator)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member or unvalidated email (creator excepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2488,6 +2559,56 @@
           "updatedAt"
         ]
       },
+      "collection-member": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the member record (short id)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this member belongs to",
+            "example": "my-kitchen"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Member's email address; must be validated for access (except creator)",
+            "example": "alice@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "editor",
+              "viewer"
+            ],
+            "description": "Member's role in the collection; creator is always owner and cannot be demoted",
+            "example": "editor"
+          },
+          "isCreator": {
+            "type": "boolean",
+            "description": "True if this member created the collection; permanent owner, cannot be removed or demoted",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the member was added to the collection",
+            "example": "2023-01-15T14:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "email",
+          "role",
+          "isCreator",
+          "createdAt"
+        ]
+      },
       "login": {
         "type": "object",
         "properties": {
@@ -2593,56 +2714,6 @@
         },
         "required": [
           "event"
-        ]
-      },
-      "collection-member": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the member record (short id)",
-            "example": "K3m9_xR2"
-          },
-          "collectionId": {
-            "type": "string",
-            "description": "Id of the collection this member belongs to",
-            "example": "my-kitchen"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Member's email address; must be validated for access (except creator)",
-            "example": "alice@example.com"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "owner",
-              "editor",
-              "viewer"
-            ],
-            "description": "Member's role in the collection; creator is always owner and cannot be demoted",
-            "example": "editor"
-          },
-          "isCreator": {
-            "type": "boolean",
-            "description": "True if this member created the collection; permanent owner, cannot be removed or demoted",
-            "example": false
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the member was added to the collection",
-            "example": "2023-01-15T14:30:00Z"
-          }
-        },
-        "required": [
-          "id",
-          "collectionId",
-          "email",
-          "role",
-          "isCreator",
-          "createdAt"
         ]
       }
     }
