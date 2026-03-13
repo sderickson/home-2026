@@ -1,0 +1,22 @@
+import express from "express";
+import { createScopedMiddleware } from "@saflib/express";
+import { jsonSpec } from "@sderickson/recipes-spec";
+
+// BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+import { listMenusHandler } from "./list.ts";
+// END WORKFLOW AREA
+
+export const createMenusRouter = () => {
+  const router = express.Router();
+
+  router.use(
+    "/menus",
+    createScopedMiddleware({
+      apiSpec: jsonSpec,
+      enforceAuth: false,
+    }),
+  );
+  router.get("/menus", listMenusHandler);
+
+  return router;
+};
