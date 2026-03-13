@@ -2400,6 +2400,93 @@
           }
         }
       }
+    },
+    "/menus/{id}": {
+      "get": {
+        "summary": "Get one menu with groupings and full Recipe objects for every recipe in the menu. Optional query collectionId when in collection context. When no collectionId (public detail), allowed if menu is public.",
+        "operationId": "getMenu",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Menu id."
+          },
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection (when in collection context). Omit for public menu detail."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu with groupings and flat array of full Recipe objects for every recipe in the menu's groupings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menu",
+                    "recipes"
+                  ],
+                  "properties": {
+                    "menu": {
+                      "$ref": "#/components/schemas/menu"
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      },
+                      "description": "Full Recipe objects for every recipe referenced in the menu's groupings (enough to render the menu)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - menu is private and caller is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - menu not in collection or private and caller has only viewer access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - menu does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

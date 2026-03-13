@@ -357,6 +357,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/menus/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one menu with groupings and full Recipe objects for every recipe in the menu. Optional query collectionId when in collection context. When no collectionId (public detail), allowed if menu is public. */
+        get: operations["getMenu"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2761,6 +2778,63 @@ export interface operations {
                 };
             };
             /** @description Not found - collection does not exist (when collectionId provided). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    getMenu: {
+        parameters: {
+            query?: {
+                /** @description Id of the collection (when in collection context). Omit for public menu detail. */
+                collectionId?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Menu id. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Menu with groupings and flat array of full Recipe objects for every recipe in the menu's groupings. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        menu: components["schemas"]["menu"];
+                        /** @description Full Recipe objects for every recipe referenced in the menu's groupings (enough to render the menu). */
+                        recipes: components["schemas"]["recipe"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - menu is private and caller is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - menu not in collection or private and caller has only viewer access. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not found - menu does not exist. */
             404: {
                 headers: {
                     [name: string]: unknown;
