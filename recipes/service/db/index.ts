@@ -8,6 +8,7 @@ export const recipesDb = recipesDbManager.publicInterface();
 // BEGIN SORTED WORKFLOW AREA query-exports FOR drizzle/add-query
 export * from "./queries/collection-member/index.ts";
 export * from "./queries/collection/index.ts";
+export * from "./queries/menu/index.ts";
 export * from "./queries/recipe-file/index.ts";
 export * from "./queries/recipe-note-file/index.ts";
 export * from "./queries/recipe-note/index.ts";
