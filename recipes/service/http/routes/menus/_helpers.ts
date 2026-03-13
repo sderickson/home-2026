@@ -58,3 +58,10 @@ export function updateMenuResultToUpdateMenuResponse(
     menu: menuToApiMenu(menu),
   };
 }
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteMenuResultToDeleteMenuResponse(
+  _row: MenuEntity,
+): void {
+  // 204 No Content - no body to map
+}
