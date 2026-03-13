@@ -21,3 +21,5 @@ export class RecipeNoteFileNotFoundError extends RecipesDatabaseError {}
 export class CollectionNotFoundError extends RecipesDatabaseError {}
 
 export class CollectionMemberNotFoundError extends RecipesDatabaseError {}
+
+export class MenuNotFoundError extends RecipesDatabaseError {}
