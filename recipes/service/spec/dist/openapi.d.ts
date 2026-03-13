@@ -356,6 +356,7 @@ export interface components {
         UnsplashAttribution: components["schemas"]["unsplash-attribution"];
         Collection: components["schemas"]["collection"];
         CollectionMember: components["schemas"]["collection-member"];
+        Menu: components["schemas"]["menu"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -889,6 +890,91 @@ export interface components {
             /** @description The component that triggered the event. For vue, it should be the component name. */
             component?: string;
         } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
+        menu: {
+            /**
+             * @description Unique identifier for the menu (short id from generateShortId)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * @description Id of the collection this menu belongs to
+             * @example my-kitchen
+             */
+            collectionId: string;
+            /**
+             * @description Human-readable name for the menu
+             * @example Weeknight Dinners
+             */
+            name: string;
+            /**
+             * @description Whether the menu is visible to non-editors (e.g. public menu list)
+             * @example false
+             */
+            isPublic: boolean;
+            /**
+             * @description User id of the menu creator (short id)
+             * @example a1b2c3d4
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the menu was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * @description User id of the last updater (short id)
+             * @example a1b2c3d4
+             */
+            updatedBy: string;
+            /**
+             * Format: date-time
+             * @description When the menu was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+            /**
+             * @description User ids of everyone who has edited this menu (append on each edit)
+             * @example [
+             *       "a1b2c3d4",
+             *       "e5f6g7h8"
+             *     ]
+             */
+            editedByUserIds: string[];
+            /**
+             * @description Ordered categories; each has a name and ordered recipe ids (display order)
+             * @example [
+             *       {
+             *         "name": "Starters",
+             *         "recipeIds": [
+             *           "r1abc"
+             *         ]
+             *       },
+             *       {
+             *         "name": "Mains",
+             *         "recipeIds": [
+             *           "r2def",
+             *           "r3ghi"
+             *         ]
+             *       }
+             *     ]
+             */
+            groupings: {
+                /**
+                 * @description Name of the grouping (e.g. appetizers, mains, desserts)
+                 * @example Mains
+                 */
+                name: string;
+                /**
+                 * @description Recipe ids in this grouping, in display order
+                 * @example [
+                 *       "r1abc",
+                 *       "r2def"
+                 *     ]
+                 */
+                recipeIds: string[];
+            }[];
+        };
     };
     responses: never;
     parameters: never;

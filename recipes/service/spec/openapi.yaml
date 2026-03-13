@@ -119,4 +119,6 @@ components:
       $ref: "./schemas/collection.yaml"
     CollectionMember:
       $ref: "./schemas/collection-member.yaml"
+    Menu:
+      $ref: "./schemas/menu.yaml"
     # END WORKFLOW AREA

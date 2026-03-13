@@ -2346,6 +2346,9 @@
       "CollectionMember": {
         "$ref": "#/components/schemas/collection-member"
       },
+      "Menu": {
+        "$ref": "#/components/schemas/menu"
+      },
       "recipe": {
         "type": "object",
         "properties": {
@@ -3107,6 +3110,122 @@
         },
         "required": [
           "event"
+        ]
+      },
+      "menu": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the menu (short id from generateShortId)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this menu belongs to",
+            "example": "my-kitchen"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the menu",
+            "example": "Weeknight Dinners",
+            "minLength": 1
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether the menu is visible to non-editors (e.g. public menu list)",
+            "example": false
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the menu creator (short id)",
+            "example": "a1b2c3d4"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "User id of the last updater (short id)",
+            "example": "a1b2c3d4"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "editedByUserIds": {
+            "type": "array",
+            "description": "User ids of everyone who has edited this menu (append on each edit)",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "a1b2c3d4",
+              "e5f6g7h8"
+            ]
+          },
+          "groupings": {
+            "type": "array",
+            "description": "Ordered categories; each has a name and ordered recipe ids (display order)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the grouping (e.g. appetizers, mains, desserts)",
+                  "example": "Mains",
+                  "minLength": 1
+                },
+                "recipeIds": {
+                  "type": "array",
+                  "description": "Recipe ids in this grouping, in display order",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "r1abc",
+                    "r2def"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "recipeIds"
+              ]
+            },
+            "example": [
+              {
+                "name": "Starters",
+                "recipeIds": [
+                  "r1abc"
+                ]
+              },
+              {
+                "name": "Mains",
+                "recipeIds": [
+                  "r2def",
+                  "r3ghi"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "name",
+          "isPublic",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt",
+          "editedByUserIds",
+          "groupings"
         ]
       }
     }
