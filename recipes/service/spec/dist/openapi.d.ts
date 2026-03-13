@@ -928,6 +928,15 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Unauthorized - collection listing requires authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     createRecipe: {
@@ -1026,6 +1035,15 @@ export interface operations {
                         /** @description Optional list of recipe file info. */
                         files?: Record<string, never>[];
                     };
+                };
+            };
+            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
@@ -1169,6 +1187,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-version"][];
+                };
+            };
+            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */

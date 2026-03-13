@@ -19,6 +19,12 @@ listRecipes:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
+    "401":
+      description: "Unauthorized - collection listing requires authentication."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
     "200":
       description: "List of recipes (public only when not admin, includes private for admins)."
       content:

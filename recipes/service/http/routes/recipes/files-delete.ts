@@ -1,6 +1,5 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContextWithAuth } from "@saflib/node";
 import {
   recipeFileQueries,
   RecipeNotFoundError,
@@ -11,21 +10,11 @@ import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { deleteFileResultToFilesDeleteRecipesResponse } from "./_helpers.ts";
 
 export const filesDeleteRecipesHandler = createHandler(async (req, res) => {
-  const { auth } = getSafContextWithAuth();
   const id = req.params.id as string;
   const fileId = req.params.fileId as string;
   const { recipesDbKey, recipesFileContainer } =
     recipesServiceStorage.getStore()!;
-  const authWithVerified = {
-    ...auth,
-    emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-  };
-  await getRecipeAndRequireCollectionAuth(
-    recipesDbKey,
-    id,
-    authWithVerified,
-    { requireMutate: true },
-  );
+  await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
   const listOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
     recipeId: id,

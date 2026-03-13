@@ -19,16 +19,7 @@ export const deleteRecipeHandler = createHandler(
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
 
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const [filesListOut, noteFilesListOut] = await Promise.all([
       recipeFileQueries.listRecipeFile(recipesDbKey, { recipeId: id }),

@@ -22,16 +22,7 @@ export const versionsLatestUpdateRecipesHandler = createHandler(
     const data: RecipesServiceRequestBody["updateRecipeVersionLatest"] =
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const { result, error } = await recipeQueries.updateLatestVersionRecipe(
       recipesDbKey,

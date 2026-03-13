@@ -47,6 +47,16 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - collection listing requires authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
           }
         }
       },
@@ -208,6 +218,16 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - recipe is private and caller is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -390,6 +410,16 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe-version"
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - recipe is private and caller is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }

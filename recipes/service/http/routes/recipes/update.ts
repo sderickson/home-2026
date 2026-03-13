@@ -20,16 +20,9 @@ export const updateRecipeHandler = createHandler(
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    const getOut = await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    const getOut = await getRecipeAndRequireCollectionAuth(id, {
+      requireMutate: true,
+    });
 
     const existing = getOut.recipe;
     const merged = {

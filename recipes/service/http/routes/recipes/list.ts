@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContextWithAuth } from "@saflib/node";
+import { safContextStorage } from "@saflib/node";
 import { recipeQueries } from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
@@ -15,10 +15,12 @@ export const listRecipesHandler = createHandler(async (req, res) => {
     });
   }
 
-  const { auth } = getSafContextWithAuth();
+  const auth = safContextStorage.getStore()?.auth;
+  if (!auth) {
+    throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
+  }
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
-  const emailValidated =
-    (auth as { emailVerified?: boolean }).emailVerified !== false;
+  const emailValidated = auth.emailVerified !== false;
 
   const member = await requireCollectionMembership({
     recipesDbKey,

@@ -5,7 +5,6 @@ import {
   PathTraversalError,
   StorageError,
 } from "@saflib/object-store";
-import { getSafContextWithAuth } from "@saflib/node";
 import {
   recipeNoteFileQueries,
   RecipeNoteNotFoundError,
@@ -15,23 +14,13 @@ import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 
 export const notesFilesDownloadRecipesHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
 
     const id = req.params.id as string;
     const noteId = req.params.noteId as string;
     const fileId = req.params.fileId as string;
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: false },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: false });
 
     const listOut = await recipeNoteFileQueries.listRecipeNoteFile(
       recipesDbKey,

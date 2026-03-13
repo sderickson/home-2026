@@ -29,7 +29,7 @@ describe("GET /collections", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_EMAIL));
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ collections: [] });
+    expect(response.body).toEqual({ collections: [], members: [] });
   });
 
   it("should return 200 with collections when authenticated and user is member", async () => {
@@ -53,12 +53,8 @@ describe("GET /collections", () => {
       name: "My Kitchen",
       createdBy: SEED_USER_EMAIL,
     });
-    expect(response.body.collections[0].createdAt).toEqual(
-      expect.any(String),
-    );
-    expect(response.body.collections[0].updatedAt).toEqual(
-      expect.any(String),
-    );
+    expect(response.body.collections[0].createdAt).toEqual(expect.any(String));
+    expect(response.body.collections[0].updatedAt).toEqual(expect.any(String));
   });
 
   it("should return 401 when not authenticated", async () => {

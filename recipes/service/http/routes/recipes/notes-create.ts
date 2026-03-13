@@ -24,16 +24,7 @@ export const notesCreateRecipesHandler = createHandler(
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const { result, error } = await recipeNoteQueries.createRecipeNote(
       recipesDbKey,

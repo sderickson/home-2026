@@ -38,6 +38,13 @@ getRecipe:
                 items:
                   type: object
 
+    "401":
+      description: "Unauthorized - recipe is private and caller is not authenticated."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
     "404":
       description: "Not Found"
       content:

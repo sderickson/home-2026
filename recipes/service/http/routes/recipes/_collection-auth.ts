@@ -3,6 +3,7 @@
  * Use after resolving collectionId: from recipe.collectionId for :id routes, or from query/body for list/create.
  */
 import createError from "http-errors";
+import { safContextStorage } from "@saflib/node";
 import type { DbKey } from "@saflib/drizzle";
 import {
   collectionMemberQueries,
@@ -14,6 +15,7 @@ import type {
   CollectionMemberEntity,
   GetByIdRecipeResult,
 } from "@sderickson/recipes-db";
+import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 
 export interface RequireCollectionMembershipParams {
   recipesDbKey: DbKey;
@@ -66,22 +68,23 @@ export async function requireCollectionMembership(
   return member;
 }
 
-export interface AuthLike {
-  userEmail: string;
-  userId: string;
-  emailVerified?: boolean;
-}
-
 /**
- * Load recipe by id, enforce collection membership, then return the getById result.
- * Throws 404 if recipe not found, 403 if not a member or insufficient role.
+ * Load recipe by id. Reads recipesDbKey and auth from context stores.
+ * - If requireMutate: true and no auth -> 401.
+ * - If requireMutate: false, no auth, and recipe is public -> return recipe (no membership check).
+ * - If no auth and recipe is private -> 401.
+ * - If auth present -> require collection membership then return. Throws 404 if not found, 403 if forbidden.
  */
 export async function getRecipeAndRequireCollectionAuth(
-  recipesDbKey: DbKey,
   recipeId: string,
-  auth: AuthLike,
   options: { requireMutate: boolean },
 ): Promise<GetByIdRecipeResult> {
+  const recipesDbKey = recipesServiceStorage.getStore()?.recipesDbKey;
+  if (!recipesDbKey) {
+    throw new Error("Recipes service context not found");
+  }
+  const auth = safContextStorage.getStore()?.auth;
+
   const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
   if (out.error) {
     if (out.error instanceof RecipeNotFoundError) {
@@ -90,10 +93,21 @@ export async function getRecipeAndRequireCollectionAuth(
     throw out.error satisfies never;
   }
 
+  const { recipe } = out.result;
+  if (!auth) {
+    if (options.requireMutate) {
+      throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
+    }
+    if (!recipe.isPublic) {
+      throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
+    }
+    return out.result;
+  }
+
   const emailValidated = auth.emailVerified !== false;
   await requireCollectionMembership({
     recipesDbKey,
-    collectionId: out.result.recipe.collectionId,
+    collectionId: recipe.collectionId,
     callerEmail: auth.userEmail,
     emailValidated,
     requireMutate: options.requireMutate,

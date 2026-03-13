@@ -28,16 +28,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
 
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const photoResult = await unsplash.photos.get({ photoId: unsplashPhotoId });
     if (photoResult.type !== "success") {

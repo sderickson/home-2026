@@ -24,16 +24,7 @@ export const notesFilesUploadRecipesHandler = createHandler(
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
     const userId = auth.userId;
-    const authWithVerified = {
-      ...auth,
-      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
-    };
-    await getRecipeAndRequireCollectionAuth(
-      recipesDbKey,
-      id,
-      authWithVerified,
-      { requireMutate: true },
-    );
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const files = Array.isArray(req.files) ? req.files : req.files?.file;
     const file = Array.isArray(files)
