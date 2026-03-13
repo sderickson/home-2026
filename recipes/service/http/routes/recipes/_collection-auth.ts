@@ -4,7 +4,6 @@
  */
 import createError from "http-errors";
 import { safContextStorage } from "@saflib/node";
-import type { DbKey } from "@saflib/drizzle";
 import {
   collectionMemberQueries,
   recipeQueries,
@@ -17,35 +16,29 @@ import type {
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 
-export interface RequireCollectionMembershipParams {
-  recipesDbKey: DbKey;
-  collectionId: string;
-  callerEmail: string;
-  /** Whether the caller's email is validated (identity). Creator bypasses this. */
-  emailValidated: boolean;
-  /** If true, caller must be editor or owner (not viewer). */
-  requireMutate: boolean;
-}
-
 /**
- * Looks up the caller's collection_member row, enforces membership + validated-email + role.
- * Returns the member row or throws 403.
+ * Looks up the caller's collection_member row from context (recipesDbKey, auth), enforces membership + validated-email + role.
+ * Returns the member row or throws 401 if no auth, 403 if not a member or insufficient role.
  */
 export async function requireCollectionMembership(
-  params: RequireCollectionMembershipParams,
+  collectionId: string,
+  options: { requireMutate: boolean },
 ): Promise<CollectionMemberEntity> {
-  const {
-    recipesDbKey,
-    collectionId,
-    callerEmail,
-    emailValidated,
-    requireMutate,
-  } = params;
+  const recipesDbKey = recipesServiceStorage.getStore()?.recipesDbKey;
+  if (!recipesDbKey) {
+    throw new Error("Recipes service context not found");
+  }
+  const auth = safContextStorage.getStore()?.auth;
+  if (!auth) {
+    throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
+  }
+
+  const emailValidated = auth.emailVerified !== false;
 
   const { result: member, error: memberError } =
     await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
       recipesDbKey,
-      { collectionId, email: callerEmail },
+      { collectionId, email: auth.userEmail },
     );
 
   if (memberError) {
@@ -61,7 +54,7 @@ export async function requireCollectionMembership(
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 
-  if (requireMutate && member.role === "viewer") {
+  if (options.requireMutate && member.role === "viewer") {
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 
@@ -104,12 +97,7 @@ export async function getRecipeAndRequireCollectionAuth(
     return out.result;
   }
 
-  const emailValidated = auth.emailVerified !== false;
-  await requireCollectionMembership({
-    recipesDbKey,
-    collectionId: recipe.collectionId,
-    callerEmail: auth.userEmail,
-    emailValidated,
+  await requireCollectionMembership(recipe.collectionId, {
     requireMutate: options.requireMutate,
   });
 

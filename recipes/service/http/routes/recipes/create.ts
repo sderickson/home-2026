@@ -24,17 +24,11 @@ export const createRecipeHandler = createHandler(
       });
     }
 
-    const { recipesDbKey } = recipesServiceStorage.getStore()!;
-    const emailValidated =
-      (auth as { emailVerified?: boolean }).emailVerified !== false;
-    await requireCollectionMembership({
-      recipesDbKey,
-      collectionId: collectionId.trim(),
-      callerEmail: auth.userEmail,
-      emailValidated,
+    await requireCollectionMembership(collectionId.trim(), {
       requireMutate: true,
     });
 
+    const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
     const initialContent = data.initialVersion?.content;
