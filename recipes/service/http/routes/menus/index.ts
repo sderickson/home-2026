@@ -6,6 +6,7 @@ import { jsonSpec } from "@sderickson/recipes-spec";
 import { createMenuHandler } from "./create.ts";
 import { getMenuHandler } from "./get.ts";
 import { listMenusHandler } from "./list.ts";
+import { updateMenuHandler } from "./update.ts";
 // END WORKFLOW AREA
 
 export const createMenusRouter = () => {
@@ -21,6 +22,7 @@ export const createMenusRouter = () => {
   router.get("/menus", listMenusHandler);
   router.post("/menus", createMenuHandler);
   router.get("/menus/:id", getMenuHandler);
+  router.put("/menus/:id", updateMenuHandler);
 
   return router;
 };

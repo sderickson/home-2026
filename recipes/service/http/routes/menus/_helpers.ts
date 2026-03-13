@@ -8,6 +8,7 @@ type ListMenus200 = RecipesServiceResponseBody["listMenus"][200];
 type MenuApi = ListMenus200["menus"][number];
 type GetMenu200 = RecipesServiceResponseBody["getMenu"][200];
 type CreateMenu200 = RecipesServiceResponseBody["createMenu"][200];
+type UpdateMenu200 = RecipesServiceResponseBody["updateMenu"][200];
 
 export function menuToApiMenu(row: MenuEntity): MenuApi {
   return {
@@ -45,6 +46,14 @@ export function getMenuResultToGetMenuResponse(
 export function createMenuResultToCreateMenuResponse(
   menu: MenuEntity,
 ): CreateMenu200 {
+  return {
+    menu: menuToApiMenu(menu),
+  };
+}
+
+export function updateMenuResultToUpdateMenuResponse(
+  menu: MenuEntity,
+): UpdateMenu200 {
   return {
     menu: menuToApiMenu(menu),
   };
