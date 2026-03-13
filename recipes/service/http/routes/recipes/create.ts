@@ -20,6 +20,13 @@ export const createRecipeHandler = createHandler(
     }
 
     const data: RecipesServiceRequestBody["createRecipe"] = req.body ?? {};
+    const collectionId = data.collectionId;
+    if (typeof collectionId !== "string" || !collectionId.trim()) {
+      throw createError(400, "collectionId is required in request body", {
+        code: "VALIDATION_ERROR",
+      });
+    }
+
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
@@ -28,7 +35,7 @@ export const createRecipeHandler = createHandler(
       const { result, error } = await recipeQueries.createWithVersionRecipe(
         recipesDbKey,
         {
-          collectionId: data.collectionId,
+          collectionId: collectionId.trim(),
           title: data.title,
           subtitle: data.subtitle,
           description: data.description ?? null,
@@ -59,7 +66,7 @@ export const createRecipeHandler = createHandler(
     }
 
     const { result, error } = await recipeQueries.createRecipe(recipesDbKey, {
-      collectionId: data.collectionId,
+      collectionId: collectionId.trim(),
       title: data.title,
       subtitle: data.subtitle,
       description: data.description ?? null,

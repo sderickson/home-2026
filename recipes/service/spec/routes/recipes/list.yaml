@@ -1,10 +1,24 @@
 listRecipes:
-  summary: "List recipes. Public-only when not logged in or non-admin; admins see private too."
+  summary: "List recipes in a collection. Public-only when not logged in or non-admin; admins see private too."
   operationId: "listRecipes"
   tags:
     - "no-auth"
 
+  parameters:
+    - name: collectionId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Id of the collection to list recipes from
+
   responses:
+    "400":
+      description: "Bad request - collectionId query parameter is required."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
     "200":
       description: "List of recipes (public only when not admin, includes private for admins)."
       content:

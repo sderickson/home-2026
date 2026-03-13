@@ -11,9 +11,20 @@ describe("GET /recipes", () => {
     app = createRecipesHttpApp({});
   });
 
+  it("should return 400 when collectionId query parameter is missing", async () => {
+    const response = await request(app)
+      .get("/recipes")
+      .set(makeUserHeaders());
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBeDefined();
+    expect(response.body.message).toContain("collectionId");
+  });
+
   it("should return 200 and empty array when no recipes exist", async () => {
     const response = await request(app)
       .get("/recipes")
+      .query({ collectionId: "some-collection-id" })
       .set(makeUserHeaders());
 
     expect(response.status).toBe(200);
@@ -21,7 +32,9 @@ describe("GET /recipes", () => {
   });
 
   it("should return 200 when not authenticated (public recipes only)", async () => {
-    const response = await request(app).get("/recipes");
+    const response = await request(app)
+      .get("/recipes")
+      .query({ collectionId: "some-collection-id" });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);

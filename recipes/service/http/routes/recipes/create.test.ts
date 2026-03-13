@@ -122,4 +122,19 @@ describe("POST /recipes", () => {
     expect(response.status).toBe(403);
     expect(response.body.code).toBe("FORBIDDEN");
   });
+
+  it("should return 400 when collectionId is missing in request body", async () => {
+    const response = await request(app)
+      .post("/recipes")
+      .set(makeAdminHeaders(SEED_USER_ID))
+      .send({
+        title: "Test",
+        subtitle: "Short",
+        isPublic: true,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBeDefined();
+    expect(response.body.message).toContain("collectionId");
+  });
 });

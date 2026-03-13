@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List recipes. Public-only when not logged in or non-admin; admins see private too. */
+        /** List recipes in a collection. Public-only when not logged in or non-admin; admins see private too. */
         get: operations["listRecipes"];
         put?: never;
         /** Create recipe (and optionally initial version). Admin only. */
@@ -410,6 +410,15 @@ export interface components {
              */
             currentVersionId?: string;
         };
+        error: {
+            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
+            code?: string;
+            /**
+             * @description A human-readable description of the error.
+             * @example The requested resource could not be found.
+             */
+            message?: string;
+        };
         /**
          * @description Version body — structured ingredients and markdown instructions
          * @example {
@@ -543,15 +552,6 @@ export interface components {
              * @example 2023-01-15T14:30:00Z
              */
             createdAt: string;
-        };
-        error: {
-            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
-            code?: string;
-            /**
-             * @description A human-readable description of the error.
-             * @example The requested resource could not be found.
-             */
-            message?: string;
         };
         "recipe-note": {
             /**
@@ -900,7 +900,10 @@ export type $defs = Record<string, never>;
 export interface operations {
     listRecipes: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description Id of the collection to list recipes from */
+                collectionId: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -914,6 +917,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe"][];
+                };
+            };
+            /** @description Bad request - collectionId query parameter is required. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
         };
@@ -957,6 +969,15 @@ export interface operations {
                         /** @description Present when initialVersion was supplied in the request. */
                         initialVersion?: components["schemas"]["recipe-version"];
                     };
+                };
+            };
+            /** @description Bad request - collectionId is required in request body. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

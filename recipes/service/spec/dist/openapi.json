@@ -8,10 +8,21 @@
   "paths": {
     "/recipes": {
       "get": {
-        "summary": "List recipes. Public-only when not logged in or non-admin; admins see private too.",
+        "summary": "List recipes in a collection. Public-only when not logged in or non-admin; admins see private too.",
         "operationId": "listRecipes",
         "tags": [
           "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection to list recipes from"
+          }
         ],
         "responses": {
           "200": {
@@ -23,6 +34,16 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - collectionId query parameter is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -99,6 +120,16 @@
                       "description": "Present when initialVersion was supplied in the request."
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - collectionId is required in request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -2323,6 +2354,20 @@
           "updatedAt"
         ]
       },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
+      },
       "content": {
         "type": "object",
         "description": "Version body — structured ingredients and markdown instructions",
@@ -2493,20 +2538,6 @@
           "createdBy",
           "createdAt"
         ]
-      },
-      "error": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
-          },
-          "message": {
-            "type": "string",
-            "description": "A human-readable description of the error.",
-            "example": "The requested resource could not be found."
-          }
-        }
       },
       "recipe-note": {
         "type": "object",
