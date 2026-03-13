@@ -14,7 +14,7 @@ import { deleteRecipeResultToDeleteRecipeResponse } from "./_helpers.ts";
 
 export const deleteRecipeHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
+    getSafContextWithAuth();
     const id = req.params.id as string;
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;

@@ -7,9 +7,16 @@ export const listRecipesHandler = recipesHandler({
   status: 200,
   handler: async ({ query }) => {
     let list = [...mockRecipes];
-    if (query.title != null && query.title !== "") {
-      list = list.filter((r) =>
-        r.title.toLowerCase().includes(query.title!.toLowerCase()),
+    if (query.publicOnly === "true") {
+      list = list.filter((r) => r.isPublic);
+    } else if (
+      query.collectionId != null &&
+      typeof query.collectionId === "string" &&
+      query.collectionId !== ""
+    ) {
+      const id = query.collectionId;
+      list = list.filter(
+        (r) => (r as { collectionId?: string }).collectionId === id,
       );
     }
     return list;

@@ -17,7 +17,7 @@ type UpdateLatestVersionRecipeError = RecipeVersionNotFoundError;
 
 export const versionsLatestUpdateRecipesHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
+    getSafContextWithAuth();
     const id = req.params.id as string;
     const data: RecipesServiceRequestBody["updateRecipeVersionLatest"] =
       req.body ?? {};
