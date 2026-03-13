@@ -27,7 +27,7 @@ describe("deleteRecipe", () => {
 
   it("invalidates related queries so list no longer includes deleted recipe", async () => {
     const [listQuery, app] = withVueQuery(() =>
-      useQuery(listRecipesQuery()),
+      useQuery(listRecipesQuery("my-kitchen")),
     );
     const [mutation] = withVueQuery(() => useDeleteRecipeMutation());
     const id = mockRecipes[mockRecipes.length - 1].id;

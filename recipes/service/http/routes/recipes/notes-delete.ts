@@ -1,24 +1,21 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContextWithAuth } from "@saflib/node";
 import {
   recipeNoteQueries,
   RecipeNoteNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { deleteNoteResultToNotesDeleteRecipesResponse } from "./_helpers.ts";
 
 type DeleteNoteRecipeError = RecipeNoteNotFoundError;
 
 export const notesDeleteRecipesHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
+    const id = req.params.id as string;
     const noteId = req.params.noteId as string;
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const { result, error } = await recipeNoteQueries.deleteRecipeNote(
       recipesDbKey,

@@ -1,38 +1,43 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-
-const adminUserId = "11111111-1111-1111-1111-111111111111";
+import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
+import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("DELETE /recipes/:id", () => {
   let app: express.Express;
+  let dbKey: DbKey;
+  let recipeId: string;
 
-  beforeEach(() => {
-    app = createRecipesHttpApp({});
+  beforeEach(async () => {
+    dbKey = recipesDb.connect();
+    const collectionId = await createTestCollection(dbKey);
+    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
+      title: "To Delete",
+      subtitle: "Short",
+      description: null,
+      isPublic: true,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
+      versionContent: { ingredients: [], instructionsMarkdown: "" },
+    });
+    if (!result) throw new Error("Expected createWithVersionRecipe to return result");
+    recipeId = result.recipe.id;
+    app = createRecipesHttpApp({ recipesDbKey: dbKey });
+  });
+
+  afterEach(() => {
+    recipesDb.disconnect(dbKey);
   });
 
   it("should return 204 when admin deletes existing recipe", async () => {
-    const createRes = await request(app)
-      .post("/recipes")
-      .set(makeAdminHeaders(adminUserId))
-      .send({
-        title: "To Delete",
-        subtitle: "Short",
-        isPublic: true,
-        initialVersion: {
-          content: { ingredients: [], instructionsMarkdown: "" },
-        },
-      } satisfies RecipesServiceRequestBody["createRecipe"]);
-
-    expect(createRes.status).toBe(200);
-    const recipeId = createRes.body.recipe.id;
-
     const response = await request(app)
       .delete(`/recipes/${recipeId}`)
-      .set(makeAdminHeaders(adminUserId));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
@@ -46,25 +51,10 @@ describe("DELETE /recipes/:id", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin requests delete", async () => {
-    const createRes = await request(app)
-      .post("/recipes")
-      .set(makeAdminHeaders(adminUserId))
-      .send({
-        title: "Recipe",
-        subtitle: "Short",
-        isPublic: true,
-        initialVersion: {
-          content: { ingredients: [], instructionsMarkdown: "" },
-        },
-      } satisfies RecipesServiceRequestBody["createRecipe"]);
-
-    expect(createRes.status).toBe(200);
-    const recipeId = createRes.body.recipe.id;
-
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .delete(`/recipes/${recipeId}`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders("other-user-id", "other@example.com"));
 
     expect(response.status).toBe(403);
     expect(response.body.code).toBe("FORBIDDEN");
@@ -73,7 +63,7 @@ describe("DELETE /recipes/:id", () => {
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .delete("/recipes/00000000-0000-0000-0000-000000000000")
-      .set(makeAdminHeaders(adminUserId));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOT_FOUND");

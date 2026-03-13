@@ -1,26 +1,34 @@
 import { recipes_common_strings } from "../common/strings.ts";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
+import { collections_list } from "./pages/collections/list/List.strings.ts";
+import { collections_table } from "./pages/collections/list/CollectionsTable.strings.ts";
+import { create_collection_dialog } from "./pages/collections/list/CreateCollectionDialog.strings.ts";
+import { members_management_dialog } from "./pages/collections/list/MembersManagementDialog.strings.ts";
 import { home_page } from "./pages/home/Home.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
 import { recipes_create_page } from "./pages/recipes/create/Create.strings.ts";
 import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
-import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
 import { recipes_edit_page } from "./pages/recipes/edit/Edit.strings.ts";
 import { recipes_list_page } from "./pages/recipes/list/List.strings.ts";
+import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
 // END WORKFLOW AREA
 
 export const app_strings = {
   ...recipes_common_strings,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
+  collections_list,
+  collections_table,
+  create_collection_dialog,
+  members_management_dialog,
   home_page,
   recipe_form,
   recipes_create_page,
   recipes_detail,
   recipes_detail_page,
-  unsplash_picker_dialog,
   recipes_edit_page,
   recipes_list_page,
+  unsplash_picker_dialog,
   // END WORKFLOW AREA
 };

@@ -10,21 +10,19 @@ import {
   RecipeVersionNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { updateLatestVersionResultToUpdateRecipeVersionLatestResponse } from "./_helpers.ts";
 
 type UpdateLatestVersionRecipeError = RecipeVersionNotFoundError;
 
 export const versionsLatestUpdateRecipesHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
+    getSafContextWithAuth();
     const id = req.params.id as string;
     const data: RecipesServiceRequestBody["updateRecipeVersionLatest"] =
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const { result, error } = await recipeQueries.updateLatestVersionRecipe(
       recipesDbKey,

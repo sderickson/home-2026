@@ -6,6 +6,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
 import { generateShortId } from "@saflib/drizzle";
+import { collection } from "./collection.ts";
 
 // Recipe version content shape (JSON in recipe_version.content)
 export interface RecipeVersionContent {
@@ -15,6 +16,7 @@ export interface RecipeVersionContent {
 
 export interface RecipeEntity {
   id: string;
+  collectionId: string;
   title: string;
   subtitle: string;
   description: string | null;
@@ -25,19 +27,26 @@ export interface RecipeEntity {
   updatedAt: Date;
 }
 
-export const recipe = sqliteTable("recipe", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => generateShortId()),
-  title: text("title").notNull(),
-  subtitle: text("subtitle").notNull(),
-  description: text("description"),
-  isPublic: integer("is_public", { mode: "boolean" }).notNull(),
-  createdBy: text("created_by").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedBy: text("updated_by").notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-});
+export const recipe = sqliteTable(
+  "recipe",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => generateShortId()),
+    collectionId: text("collection_id")
+      .notNull()
+      .references(() => collection.id),
+    title: text("title").notNull(),
+    subtitle: text("subtitle").notNull(),
+    description: text("description"),
+    isPublic: integer("is_public", { mode: "boolean" }).notNull(),
+    createdBy: text("created_by").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+    updatedBy: text("updated_by").notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => [index("recipe_collection_id_idx").on(table.collectionId)],
+);
 
 export type RecipeEntityTest = Expect<
   Equal<RecipeEntity, typeof recipe.$inferSelect>

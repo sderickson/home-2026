@@ -7,6 +7,7 @@ import type {
 } from "@sderickson/recipes-spec";
 import { recipeQueries } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { requireCollectionMembership } from "./_collection-auth.ts";
 import {
   createRecipeResultToCreateRecipeResponse,
   createWithVersionResultToCreateRecipeResponse,
@@ -15,11 +16,18 @@ import {
 export const createRecipeHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+    const data: RecipesServiceRequestBody["createRecipe"] = req.body ?? {};
+    const collectionId = data.collectionId;
+    if (typeof collectionId !== "string" || !collectionId.trim()) {
+      throw createError(400, "collectionId is required in request body", {
+        code: "VALIDATION_ERROR",
+      });
     }
 
-    const data: RecipesServiceRequestBody["createRecipe"] = req.body ?? {};
+    await requireCollectionMembership(collectionId.trim(), {
+      requireMutate: true,
+    });
+
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
@@ -28,6 +36,7 @@ export const createRecipeHandler = createHandler(
       const { result, error } = await recipeQueries.createWithVersionRecipe(
         recipesDbKey,
         {
+          collectionId: collectionId.trim(),
           title: data.title,
           subtitle: data.subtitle,
           description: data.description ?? null,
@@ -58,6 +67,7 @@ export const createRecipeHandler = createHandler(
     }
 
     const { result, error } = await recipeQueries.createRecipe(recipesDbKey, {
+      collectionId: collectionId.trim(),
       title: data.title,
       subtitle: data.subtitle,
       description: data.description ?? null,

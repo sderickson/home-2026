@@ -22,5 +22,5 @@ if (!profileQuery.data.value) {
   throw new Error("Failed to load profile");
 }
 
-const browseLinkProps = linkToProps(appLinks.recipesList);
+const browseLinkProps = linkToProps(appLinks.collectionsList);
 </script>

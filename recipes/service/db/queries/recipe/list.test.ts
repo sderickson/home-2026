@@ -1,33 +1,21 @@
 import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
+import {
+  insertTestCollection,
+  makeRecipeRow,
+  TEST_COLLECTION_ID,
+} from "../../test-fixtures.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { listRecipes } from "./list.ts";
-
-function makeRecipeRow(overrides: {
-  title?: string;
-  isPublic?: boolean;
-  [k: string]: unknown;
-} = {}) {
-  const now = new Date();
-  return {
-    title: "Test Recipe",
-    subtitle: "Short",
-    description: null as string | null,
-    isPublic: true,
-    createdBy: "user-1",
-    createdAt: now,
-    updatedBy: "user-1",
-    updatedAt: now,
-    ...overrides,
-  };
-}
 
 describe("listRecipes", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -35,7 +23,7 @@ describe("listRecipes", () => {
   });
 
   it("should return empty array when no recipes exist", async () => {
-    const out = await listRecipes(dbKey, {});
+    const out = await listRecipes(dbKey, { collectionId: TEST_COLLECTION_ID });
     expect(out).toHaveProperty("result");
     assert("result" in out);
     assert(out.result !== undefined);
@@ -51,7 +39,9 @@ describe("listRecipes", () => {
         makeRecipeRow({ title: "Public One", isPublic: true }),
         makeRecipeRow({ title: "Private One", isPublic: false }),
       ]);
-    const out = await listRecipes(dbKey, {});
+    const out = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+    });
     assert("result" in out);
     assert(out.result !== undefined);
     expect(out.result).toHaveLength(1);
@@ -67,7 +57,10 @@ describe("listRecipes", () => {
         makeRecipeRow({ title: "Public", isPublic: true }),
         makeRecipeRow({ title: "Private", isPublic: false }),
       ]);
-    const out = await listRecipes(dbKey, { includePrivate: false });
+    const out = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+      includePrivate: false,
+    });
     assert("result" in out);
     assert(out.result !== undefined);
     expect(out.result).toHaveLength(1);
@@ -82,7 +75,10 @@ describe("listRecipes", () => {
         makeRecipeRow({ title: "Public", isPublic: true }),
         makeRecipeRow({ title: "Private", isPublic: false }),
       ]);
-    const out = await listRecipes(dbKey, { includePrivate: true });
+    const out = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+      includePrivate: true,
+    });
     assert("result" in out);
     assert(out.result !== undefined);
     expect(out.result).toHaveLength(2);
@@ -98,7 +94,10 @@ describe("listRecipes", () => {
       description: "Long",
     });
     await db.insert(recipe).values(row);
-    const out = await listRecipes(dbKey, { includePrivate: true });
+    const out = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+      includePrivate: true,
+    });
     assert("result" in out);
     assert(out.result !== undefined);
     expect(out.result).toHaveLength(1);

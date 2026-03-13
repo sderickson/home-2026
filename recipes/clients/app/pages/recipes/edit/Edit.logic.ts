@@ -18,7 +18,9 @@ export function assertEditDataLoaded(data: unknown): asserts data is GetRecipeRe
  */
 export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel {
   const { recipe, currentVersion } = response;
+  const recipeWithCollection = recipe as { collectionId?: string };
   return {
+    collectionId: recipeWithCollection.collectionId ?? "my-kitchen",
     title: recipe.title,
     subtitle: recipe.subtitle,
     description: recipe.description ?? null,

@@ -26,7 +26,9 @@
         />
         <v-row>
           <v-col cols="12" md="6" class="d-flex flex-column">
-            <v-label class="text-body-2 mb-1">{{ t(strings.paste_label) }}</v-label>
+            <v-label class="text-body-2 mb-1">{{
+              t(strings.paste_label)
+            }}</v-label>
             <v-textarea
               v-model="pasteText"
               :placeholder="t(strings.paste_placeholder)"
@@ -38,7 +40,9 @@
           </v-col>
           <v-col cols="12" md="6" class="d-flex flex-column">
             <v-label class="text-body-2 mb-1">Preview</v-label>
-            <div class="quick-import-dialog__preview rounded border pa-3 overflow-auto">
+            <div
+              class="quick-import-dialog__preview rounded border pa-3 overflow-auto"
+            >
               <RecipeContentPreview
                 :recipe="previewRecipe"
                 :current-version="previewVersion"
@@ -78,6 +82,7 @@ const { t } = useReverseT();
 
 const props = defineProps<{
   modelValue: boolean;
+  collectionId: string;
 }>();
 
 const emit = defineEmits<{
@@ -93,34 +98,39 @@ const createMutation = useCreateRecipeMutation();
 
 const parsed = computed(() => parseRecipePaste(pasteText.value));
 
-const previewRecipe = computed((): Recipe => ({
-  id: "",
-  title: title.value || "(Untitled)",
-  subtitle: "",
-  description: null,
-  isPublic: true,
-  createdBy: "",
-  createdAt: "",
-  updatedBy: "",
-  updatedAt: "",
-}));
+const previewRecipe = computed(
+  (): Recipe => ({
+    id: "",
+    title: title.value || "(Untitled)",
+    subtitle: "",
+    description: null,
+    isPublic: true,
+    createdBy: "",
+    createdAt: "",
+    updatedBy: "",
+    updatedAt: "",
+  }),
+);
 
-const previewVersion = computed((): RecipeVersion => ({
-  id: "",
-  recipeId: "",
-  content: {
-    ingredients: parsed.value.ingredients,
-    instructionsMarkdown: parsed.value.instructionsMarkdown,
-  },
-  isLatest: true,
-  createdBy: "",
-  createdAt: "",
-}));
+const previewVersion = computed(
+  (): RecipeVersion => ({
+    id: "",
+    recipeId: "",
+    content: {
+      ingredients: parsed.value.ingredients,
+      instructionsMarkdown: parsed.value.instructionsMarkdown,
+    },
+    isLatest: true,
+    createdBy: "",
+    createdAt: "",
+  }),
+);
 
 const canSave = computed(
   () =>
     title.value.trim() !== "" &&
-    (parsed.value.ingredients.length > 0 || parsed.value.instructionsMarkdown !== ""),
+    (parsed.value.ingredients.length > 0 ||
+      parsed.value.instructionsMarkdown !== ""),
 );
 
 function reset() {
@@ -140,6 +150,7 @@ async function handleSave() {
   saving.value = true;
   try {
     const data = await createMutation.mutateAsync({
+      collectionId: props.collectionId,
       title: title.value.trim(),
       subtitle: "",
       isPublic: true,

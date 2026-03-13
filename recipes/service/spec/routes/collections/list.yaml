@@ -1,0 +1,39 @@
+listCollections:
+  summary: "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator)."
+  operationId: "listCollections"
+
+  responses:
+    "200":
+      description: "Collections the current user is a member of."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - collections
+              - members
+            properties:
+              collections:
+                type: array
+                items:
+                  $ref: "../../schemas/collection.yaml"
+                description: "List of collections the user is a member of."
+              members:
+                type: array
+                items:
+                  $ref: "../../schemas/collection-member.yaml"
+                description: "All members for all returned collections."
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - user does not have required privileges."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

@@ -9,23 +9,25 @@ import {
   recipeNoteQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/notes (notesListRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
-
-  const seedUserId = "11111111-1111-1111-1111-111111111111";
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -43,7 +45,7 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
   it("should return 200 with empty array when recipe has no notes", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -55,14 +57,14 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
       recipeId,
       body: "Tried less sugar.",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note) throw new Error("Expected createRecipeNote to return result");
 
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -72,8 +74,8 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
       recipeId,
       body: "Tried less sugar.",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     expect(response.body[0].createdAt).toBeDefined();
     expect(response.body[0].updatedAt).toBeDefined();
@@ -82,19 +84,20 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .get("/recipes/00000000-0000-0000-0000-000000000001/notes")
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests notes for private recipe in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
       isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
@@ -102,8 +105,8 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${privateId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
   });
 });

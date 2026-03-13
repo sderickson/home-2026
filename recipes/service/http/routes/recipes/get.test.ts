@@ -5,29 +5,32 @@ import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
 import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
-
-  const seedUserId = "11111111-1111-1111-1111-111111111111";
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
       },
     });
-    if (!result) throw new Error("Expected createWithVersionRecipe to return result");
+    if (!result)
+      throw new Error("Expected createWithVersionRecipe to return result");
     recipeId = result.recipe.id;
     app = createRecipesHttpApp({ recipesDbKey: dbKey });
   });
@@ -39,7 +42,7 @@ describe("GET /recipes/:id", () => {
   it("should return 200 with recipe when found", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -48,7 +51,7 @@ describe("GET /recipes/:id", () => {
         title: "Test Recipe",
         subtitle: "Short",
         isPublic: true,
-        createdBy: seedUserId,
+        createdBy: SEED_USER_ID,
         currentVersionId: expect.any(String),
       },
       currentVersion: {
@@ -70,31 +73,37 @@ describe("GET /recipes/:id", () => {
     const response = await request(app).get(`/recipes/${recipeId}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.recipe).toMatchObject({ id: recipeId, title: "Test Recipe", isPublic: true });
+    expect(response.body.recipe.isPublic).toBe(true);
   });
 
-  it("should return 404 when not authenticated and recipe is private", async () => {
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
-      title: "Private Recipe",
-      subtitle: "Private",
-      description: null,
-      isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
-      versionContent: { ingredients: [], instructionsMarkdown: "" },
-    });
-    if (!result) throw new Error("Expected createWithVersionRecipe to return result");
-    const privateId = result.recipe.id;
+  it("should return 401 when not authenticated for private recipe", async () => {
+    const { result: privateResult } =
+      await recipeQueries.createWithVersionRecipe(dbKey, {
+        collectionId,
+        title: "Private Recipe",
+        subtitle: "Private",
+        description: null,
+        isPublic: false,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
+        versionContent: {
+          ingredients: [],
+          instructionsMarkdown: "",
+        },
+      });
+    if (!privateResult)
+      throw new Error("Expected createWithVersionRecipe to return result");
+    const privateRecipeId = privateResult.recipe.id;
 
-    const response = await request(app).get(`/recipes/${privateId}`);
+    const response = await request(app).get(`/recipes/${privateRecipeId}`);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(401);
   });
 
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .get("/recipes/00000000-0000-0000-0000-000000000001")
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });

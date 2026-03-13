@@ -5,11 +5,15 @@
         {{ t(strings.breadcrumb_home) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="appLinks.recipesList.path">
-        {{ t(strings.breadcrumb_recipes) }}
+      <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
+        {{ t(strings.breadcrumb_collections) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="`/recipes/${data.recipe.id}`">
+      <v-breadcrumbs-item :to="recipesListPath">
+        {{ collectionName }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="recipeDetailPath">
         {{ data.recipe.title }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
@@ -27,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { recipes_edit_page as strings } from "./Edit.strings.ts";
 import { useEditLoader } from "./Edit.loader.ts";
 import { assertEditDataLoaded, recipeToFormModel } from "./Edit.logic.ts";
@@ -36,17 +40,35 @@ import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath } from "@saflib/links";
 
 const { t } = useReverseT();
+const route = useRoute();
 const router = useRouter();
-const { recipeQuery } = useEditLoader();
+const collectionId = route.params.collectionId as string;
+const { collectionQuery, recipeQuery } = useEditLoader();
 
 assertEditDataLoaded(recipeQuery.data.value);
 
 const data = recipeQuery.data.value!;
 const formModel = ref<RecipeFormModel>(recipeToFormModel(data));
 
+const collection = computed(() => collectionQuery.data.value?.collection);
+const collectionName = computed(() => collection.value?.name ?? collectionId);
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
+);
+const recipeDetailPath = computed(() =>
+  constructPath(appLinks.recipesDetail, {
+    params: { collectionId, id: data.recipe.id },
+  }),
+);
+
 function handleSuccess(recipeId: string) {
-  router.push(`/recipes/${recipeId}`);
+  router.push(
+    constructPath(appLinks.recipesDetail, {
+      params: { collectionId, id: recipeId },
+    }),
+  );
 }
 </script>

@@ -9,18 +9,17 @@ import {
   type DeleteRecipeError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { deleteRecipeResultToDeleteRecipeResponse } from "./_helpers.ts";
 
 export const deleteRecipeHandler = createHandler(
   async (req, res) => {
-    const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
+    getSafContextWithAuth();
     const id = req.params.id as string;
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
+
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const [filesListOut, noteFilesListOut] = await Promise.all([
       recipeFileQueries.listRecipeFile(recipesDbKey, { recipeId: id }),

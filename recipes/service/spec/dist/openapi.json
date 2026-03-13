@@ -8,10 +8,31 @@
   "paths": {
     "/recipes": {
       "get": {
-        "summary": "List recipes. Public-only when not logged in or non-admin; admins see private too.",
+        "summary": "List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth).",
         "operationId": "listRecipes",
         "tags": [
           "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection to list recipes from. Omit when publicOnly=true."
+          },
+          {
+            "name": "publicOnly",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this."
+          }
         ],
         "responses": {
           "200": {
@@ -23,6 +44,36 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - provide either collectionId or publicOnly=true, not both nor neither.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - collection listing requires authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member of the collection or insufficient role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -39,11 +90,16 @@
               "schema": {
                 "type": "object",
                 "required": [
+                  "collectionId",
                   "title",
                   "subtitle",
                   "isPublic"
                 ],
                 "properties": {
+                  "collectionId": {
+                    "type": "string",
+                    "description": "Id of the collection this recipe belongs to"
+                  },
                   "title": {
                     "type": "string",
                     "description": "Recipe title"
@@ -98,6 +154,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request - collectionId is required in request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
             "content": {
@@ -123,7 +189,7 @@
     },
     "/recipes/{id}": {
       "get": {
-        "summary": "Get one recipe with current version, optional notes and file list.",
+        "summary": "Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection.",
         "operationId": "getRecipe",
         "tags": [
           "no-auth"
@@ -172,6 +238,26 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - recipe is private and caller is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member of the recipe's collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -354,6 +440,16 @@
                   "items": {
                     "$ref": "#/components/schemas/recipe-version"
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - recipe is private and caller is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -1505,6 +1601,711 @@
           }
         }
       }
+    },
+    "/collections": {
+      "get": {
+        "summary": "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator).",
+        "operationId": "listCollections",
+        "responses": {
+          "200": {
+            "description": "Collections the current user is a member of.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collections",
+                    "members"
+                  ],
+                  "properties": {
+                    "collections": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection"
+                      },
+                      "description": "List of collections the user is a member of."
+                    },
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection-member"
+                      },
+                      "description": "All members for all returned collections."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one.",
+        "operationId": "createCollections",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Human-readable name for the collection",
+                    "minLength": 1,
+                    "example": "My Kitchen"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Optional id (URL-safe, unique); if omitted, server generates a short id",
+                    "minLength": 1,
+                    "example": "my-kitchen"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collection"
+                  ],
+                  "properties": {
+                    "collection": {
+                      "$ref": "#/components/schemas/collection",
+                      "description": "The created collection."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - e.g. id not URL-safe or id already in use (when id provided).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collections/{id}": {
+      "get": {
+        "summary": "Get one collection by id. Caller must be a member (any role) and have validated email; creator always has access.",
+        "operationId": "getCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collection"
+                  ],
+                  "properties": {
+                    "collection": {
+                      "$ref": "#/components/schemas/collection",
+                      "description": "The collection."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member or unvalidated email (creator excepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update collection name. Owner only.",
+        "operationId": "updateCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Human-readable name for the collection",
+                    "minLength": 1,
+                    "example": "My Kitchen"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collection"
+                  ],
+                  "properties": {
+                    "collection": {
+                      "$ref": "#/components/schemas/collection",
+                      "description": "The updated collection."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete collection. Owner only. Forbidden if collection has any recipes (409).",
+        "operationId": "deleteCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Collection deleted."
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - collection has recipes; delete recipes first or use empty collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collections/{id}/members": {
+      "get": {
+        "summary": "List members of a collection (email, role, isCreator). Caller must be a member (any role) with validated email; creator always has access.",
+        "operationId": "membersListCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "members"
+                  ],
+                  "properties": {
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection-member"
+                      },
+                      "description": "List of collection members (email, role, isCreator)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member or unvalidated email (creator excepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a member to a collection (or update role if email already exists). Owner only.",
+        "operationId": "membersAddCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "role"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Member's email address",
+                    "example": "alice@example.com"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "owner",
+                      "editor",
+                      "viewer"
+                    ],
+                    "description": "Role to assign (or update if member already exists)",
+                    "example": "editor"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Added or updated member.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "member"
+                  ],
+                  "properties": {
+                    "member": {
+                      "$ref": "#/components/schemas/collection-member",
+                      "description": "The added or updated collection member."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collections/{id}/members/{memberId}": {
+      "put": {
+        "summary": "Update a member's role. Owner only. Cannot demote the creator (permanent owner).",
+        "operationId": "membersUpdateCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          },
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Member record id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role"
+                ],
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "owner",
+                      "editor",
+                      "viewer"
+                    ],
+                    "description": "New role for the member (creator's role cannot be changed from owner)",
+                    "example": "viewer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated member.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "member"
+                  ],
+                  "properties": {
+                    "member": {
+                      "$ref": "#/components/schemas/collection-member",
+                      "description": "The updated collection member."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - cannot demote the creator (permanent owner).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection or member does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted.",
+        "operationId": "membersRemoveCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          },
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Member record id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Member removed."
+          },
+          "400": {
+            "description": "Bad Request - cannot remove the creator (permanent owner).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection or member does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1538,6 +2339,12 @@
       },
       "UnsplashAttribution": {
         "$ref": "#/components/schemas/unsplash-attribution"
+      },
+      "Collection": {
+        "$ref": "#/components/schemas/collection"
+      },
+      "CollectionMember": {
+        "$ref": "#/components/schemas/collection-member"
       },
       "recipe": {
         "type": "object",
@@ -1606,6 +2413,20 @@
           "updatedBy",
           "updatedAt"
         ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
       },
       "content": {
         "type": "object",
@@ -1777,20 +2598,6 @@
           "createdBy",
           "createdAt"
         ]
-      },
-      "error": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
-          },
-          "message": {
-            "type": "string",
-            "description": "A human-readable description of the error.",
-            "example": "The requested resource could not be found."
-          }
-        }
       },
       "recipe-note": {
         "type": "object",
@@ -2102,6 +2909,97 @@
           "unsplashPhotoId",
           "downloadLocation",
           "imageUrl"
+        ]
+      },
+      "collection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier; user-specified (URL-safe) on create or server-generated short id",
+            "example": "my-kitchen",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the collection",
+            "example": "My Kitchen",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the collection creator (short id)",
+            "example": "K3m9_xR2"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the collection was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "collection-member": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the member record (short id)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this member belongs to",
+            "example": "my-kitchen"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Member's email address; must be validated for access (except creator)",
+            "example": "alice@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "editor",
+              "viewer"
+            ],
+            "description": "Member's role in the collection; creator is always owner and cannot be demoted",
+            "example": "editor"
+          },
+          "isCreator": {
+            "type": "boolean",
+            "description": "True if this member created the collection; permanent owner, cannot be removed or demoted",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the member was added to the collection",
+            "example": "2023-01-15T14:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "email",
+          "role",
+          "isCreator",
+          "createdAt"
         ]
       },
       "login": {

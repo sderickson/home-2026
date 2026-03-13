@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNoteNotFoundError } from "../../errors.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { recipeNote } from "../../schemas/recipe-note.ts";
 import { insertRecipeNoteFile } from "./insert.ts";
@@ -9,8 +10,10 @@ import { insertRecipeNoteFile } from "./insert.ts";
 describe("insertRecipeNoteFile", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(() => {
@@ -42,26 +45,12 @@ describe("insertRecipeNoteFile", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow({ title: "Recipe A" }),
       id: recipeId,
-      title: "Recipe A",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
     await db.insert(recipe).values({
+      ...makeRecipeRow({ title: "Recipe B" }),
       id: otherRecipeId,
-      title: "Recipe B",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
     await db.insert(recipeVersion).values({
       recipeId: otherRecipeId,
@@ -104,15 +93,8 @@ describe("insertRecipeNoteFile", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
     await db.insert(recipeVersion).values({
       recipeId,
@@ -165,15 +147,8 @@ describe("insertRecipeNoteFile", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
     await db.insert(recipeVersion).values({
       recipeId,

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNoteNotFoundError } from "../../errors.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { createRecipeNote } from "./create.ts";
 import { deleteRecipeNote } from "./delete.ts";
@@ -10,8 +11,10 @@ import { listRecipeNote } from "./list.ts";
 describe("deleteRecipeNote", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -31,19 +34,11 @@ describe("deleteRecipeNote", () => {
   });
 
   it("deletes recipe note when found", async () => {
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: "test-recipe-delete-note",
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     const createOut = await createRecipeNote(dbKey, {

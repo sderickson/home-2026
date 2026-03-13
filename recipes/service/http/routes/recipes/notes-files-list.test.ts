@@ -14,24 +14,26 @@ import {
   recipeNoteFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
   let noteId: string;
 
-  const seedUserId = "11111111-1111-1111-1111-111111111111";
-
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -44,8 +46,8 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       recipeId,
       body: "Test note.",
       everEdited: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note) throw new Error("Expected createRecipeNote to return result");
     noteId = note.id;
@@ -60,7 +62,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
   it("should return 200 with empty array when note has no files", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -77,14 +79,14 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
         file_original_name: "note-file.pdf",
         mimetype: "application/pdf",
         size: 1024,
-        uploaded_by: seedUserId,
+        uploaded_by: SEED_USER_ID,
       },
     );
     if (!file) throw new Error("Expected insertRecipeNoteFile to return result");
 
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -96,7 +98,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       fileOriginalName: "note-file.pdf",
       mimetype: "application/pdf",
       size: 1024,
-      uploadedBy: seedUserId,
+      uploadedBy: SEED_USER_ID,
     });
     expect(response.body[0].createdAt).toBeDefined();
     expect(response.body[0].updatedAt).toBeDefined();
@@ -108,7 +110,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/00000000-0000-0000-0000-000000000001/notes/${noteId}/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
@@ -118,34 +120,33 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000002/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests note files for private recipe in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
       isPublic: false,
-      createdBy: seedUserId,
-      updatedBy: seedUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
     const privateRecipeId = result.recipe.id;
 
-    const { result: privateNote } = await recipeNoteQueries.createRecipeNote(
-      dbKey,
-      {
-        recipeId: privateRecipeId,
-        body: "Private note.",
-        everEdited: false,
-        createdBy: seedUserId,
-        updatedBy: seedUserId,
-      },
-    );
+    const { result: privateNote } = await recipeNoteQueries.createRecipeNote(dbKey, {
+      recipeId: privateRecipeId,
+      recipeVersionId: null,
+      body: "Private note.",
+      everEdited: false,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
+    });
     if (!privateNote)
       throw new Error("Expected createRecipeNote to return result");
 
@@ -153,8 +154,8 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/${privateRecipeId}/notes/${privateNote.id}/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
   });
 });

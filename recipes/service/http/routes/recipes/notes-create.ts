@@ -11,6 +11,7 @@ import {
   RecipeVersionNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { createNoteResultToNotesCreateRecipesResponse } from "./_helpers.ts";
 
 type CreateNoteRecipeError = RecipeNotFoundError | RecipeVersionNotFoundError;
@@ -18,15 +19,12 @@ type CreateNoteRecipeError = RecipeNotFoundError | RecipeVersionNotFoundError;
 export const notesCreateRecipesHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const data: RecipesServiceRequestBody["notesCreateRecipes"] =
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const { result, error } = await recipeNoteQueries.createRecipeNote(
       recipesDbKey,

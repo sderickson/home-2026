@@ -67,6 +67,28 @@ paths:
   /recipes/{id}/files/from-unsplash:
     post:
       $ref: "./routes/recipes/files-from-unsplash.yaml#/filesFromUnsplashRecipes"
+  /collections:
+    get:
+      $ref: "./routes/collections/list.yaml#/listCollections"
+    post:
+      $ref: "./routes/collections/create.yaml#/createCollections"
+  /collections/{id}:
+    get:
+      $ref: "./routes/collections/get.yaml#/getCollections"
+    put:
+      $ref: "./routes/collections/update.yaml#/updateCollections"
+    delete:
+      $ref: "./routes/collections/delete.yaml#/deleteCollections"
+  /collections/{id}/members:
+    get:
+      $ref: "./routes/collections/members-list.yaml#/membersListCollections"
+    post:
+      $ref: "./routes/collections/members-add.yaml#/membersAddCollections"
+  /collections/{id}/members/{memberId}:
+    put:
+      $ref: "./routes/collections/members-update.yaml#/membersUpdateCollections"
+    delete:
+      $ref: "./routes/collections/members-remove.yaml#/membersRemoveCollections"
   # END WORKFLOW AREA
 
 components:
@@ -93,4 +115,8 @@ components:
       $ref: "./schemas/add-recipe-file-from-unsplash-request.yaml"
     UnsplashAttribution:
       $ref: "./schemas/unsplash-attribution.yaml"
+    Collection:
+      $ref: "./schemas/collection.yaml"
+    CollectionMember:
+      $ref: "./schemas/collection-member.yaml"
     # END WORKFLOW AREA

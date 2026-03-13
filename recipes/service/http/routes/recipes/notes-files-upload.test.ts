@@ -10,8 +10,7 @@ import {
   recipeNoteFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-
-const adminUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () => {
   let app: express.Express;
@@ -21,13 +20,15 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    const collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -40,8 +41,8 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       recipeId,
       body: "Test note.",
       everEdited: false,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!note) throw new Error("Expected createRecipeNote to return result");
     noteId = note.id;
@@ -59,7 +60,7 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
 
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from(fileContent), filename);
 
     expect(response.status).toBe(200);
@@ -68,7 +69,7 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       fileOriginalName: filename,
       mimetype: "text/plain",
       size: fileContent.length,
-      uploadedBy: adminUserId,
+      uploadedBy: SEED_USER_ID,
     });
     expect(response.body.id).toBeDefined();
     expect(response.body.blobName).toBeDefined();
@@ -92,10 +93,10 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(403);
@@ -107,11 +108,11 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       .post(
         `/recipes/00000000-0000-0000-0000-000000000001/notes/${noteId}/files`,
       )
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_NOTE_NOT_FOUND");
+    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
   });
 
   it("should return 404 when note not found", async () => {
@@ -119,7 +120,7 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       .post(
         `/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000002/files`,
       )
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(404);

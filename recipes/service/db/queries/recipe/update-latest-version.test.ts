@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeVersionNotFoundError } from "../../errors.ts";
+import { insertTestCollection, makeRecipeRow, TEST_COLLECTION_ID } from "../../test-fixtures.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
@@ -9,8 +10,10 @@ import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 describe("updateLatestVersionRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -19,6 +22,7 @@ describe("updateLatestVersionRecipe", () => {
 
   it("should update latest version content in place and return the updated version", async () => {
     const { result: created } = await createWithVersionRecipe(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
       title: "Recipe",
       subtitle: "Short",
       description: null,
@@ -74,20 +78,10 @@ describe("updateLatestVersionRecipe", () => {
   });
 
   it("should return RecipeVersionNotFoundError when recipe exists but has no version", async () => {
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
     const [inserted] = await db
       .insert(recipe)
-      .values({
-        title: "Orphan Recipe",
-        subtitle: "Short",
-        description: null,
-        isPublic: false,
-        createdBy: "user-1",
-        createdAt: now,
-        updatedBy: "user-1",
-        updatedAt: now,
-      })
+      .values(makeRecipeRow({ title: "Orphan Recipe", isPublic: false }))
       .returning();
     expect(inserted).toBeDefined();
     assert(inserted);

@@ -5,12 +5,16 @@
         {{ t(strings.breadcrumb_home) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item>
-        {{ t(strings.breadcrumb_recipes) }}
+      <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
+        {{ t(strings.breadcrumb_collections) }}
+      </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
+      <v-breadcrumbs-item :to="recipesListPath">
+        {{ collectionName }}
       </v-breadcrumbs-item>
     </v-breadcrumbs>
     <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <h1 class="text-h4">{{ t(strings.title) }}</h1>
+      <h1 class="text-h4">{{ collectionName }} — {{ t(strings.title) }}</h1>
       <v-spacer />
       <v-btn
         v-if="showCreateRecipe"
@@ -23,7 +27,9 @@
       </v-btn>
       <v-btn
         v-if="showCreateRecipe"
-        v-bind="createLinkProps"
+        v-bind="
+          linkToProps(appLinks.recipesCreate, { params: { collectionId } })
+        "
         color="primary"
         prepend-icon="mdi-plus"
       >
@@ -31,10 +37,14 @@
       </v-btn>
     </div>
 
-    <RecipeList :recipes="recipes" :get-recipe-link-props="getRecipeLinkProps" />
+    <RecipeList
+      :recipes="recipes"
+      :get-recipe-link-props="getRecipeLinkProps"
+    />
 
     <QuickImportDialog
       v-model="quickImportOpen"
+      :collection-id="collectionId"
       @success="onQuickImportSuccess"
     />
   </v-container>
@@ -42,42 +52,61 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { RecipeList } from "@sderickson/recipes-sdk";
-import { linkToProps } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath, linkToProps } from "@saflib/links";
 import { recipes_list_page as strings } from "./List.strings.ts";
 import { useListLoader } from "./List.loader.ts";
 import {
+  assertCollectionLoaded,
   assertProfileLoaded,
   assertRecipesLoaded,
-  canShowCreateRecipe,
+  canShowCreateRecipeForRole,
   getRecipesList,
 } from "./List.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import QuickImportDialog from "./QuickImportDialog.vue";
 
 const { t } = useReverseT();
+const route = useRoute();
 const router = useRouter();
-const { profileQuery, recipesQuery } = useListLoader();
+const collectionId = route.params.collectionId as string;
+const { profileQuery, collectionQuery, membersQuery, recipesQuery } =
+  useListLoader();
 
 assertProfileLoaded(profileQuery.data.value);
+assertCollectionLoaded(collectionQuery.data.value);
 assertRecipesLoaded(recipesQuery.data.value);
 
-const profile = profileQuery.data.value;
+const collection = computed(() => collectionQuery.data.value!.collection);
+const collectionName = computed(() => collection.value?.name ?? collectionId);
+const members = computed(() => membersQuery.data.value?.members ?? []);
+const userEmail = computed(() => profileQuery.data.value?.email ?? "");
+const currentMember = computed(() =>
+  members.value.find((m) => m.email === userEmail.value),
+);
+const showCreateRecipe = computed(() =>
+  canShowCreateRecipeForRole(currentMember.value?.role),
+);
+
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
+);
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));
-const showCreateRecipe = computed(() => canShowCreateRecipe(profile));
-const createLinkProps = linkToProps(appLinks.recipesCreate);
 const quickImportOpen = ref(false);
 
 function getRecipeLinkProps(recipeId: string) {
-  return linkToProps({
-    ...appLinks.recipesDetail,
-    path: `/recipes/${recipeId}`,
+  return linkToProps(appLinks.recipesDetail, {
+    params: { collectionId, id: recipeId },
   });
 }
 
 function onQuickImportSuccess(recipeId: string) {
-  router.push(`/recipes/${recipeId}`);
+  router.push(
+    constructPath(appLinks.recipesDetail, {
+      params: { collectionId, id: recipeId },
+    }),
+  );
 }
 </script>

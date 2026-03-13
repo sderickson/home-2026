@@ -14,7 +14,9 @@ import type {
   RecipeNote,
 } from "@sderickson/recipes-spec";
 
-export const mockRecipes: Recipe[] = [
+const TEST_COLLECTION_ID = "my-kitchen";
+
+export const mockRecipes: (Recipe & { collectionId?: string })[] = [
   {
     id: "123e4567-e89b-12d3-a456-426614174000",
     title: "Classic Chocolate Chip Cookies",
@@ -22,6 +24,7 @@ export const mockRecipes: Recipe[] = [
     description:
       "A crowd-pleasing recipe that works every time. Best with room-temperature butter.",
     isPublic: true,
+    collectionId: TEST_COLLECTION_ID,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
     createdAt: "2023-01-15T14:30:00Z",
     updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
@@ -33,6 +36,7 @@ export const mockRecipes: Recipe[] = [
     title: "Simple Salad",
     subtitle: "Quick and fresh",
     isPublic: false,
+    collectionId: TEST_COLLECTION_ID,
     createdBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
     createdAt: "2023-03-10T10:00:00Z",
     updatedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",

@@ -1,7 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 import { stubGlobals } from "@saflib/vue/testing";
 import RecipesCreateAsync from "./CreateAsync.vue";
-import { mountTestApp, testAppHandlers } from "@sderickson/recipes-app-spa/test-app";
+import {
+  createTestRouter,
+  mountTestApp,
+  testAppHandlers,
+} from "@sderickson/recipes-app-spa/test-app";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 
 // Renders the page to capture baseline coverage.
@@ -12,7 +16,11 @@ describe("RecipesCreate", () => {
   setupMockServer(testAppHandlers);
 
   it("should render", async () => {
-    const wrapper = mountTestApp(RecipesCreateAsync);
+    const router = createTestRouter();
+    await router.push("/c/my-kitchen/recipes/create");
+    await router.isReady();
+
+    const wrapper = mountTestApp(RecipesCreateAsync, {}, { router });
     await vi.waitFor(() => expect(wrapper.text()).toContain("Create recipe"));
     wrapper.unmount();
   });

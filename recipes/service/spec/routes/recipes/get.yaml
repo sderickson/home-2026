@@ -1,5 +1,5 @@
 getRecipe:
-  summary: "Get one recipe with current version, optional notes and file list."
+  summary: "Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection."
   operationId: "getRecipe"
   tags:
     - "no-auth"
@@ -37,6 +37,20 @@ getRecipe:
                 description: "Optional list of recipe file info."
                 items:
                   type: object
+
+    "401":
+      description: "Unauthorized - recipe is private and caller is not authenticated."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - not a member of the recipe's collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
 
     "404":
       description: "Not Found"

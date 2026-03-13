@@ -9,24 +9,26 @@ import {
   recipeFileQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-
-const adminUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
   let fileId: string;
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -41,7 +43,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
       file_original_name: "test.pdf",
       mimetype: "application/pdf",
       size: 100,
-      uploaded_by: adminUserId,
+      uploaded_by: SEED_USER_ID,
     });
     if (!insertFile.result) throw new Error("Expected insertRecipeFile to return result");
     fileId = insertFile.result.id;
@@ -56,7 +58,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
   it("should return 204 when admin deletes existing file", async () => {
     const response = await request(app)
       .delete(`/recipes/${recipeId}/files/${fileId}`)
-      .set(makeAdminHeaders(adminUserId));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
@@ -75,10 +77,10 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .delete(`/recipes/${recipeId}/files/${fileId}`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders("other-user-id", "other@example.com"));
 
     expect(response.status).toBe(403);
     expect(response.body.code).toBe("FORBIDDEN");
@@ -89,7 +91,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
       .delete(
         `/recipes/${recipeId}/files/00000000-0000-0000-0000-000000000001`,
       )
-      .set(makeAdminHeaders(adminUserId));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_FILE_NOT_FOUND");
@@ -99,12 +101,13 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
     const { result: otherRecipe } = await recipeQueries.createWithVersionRecipe(
       dbKey,
       {
+        collectionId,
         title: "Other Recipe",
         subtitle: "Other",
         description: null,
         isPublic: true,
-        createdBy: adminUserId,
-        updatedBy: adminUserId,
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
       },
     );
@@ -113,7 +116,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
 
     const response = await request(app)
       .delete(`/recipes/${otherRecipeId}/files/${fileId}`)
-      .set(makeAdminHeaders(adminUserId));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_FILE_NOT_FOUND");

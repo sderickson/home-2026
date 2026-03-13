@@ -9,21 +9,29 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/",
   },
+  collectionsHome: {
+    subdomain,
+    path: "/collections",
+  },
+  collectionsList: {
+    subdomain,
+    path: "/collections",
+  },
   recipesList: {
     subdomain,
-    path: "/recipes/list",
+    path: "/c/:collectionId/recipes/list",
   },
   recipesDetail: {
     subdomain,
-    path: "/recipes/:id",
+    path: "/c/:collectionId/recipes/:id",
   },
   recipesCreate: {
     subdomain,
-    path: "/recipes/create",
+    path: "/c/:collectionId/recipes/create",
   },
   recipesEdit: {
     subdomain,
-    path: "/recipes/:id/edit",
+    path: "/c/:collectionId/recipes/:id/edit",
   },
   // END WORKFLOW AREA
 };

@@ -4,8 +4,12 @@ import { createVersionRecipe } from "./create-version.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { deleteRecipe, type DeleteRecipeError } from "./delete.ts";
 export type { DeleteRecipeError };
-import { getByIdRecipe } from "./get-by-id.ts";
-import { listRecipes } from "./list.ts";
+import {
+  getByIdRecipe,
+  type GetByIdRecipeResult,
+} from "./get-by-id.ts";
+export type { GetByIdRecipeResult };
+import { listPublicRecipes, listRecipes } from "./list.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 import { updateMetadataRecipe } from "./update-metadata.ts";
 import { versionsListRecipe } from "./versions-list.ts";
@@ -18,6 +22,7 @@ export const recipeQueries = {
   createWithVersionRecipe,
   deleteRecipe,
   getByIdRecipe,
+  listPublicRecipes,
   listRecipes,
   updateLatestVersionRecipe,
   updateMetadataRecipe,

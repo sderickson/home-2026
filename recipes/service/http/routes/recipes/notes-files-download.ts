@@ -5,40 +5,22 @@ import {
   PathTraversalError,
   StorageError,
 } from "@saflib/object-store";
-import { getSafContext } from "@saflib/node";
 import {
-  recipeQueries,
   recipeNoteFileQueries,
-  RecipeNotFoundError,
   RecipeNoteNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 
 export const notesFilesDownloadRecipesHandler = createHandler(
   async (req, res) => {
-    const store = getSafContext();
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
 
     const id = req.params.id as string;
     const noteId = req.params.noteId as string;
     const fileId = req.params.fileId as string;
-
-    const getOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
-    if (getOut.error) {
-      const error = getOut.error;
-      switch (true) {
-        case error instanceof RecipeNotFoundError:
-          throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
-        default:
-          throw error satisfies never;
-      }
-    }
-
-    const isAdmin = store.auth?.userScopes?.includes("*") ?? false;
-    if (!getOut.result.recipe.isPublic && !isAdmin) {
-      throw createError(404, "Recipe not found", { code: "RECIPE_NOT_FOUND" });
-    }
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: false });
 
     const listOut = await recipeNoteFileQueries.listRecipeNoteFile(
       recipesDbKey,

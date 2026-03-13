@@ -1,14 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { getByIdRecipe } from "./get-by-id.ts";
 
 describe("getByIdRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -27,15 +30,8 @@ describe("getByIdRecipe", () => {
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow(),
       id: recipeId,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     await db.insert(recipeVersion).values({
@@ -66,19 +62,11 @@ describe("getByIdRecipe", () => {
 
   it("returns recipe with placeholder version when recipe exists but has no versions (partial state)", async () => {
     const recipeId = "test-recipe-partial-state";
-    const now = new Date();
     const db = recipesDbManager.get(dbKey)!;
 
     await db.insert(recipe).values({
+      ...makeRecipeRow({ title: "Orphan Recipe", subtitle: "No version" }),
       id: recipeId,
-      title: "Orphan Recipe",
-      subtitle: "No version",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
     // Intentionally no recipe_version rows (e.g. after a failed delete left recipe without versions)
 

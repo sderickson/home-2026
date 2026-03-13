@@ -8,12 +8,12 @@ import type {
 } from "@sderickson/recipes-spec";
 import {
   generateShortId,
-  recipeQueries,
   recipeFileQueries,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
 import { unsplash } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToApiRecipeFile } from "./_helpers.ts";
 
 type FilesFromUnsplashRecipeError = RecipeNotFoundError;
@@ -21,10 +21,6 @@ type FilesFromUnsplashRecipeError = RecipeNotFoundError;
 export const filesFromUnsplashRecipesHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const body =
       req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
@@ -32,17 +28,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
 
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
-
-    const getOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
-    if (getOut.error) {
-      const error: FilesFromUnsplashRecipeError = getOut.error;
-      switch (true) {
-        case error instanceof RecipeNotFoundError:
-          throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
-        default:
-          throw error satisfies never;
-      }
-    }
+    await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const photoResult = await unsplash.photos.get({ photoId: unsplashPhotoId });
     if (photoResult.type !== "success") {

@@ -1,10 +1,14 @@
-// TODO: replace with actual queries this page will need on load
 import { getProfile } from "@saflib/auth";
+import { getCollectionsQuery } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
+import { useRoute } from "vue-router";
 
 export function useCreateLoader() {
-  // TODO: Add tanstack query calls here and return each query result in the array
+  const route = useRoute();
+  const collectionId = route.params.collectionId as string;
+
   return {
     profileQuery: useQuery(getProfile()),
+    collectionQuery: useQuery(getCollectionsQuery(collectionId)),
   };
 }

@@ -1,0 +1,40 @@
+# CollectionMember — one member of a collection with a role. Creator is permanent owner (isCreator true); cannot be removed or demoted.
+type: object
+properties:
+  id:
+    type: string
+    description: Unique identifier for the member record (short id)
+    example: "K3m9_xR2"
+  collectionId:
+    type: string
+    description: Id of the collection this member belongs to
+    example: "my-kitchen"
+  email:
+    type: string
+    format: email
+    description: Member's email address; must be validated for access (except creator)
+    example: "alice@example.com"
+  role:
+    type: string
+    enum:
+      - owner
+      - editor
+      - viewer
+    description: Member's role in the collection; creator is always owner and cannot be demoted
+    example: "editor"
+  isCreator:
+    type: boolean
+    description: True if this member created the collection; permanent owner, cannot be removed or demoted
+    example: false
+  createdAt:
+    type: string
+    format: date-time
+    description: When the member was added to the collection
+    example: "2023-01-15T14:30:00Z"
+required:
+  - id
+  - collectionId
+  - email
+  - role
+  - isCreator
+  - createdAt

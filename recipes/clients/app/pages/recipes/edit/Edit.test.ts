@@ -1,7 +1,7 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 import { stubGlobals, mountWithPlugins } from "@saflib/vue/testing";
 import RecipesEditAsync from "./EditAsync.vue";
-import { createAppRouter } from "../../../router.ts";
+import { createTestRouter } from "../../../test-app.ts";
 import { app_strings } from "../../../strings.ts";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
@@ -19,8 +19,8 @@ describe("RecipesEdit", () => {
   afterEach(resetMocks);
 
   it("should render", async () => {
-    const router = createAppRouter();
-    await router.push(`/recipes/${mockRecipes[0].id}/edit`);
+    const router = createTestRouter();
+    await router.push(`/c/my-kitchen/recipes/${mockRecipes[0].id}/edit`);
     await router.isReady();
 
     const wrapper = mountWithPlugins(

@@ -1,24 +1,20 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContextWithAuth } from "@saflib/node";
 import {
   recipeFileQueries,
   RecipeNotFoundError,
   RecipeFileNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { deleteFileResultToFilesDeleteRecipesResponse } from "./_helpers.ts";
 
 export const filesDeleteRecipesHandler = createHandler(async (req, res) => {
-  const { auth } = getSafContextWithAuth();
-  if (!auth.userScopes.includes("*")) {
-    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-  }
-
   const id = req.params.id as string;
   const fileId = req.params.fileId as string;
   const { recipesDbKey, recipesFileContainer } =
     recipesServiceStorage.getStore()!;
+  await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
   const listOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
     recipeId: id,

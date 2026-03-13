@@ -9,10 +9,14 @@ createRecipe:
         schema:
           type: object
           required:
+            - collectionId
             - title
             - subtitle
             - isPublic
           properties:
+            collectionId:
+              type: string
+              description: Id of the collection this recipe belongs to
             title:
               type: string
               description: Recipe title
@@ -48,6 +52,13 @@ createRecipe:
               initialVersion:
                 $ref: "../../schemas/recipe-version.yaml"
                 description: "Present when initialVersion was supplied in the request."
+
+    "400":
+      description: "Bad request - collectionId is required in request body."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

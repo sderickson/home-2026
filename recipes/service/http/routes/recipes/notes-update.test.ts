@@ -10,24 +10,26 @@ import {
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-
-const adminUserId = "11111111-1111-1111-1111-111111111111";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let collectionId: string;
   let recipeId: string;
   let noteId: string;
 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
+    collectionId = await createTestCollection(dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
         instructionsMarkdown: "Mix and bake.",
@@ -41,8 +43,8 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
       recipeVersionId: null,
       body: "Original note body",
       everEdited: false,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     if (!createNote.result) throw new Error("Expected createRecipeNote to return result");
     noteId = createNote.result.id;
@@ -61,7 +63,7 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
 
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/${noteId}`)
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -70,8 +72,8 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
       recipeId,
       body: body.body,
       everEdited: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
     });
     expect(response.body.createdAt).toBeDefined();
     expect(response.body.updatedAt).toBeDefined();
@@ -87,10 +89,10 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/${noteId}`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);
@@ -102,7 +104,7 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
   it("should return 404 when note not found", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000001`)
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);
@@ -113,19 +115,20 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
 
   it("should return 404 when note belongs to different recipe", async () => {
     const { result: otherRecipe } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
       title: "Other Recipe",
       subtitle: "Short",
       description: null,
       isPublic: true,
-      createdBy: adminUserId,
-      updatedBy: adminUserId,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
     });
     if (!otherRecipe) throw new Error("Expected createWithVersionRecipe to return result");
     // noteId belongs to recipeId; we request update under otherRecipe.recipe.id
     const response = await request(app)
       .put(`/recipes/${otherRecipe.recipe.id}/notes/${noteId}`)
-      .set(makeAdminHeaders(adminUserId))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);

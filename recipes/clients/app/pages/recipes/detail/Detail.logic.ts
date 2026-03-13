@@ -61,6 +61,7 @@ export function assertNoteFilesByRecipeLoaded(data: unknown): asserts data {
 
 /**
  * Whether the current user can see the version history section (admin only).
+ * @deprecated Use role-based checks for collection-scoped pages.
  */
 export function canShowVersionHistory(profile: { isAdmin?: boolean }): boolean {
   return profile.isAdmin === true;
@@ -68,9 +69,18 @@ export function canShowVersionHistory(profile: { isAdmin?: boolean }): boolean {
 
 /**
  * Whether the current user can add, edit, or delete notes (admin only).
+ * @deprecated Use canEditInCollection for collection-scoped pages.
  */
 export function canShowNotesEdit(profile: { isAdmin?: boolean }): boolean {
   return profile.isAdmin === true;
+}
+
+/**
+ * Whether the user can edit/delete in this collection (owner or editor).
+ * Viewers see read-only; edit/delete UI is hidden.
+ */
+export function canEditInCollection(role: string | undefined): boolean {
+  return role === "owner" || role === "editor";
 }
 
 /**

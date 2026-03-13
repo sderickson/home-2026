@@ -2,14 +2,17 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError } from "../../errors.ts";
+import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { versionsListRecipe } from "./versions-list.ts";
 
 describe("versionsListRecipe", () => {
   let dbKey: DbKey;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     dbKey = recipesDbManager.connect();
+    const db = recipesDbManager.get(dbKey)!;
+    await insertTestCollection(db);
   });
 
   afterEach(async () => {
@@ -32,15 +35,8 @@ describe("versionsListRecipe", () => {
     const base = new Date("2025-01-01T00:00:00Z");
 
     await db.insert(recipe).values({
+      ...makeRecipeRow({ createdAt: base, updatedAt: base }),
       id: recipeId,
-      title: "Test Recipe",
-      subtitle: "Short",
-      description: null,
-      isPublic: true,
-      createdBy: "user-1",
-      createdAt: base,
-      updatedBy: "user-1",
-      updatedAt: base,
     });
 
     const older = new Date("2025-01-02T00:00:00Z");
@@ -83,18 +79,10 @@ describe("versionsListRecipe", () => {
   it("returns empty array when recipe has no versions", async () => {
     const recipeId = "test-recipe-no-versions";
     const db = recipesDbManager.get(dbKey)!;
-    const now = new Date();
 
     await db.insert(recipe).values({
+      ...makeRecipeRow({ title: "No Versions", isPublic: false }),
       id: recipeId,
-      title: "No Versions",
-      subtitle: "Short",
-      description: null,
-      isPublic: false,
-      createdBy: "user-1",
-      createdAt: now,
-      updatedBy: "user-1",
-      updatedAt: now,
     });
 
     const out = await versionsListRecipe(dbKey, recipeId);

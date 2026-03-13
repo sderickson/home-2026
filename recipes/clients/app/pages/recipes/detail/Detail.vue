@@ -6,11 +6,15 @@
           {{ t(strings.breadcrumb_home) }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="appLinks.recipesList.path">
-          {{ t(strings.breadcrumb_recipes) }}
+        <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
+          {{ t(strings.breadcrumb_collections) }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="`/recipes/${recipe.id}`">
+        <v-breadcrumbs-item :to="recipesListPath">
+          {{ collectionName }}
+        </v-breadcrumbs-item>
+        <v-breadcrumbs-divider />
+        <v-breadcrumbs-item :to="recipeDetailPath">
           {{ recipe.title }}
         </v-breadcrumbs-item>
       </v-breadcrumbs>
@@ -46,13 +50,17 @@
                   </template>
                 </v-tooltip>
               </template>
-              <v-tooltip location="bottom" :text="t(strings.toolbar_edit)">
+              <v-tooltip
+                v-if="showEdit"
+                location="bottom"
+                :text="t(strings.toolbar_edit)"
+              >
                 <template #activator="{ props: tooltipProps }">
                   <v-btn
                     v-bind="tooltipProps"
                     icon
                     variant="text"
-                    :to="`/recipes/${recipe.id}/edit`"
+                    :to="recipeEditPath"
                   >
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
@@ -122,7 +130,7 @@
                   @change="filesFlow.onFileInputChangeAndUpload"
                 />
               </template>
-              <template v-if="showFilesEdit">
+              <template v-if="showEdit && showFilesEdit">
                 <v-tooltip location="bottom" :text="t(strings.toolbar_delete)">
                   <template #activator="{ props: tooltipProps }">
                     <v-btn
@@ -227,7 +235,9 @@
           >
             <template #name>
               <a
-                :href="expandedImageFile.unsplashAttribution.photographerProfileUrl"
+                :href="
+                  expandedImageFile.unsplashAttribution.photographerProfileUrl
+                "
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-primary text-decoration-none"
@@ -287,9 +297,10 @@
 <script setup lang="ts">
 import type { RecipeFileInfo } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath } from "@saflib/links";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
@@ -298,8 +309,7 @@ import {
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-  canShowNotesEdit,
-  canShowVersionHistory,
+  canEditInCollection,
   groupNoteFilesByNoteId,
   notesByVersionIdMap,
   notesForLatestVersion as notesForLatestVersionFn,
@@ -318,8 +328,12 @@ import UnsplashPickerDialog from "./UnsplashPickerDialog.vue";
 
 const { t, lookupTKey } = useReverseT();
 const router = useRouter();
+const route = useRoute();
+const collectionId = route.params.collectionId as string;
 const {
   profileQuery,
+  collectionQuery,
+  membersQuery,
   recipeQuery,
   versionsQuery,
   notesQuery,
@@ -336,17 +350,32 @@ assertNoteFilesByRecipeLoaded(noteFilesByRecipeQuery.data.value);
 
 const recipe = computed(() => recipeQuery.data.value!.recipe);
 const currentVersion = computed(() => recipeQuery.data.value!.currentVersion);
-const profile = computed(() => profileQuery.data.value);
+const collection = computed(() => collectionQuery.data.value?.collection);
+const collectionName = computed(() => collection.value?.name ?? collectionId);
+const members = computed(() => membersQuery.data.value?.members ?? []);
+const userEmail = computed(() => profileQuery.data.value?.email ?? "");
+const currentMember = computed(() =>
+  members.value.find((m) => m.email === userEmail.value),
+);
+const showEdit = computed(() => canEditInCollection(currentMember.value?.role));
 const versions = computed(() => versionsQuery.data.value ?? []);
 const notes = computed(() => notesQuery.data.value ?? []);
-const showVersionHistory = computed(() =>
-  canShowVersionHistory(profile.value as { isAdmin?: boolean }),
+const showVersionHistory = computed(() => true);
+const showNotesEdit = computed(() => showEdit.value);
+const showFilesEdit = computed(() => showEdit.value);
+
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
 );
-const showNotesEdit = computed(() =>
-  canShowNotesEdit(profile.value as { isAdmin?: boolean }),
+const recipeDetailPath = computed(() =>
+  constructPath(appLinks.recipesDetail, {
+    params: { collectionId, id: recipe.value.id },
+  }),
 );
-const showFilesEdit = computed(() =>
-  canShowNotesEdit(profile.value as { isAdmin?: boolean }),
+const recipeEditPath = computed(() =>
+  constructPath(appLinks.recipesEdit, {
+    params: { collectionId, id: recipe.value.id },
+  }),
 );
 
 const files = computed(() => filesQuery.data.value ?? []);
@@ -395,7 +424,9 @@ function setDeleteFileDialogOpen(v: boolean) {
 async function doDeleteRecipe() {
   await deleteRecipeMutation.mutateAsync(recipe.value.id);
   deleteRecipeDialogOpen.value = false;
-  await router.push(appLinks.recipesList.path);
+  await router.push(
+    constructPath(appLinks.recipesList, { params: { collectionId } }),
+  );
 }
 
 // Reset file input after upload so same file can be selected again

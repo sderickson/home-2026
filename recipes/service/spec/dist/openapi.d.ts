@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List recipes. Public-only when not logged in or non-admin; admins see private too. */
+        /** List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth). */
         get: operations["listRecipes"];
         put?: never;
         /** Create recipe (and optionally initial version). Admin only. */
@@ -29,7 +29,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one recipe with current version, optional notes and file list. */
+        /** Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection. */
         get: operations["getRecipe"];
         /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
         put: operations["updateRecipe"];
@@ -267,6 +267,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). */
+        get: operations["listCollections"];
+        put?: never;
+        /** Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one. */
+        post: operations["createCollections"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collections/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one collection by id. Caller must be a member (any role) and have validated email; creator always has access. */
+        get: operations["getCollections"];
+        /** Update collection name. Owner only. */
+        put: operations["updateCollections"];
+        post?: never;
+        /** Delete collection. Owner only. Forbidden if collection has any recipes (409). */
+        delete: operations["deleteCollections"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collections/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List members of a collection (email, role, isCreator). Caller must be a member (any role) with validated email; creator always has access. */
+        get: operations["membersListCollections"];
+        put?: never;
+        /** Add a member to a collection (or update role if email already exists). Owner only. */
+        post: operations["membersAddCollections"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collections/{id}/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update a member's role. Owner only. Cannot demote the creator (permanent owner). */
+        put: operations["membersUpdateCollections"];
+        post?: never;
+        /** Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted. */
+        delete: operations["membersRemoveCollections"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -281,6 +354,8 @@ export interface components {
         UnsplashPhotoSearchItem: components["schemas"]["unsplash-photo-search-item"];
         AddRecipeFileFromUnsplashRequest: components["schemas"]["add-recipe-file-from-unsplash-request"];
         UnsplashAttribution: components["schemas"]["unsplash-attribution"];
+        Collection: components["schemas"]["collection"];
+        CollectionMember: components["schemas"]["collection-member"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -334,6 +409,15 @@ export interface components {
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
              */
             currentVersionId?: string;
+        };
+        error: {
+            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
+            code?: string;
+            /**
+             * @description A human-readable description of the error.
+             * @example The requested resource could not be found.
+             */
+            message?: string;
         };
         /**
          * @description Version body — structured ingredients and markdown instructions
@@ -468,15 +552,6 @@ export interface components {
              * @example 2023-01-15T14:30:00Z
              */
             createdAt: string;
-        };
-        error: {
-            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
-            code?: string;
-            /**
-             * @description A human-readable description of the error.
-             * @example The requested resource could not be found.
-             */
-            message?: string;
         };
         "recipe-note": {
             /**
@@ -717,6 +792,70 @@ export interface components {
              */
             imageUrl: string;
         };
+        collection: {
+            /**
+             * @description Unique identifier; user-specified (URL-safe) on create or server-generated short id
+             * @example my-kitchen
+             */
+            id: string;
+            /**
+             * @description Human-readable name for the collection
+             * @example My Kitchen
+             */
+            name: string;
+            /**
+             * @description User id of the collection creator (short id)
+             * @example K3m9_xR2
+             */
+            createdBy: string;
+            /**
+             * Format: date-time
+             * @description When the collection was created
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When the collection was last updated
+             * @example 2023-02-01T09:00:00Z
+             */
+            updatedAt: string;
+        };
+        "collection-member": {
+            /**
+             * @description Unique identifier for the member record (short id)
+             * @example K3m9_xR2
+             */
+            id: string;
+            /**
+             * @description Id of the collection this member belongs to
+             * @example my-kitchen
+             */
+            collectionId: string;
+            /**
+             * Format: email
+             * @description Member's email address; must be validated for access (except creator)
+             * @example alice@example.com
+             */
+            email: string;
+            /**
+             * @description Member's role in the collection; creator is always owner and cannot be demoted
+             * @example editor
+             * @enum {string}
+             */
+            role: "owner" | "editor" | "viewer";
+            /**
+             * @description True if this member created the collection; permanent owner, cannot be removed or demoted
+             * @example false
+             */
+            isCreator: boolean;
+            /**
+             * Format: date-time
+             * @description When the member was added to the collection
+             * @example 2023-01-15T14:30:00Z
+             */
+            createdAt: string;
+        };
         login: {
             /** @enum {string} */
             event: "login";
@@ -761,7 +900,12 @@ export type $defs = Record<string, never>;
 export interface operations {
     listRecipes: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Id of the collection to list recipes from. Omit when publicOnly=true. */
+                collectionId?: string;
+                /** @description When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this. */
+                publicOnly?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -777,6 +921,33 @@ export interface operations {
                     "application/json": components["schemas"]["recipe"][];
                 };
             };
+            /** @description Bad request - provide either collectionId or publicOnly=true, not both nor neither. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - collection listing requires authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the collection or insufficient role. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     createRecipe: {
@@ -789,6 +960,8 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /** @description Id of the collection this recipe belongs to */
+                    collectionId: string;
                     /** @description Recipe title */
                     title: string;
                     /** @description Subtitle shown on menus and list views */
@@ -816,6 +989,15 @@ export interface operations {
                         /** @description Present when initialVersion was supplied in the request. */
                         initialVersion?: components["schemas"]["recipe-version"];
                     };
+                };
+            };
+            /** @description Bad request - collectionId is required in request body. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -864,6 +1046,24 @@ export interface operations {
                         /** @description Optional list of recipe file info. */
                         files?: Record<string, never>[];
                     };
+                };
+            };
+            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
@@ -1007,6 +1207,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-version"][];
+                };
+            };
+            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
@@ -1847,6 +2056,544 @@ export interface operations {
                 };
             };
             /** @description Not Found - recipe not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    listCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Collections the current user is a member of. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description List of collections the user is a member of. */
+                        collections: components["schemas"]["collection"][];
+                        /** @description All members for all returned collections. */
+                        members: components["schemas"]["collection-member"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Human-readable name for the collection
+                     * @example My Kitchen
+                     */
+                    name: string;
+                    /**
+                     * @description Optional id (URL-safe, unique); if omitted, server generates a short id
+                     * @example my-kitchen
+                     */
+                    id?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The created collection. */
+                        collection: components["schemas"]["collection"];
+                    };
+                };
+            };
+            /** @description Bad Request - e.g. id not URL-safe or id already in use (when id provided). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - user does not have required privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    getCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The collection. */
+                        collection: components["schemas"]["collection"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member or unvalidated email (creator excepted). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Human-readable name for the collection
+                     * @example My Kitchen
+                     */
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Updated collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The updated collection. */
+                        collection: components["schemas"]["collection"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    deleteCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Collection deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Conflict - collection has recipes; delete recipes first or use empty collection. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersListCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Members of the collection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description List of collection members (email, role, isCreator). */
+                        members: components["schemas"]["collection-member"][];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member or unvalidated email (creator excepted). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersAddCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @description Member's email address
+                     * @example alice@example.com
+                     */
+                    email: string;
+                    /**
+                     * @description Role to assign (or update if member already exists)
+                     * @example editor
+                     * @enum {string}
+                     */
+                    role: "owner" | "editor" | "viewer";
+                };
+            };
+        };
+        responses: {
+            /** @description Added or updated member. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The added or updated collection member. */
+                        member: components["schemas"]["collection-member"];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersUpdateCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+                /** @description Member record id */
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description New role for the member (creator's role cannot be changed from owner)
+                     * @example viewer
+                     * @enum {string}
+                     */
+                    role: "owner" | "editor" | "viewer";
+                };
+            };
+        };
+        responses: {
+            /** @description Updated member. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The updated collection member. */
+                        member: components["schemas"]["collection-member"];
+                    };
+                };
+            };
+            /** @description Bad Request - cannot demote the creator (permanent owner). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection or member does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    membersRemoveCollections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Collection id */
+                id: string;
+                /** @description Member record id */
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Member removed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request - cannot remove the creator (permanent owner). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be an owner of the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found - collection or member does not exist. */
             404: {
                 headers: {
                     [name: string]: unknown;

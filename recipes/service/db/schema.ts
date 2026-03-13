@@ -1,4 +1,5 @@
 // BEGIN SORTED WORKFLOW AREA schema-exports FOR drizzle/update-schema
+export * from "./schemas/collection.ts";
 export * from "./schemas/recipe-file.ts";
 export * from "./schemas/recipe-note-file.ts";
 export * from "./schemas/recipe-note.ts";
