@@ -5,8 +5,14 @@ import { getByIdResultToGetRecipeResponse } from "./_helpers.ts";
 
 export const getRecipeHandler = createHandler(async (req, res) => {
   const id = req.params.id as string;
+  const collectionId =
+    typeof req.query.collectionId === "string"
+      ? req.query.collectionId.trim() || undefined
+      : undefined;
   const out = await getRecipeAndRequireCollectionAuth(id, {
     requireMutate: false,
+    collectionId,
+    publicOnlyIfOmitted: true,
   });
 
   const response: RecipesServiceResponseBody["getRecipe"][200] =

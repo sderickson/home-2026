@@ -6,7 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { recipe } from "../../schemas/recipe.ts";
 
 export interface ListRecipesParams {
-  /** Id of the collection to list recipes from. Required. */
+  /** Id of the collection to list recipes from. Required when not listing public only. */
   collectionId: string;
   /** When true (admin), return all recipes in the collection. When false or omitted, only public recipes. */
   includePrivate?: boolean;
@@ -26,6 +26,20 @@ export const listRecipes = queryWrapper(
             .select()
             .from(recipe)
             .where(and(collectionCondition, eq(recipe.isPublic, true)));
+    return { result };
+  },
+);
+
+/** List all public recipes across all collections. Used by root app (GET /recipes?publicOnly=true). */
+export const listPublicRecipes = queryWrapper(
+  async (
+    dbKey: DbKey,
+  ): Promise<ReturnsError<typeof recipe.$inferSelect[], never>> => {
+    const db = recipesDbManager.get(dbKey)!;
+    const result = await db
+      .select()
+      .from(recipe)
+      .where(eq(recipe.isPublic, true));
     return { result };
   },
 );

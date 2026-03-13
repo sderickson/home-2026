@@ -1,11 +1,9 @@
-import { listRecipesQuery } from "@sderickson/recipes-sdk";
+import { listPublicRecipesQuery } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 
-/** Root (public) list: uses a single collection id for public listing; product may configure. */
-const ROOT_RECIPES_COLLECTION_ID = "public";
-
+/** Root (public) list: all public recipes across all collections (GET /recipes?publicOnly=true). */
 export function useListLoader() {
   return {
-    recipesQuery: useQuery(listRecipesQuery(ROOT_RECIPES_COLLECTION_ID)),
+    recipesQuery: useQuery(listPublicRecipesQuery()),
   };
 }

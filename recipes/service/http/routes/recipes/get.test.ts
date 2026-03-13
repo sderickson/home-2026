@@ -97,7 +97,7 @@ describe("GET /recipes/:id", () => {
 
     const response = await request(app).get(`/recipes/${privateRecipeId}`);
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(404);
   });
 
   it("should return 404 when recipe not found", async () => {

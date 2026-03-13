@@ -1,5 +1,5 @@
 getRecipe:
-  summary: "Get one recipe with current version, optional notes and file list."
+  summary: "Get one recipe. With collectionId: must be member. Without: returns only if recipe is public (root app public detail)."
   operationId: "getRecipe"
   tags:
     - "no-auth"
@@ -11,6 +11,12 @@ getRecipe:
       schema:
         type: string
       description: "Recipe id"
+    - name: collectionId
+      in: query
+      required: false
+      schema:
+        type: string
+      description: "Collection for scoped access (auth required). Omit for public-only (return recipe only if public)."
 
   responses:
     "200":
@@ -40,6 +46,13 @@ getRecipe:
 
     "401":
       description: "Unauthorized - recipe is private and caller is not authenticated."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - not a member of the recipe's collection (when collectionId is used)."
       content:
         application/json:
           schema:

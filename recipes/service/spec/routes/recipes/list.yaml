@@ -1,5 +1,5 @@
 listRecipes:
-  summary: "List recipes in a collection. Public-only when not logged in or non-admin; admins see private too."
+  summary: "List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth)."
   operationId: "listRecipes"
   tags:
     - "no-auth"
@@ -7,20 +7,32 @@ listRecipes:
   parameters:
     - name: collectionId
       in: query
-      required: true
+      required: false
       schema:
         type: string
-      description: Id of the collection to list recipes from
-
+      description: Id of the collection to list recipes from. Omit when publicOnly=true.
+    - name: publicOnly
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+      description: When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this.
   responses:
     "400":
-      description: "Bad request - collectionId query parameter is required."
+      description: "Bad request - provide either collectionId or publicOnly=true, not both nor neither."
       content:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
     "401":
       description: "Unauthorized - collection listing requires authentication."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "403":
+      description: "Forbidden - not a member of the collection or insufficient role."
       content:
         application/json:
           schema:

@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List recipes in a collection. Public-only when not logged in or non-admin; admins see private too. */
+        /** List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth). */
         get: operations["listRecipes"];
         put?: never;
         /** Create recipe (and optionally initial version). Admin only. */
@@ -29,7 +29,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one recipe with current version, optional notes and file list. */
+        /** Get one recipe. With collectionId: must be member. Without: returns only if recipe is public (root app public detail). */
         get: operations["getRecipe"];
         /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
         put: operations["updateRecipe"];
@@ -900,9 +900,11 @@ export type $defs = Record<string, never>;
 export interface operations {
     listRecipes: {
         parameters: {
-            query: {
-                /** @description Id of the collection to list recipes from */
-                collectionId: string;
+            query?: {
+                /** @description Id of the collection to list recipes from. Omit when publicOnly=true. */
+                collectionId?: string;
+                /** @description When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this. */
+                publicOnly?: boolean;
             };
             header?: never;
             path?: never;
@@ -919,7 +921,7 @@ export interface operations {
                     "application/json": components["schemas"]["recipe"][];
                 };
             };
-            /** @description Bad request - collectionId query parameter is required. */
+            /** @description Bad request - provide either collectionId or publicOnly=true, not both nor neither. */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -930,6 +932,15 @@ export interface operations {
             };
             /** @description Unauthorized - collection listing requires authentication. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the collection or insufficient role. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1011,7 +1022,10 @@ export interface operations {
     };
     getRecipe: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Collection for scoped access (auth required). Omit for public-only (return recipe only if public). */
+                collectionId?: string;
+            };
             header?: never;
             path: {
                 /** @description Recipe id */
@@ -1039,6 +1053,15 @@ export interface operations {
             };
             /** @description Unauthorized - recipe is private and caller is not authenticated. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection (when collectionId is used). */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
