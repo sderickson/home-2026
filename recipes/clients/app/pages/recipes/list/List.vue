@@ -44,6 +44,7 @@
 
     <QuickImportDialog
       v-model="quickImportOpen"
+      :collection-id="collectionId"
       @success="onQuickImportSuccess"
     />
   </v-container>

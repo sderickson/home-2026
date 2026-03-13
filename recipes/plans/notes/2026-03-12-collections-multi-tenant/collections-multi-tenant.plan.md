@@ -54,17 +54,30 @@ See [collections-multi-tenant.spec.md](./collections-multi-tenant.spec.md) for t
 
 ---
 
+## Milestone 5 — Root app: public recipe list (all public recipes across collections)
+
+**Packages:** `recipes/service/http`, `recipes/service/sdk`, `recipes/clients/root`.
+
+**Goal:** Extend GET /recipes to accept `publicOnly=true` (no collectionId): return all public recipes across all collections. Extend GET /recipes/:id so that when collectionId is omitted, return the recipe only if it is public (for root app public detail). Root client: public recipe list page uses GET /recipes?publicOnly=true; public recipe detail uses GET /recipes/:id without collectionId. No collection-level visibility; recipes stay public/private per recipe.
+
+**Workflow:** collections-m5-root-public-recipes.workflow.ts.
+
+**Stopping point:** Root app shows public recipe list (all public recipes) and public recipe detail; backend supports publicOnly list and public-by-id get.
+
+---
+
 ## Workflows summary
 
 | Workflow file | Scope |
 |---------------|--------|
-| collections-multi-tenant.workflow.ts | Orchestrator: runs M1–M4 in order |
+| collections-multi-tenant.workflow.ts | Orchestrator: runs M1–M5 in order |
 | collections-m1-spec.workflow.ts | Collections + members OpenAPI schemas and routes |
 | collections-m1-db.workflow.ts | collection, collection_member tables; recipe.collection_id; migration |
 | collections-m1-http.workflow.ts | Collection and member handlers; auth and constraint logic |
 | collections-m2-collections-frontend.workflow.ts | SDK collections/members + Collections page + membership dialog |
 | collections-m3-recipe-scoping-backend.workflow.ts | Required collectionId (query/body) on recipe endpoints; scope + permissions |
 | collections-m4-recipe-scoping-frontend.workflow.ts | Links, router, breadcrumbs, loaders under /c/:collectionId/; pass collectionId to API |
+| collections-m5-root-public-recipes.workflow.ts | GET /recipes?publicOnly=true + GET /recipes/:id (public); root app public list and detail |
 
 - **Run one:** `npm exec saf-workflow run ./notes/2026-03-12-collections-multi-tenant/collections-m1-spec.workflow.ts` (etc.).
 - **Dry-run orchestrator:** `npm exec saf-workflow dry-run ./notes/2026-03-12-collections-multi-tenant/collections-multi-tenant.workflow.ts`.

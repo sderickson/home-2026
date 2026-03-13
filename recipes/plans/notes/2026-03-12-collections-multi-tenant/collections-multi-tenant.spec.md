@@ -23,7 +23,7 @@ Introduce **collections** as a first-class resource. A collection has a name and
 - **recipes/service/http**: Add handlers for collection and member CRUD; add collection-scoped handlers for recipes, notes, files; enforce permission checks (owner/editor/viewer) per collection and validated-email rule (creator excepted).
 - **recipes/service/sdk**: Add API client and types for collections and members; update existing requests to take collection id; shared components that accept collection context.
 - **recipes/clients/app**: Routes under `/c/:collectionId/`; single collections page (list all + owner membership dialog); breadcrumbs use collection name; all loaders/mutations pass collection id and respect permissions.
-- **recipes/clients/root**: If public content is still shown, either scope by collection (e.g. public collection view) or retain a global public list; align with product decision for “public” vs “collection-scoped public.”
+- **recipes/clients/root**: Use GET /recipes?publicOnly=true for the public recipe list (all public recipes across all collections). No collection-level visibility; recipes remain public/private per recipe.
 - **recipes/links**: Update app (and root if needed) link definitions so paths use `/c/:collectionId/...`.
 
 ## Database Schema Updates
@@ -105,14 +105,14 @@ Existing business objects (RecipeVersion, RecipeNote, RecipeFileInfo, RecipeNote
 
 Keep existing recipe API paths; do not add a `/c/:collectionId/` prefix. Require **collectionId** via query params (for GET/list) or request body (for POST/create). Permission: caller must have at least viewer on the collection (and validated email unless creator); mutations require editor or owner.
 
-- **GET /recipes** — Required query: `collectionId`. List recipes in that collection. Response: `{ recipes: Recipe[] }`. Filter: recipe.collection_id = collectionId (and optionally public/private as today). Return 400 if collectionId missing.
-- **GET /recipes/:id** — Required query: `collectionId`. Get recipe; must belong to that collection. Return 404 if recipe.collection_id != collectionId.
+- **GET /recipes** — Either (a) query `collectionId`: list recipes in that collection (filter by collection_id and public/private per viewer). Return 400 if neither (a) nor (b). Or (b) query `publicOnly=true` (no collectionId): list all public recipes across all collections; used by the root (logged-out) app. Response: `{ recipes: Recipe[] }`.
+- **GET /recipes/:id** — Query `collectionId` (required for collection-scoped access): get recipe; must belong to that collection. Or omit collectionId: return recipe only if it is public (used by root app for public recipe detail). Return 404 if not found or not public when collectionId omitted.
 - **POST /recipes** — Required in body: `collectionId`. Create recipe in that collection (set recipe.collection_id). Return 400 if collectionId missing.
 - **PUT /recipes/:id** — Required query or body: `collectionId`. Update recipe; must belong to that collection.
 - **DELETE /recipes/:id** — Required query or body: `collectionId`. Delete recipe; must belong to that collection.
 - **Versions, notes, files, note-files** — Same idea: require `collectionId` (query or body as appropriate) and verify the parent recipe belongs to that collection before operating.
 
-All recipe (and nested) endpoints require collectionId; return 400 when missing. Frontend URLs stay under `/c/:collectionId/...`; the app passes collectionId from the route into each API call as query or body.
+Collection-scoped recipe and nested endpoints require collectionId; return 400 when missing. For the root app: GET /recipes?publicOnly=true and GET /recipes/:id (no collectionId, public only) support the public recipe list and detail pages. Frontend app URLs stay under `/c/:collectionId/...`; the app passes collectionId from the route into each API call as query or body.
 
 
 Error responses: 400 validation, 401 unauthenticated, 403 forbidden (e.g. not a member or insufficient role), 404 not found (collection or resource not in collection). Use existing Error schema where applicable.
@@ -135,7 +135,14 @@ Error responses: 400 validation, 401 unauthenticated, 403 forbidden (e.g. not a 
 4. **Collection-scoped recipe create/edit** (paths: `/c/:collectionId/recipes/create`, `/c/:collectionId/recipes/:id/edit`)
    - Purpose: Create or edit recipe in this collection. Loader/mutations use collectionId.
 
-All app routes that currently live under `/recipes/...` move under `/c/:collectionId/...`. Breadcrumbs use the collection name instead of a generic "recipes" label. Root client (public) may remain at a global public list or be updated to something like “public collection” view; spec leaves that to product (see Out of Scope).
+All app routes that currently live under `/recipes/...` move under `/c/:collectionId/...`. Breadcrumbs use the collection name instead of a generic "recipes" label.
+
+### Root (logged-out) client
+
+**Public recipe list** — Uses GET /recipes?publicOnly=true to show all public recipes across all collections. No collection concept; one global public list.
+
+**Public recipe detail** — Uses GET /recipes/:id without collectionId; returns the recipe only if it is public. Link from public list to detail by recipe id.
+
 
 ## Migration
 
@@ -144,10 +151,9 @@ All app routes that currently live under `/recipes/...` move under `/c/:collecti
 
 ## Future Enhancements / Out of Scope
 
-- Public root site behavior when multiple collections exist (e.g. single “public collection” vs “browse all public collections”) — can stay as today (global public list) or be refined later.
 - Transfer of ownership (e.g. change the “first” owner) — covered by “add owner then remove self” if at least one other owner.
 - Invitation flow (email invite vs just adding email) — out of scope; adding by email is sufficient for this spec.
-- Collection-level visibility (e.g. “public collection” vs “private collection”) — not in scope; existing recipe public/private can remain.
+- Collection-level visibility (e.g. “public collection” vs “private collection”) — not in scope; recipes stay public/private per recipe. Root app lists all public recipes across collections via GET /recipes?publicOnly=true.
 
 ## Questions and Clarifications
 
