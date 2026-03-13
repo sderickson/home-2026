@@ -31,7 +31,7 @@ describe("createRecipe", () => {
 
   it("invalidates related queries so list reflects the new recipe", async () => {
     const [listQuery, app] = withVueQuery(() =>
-      useQuery(listRecipesQuery()),
+      useQuery(listRecipesQuery("my-kitchen")),
     );
     const [mutation] = withVueQuery(() => useCreateRecipeMutation());
 

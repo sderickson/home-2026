@@ -11,7 +11,9 @@ describe("listRecipes", () => {
   afterEach(resetMocks);
 
   it("returns list of recipes from fake handler", async () => {
-    const [query, app] = withVueQuery(() => useQuery(listRecipesQuery()));
+    const [query, app] = withVueQuery(() =>
+      useQuery(listRecipesQuery("my-kitchen")),
+    );
 
     await query.refetch();
     expect(query.data.value).toBeDefined();
@@ -23,7 +25,9 @@ describe("listRecipes", () => {
   });
 
   it("returns recipes with expected shape (id, title, isPublic)", async () => {
-    const [query, app] = withVueQuery(() => useQuery(listRecipesQuery()));
+    const [query, app] = withVueQuery(() =>
+      useQuery(listRecipesQuery("my-kitchen")),
+    );
 
     await query.refetch();
     const data = query.data.value;
