@@ -3,6 +3,7 @@ import { createScopedMiddleware } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+import { getMenuHandler } from "./get.ts";
 import { listMenusHandler } from "./list.ts";
 // END WORKFLOW AREA
 
@@ -17,6 +18,7 @@ export const createMenusRouter = () => {
     }),
   );
   router.get("/menus", listMenusHandler);
+  router.get("/menus/:id", getMenuHandler);
 
   return router;
 };
