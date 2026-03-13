@@ -1,0 +1,73 @@
+updateMenus:
+  summary: "Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection."
+  operationId: "updateMenu"
+
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Menu id.
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - collectionId
+            - name
+            - isPublic
+            - groupings
+          properties:
+            collectionId:
+              type: string
+              description: Id of the collection this menu belongs to.
+            name:
+              type: string
+              description: Human-readable name for the menu.
+              minLength: 1
+            isPublic:
+              type: boolean
+              description: Whether the menu is visible to non-editors.
+            groupings:
+              $ref: "../../schemas/menu.yaml#/properties/groupings"
+
+  responses:
+    "200":
+      description: "Updated menu."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - menu
+            properties:
+              menu:
+                $ref: "../../schemas/menu.yaml"
+    "400":
+      description: "Bad request - e.g. recipeIds in groupings do not belong to the same collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "403":
+      description: "Forbidden - caller must be editor or owner on the collection; menu must belong to collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "404":
+      description: "Not found - menu or collection does not exist."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

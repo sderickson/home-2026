@@ -367,7 +367,8 @@ export interface paths {
         };
         /** Get one menu with groupings and full Recipe objects for every recipe in the menu. Optional query collectionId when in collection context. When no collectionId (public detail), allowed if menu is public. */
         get: operations["getMenu"];
-        put?: never;
+        /** Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection. */
+        put: operations["updateMenu"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2939,6 +2940,79 @@ export interface operations {
                 };
             };
             /** @description Not found - menu does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    updateMenu: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Menu id. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Id of the collection this menu belongs to. */
+                    collectionId: string;
+                    /** @description Human-readable name for the menu. */
+                    name: string;
+                    /** @description Whether the menu is visible to non-editors. */
+                    isPublic: boolean;
+                    groupings: components["schemas"]["groupings"];
+                };
+            };
+        };
+        responses: {
+            /** @description Updated menu. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        menu: components["schemas"]["menu"];
+                    };
+                };
+            };
+            /** @description Bad request - e.g. recipeIds in groupings do not belong to the same collection. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be editor or owner on the collection; menu must belong to collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not found - menu or collection does not exist. */
             404: {
                 headers: {
                     [name: string]: unknown;

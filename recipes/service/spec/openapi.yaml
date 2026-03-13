@@ -97,6 +97,8 @@ paths:
   /menus/{id}:
     get:
       $ref: "./routes/menus/get.yaml#/getMenus"
+    put:
+      $ref: "./routes/menus/update.yaml#/updateMenus"
   # END WORKFLOW AREA
 
 components:
