@@ -370,7 +370,8 @@ export interface paths {
         /** Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection. */
         put: operations["updateMenu"];
         post?: never;
-        delete?: never;
+        /** Delete menu. Query collectionId when not inferred from path. Editor or owner on collection; menu must belong to collection. */
+        delete: operations["deleteMenu"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2993,6 +2994,57 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["error"];
                 };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be editor or owner on the collection; menu must belong to collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not found - menu or collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    deleteMenu: {
+        parameters: {
+            query?: {
+                /** @description Id of the collection (when not inferred from path). */
+                collectionId?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Menu id. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Menu deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {

@@ -99,6 +99,8 @@ paths:
       $ref: "./routes/menus/get.yaml#/getMenus"
     put:
       $ref: "./routes/menus/update.yaml#/updateMenus"
+    delete:
+      $ref: "./routes/menus/delete.yaml#/deleteMenus"
   # END WORKFLOW AREA
 
 components:
