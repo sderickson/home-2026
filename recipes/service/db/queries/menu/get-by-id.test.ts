@@ -2,13 +2,15 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
+import { MenuNotFoundError } from "../../errors.ts";
 import { insertTestCollection } from "../../test-fixtures.ts";
 import { menu } from "../../schemas/menu.ts";
 import { getByIdMenu } from "./get-by-id.ts";
 
 /**
  * getByIdMenu: 100% coverage.
- * No handled errors (ReturnsError<..., never>). Success paths: found (result) and not found (null).
+ * One handled error: MenuNotFoundError when menu does not exist.
+ * Success path: found (result).
  */
 describe("getByIdMenu", () => {
   let dbKey: DbKey;
@@ -21,10 +23,13 @@ describe("getByIdMenu", () => {
     recipesDbManager.disconnect(dbKey);
   });
 
-  it("returns null when menu does not exist", async () => {
+  it("returns MenuNotFoundError when menu does not exist", async () => {
     const { result, error } = await getByIdMenu(dbKey, "non-existent-id");
-    expect(error).toBeUndefined();
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
+    expect(error).toBeDefined();
+    assert(error);
+    expect(error).toBeInstanceOf(MenuNotFoundError);
+    expect(error.message).toBe("Menu with id 'non-existent-id' not found");
   });
 
   it("returns menu when found", async () => {
