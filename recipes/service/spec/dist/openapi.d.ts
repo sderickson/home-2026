@@ -2016,6 +2016,8 @@ export interface operations {
                     "application/json": {
                         /** @description List of collections the user is a member of. */
                         collections: components["schemas"]["collection"][];
+                        /** @description All members for all returned collections. */
+                        members: components["schemas"]["collection-member"][];
                     };
                 };
             };

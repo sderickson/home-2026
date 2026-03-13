@@ -21,10 +21,12 @@ export function collectionToApiCollection(
 }
 
 export function collectionsListResultToListCollectionsResponse(
-  rows: CollectionEntity[],
+  collectionRows: CollectionEntity[],
+  memberRows: CollectionMemberEntity[],
 ): ListCollections200 {
   return {
-    collections: rows.map(collectionToApiCollection),
+    collections: collectionRows.map(collectionToApiCollection),
+    members: memberRows.map(collectionMemberToApiCollectionMember),
   };
 }
 

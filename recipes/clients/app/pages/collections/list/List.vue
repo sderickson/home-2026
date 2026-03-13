@@ -28,6 +28,8 @@
     <CollectionsTable
       v-else
       :collections="collections"
+      :members="members"
+      :user-email="userEmail"
       @manage-members="openMembersDialog"
     />
 
@@ -66,6 +68,14 @@ assertCollectionsLoaded(collectionsQuery.data.value?.collections);
 
 const collections = computed(() =>
   getCollectionsList(collectionsQuery.data.value?.collections),
+);
+
+const members = computed(
+  () => collectionsQuery.data.value?.members ?? [],
+);
+
+const userEmail = computed(
+  () => profileQuery.data.value?.email ?? "",
 );
 
 const createDialogOpen = ref(false);

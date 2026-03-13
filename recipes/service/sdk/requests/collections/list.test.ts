@@ -10,7 +10,7 @@ describe("listCollections", () => {
   setupMockServer(recipesServiceFakeHandlers);
   afterEach(resetMocks);
 
-  it("returns list of collections from fake handler", async () => {
+  it("returns list of collections and members from fake handler", async () => {
     const [query, app] = withVueQuery(() => useQuery(listCollectionsQuery()));
 
     await query.refetch();
@@ -19,6 +19,8 @@ describe("listCollections", () => {
     expect(Array.isArray(query.data.value?.collections)).toBe(true);
     expect(query.data.value?.collections).toHaveLength(mockCollections.length);
     expect(query.data.value?.collections?.[0]?.name).toBe(mockCollections[0].name);
+    expect(query.data.value?.members).toBeDefined();
+    expect(Array.isArray(query.data.value?.members)).toBe(true);
 
     app.unmount();
   });

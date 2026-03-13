@@ -11,12 +11,18 @@ listCollections:
             type: object
             required:
               - collections
+              - members
             properties:
               collections:
                 type: array
                 items:
                   $ref: "../../schemas/collection.yaml"
                 description: "List of collections the user is a member of."
+              members:
+                type: array
+                items:
+                  $ref: "../../schemas/collection-member.yaml"
+                description: "All members for all returned collections."
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

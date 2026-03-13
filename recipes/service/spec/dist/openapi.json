@@ -1523,7 +1523,8 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "collections"
+                    "collections",
+                    "members"
                   ],
                   "properties": {
                     "collections": {
@@ -1532,6 +1533,13 @@
                         "$ref": "#/components/schemas/collection"
                       },
                       "description": "List of collections the user is a member of."
+                    },
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/collection-member"
+                      },
+                      "description": "All members for all returned collections."
                     }
                   }
                 }
