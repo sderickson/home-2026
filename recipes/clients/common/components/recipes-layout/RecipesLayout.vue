@@ -95,7 +95,6 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: "App" },
-      { ...appLinks.collectionsHome, name: "Collections" },
       { ...accountLinks.home, name: "Account" },
       ...(props.isAdmin ? [{ ...adminLinks.admin, name: "Admin" }] : []),
       {
