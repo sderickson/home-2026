@@ -27,7 +27,9 @@
       </v-btn>
       <v-btn
         v-if="showCreateRecipe"
-        :to="recipesCreatePath"
+        v-bind="
+          linkToProps(appLinks.recipesCreate, { params: { collectionId } })
+        "
         color="primary"
         prepend-icon="mdi-plus"
       >
@@ -35,7 +37,10 @@
       </v-btn>
     </div>
 
-    <RecipeList :recipes="recipes" :get-recipe-link-props="getRecipeLinkProps" />
+    <RecipeList
+      :recipes="recipes"
+      :get-recipe-link-props="getRecipeLinkProps"
+    />
 
     <QuickImportDialog
       v-model="quickImportOpen"
@@ -49,6 +54,7 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { RecipeList } from "@sderickson/recipes-sdk";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath, linkToProps } from "@saflib/links";
 import { recipes_list_page as strings } from "./List.strings.ts";
 import { useListLoader } from "./List.loader.ts";
 import {
@@ -65,12 +71,8 @@ const { t } = useReverseT();
 const route = useRoute();
 const router = useRouter();
 const collectionId = route.params.collectionId as string;
-const {
-  profileQuery,
-  collectionQuery,
-  membersQuery,
-  recipesQuery,
-} = useListLoader();
+const { profileQuery, collectionQuery, membersQuery, recipesQuery } =
+  useListLoader();
 
 assertProfileLoaded(profileQuery.data.value);
 assertCollectionLoaded(collectionQuery.data.value);
@@ -87,16 +89,23 @@ const showCreateRecipe = computed(() =>
   canShowCreateRecipeForRole(currentMember.value?.role),
 );
 
-const recipesListPath = computed(() => `/c/${collectionId}/recipes/list`);
-const recipesCreatePath = computed(() => `/c/${collectionId}/recipes/create`);
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
+);
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));
 const quickImportOpen = ref(false);
 
 function getRecipeLinkProps(recipeId: string) {
-  return { to: `/c/${collectionId}/recipes/${recipeId}` };
+  return linkToProps(appLinks.recipesDetail, {
+    params: { collectionId, id: recipeId },
+  });
 }
 
 function onQuickImportSuccess(recipeId: string) {
-  router.push(`/c/${collectionId}/recipes/${recipeId}`);
+  router.push(
+    constructPath(appLinks.recipesDetail, {
+      params: { collectionId, id: recipeId },
+    }),
+  );
 }
 </script>

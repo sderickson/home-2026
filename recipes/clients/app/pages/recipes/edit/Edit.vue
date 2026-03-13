@@ -40,6 +40,7 @@ import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath } from "@saflib/links";
 
 const { t } = useReverseT();
 const route = useRoute();
@@ -54,10 +55,20 @@ const formModel = ref<RecipeFormModel>(recipeToFormModel(data));
 
 const collection = computed(() => collectionQuery.data.value?.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
-const recipesListPath = computed(() => `/c/${collectionId}/recipes/list`);
-const recipeDetailPath = computed(() => `/c/${collectionId}/recipes/${data.recipe.id}`);
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
+);
+const recipeDetailPath = computed(() =>
+  constructPath(appLinks.recipesDetail, {
+    params: { collectionId, id: data.recipe.id },
+  }),
+);
 
 function handleSuccess(recipeId: string) {
-  router.push(`/c/${collectionId}/recipes/${recipeId}`);
+  router.push(
+    constructPath(appLinks.recipesDetail, {
+      params: { collectionId, id: recipeId },
+    }),
+  );
 }
 </script>

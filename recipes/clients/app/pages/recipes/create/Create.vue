@@ -20,10 +20,7 @@
 
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
-    <RecipeForm
-      v-model="formModel"
-      @success="handleSuccess"
-    />
+    <RecipeForm v-model="formModel" @success="handleSuccess" />
   </v-container>
 </template>
 
@@ -37,6 +34,7 @@ import RecipeForm from "../../../components/recipes/RecipeForm.vue";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { appLinks } from "@sderickson/recipes-links";
+import { constructPath } from "@saflib/links";
 
 const { t } = useReverseT();
 const route = useRoute();
@@ -48,7 +46,9 @@ assertCreateDataLoaded(profileQuery.data.value);
 
 const collection = computed(() => collectionQuery.data.value?.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
-const recipesListPath = computed(() => `/c/${collectionId}/recipes/list`);
+const recipesListPath = computed(() =>
+  constructPath(appLinks.recipesList, { params: { collectionId } }),
+);
 
 const formModel = ref<RecipeFormModel>({
   collectionId,
@@ -66,6 +66,10 @@ const formModel = ref<RecipeFormModel>({
 });
 
 function handleSuccess(recipeId: string) {
-  router.push(`/c/${collectionId}/recipes/${recipeId}`);
+  router.push(
+    constructPath(appLinks.recipesDetail, {
+      params: { collectionId, id: recipeId },
+    }),
+  );
 }
 </script>
