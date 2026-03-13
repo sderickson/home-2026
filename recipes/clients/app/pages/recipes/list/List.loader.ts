@@ -1,5 +1,9 @@
 import { getProfile } from "@saflib/auth";
-import { listRecipesQuery } from "@sderickson/recipes-sdk";
+import {
+  getCollectionsQuery,
+  listRecipesQuery,
+  membersListCollectionsQuery,
+} from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
@@ -9,6 +13,8 @@ export function useListLoader() {
 
   return {
     profileQuery: useQuery(getProfile()),
+    collectionQuery: useQuery(getCollectionsQuery(collectionId)),
+    membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipesQuery: useQuery(listRecipesQuery(collectionId)),
   };
 }

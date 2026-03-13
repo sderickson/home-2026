@@ -5,6 +5,7 @@ export const recipes_detail_page = {
   ingredients: "Ingredients",
   instructions: "Instructions",
   breadcrumb_home: "Home",
+  breadcrumb_collections: "Collections",
   breadcrumb_recipes: "Recipes",
   back_to_list: "Back to recipes",
   edit_recipe: "Edit recipe",

@@ -3,6 +3,7 @@ import { appLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+import CollectionLayout from "./layouts/CollectionLayout.vue";
 import CollectionsListAsync from "./pages/collections/list/ListAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
@@ -20,24 +21,30 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
       component: HomeAsync,
     },
     {
-      path: appLinks.recipesList.path,
-      component: RecipesListAsync,
-    },
-    {
-      path: appLinks.recipesDetail.path,
-      component: RecipesDetailAsync,
-    },
-    {
-      path: appLinks.recipesCreate.path,
-      component: RecipesCreateAsync,
-    },
-    {
-      path: appLinks.recipesEdit.path,
-      component: RecipesEditAsync,
-    },
-    {
       path: appLinks.collectionsList.path,
       component: CollectionsListAsync,
+    },
+    {
+      path: "/c/:collectionId",
+      component: CollectionLayout,
+      children: [
+        {
+          path: "recipes/list",
+          component: RecipesListAsync,
+        },
+        {
+          path: "recipes/create",
+          component: RecipesCreateAsync,
+        },
+        {
+          path: "recipes/:id",
+          component: RecipesDetailAsync,
+        },
+        {
+          path: "recipes/:id/edit",
+          component: RecipesEditAsync,
+        },
+      ],
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

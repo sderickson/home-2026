@@ -20,9 +20,27 @@ export function assertRecipesLoaded(data: unknown): asserts data {
 
 /**
  * Whether the current user can see the "Create recipe" action (admin only).
+ * @deprecated Use canShowCreateRecipeForRole for collection-scoped pages.
  */
 export function canShowCreateRecipe(profile: { isAdmin?: boolean }): boolean {
   return profile.isAdmin === true;
+}
+
+/**
+ * Whether the user can create/edit/delete recipes in this collection (owner or editor).
+ * Viewers see read-only; create/edit/delete UI is hidden.
+ */
+export function canShowCreateRecipeForRole(role: string | undefined): boolean {
+  return role === "owner" || role === "editor";
+}
+
+/**
+ * Asserts that collection data is loaded.
+ */
+export function assertCollectionLoaded(data: unknown): asserts data {
+  if (!data) {
+    throw new Error("Failed to load collection");
+  }
 }
 
 /**

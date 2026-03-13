@@ -4,5 +4,6 @@ export const recipes_list_page = {
   quick_import: "Quick import",
   empty_list: "No recipes yet.",
   breadcrumb_home: "Home",
+  breadcrumb_collections: "Collections",
   breadcrumb_recipes: "Recipes",
 };

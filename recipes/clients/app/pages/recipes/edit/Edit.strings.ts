@@ -3,6 +3,7 @@ export const recipes_edit_page = {
   back_to_list: "Back to recipes",
   preview_heading: "Preview",
   breadcrumb_home: "Home",
+  breadcrumb_collections: "Collections",
   breadcrumb_recipes: "Recipes",
   breadcrumb_edit: "Edit",
   commit_dialog_title: "Save as new version",
