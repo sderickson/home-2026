@@ -62,19 +62,13 @@ export async function requireCollectionMembership(
 }
 
 /**
- * Load recipe by id. Reads recipesDbKey and auth from context stores.
- * - collectionId omitted + publicOnlyIfOmitted true (root app GET): return recipe only if public; else 404.
- * - collectionId omitted + publicOnlyIfOmitted false (nested routes): require membership for recipe.collectionId.
- * - collectionId provided: require membership for that collection; recipe must belong to it; 403 if not member.
+ * Load recipe by id. Access is determined from the recipe itself:
+ * - No auth: return only if recipe is public; else 401.
+ * - Auth: require membership on the recipe's collection (recipe.collectionId); return if member, 403 if not.
  */
 export async function getRecipeAndRequireCollectionAuth(
   recipeId: string,
-  options: {
-    requireMutate: boolean;
-    collectionId?: string;
-    /** When true and collectionId omitted, return recipe only if public (root app public detail). Default false. */
-    publicOnlyIfOmitted?: boolean;
-  },
+  options: { requireMutate: boolean },
 ): Promise<GetByIdRecipeResult> {
   const recipesDbKey = recipesServiceStorage.getStore()?.recipesDbKey;
   if (!recipesDbKey) {
@@ -91,30 +85,15 @@ export async function getRecipeAndRequireCollectionAuth(
   }
 
   const { recipe } = out.result;
-  const omitCollection = options.collectionId === undefined || options.collectionId === "";
 
-  if (omitCollection && options.publicOnlyIfOmitted === true) {
+  if (!auth) {
     if (!recipe.isPublic) {
-      throw createError(404, "Recipe not found", { code: "RECIPE_NOT_FOUND" });
+      throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
     }
     return out.result;
   }
 
-  const effectiveCollectionId = omitCollection ? recipe.collectionId : options.collectionId!;
-  if (!auth) {
-    if (omitCollection) {
-      if (!recipe.isPublic) {
-        throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
-      }
-      return out.result;
-    }
-    throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
-  }
-
-  if (recipe.collectionId !== effectiveCollectionId) {
-    throw createError(404, "Recipe not found", { code: "RECIPE_NOT_FOUND" });
-  }
-  await requireCollectionMembership(effectiveCollectionId, {
+  await requireCollectionMembership(recipe.collectionId, {
     requireMutate: options.requireMutate,
   });
 

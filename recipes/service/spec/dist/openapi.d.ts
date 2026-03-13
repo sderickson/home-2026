@@ -29,7 +29,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one recipe. With collectionId: must be member. Without: returns only if recipe is public (root app public detail). */
+        /** Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection. */
         get: operations["getRecipe"];
         /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
         put: operations["updateRecipe"];
@@ -1022,10 +1022,7 @@ export interface operations {
     };
     getRecipe: {
         parameters: {
-            query?: {
-                /** @description Collection for scoped access (auth required). Omit for public-only (return recipe only if public). */
-                collectionId?: string;
-            };
+            query?: never;
             header?: never;
             path: {
                 /** @description Recipe id */
@@ -1060,7 +1057,7 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Forbidden - not a member of the recipe's collection (when collectionId is used). */
+            /** @description Forbidden - not a member of the recipe's collection. */
             403: {
                 headers: {
                     [name: string]: unknown;
