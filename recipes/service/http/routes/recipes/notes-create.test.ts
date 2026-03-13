@@ -49,7 +49,7 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
 
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -84,7 +84,7 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
 
     const response = await request(app)
       .post(`/recipes/${withVersion.recipe.id}/notes`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -108,10 +108,10 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         body: "A note",
       } satisfies RecipesServiceRequestBody["notesCreateRecipes"]);
@@ -123,7 +123,7 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .post("/recipes/00000000-0000-0000-0000-000000000001/notes")
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         body: "A note",
       } satisfies RecipesServiceRequestBody["notesCreateRecipes"]);
@@ -140,7 +140,7 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
 
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(404);

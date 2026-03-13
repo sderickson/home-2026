@@ -49,7 +49,7 @@ describe("POST /recipes/:id/versions", () => {
 
     const response = await request(app)
       .post(`/recipes/${recipeId}/versions`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(versionContent);
 
     expect(response.status).toBe(200);
@@ -74,10 +74,10 @@ describe("POST /recipes/:id/versions", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin requests create version", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/versions`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         ingredients: [],
         instructionsMarkdown: "New version",
@@ -91,7 +91,7 @@ describe("POST /recipes/:id/versions", () => {
     const fakeId = "00000000-0000-0000-0000-000000000000";
     const response = await request(app)
       .post(`/recipes/${fakeId}/versions`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         ingredients: [],
         instructionsMarkdown: "",

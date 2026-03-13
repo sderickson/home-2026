@@ -45,7 +45,7 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
   it("should return 200 with empty array when recipe has no notes", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -64,7 +64,7 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -84,12 +84,12 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .get("/recipes/00000000-0000-0000-0000-000000000001/notes")
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests notes for private recipe in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
@@ -105,8 +105,8 @@ describe("GET /recipes/:id/notes (notesListRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${privateId}/notes`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
   });
 });

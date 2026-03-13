@@ -37,7 +37,7 @@ describe("DELETE /recipes/:id", () => {
   it("should return 204 when admin deletes existing recipe", async () => {
     const response = await request(app)
       .delete(`/recipes/${recipeId}`)
-      .set(makeAdminHeaders(SEED_USER_ID));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
@@ -51,10 +51,10 @@ describe("DELETE /recipes/:id", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin requests delete", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .delete(`/recipes/${recipeId}`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders("other-user-id", "other@example.com"));
 
     expect(response.status).toBe(403);
     expect(response.body.code).toBe("FORBIDDEN");
@@ -63,7 +63,7 @@ describe("DELETE /recipes/:id", () => {
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .delete("/recipes/00000000-0000-0000-0000-000000000000")
-      .set(makeAdminHeaders(SEED_USER_ID));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOT_FOUND");

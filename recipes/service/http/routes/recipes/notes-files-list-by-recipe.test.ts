@@ -74,7 +74,7 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
   it("returns 200 with empty array when recipe has no note files", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/note-files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -112,7 +112,7 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
 
     const response = await request(app)
       .get(`/recipes/${recipeId}/note-files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -127,7 +127,7 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
   it("returns 404 when recipe does not exist", async () => {
     const response = await request(app)
       .get("/recipes/00000000-0000-0000-0000-000000000099/note-files")
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });

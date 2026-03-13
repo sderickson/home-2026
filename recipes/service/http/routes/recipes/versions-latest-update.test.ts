@@ -51,7 +51,7 @@ describe("PUT /recipes/:id/versions/latest", () => {
 
     const response = await request(app)
       .put(`/recipes/${recipeId}/versions/latest`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(updateBody);
 
     expect(response.status).toBe(200);
@@ -76,10 +76,10 @@ describe("PUT /recipes/:id/versions/latest", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin requests update", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}/versions/latest`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         ingredients: [],
         instructionsMarkdown: "Hacked",
@@ -93,14 +93,14 @@ describe("PUT /recipes/:id/versions/latest", () => {
     const fakeId = "00000000-0000-0000-0000-000000000000";
     const response = await request(app)
       .put(`/recipes/${fakeId}/versions/latest`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         ingredients: [],
         instructionsMarkdown: "",
       } satisfies RecipesServiceRequestBody["updateRecipeVersionLatest"]);
 
     expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_VERSION_NOT_FOUND");
+    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
   });
 
   it("should return 404 when recipe has no versions", async () => {
@@ -119,7 +119,7 @@ describe("PUT /recipes/:id/versions/latest", () => {
 
     const response = await request(app)
       .put(`/recipes/${recipeNoVersionId}/versions/latest`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         ingredients: [],
         instructionsMarkdown: "",

@@ -49,7 +49,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
   it("should return 200 with file metadata and unsplashAttribution when admin sends valid body", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/files/from-unsplash`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
         downloadLocation:
@@ -104,10 +104,10 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/files/from-unsplash`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         unsplashPhotoId: "mock-photo-id",
         downloadLocation:
@@ -122,7 +122,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .post("/recipes/nonexistent-recipe-id/files/from-unsplash")
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
         downloadLocation:

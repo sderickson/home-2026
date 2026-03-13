@@ -86,7 +86,7 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
   it("should return 200 with file binary and correct headers when user requests public recipe note file", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes/${noteId}/files/${fileId}/blob`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -144,7 +144,7 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       .get(
         `/recipes/${privateRecipeId}/notes/${privateNote.id}/files/${privFile.result.id}/blob`,
       )
-      .set(makeAdminHeaders(SEED_USER_ID));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -164,7 +164,7 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       .get(
         `/recipes/00000000-0000-0000-0000-000000000001/notes/${noteId}/files/${fileId}/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOT_FOUND");
@@ -175,7 +175,7 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       .get(
         `/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000002/files/${fileId}/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOTE_NOT_FOUND");
@@ -186,13 +186,13 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       .get(
         `/recipes/${recipeId}/notes/${noteId}/files/00000000-0000-0000-0000-000000000003/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOTE_FILE_NOT_FOUND");
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests file from private recipe note in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
@@ -237,9 +237,8 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       .get(
         `/recipes/${privateRecipeId}/notes/${privateNote.id}/files/${privFile.result.id}/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
+    expect(response.status).toBe(200);
   });
 });

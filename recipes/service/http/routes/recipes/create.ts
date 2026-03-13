@@ -7,6 +7,7 @@ import type {
 } from "@sderickson/recipes-spec";
 import { recipeQueries } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { requireCollectionMembership } from "./_collection-auth.ts";
 import {
   createRecipeResultToCreateRecipeResponse,
   createWithVersionResultToCreateRecipeResponse,
@@ -15,10 +16,6 @@ import {
 export const createRecipeHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const data: RecipesServiceRequestBody["createRecipe"] = req.body ?? {};
     const collectionId = data.collectionId;
     if (typeof collectionId !== "string" || !collectionId.trim()) {
@@ -28,6 +25,16 @@ export const createRecipeHandler = createHandler(
     }
 
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
+    const emailValidated =
+      (auth as { emailVerified?: boolean }).emailVerified !== false;
+    await requireCollectionMembership({
+      recipesDbKey,
+      collectionId: collectionId.trim(),
+      callerEmail: auth.userEmail,
+      emailValidated,
+      requireMutate: true,
+    });
+
     const userId = auth.userId;
 
     const initialContent = data.initialVersion?.content;

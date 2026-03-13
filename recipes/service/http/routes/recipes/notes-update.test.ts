@@ -63,7 +63,7 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
 
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/${noteId}`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -89,10 +89,10 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/${noteId}`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);
@@ -104,7 +104,7 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
   it("should return 404 when note not found", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000001`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);
@@ -128,7 +128,7 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
     // noteId belongs to recipeId; we request update under otherRecipe.recipe.id
     const response = await request(app)
       .put(`/recipes/${otherRecipe.recipe.id}/notes/${noteId}`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         body: "Updated",
       } satisfies RecipesServiceRequestBody["notesUpdateRecipes"]);

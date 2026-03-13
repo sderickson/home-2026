@@ -1,9 +1,10 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { getSafContext } from "@saflib/node";
+import { getSafContextWithAuth } from "@saflib/node";
 import { recipeQueries } from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { requireCollectionMembership } from "./_collection-auth.ts";
 import { recipeToApiRecipe } from "./_helpers.ts";
 
 export const listRecipesHandler = createHandler(async (req, res) => {
@@ -14,13 +15,23 @@ export const listRecipesHandler = createHandler(async (req, res) => {
     });
   }
 
-  const store = getSafContext();
+  const { auth } = getSafContextWithAuth();
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
+  const emailValidated =
+    (auth as { emailVerified?: boolean }).emailVerified !== false;
 
-  const isAdmin = store.auth?.userScopes?.includes("*") ?? false;
+  const member = await requireCollectionMembership({
+    recipesDbKey,
+    collectionId: collectionId.trim(),
+    callerEmail: auth.userEmail,
+    emailValidated,
+    requireMutate: false,
+  });
+
+  const includePrivate = member.role !== "viewer";
   const { result } = await recipeQueries.listRecipes(recipesDbKey, {
     collectionId: collectionId.trim(),
-    includePrivate: isAdmin,
+    includePrivate,
   });
 
   const response: RecipesServiceResponseBody["listRecipes"][200] =

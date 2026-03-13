@@ -39,7 +39,7 @@ describe("POST /recipes", () => {
 
     const response = await request(app)
       .post("/recipes")
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -76,7 +76,7 @@ describe("POST /recipes", () => {
 
     const response = await request(app)
       .post("/recipes")
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(body);
 
     expect(response.status).toBe(200);
@@ -108,10 +108,10 @@ describe("POST /recipes", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post("/recipes")
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         collectionId,
         title: "Test",
@@ -126,7 +126,7 @@ describe("POST /recipes", () => {
   it("should return 400 when collectionId is missing in request body", async () => {
     const response = await request(app)
       .post("/recipes")
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         title: "Test",
         subtitle: "Short",

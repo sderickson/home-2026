@@ -7,35 +7,31 @@ import type {
 } from "@sderickson/recipes-spec";
 import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { updateMetadataResultToUpdateRecipeResponse } from "./_helpers.ts";
 
-type GetByIdRecipeError = RecipeNotFoundError;
 type UpdateMetadataRecipeError = RecipeNotFoundError;
 
 export const updateRecipeHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const data: RecipesServiceRequestBody["updateRecipe"] = req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
-    const getOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
-    if (getOut.error) {
-      const error: GetByIdRecipeError = getOut.error;
-      switch (true) {
-        case error instanceof RecipeNotFoundError:
-          throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
-        default:
-          throw error satisfies never;
-      }
-    }
+    const authWithVerified = {
+      ...auth,
+      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
+    };
+    const getOut = await getRecipeAndRequireCollectionAuth(
+      recipesDbKey,
+      id,
+      authWithVerified,
+      { requireMutate: true },
+    );
 
-    const existing = getOut.result.recipe;
+    const existing = getOut.recipe;
     const merged = {
       title: data.title ?? existing.title,
       subtitle:

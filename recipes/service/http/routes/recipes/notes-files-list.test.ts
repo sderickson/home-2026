@@ -62,7 +62,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
   it("should return 200 with empty array when note has no files", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -86,7 +86,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
@@ -110,7 +110,7 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/00000000-0000-0000-0000-000000000001/notes/${noteId}/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
@@ -120,12 +120,12 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000002/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests note files for private recipe in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
@@ -154,8 +154,8 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       .get(
         `/recipes/${privateRecipeId}/notes/${privateNote.id}/files`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
   });
 });

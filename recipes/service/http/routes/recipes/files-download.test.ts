@@ -72,7 +72,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   it("should return 200 with file binary and correct headers when user requests public recipe file", async () => {
     const response = await request(app)
       .get(`/recipes/${recipeId}/files/${fileId}/blob`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -116,7 +116,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${privateRecipeId}/files/${privFile.result.id}/blob`)
-      .set(makeAdminHeaders(SEED_USER_ID));
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe("application/pdf");
@@ -136,7 +136,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       .get(
         `/recipes/00000000-0000-0000-0000-000000000001/files/${fileId}/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOT_FOUND");
@@ -147,13 +147,13 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       .get(
         `/recipes/${recipeId}/files/00000000-0000-0000-0000-000000000001/blob`,
       )
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_FILE_NOT_FOUND");
   });
 
-  it("should return 404 when recipe is private and user is not admin", async () => {
+  it("should return 200 when member requests file from private recipe in collection", async () => {
     const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
@@ -184,9 +184,8 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
 
     const response = await request(app)
       .get(`/recipes/${privateRecipeId}/files/${privFile.result.id}/blob`)
-      .set(makeUserHeaders());
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
+    expect(response.status).toBe(200);
   });
 });

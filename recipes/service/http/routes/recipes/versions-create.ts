@@ -1,6 +1,7 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
@@ -14,14 +15,20 @@ type CreateVersionRecipeError = RecipeNotFoundError;
 export const versionsCreateRecipesHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const data: RecipesServiceRequestBody["createRecipeVersion"] =
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
+    const authWithVerified = {
+      ...auth,
+      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
+    };
+    await getRecipeAndRequireCollectionAuth(
+      recipesDbKey,
+      id,
+      authWithVerified,
+      { requireMutate: true },
+    );
 
     const { result, error } = await recipeQueries.createVersionRecipe(
       recipesDbKey,

@@ -43,7 +43,7 @@ describe("PUT /recipes/:id", () => {
 
     const response = await request(app)
       .put(`/recipes/${recipeId}`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send(updateBody);
 
     expect(response.status).toBe(200);
@@ -67,10 +67,10 @@ describe("PUT /recipes/:id", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin requests update", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .put(`/recipes/${recipeId}`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({ title: "Hacked" } satisfies RecipesServiceRequestBody["updateRecipe"]);
 
     expect(response.status).toBe(403);
@@ -81,7 +81,7 @@ describe("PUT /recipes/:id", () => {
     const fakeId = "00000000-0000-0000-0000-000000000000";
     const response = await request(app)
       .put(`/recipes/${fakeId}`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         title: "Updated",
       } satisfies RecipesServiceRequestBody["updateRecipe"]);

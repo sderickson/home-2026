@@ -7,11 +7,11 @@ import { Readable } from "stream";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import {
   generateShortId,
-  recipeQueries,
   recipeFileQueries,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToApiRecipeFile } from "./_helpers.ts";
 
 type FilesUploadRecipeError = RecipeNotFoundError;
@@ -19,14 +19,20 @@ type FilesUploadRecipeError = RecipeNotFoundError;
 export const filesUploadRecipesHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
     const userId = auth.userId;
+    const authWithVerified = {
+      ...auth,
+      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
+    };
+    await getRecipeAndRequireCollectionAuth(
+      recipesDbKey,
+      id,
+      authWithVerified,
+      { requireMutate: true },
+    );
 
     const files = Array.isArray(req.files) ? req.files : req.files?.file;
     const file = Array.isArray(files)
@@ -37,17 +43,6 @@ export const filesUploadRecipesHandler = createHandler(
       throw createError(400, "No file uploaded");
     }
     const multerFile = file as { path: string; originalname: string; mimetype: string; size: number };
-
-    const getOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
-    if (getOut.error) {
-      const error: FilesUploadRecipeError = getOut.error;
-      switch (true) {
-        case error instanceof RecipeNotFoundError:
-          throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
-        default:
-          throw error satisfies never;
-      }
-    }
 
     const pathId = generateShortId();
     const blob_name = `recipes/${id}/${pathId}`;

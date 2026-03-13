@@ -60,7 +60,7 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
 
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from(fileContent), filename);
 
     expect(response.status).toBe(200);
@@ -93,10 +93,10 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 403 when caller is not editor/owner (e.g. non-member)", async () => {
     const response = await request(app)
       .post(`/recipes/${recipeId}/notes/${noteId}/files`)
-      .set(makeUserHeaders())
+      .set(makeUserHeaders("other-user-id", "other@example.com"))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(403);
@@ -108,11 +108,11 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       .post(
         `/recipes/00000000-0000-0000-0000-000000000001/notes/${noteId}/files`,
       )
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_NOTE_NOT_FOUND");
+    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
   });
 
   it("should return 404 when note not found", async () => {
@@ -120,7 +120,7 @@ describe("POST /recipes/:id/notes/:noteId/files (notesFilesUploadRecipes)", () =
       .post(
         `/recipes/${recipeId}/notes/00000000-0000-0000-0000-000000000002/files`,
       )
-      .set(makeAdminHeaders(SEED_USER_ID))
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .attach("file", Buffer.from("content"), "file.txt");
 
     expect(response.status).toBe(404);

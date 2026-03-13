@@ -11,6 +11,7 @@ import {
   RecipeNoteNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { insertNoteFileResultToNotesFilesUploadRecipesResponse } from "./_helpers.ts";
 
 type NotesFilesUploadRecipeError = RecipeNoteNotFoundError;
@@ -18,15 +19,21 @@ type NotesFilesUploadRecipeError = RecipeNoteNotFoundError;
 export const notesFilesUploadRecipesHandler = createHandler(
   async (req, res) => {
     const { auth } = getSafContextWithAuth();
-    if (!auth.userScopes.includes("*")) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-
     const id = req.params.id as string;
     const noteId = req.params.noteId as string;
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
     const userId = auth.userId;
+    const authWithVerified = {
+      ...auth,
+      emailVerified: (auth as { emailVerified?: boolean }).emailVerified,
+    };
+    await getRecipeAndRequireCollectionAuth(
+      recipesDbKey,
+      id,
+      authWithVerified,
+      { requireMutate: true },
+    );
 
     const files = Array.isArray(req.files) ? req.files : req.files?.file;
     const file = Array.isArray(files)
