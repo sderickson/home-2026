@@ -89,6 +89,9 @@ paths:
       $ref: "./routes/collections/members-update.yaml#/membersUpdateCollections"
     delete:
       $ref: "./routes/collections/members-remove.yaml#/membersRemoveCollections"
+  /menus:
+    get:
+      $ref: "./routes/menus/list.yaml#/listMenus"
   # END WORKFLOW AREA
 
 components:

@@ -340,6 +340,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/menus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth). */
+        get: operations["listMenus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -857,39 +874,6 @@ export interface components {
              */
             createdAt: string;
         };
-        login: {
-            /** @enum {string} */
-            event: "login";
-            context: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup: {
-            /** @enum {string} */
-            event?: "signup";
-            context?: {
-                /** @enum {string} */
-                method?: "email";
-            };
-        };
-        signup_view: {
-            /** @enum {string} */
-            event?: "signup_view";
-        };
-        verify_email: {
-            /** @enum {string} */
-            event?: "verify_email";
-        };
-        index: {
-            event: string;
-            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
-            client?: string;
-            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
-            view?: string;
-            /** @description The component that triggered the event. For vue, it should be the component name. */
-            component?: string;
-        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
         menu: {
             /**
              * @description Unique identifier for the menu (short id from generateShortId)
@@ -975,6 +959,39 @@ export interface components {
                 recipeIds: string[];
             }[];
         };
+        login: {
+            /** @enum {string} */
+            event: "login";
+            context: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup: {
+            /** @enum {string} */
+            event?: "signup";
+            context?: {
+                /** @enum {string} */
+                method?: "email";
+            };
+        };
+        signup_view: {
+            /** @enum {string} */
+            event?: "signup_view";
+        };
+        verify_email: {
+            /** @enum {string} */
+            event?: "verify_email";
+        };
+        index: {
+            event: string;
+            /** @description The frontend client that triggered the event. For web, it should be "web-{spa-name}". */
+            client?: string;
+            /** @description The page that triggered the event. For vue, it should be the route name provided by vue router. */
+            view?: string;
+            /** @description The component that triggered the event. For vue, it should be the component name. */
+            component?: string;
+        } & (components["schemas"]["login"] | components["schemas"]["signup"] | components["schemas"]["signup_view"] | components["schemas"]["verify_email"]);
     };
     responses: never;
     parameters: never;
@@ -2680,6 +2697,70 @@ export interface operations {
                 };
             };
             /** @description Not Found - collection or member does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    listMenus: {
+        parameters: {
+            query?: {
+                /** @description Id of the collection to list menus from. Omit when publicOnly=true. */
+                collectionId?: string;
+                /** @description When true, return all public menus across all collections. Used by root (logged-out) app. Do not send collectionId when using this. */
+                publicOnly?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Menus in the collection (viewers get public only; editors/owners get all) or all public menus when publicOnly=true. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description List of menus. */
+                        menus: components["schemas"]["menu"][];
+                    };
+                };
+            };
+            /** @description Bad request - provide either collectionId or publicOnly=true, not both nor neither. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - collection-scoped listing requires authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the collection or insufficient role (at least viewer required). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not found - collection does not exist (when collectionId provided). */
             404: {
                 headers: {
                     [name: string]: unknown;

@@ -2306,6 +2306,100 @@
           }
         }
       }
+    },
+    "/menus": {
+      "get": {
+        "summary": "List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth).",
+        "operationId": "listMenus",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection to list menus from. Omit when publicOnly=true."
+          },
+          {
+            "name": "publicOnly",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "When true, return all public menus across all collections. Used by root (logged-out) app. Do not send collectionId when using this."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menus in the collection (viewers get public only; editors/owners get all) or all public menus when publicOnly=true.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menus"
+                  ],
+                  "properties": {
+                    "menus": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/menu"
+                      },
+                      "description": "List of menus."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - provide either collectionId or publicOnly=true, not both nor neither.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - collection-scoped listing requires authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member of the collection or insufficient role (at least viewer required).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - collection does not exist (when collectionId provided).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3005,113 +3099,6 @@
           "createdAt"
         ]
       },
-      "login": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "login"
-            ]
-          },
-          "context": {
-            "type": "object",
-            "properties": {
-              "method": {
-                "type": "string",
-                "enum": [
-                  "email"
-                ]
-              }
-            }
-          }
-        },
-        "required": [
-          "event",
-          "context"
-        ]
-      },
-      "signup": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "signup"
-            ]
-          },
-          "context": {
-            "type": "object",
-            "properties": {
-              "method": {
-                "type": "string",
-                "enum": [
-                  "email"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "signup_view": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "signup_view"
-            ]
-          }
-        }
-      },
-      "verify_email": {
-        "type": "object",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [
-              "verify_email"
-            ]
-          }
-        }
-      },
-      "index": {
-        "type": "object",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/login"
-          },
-          {
-            "$ref": "#/components/schemas/signup"
-          },
-          {
-            "$ref": "#/components/schemas/signup_view"
-          },
-          {
-            "$ref": "#/components/schemas/verify_email"
-          }
-        ],
-        "properties": {
-          "event": {
-            "type": "string"
-          },
-          "client": {
-            "type": "string",
-            "description": "The frontend client that triggered the event. For web, it should be \"web-{spa-name}\"."
-          },
-          "view": {
-            "type": "string",
-            "description": "The page that triggered the event. For vue, it should be the route name provided by vue router."
-          },
-          "component": {
-            "type": "string",
-            "description": "The component that triggered the event. For vue, it should be the component name."
-          }
-        },
-        "required": [
-          "event"
-        ]
-      },
       "menu": {
         "type": "object",
         "properties": {
@@ -3226,6 +3213,113 @@
           "updatedAt",
           "editedByUserIds",
           "groupings"
+        ]
+      },
+      "login": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "login"
+            ]
+          },
+          "context": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "event",
+          "context"
+        ]
+      },
+      "signup": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "signup"
+            ]
+          },
+          "context": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "email"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "signup_view": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "signup_view"
+            ]
+          }
+        }
+      },
+      "verify_email": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "verify_email"
+            ]
+          }
+        }
+      },
+      "index": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/login"
+          },
+          {
+            "$ref": "#/components/schemas/signup"
+          },
+          {
+            "$ref": "#/components/schemas/signup_view"
+          },
+          {
+            "$ref": "#/components/schemas/verify_email"
+          }
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string",
+            "description": "The frontend client that triggered the event. For web, it should be \"web-{spa-name}\"."
+          },
+          "view": {
+            "type": "string",
+            "description": "The page that triggered the event. For vue, it should be the route name provided by vue router."
+          },
+          "component": {
+            "type": "string",
+            "description": "The component that triggered the event. For vue, it should be the component name."
+          }
+        },
+        "required": [
+          "event"
         ]
       }
     }
