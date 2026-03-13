@@ -92,6 +92,8 @@ paths:
   /menus:
     get:
       $ref: "./routes/menus/list.yaml#/listMenus"
+    post:
+      $ref: "./routes/menus/create.yaml#/createMenus"
   /menus/{id}:
     get:
       $ref: "./routes/menus/get.yaml#/getMenus"

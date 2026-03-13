@@ -2399,6 +2399,104 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create menu in a collection. Editor or owner on collection only. Recipe ids in groupings must belong to the same collection.",
+        "operationId": "createMenu",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "collectionId",
+                  "name",
+                  "isPublic",
+                  "groupings"
+                ],
+                "properties": {
+                  "collectionId": {
+                    "type": "string",
+                    "description": "Id of the collection this menu belongs to."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Human-readable name for the menu.",
+                    "minLength": 1
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether the menu is visible to non-editors."
+                  },
+                  "groupings": {
+                    "$ref": "#/components/schemas/groupings"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created menu.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menu"
+                  ],
+                  "properties": {
+                    "menu": {
+                      "$ref": "#/components/schemas/menu"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - e.g. recipeIds in groupings do not belong to the same collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be editor or owner on the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - collection does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/menus/{id}": {
@@ -3300,6 +3398,51 @@
           "updatedAt",
           "editedByUserIds",
           "groupings"
+        ]
+      },
+      "groupings": {
+        "type": "array",
+        "description": "Ordered categories; each has a name and ordered recipe ids (display order)",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the grouping (e.g. appetizers, mains, desserts)",
+              "example": "Mains",
+              "minLength": 1
+            },
+            "recipeIds": {
+              "type": "array",
+              "description": "Recipe ids in this grouping, in display order",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "r1abc",
+                "r2def"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "recipeIds"
+          ]
+        },
+        "example": [
+          {
+            "name": "Starters",
+            "recipeIds": [
+              "r1abc"
+            ]
+          },
+          {
+            "name": "Mains",
+            "recipeIds": [
+              "r2def",
+              "r3ghi"
+            ]
+          }
         ]
       },
       "login": {

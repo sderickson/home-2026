@@ -350,7 +350,8 @@ export interface paths {
         /** List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth). */
         get: operations["listMenus"];
         put?: never;
-        post?: never;
+        /** Create menu in a collection. Editor or owner on collection only. Recipe ids in groupings must belong to the same collection. */
+        post: operations["createMenu"];
         delete?: never;
         options?: never;
         head?: never;
@@ -976,6 +977,39 @@ export interface components {
                 recipeIds: string[];
             }[];
         };
+        /**
+         * @description Ordered categories; each has a name and ordered recipe ids (display order)
+         * @example [
+         *       {
+         *         "name": "Starters",
+         *         "recipeIds": [
+         *           "r1abc"
+         *         ]
+         *       },
+         *       {
+         *         "name": "Mains",
+         *         "recipeIds": [
+         *           "r2def",
+         *           "r3ghi"
+         *         ]
+         *       }
+         *     ]
+         */
+        groupings: {
+            /**
+             * @description Name of the grouping (e.g. appetizers, mains, desserts)
+             * @example Mains
+             */
+            name: string;
+            /**
+             * @description Recipe ids in this grouping, in display order
+             * @example [
+             *       "r1abc",
+             *       "r2def"
+             *     ]
+             */
+            recipeIds: string[];
+        }[];
         login: {
             /** @enum {string} */
             event: "login";
@@ -2778,6 +2812,76 @@ export interface operations {
                 };
             };
             /** @description Not found - collection does not exist (when collectionId provided). */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    createMenu: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Id of the collection this menu belongs to. */
+                    collectionId: string;
+                    /** @description Human-readable name for the menu. */
+                    name: string;
+                    /** @description Whether the menu is visible to non-editors. */
+                    isPublic: boolean;
+                    groupings: components["schemas"]["groupings"];
+                };
+            };
+        };
+        responses: {
+            /** @description Created menu. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        menu: components["schemas"]["menu"];
+                    };
+                };
+            };
+            /** @description Bad request - e.g. recipeIds in groupings do not belong to the same collection. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller must be editor or owner on the collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not found - collection does not exist. */
             404: {
                 headers: {
                     [name: string]: unknown;
