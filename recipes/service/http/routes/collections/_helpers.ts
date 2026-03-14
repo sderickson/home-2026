@@ -2,8 +2,10 @@
 import type {
   CollectionEntity,
   CollectionMemberEntity,
+  MenuEntity,
 } from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
+import { menuToApiMenu } from "../menus/_helpers.ts";
 
 type ListCollections200 =
   RecipesServiceResponseBody["listCollections"][200];
@@ -23,10 +25,12 @@ export function collectionToApiCollection(
 export function collectionsListResultToListCollectionsResponse(
   collectionRows: CollectionEntity[],
   memberRows: CollectionMemberEntity[],
+  menuRows: MenuEntity[],
 ): ListCollections200 {
   return {
     collections: collectionRows.map(collectionToApiCollection),
     members: memberRows.map(collectionMemberToApiCollectionMember),
+    menus: menuRows.map(menuToApiMenu),
   };
 }
 

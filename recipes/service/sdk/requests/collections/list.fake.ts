@@ -13,6 +13,6 @@ export const listCollectionsHandler = recipesHandler({
     );
     // Reflect query params if any are added later (e.g. filter by name)
     void query;
-    return { collections: list, members };
+    return { collections: list, members, menus: [] };
   },
 });

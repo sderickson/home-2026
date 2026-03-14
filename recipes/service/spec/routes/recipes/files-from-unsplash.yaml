@@ -46,3 +46,13 @@ filesFromUnsplashRecipes:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
+
+    "429":
+      description: "Too Many Requests - Unsplash API rate limit exceeded."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+          example:
+            code: "UNSPLASH_RATE_LIMIT"
+            message: "Unsplash rate limit exceeded."

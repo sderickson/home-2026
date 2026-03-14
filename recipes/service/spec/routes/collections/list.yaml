@@ -1,10 +1,10 @@
 listCollections:
-  summary: "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator)."
+  summary: "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). Includes menus for each collection (viewers see public menus only; editors/owners see all)."
   operationId: "listCollections"
 
   responses:
     "200":
-      description: "Collections the current user is a member of."
+      description: "Collections the current user is a member of, their members, and menus for those collections."
       content:
         application/json:
           schema:
@@ -12,6 +12,7 @@ listCollections:
             required:
               - collections
               - members
+              - menus
             properties:
               collections:
                 type: array
@@ -23,6 +24,11 @@ listCollections:
                 items:
                   $ref: "../../schemas/collection-member.yaml"
                 description: "All members for all returned collections."
+              menus:
+                type: array
+                items:
+                  $ref: "../../schemas/menu.yaml"
+                description: "All menus for the returned collections (viewers see public only; editors/owners see all)."
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

@@ -11,6 +11,14 @@ export * from "./requests/recipes/index.ts";
 export * from "./requests/unsplash-photos/index.ts";
 // END WORKFLOW AREA
 
+// Key-ingredient display helpers for list/card subtext (subtitle or comma-separated non-staple ingredients).
+export {
+  filterKeyIngredients,
+  formatKeyIngredientsDisplay,
+  getCardEnrichment,
+} from "./components/recipe-list/RecipeList.logic.ts";
+export type { CardEnrichment, KeyIngredient } from "./components/recipe-list/RecipeList.logic.ts";
+
 // BEGIN SORTED WORKFLOW AREA component-exports FOR sdk/add-component
 export { default as RecipeContentPreview } from "./components/recipe-content-preview/RecipeContentPreview.vue";
 export { default as RecipeFilesDisplay } from "./components/recipe-files-display/RecipeFilesDisplay.vue";

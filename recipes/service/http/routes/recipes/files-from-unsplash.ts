@@ -11,8 +11,9 @@ import {
   recipeFileQueries,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
-import { unsplash } from "@sderickson/recipes-unsplash";
+import { getPhoto, trackDownload } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { throwOnUnsplashError } from "../../unsplash-errors.ts";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToApiRecipeFile } from "./_helpers.ts";
 
@@ -24,30 +25,26 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const id = req.params.id as string;
     const body =
       req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
-    const { unsplashPhotoId, downloadLocation, imageUrl } = body;
+    const {
+      unsplashPhotoId,
+      downloadLocation: _downloadLocation,
+      imageUrl,
+    } = body;
 
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
-    const photoResult = await unsplash.photos.get({ photoId: unsplashPhotoId });
-    if (photoResult.type !== "success") {
-      throw createError(502, "Failed to fetch Unsplash photo", {
-        code: "UNSPLASH_ERROR",
-      });
+    const photoResult = await getPhoto(unsplashPhotoId);
+    if (photoResult.error) {
+      throwOnUnsplashError(photoResult.error, "fetch photo");
     }
-    const user = photoResult.response.user as unknown as Record<
-      string,
-      unknown
-    >;
+    const photoResponse = photoResult.result;
+    const user = photoResponse.user as unknown as Record<string, unknown>;
 
-    const trackResult = await unsplash.photos.trackDownload({
-      downloadLocation,
-    });
-    if (trackResult.type !== "success") {
-      throw createError(502, "Failed to track Unsplash download", {
-        code: "UNSPLASH_ERROR",
-      });
+    const trackResult = await trackDownload(unsplashPhotoId);
+    if (trackResult.error) {
+      throwOnUnsplashError(trackResult.error, "track download");
     }
 
     const imageResponse = await fetch(imageUrl);

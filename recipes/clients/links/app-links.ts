@@ -9,18 +9,6 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/",
   },
-  collectionsHome: {
-    subdomain,
-    path: "/collections",
-  },
-  collectionsList: {
-    subdomain,
-    path: "/collections",
-  },
-  recipesList: {
-    subdomain,
-    path: "/c/:collectionId/recipes/list",
-  },
   recipesDetail: {
     subdomain,
     path: "/c/:collectionId/recipes/:id",
@@ -33,10 +21,6 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/c/:collectionId/recipes/:id/edit",
   },
-  menusList: {
-    subdomain,
-    path: "/c/:collectionId/menus/list",
-  },
   menusCreate: {
     subdomain,
     path: "/c/:collectionId/menus/create",
@@ -44,6 +28,15 @@ export const appLinks: LinkMap = {
   menusDetail: {
     subdomain,
     path: "/c/:collectionId/menus/:id",
+  },
+  /** Recipe detail when navigated from a menu (same content, menu breadcrumbs). */
+  menuRecipeDetail: {
+    subdomain,
+    path: "/c/:collectionId/menus/:menuId/recipes/:recipeId",
+  },
+  collectionsDetail: {
+    subdomain,
+    path: "/c/:collectionId",
   },
   // END WORKFLOW AREA
 };

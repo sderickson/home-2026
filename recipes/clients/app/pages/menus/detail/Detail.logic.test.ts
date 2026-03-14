@@ -3,6 +3,8 @@ import {
   assertMenuDetailLoaded,
   canEditMenuForRole,
   buildUpdateMenuPayload,
+  getSectionIndexForRecipe,
+  setRecipeSection,
 } from "./Detail.logic.ts";
 
 describe("assertMenuDetailLoaded", () => {
@@ -104,5 +106,62 @@ describe("buildUpdateMenuPayload", () => {
         { name: "Sides", recipeIds: [] },
       ],
     });
+  });
+});
+
+describe("getSectionIndexForRecipe", () => {
+  const groupings = [
+    { name: "Mains", recipeIds: ["r1", "r2"] },
+    { name: "Sides", recipeIds: ["r3"] },
+  ];
+
+  it("returns section index when recipe is in that section", () => {
+    expect(getSectionIndexForRecipe("r1", groupings)).toBe(0);
+    expect(getSectionIndexForRecipe("r2", groupings)).toBe(0);
+    expect(getSectionIndexForRecipe("r3", groupings)).toBe(1);
+  });
+
+  it("returns -1 when recipe is in no section", () => {
+    expect(getSectionIndexForRecipe("r0", groupings)).toBe(-1);
+  });
+
+  it("returns first section when recipe appears in multiple (legacy)", () => {
+    const multi = [
+      { name: "A", recipeIds: ["r1"] },
+      { name: "B", recipeIds: ["r1"] },
+    ];
+    expect(getSectionIndexForRecipe("r1", multi)).toBe(0);
+  });
+});
+
+describe("setRecipeSection", () => {
+  it("moves recipe from one section to another", () => {
+    const groupings = [
+      { name: "Mains", recipeIds: ["r1", "r2"] },
+      { name: "Sides", recipeIds: ["r3"] },
+    ];
+    setRecipeSection("r1", 1, groupings);
+    expect(groupings[0].recipeIds).toEqual(["r2"]);
+    expect(groupings[1].recipeIds).toEqual(["r3", "r1"]);
+  });
+
+  it("assigns recipe to none when sectionIndex is -1", () => {
+    const groupings = [
+      { name: "Mains", recipeIds: ["r1"] },
+      { name: "Sides", recipeIds: [] },
+    ];
+    setRecipeSection("r1", -1, groupings);
+    expect(groupings[0].recipeIds).toEqual([]);
+    expect(groupings[1].recipeIds).toEqual([]);
+  });
+
+  it("adds recipe to section when it was in none", () => {
+    const groupings = [
+      { name: "Mains", recipeIds: ["r1"] },
+      { name: "Sides", recipeIds: [] },
+    ];
+    setRecipeSection("r2", 1, groupings);
+    expect(groupings[0].recipeIds).toEqual(["r1"]);
+    expect(groupings[1].recipeIds).toEqual(["r2"]);
   });
 });

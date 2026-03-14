@@ -43,7 +43,7 @@ export function canEditMenuForRole(role: string | undefined): boolean {
 export type MenuEditFormModel = {
   name: string;
   isPublic: boolean;
-  groupings: { name: string; recipeIds: string[] }[];
+  groupings: { name: string; recipeIds: string[]; _uid?: number }[];
 };
 
 /**
@@ -73,4 +73,38 @@ export function buildUpdateMenuPayload(
         recipeIds: g.recipeIds ?? [],
       })),
   };
+}
+
+/**
+ * Returns the section index (0-based) for a recipe, or -1 if in no section.
+ * If a recipe appears in multiple sections (legacy data), returns the first.
+ */
+export function getSectionIndexForRecipe(
+  recipeId: string,
+  groupings: { name: string; recipeIds: string[] }[],
+): number {
+  for (let i = 0; i < groupings.length; i++) {
+    if (groupings[i].recipeIds?.includes(recipeId)) return i;
+  }
+  return -1;
+}
+
+/**
+ * Assigns a recipe to exactly one section (or none). Mutates groupings:
+ * removes recipeId from every section, then adds to the section at sectionIndex if >= 0.
+ */
+export function setRecipeSection(
+  recipeId: string,
+  sectionIndex: number,
+  groupings: { name: string; recipeIds: string[] }[],
+): void {
+  for (const g of groupings) {
+    const idx = g.recipeIds?.indexOf(recipeId) ?? -1;
+    if (idx >= 0) g.recipeIds.splice(idx, 1);
+  }
+  if (sectionIndex >= 0 && groupings[sectionIndex]) {
+    const g = groupings[sectionIndex];
+    if (!g.recipeIds) g.recipeIds = [];
+    g.recipeIds.push(recipeId);
+  }
 }

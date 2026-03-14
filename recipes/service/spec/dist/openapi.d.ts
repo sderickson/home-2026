@@ -274,7 +274,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). */
+        /** List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). Includes menus for each collection (viewers see public menus only; editors/owners see all). */
         get: operations["listCollections"];
         put?: never;
         /** Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one. */
@@ -2187,6 +2187,19 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Too Many Requests - Unsplash API rate limit exceeded. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /** @example {
+                     *       "code": "UNSPLASH_RATE_LIMIT",
+                     *       "message": "Unsplash rate limit exceeded."
+                     *     } */
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     filesFromUnsplashRecipes: {
@@ -2241,6 +2254,19 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Too Many Requests - Unsplash API rate limit exceeded. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /** @example {
+                     *       "code": "UNSPLASH_RATE_LIMIT",
+                     *       "message": "Unsplash rate limit exceeded."
+                     *     } */
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     listCollections: {
@@ -2252,7 +2278,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Collections the current user is a member of. */
+            /** @description Collections the current user is a member of, their members, and menus for those collections. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2263,6 +2289,8 @@ export interface operations {
                         collections: components["schemas"]["collection"][];
                         /** @description All members for all returned collections. */
                         members: components["schemas"]["collection-member"][];
+                        /** @description All menus for the returned collections (viewers see public only; editors/owners see all). */
+                        menus: components["schemas"]["menu"][];
                     };
                 };
             };

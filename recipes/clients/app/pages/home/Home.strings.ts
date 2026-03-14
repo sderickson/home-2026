@@ -1,5 +1,11 @@
 export const home_page = {
-  title: "App Home",
-  subtitle: "You're in the app.",
-  cta_browse: "Browse collections",
+  welcome_heading: "Welcome!",
+  welcome_intro:
+    "This is my personal site for managing, iterating on, and sharing recipes. Organize recipes into menus and share them as part of a collection (or keep them private). Create a new collection to get started.",
+  title: "Your Recipe Collections",
+  subtitle: "Collections you've been invited to, or created yourself.",
+  create_collection: "Create collection",
+  no_collections:
+    "You are not in any collections yet. Create one to get started.",
+  members: "Other members",
 };

@@ -11,14 +11,16 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc",
-    "ping": "node --env-file=.env --experimental-strip-types ./bin/ping.ts"
+    "ping": "node --env-file=.env --experimental-strip-types ./bin/ping.ts",
+    "search": "node --env-file=.env --experimental-strip-types ./bin/search.ts",
+    "get-photo": "node --env-file=.env --experimental-strip-types ./bin/get-photo.ts",
+    "track-download": "node --env-file=.env --experimental-strip-types ./bin/track-download.ts"
   },
   "dependencies": {
     "@saflib/env": "*",
-    "unsplash-js": "^7.0.20"
+    "@saflib/monorepo": "*"
   },
   "devDependencies": {
-    "@saflib/monorepo": "*",
     "@saflib/vitest": "*"
   }
 }

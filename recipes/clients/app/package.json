@@ -26,9 +26,11 @@
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
     "marked": "^15.0.12",
-    "vue-router": "*"
+    "vue-router": "*",
+    "sortablejs": "^1.15.2"
   },
   "devDependencies": {
-    "@types/marked": "^5.0.2"
+    "@types/marked": "^5.0.2",
+    "@types/sortablejs": "^1.15.8"
   }
 }

@@ -5,16 +5,8 @@
         {{ t(strings.breadcrumb_home) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
-        {{ t(strings.breadcrumb_collections) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="menusListPath">
+      <v-breadcrumbs-item :to="collectionDetailPath">
         {{ collectionName }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="menusListPath">
-        {{ t(strings.breadcrumb_menus) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
       <v-breadcrumbs-item disabled>
@@ -22,42 +14,97 @@
       </v-breadcrumbs-item>
     </v-breadcrumbs>
 
-    <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <h1 class="text-h4">{{ menu.name }}</h1>
-      <v-chip size="small" :color="menu.isPublic ? 'success' : 'default'">
+    <v-toolbar v-if="!isEditing" density="comfortable" class="mb-4">
+      <v-toolbar-title class="text-h6">
+        {{ menu.name }}
+      </v-toolbar-title>
+      <template>
+        <v-tooltip location="bottom" :text="t(strings.tooltip_menu_view)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              :class="{ 'v-btn--active': viewMode === 'menu' }"
+              @click="viewMode = 'menu'"
+            >
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="bottom" :text="t(strings.tooltip_diner_view)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              :class="{ 'v-btn--active': viewMode === 'diner' }"
+              @click="viewMode = 'diner'"
+            >
+              <v-icon>mdi-view-module</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+      </template>
+      <v-spacer />
+      <v-chip
+        v-if="!isEditing"
+        size="small"
+        density="compact"
+        :color="menu.isPublic ? 'success' : 'default'"
+      >
         {{ menu.isPublic ? t(strings.public) : t(strings.private) }}
       </v-chip>
-      <v-spacer />
       <template v-if="showEdit">
-        <v-btn
-          v-if="!isEditing"
-          variant="outlined"
-          prepend-icon="mdi-pencil"
-          @click="startEdit"
-        >
-          {{ t(strings.edit) }}
-        </v-btn>
+        <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              @click="startEdit"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
         <template v-else>
-          <v-btn variant="outlined" @click="cancelEdit">
-            {{ t(strings.cancel) }}
-          </v-btn>
+          <v-tooltip location="bottom" :text="t(strings.cancel)">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn v-bind="tooltipProps" icon variant="text" @click="cancelEdit">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
         </template>
-        <v-btn
+        <v-tooltip
           v-if="!isEditing"
-          variant="text"
-          color="error"
-          prepend-icon="mdi-delete"
-          @click="deleteDialogOpen = true"
+          location="bottom"
+          :text="t(strings.delete)"
         >
-          {{ t(strings.delete) }}
-        </v-btn>
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              color="error"
+              @click="deleteDialogOpen = true"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </template>
-    </div>
+    </v-toolbar>
 
     <MenuGroupingsDisplay
       v-if="!isEditing"
       :groupings="menu.groupings"
       :recipes="menuRecipesForDisplay"
+      :menu-id="menuId"
+      :collection-id="collectionId"
+      :view-mode="viewMode"
+      :menu-title="!isEditing ? menu.name : undefined"
     />
     <MenuEditForm
       v-else
@@ -66,6 +113,7 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       @saved="isEditing = false"
+      @cancel="cancelEdit"
       @add-grouping="addGrouping"
       @remove-grouping="removeGrouping"
     />
@@ -146,10 +194,11 @@ const recipesList = computed(
     })),
 );
 
-const menusListPath = computed(() =>
-  constructPath(appLinks.menusList, { params: { collectionId } }),
+const collectionDetailPath = computed(() =>
+  constructPath(appLinks.collectionsDetail, { params: { collectionId } }),
 );
 
+const viewMode = ref<"menu" | "diner">("menu");
 const isEditing = ref(false);
 const deleteDialogOpen = ref(false);
 
@@ -162,9 +211,10 @@ const editForm = reactive<MenuEditFormModel>({
 function syncEditFormFromMenu() {
   editForm.name = menu.value.name;
   editForm.isPublic = menu.value.isPublic;
-  editForm.groupings = menu.value.groupings.map((g) => ({
+  editForm.groupings = menu.value.groupings.map((g, i) => ({
     name: g.name,
     recipeIds: [...g.recipeIds],
+    _uid: Date.now() + i,
   }));
 }
 
@@ -182,7 +232,11 @@ function startEdit() {
 }
 
 function addGrouping() {
-  editForm.groupings.push({ name: "", recipeIds: [] });
+  editForm.groupings.push({
+    name: "",
+    recipeIds: [],
+    _uid: Date.now(),
+  });
 }
 
 function removeGrouping(index: number) {
