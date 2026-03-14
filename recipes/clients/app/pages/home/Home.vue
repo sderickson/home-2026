@@ -84,8 +84,8 @@ import {
   assertCollectionsLoaded,
   assertProfileLoaded,
   getCollectionsList,
-} from "../collections/list/List.logic.ts";
-import CreateCollectionDialog from "../collections/list/CreateCollectionDialog.vue";
+} from "./Home.logic.ts";
+import CreateCollectionDialog from "../../components/collections/CreateCollectionDialog.vue";
 
 const { t } = useReverseT();
 const { profileQuery, collectionsQuery } = useHomeLoader();

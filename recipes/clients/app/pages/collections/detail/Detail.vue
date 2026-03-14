@@ -118,7 +118,7 @@ import {
   getRecipesList,
 } from "./Detail.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import MembersManagementDialog from "../list/MembersManagementDialog.vue";
+import MembersManagementDialog from "../../../components/collections/MembersManagementDialog.vue";
 import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
 
 const { t } = useReverseT();
