@@ -6,7 +6,7 @@
           <v-card class="mb-4">
             <v-toolbar density="comfortable">
               <v-toolbar-title class="text-h6">{{
-                recipe.title
+                props.recipe.title
               }}</v-toolbar-title>
               <v-spacer />
               <template v-if="showVersionHistory">
@@ -22,8 +22,8 @@
                       @click="versionHistoryModalOpen = true"
                     >
                       <v-badge
-                        :model-value="versions.length > 0"
-                        :content="versions.length"
+                        :model-value="props.versions.length > 0"
+                        :content="props.versions.length"
                         color="primary"
                       >
                         <v-icon>mdi-history</v-icon>
@@ -133,9 +133,9 @@
             <div class="detail-card-body d-flex">
               <div class="detail-card-preview flex-grow-1 min-width-0">
                 <RecipeContentPreview
-                  :recipe="recipe"
-                  :current-version="currentVersion"
-                  :files="files"
+                  :recipe="props.recipe"
+                  :current-version="props.currentVersion"
+                  :files="props.files"
                   :show-image-actions="showFilesEdit"
                   :image-delete-disabled="
                     filesFlow.deleteFileMutation.isPending.value
@@ -167,8 +167,8 @@
                     <NoteCard
                       v-for="note in notesTimelineOrder"
                       :key="note.id"
-                      :recipe-id="recipe.id"
-                      :latest-version-id="currentVersion?.id"
+                      :recipe-id="props.recipe.id"
+                      :latest-version-id="props.currentVersion?.id"
                       :note="note"
                       :files="getFilesForNote(note)"
                       :show-notes-edit="showNotesEdit"
@@ -179,8 +179,8 @@
                   <v-divider />
                   <div class="detail-notes-composer pa-2 flex-shrink-0">
                     <AddNoteCard
-                      :recipe-id="recipe.id"
-                      :latest-version-id="currentVersion?.id"
+                      :recipe-id="props.recipe.id"
+                      :latest-version-id="props.currentVersion?.id"
                     />
                   </div>
                 </template>
@@ -240,13 +240,13 @@
 
     <UnsplashPickerDialog
       v-model="unsplashPickerOpen"
-      :recipe-id="recipe.id"
-      :recipe-title="recipe.title"
+      :recipe-id="props.recipe.id"
+      :recipe-title="props.recipe.title"
     />
 
     <VersionHistoryModal
       v-model="versionHistoryModalOpen"
-      :recipe="recipe"
+      :recipe="props.recipe"
       :versions="versionsNewestFirst"
       :notes-by-version-id="notesByVersionId"
     />
@@ -276,8 +276,11 @@
 
 <script setup lang="ts">
 import type {
+  CollectionMember,
   Recipe,
   RecipeFileInfo,
+  RecipeNote,
+  RecipeNoteFileInfo,
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
@@ -302,60 +305,39 @@ import VersionHistoryModal from "../../pages/recipes/detail/VersionHistoryModal.
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
 import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
 
-/** Queries shape from recipe detail loader (standalone or menu-context). */
-export interface RecipeDetailQueries {
-  profileQuery: { data: { value?: unknown } };
-  collectionQuery: { data: { value?: { collection?: { id?: string } } } };
-  membersQuery: { data: { value?: { members?: Array<{ email: string; role: string }> } } };
-  recipeQuery: {
-    data: {
-      value?: {
-        recipe: Recipe;
-        currentVersion?: RecipeVersion | null;
-      } | null;
-    };
-  };
-  versionsQuery: { data: { value?: RecipeVersion[] } };
-  notesQuery: { data: { value?: unknown[] } };
-  filesQuery: { data: { value?: RecipeFileInfo[] } };
-  noteFilesByRecipeQuery: { data: { value?: unknown[] } };
+/** Props: resolved data from recipe detail loader, using spec types. */
+export interface RecipeDetailContentProps {
+  recipe: Recipe;
+  currentVersion: RecipeVersion | null;
+  collectionId: string;
+  members: CollectionMember[];
+  userEmail: string;
+  versions: RecipeVersion[];
+  notes: RecipeNote[];
+  files: RecipeFileInfo[];
+  noteFilesByRecipe: RecipeNoteFileInfo[];
 }
 
-const props = defineProps<{
-  queries: RecipeDetailQueries;
-}>();
+const props = defineProps<RecipeDetailContentProps>();
 
 const { t, lookupTKey } = useReverseT();
 const router = useRouter();
 
-const recipe = computed(() => props.queries.recipeQuery.data.value!.recipe);
-const currentVersion = computed(
-  () => props.queries.recipeQuery.data.value!.currentVersion,
-);
-const collectionId = computed(
-  () => props.queries.collectionQuery.data.value?.collection?.id ?? "",
-);
 const showEdit = computed(() => {
-  const members = (props.queries.membersQuery.data.value as { members?: Array<{ email: string; role: string }> } | undefined)?.members ?? [];
-  const userEmail = (props.queries.profileQuery.data.value as { email?: string } | undefined)?.email ?? "";
-  const currentMember = members.find((m) => m.email === userEmail);
+  const currentMember = props.members.find((m) => m.email === props.userEmail);
   return currentMember?.role === "editor" || currentMember?.role === "owner";
 });
-const versions = computed(() => props.queries.versionsQuery.data.value ?? []);
-const notes = computed(() => props.queries.notesQuery.data.value ?? []);
 const showVersionHistory = true;
 const showNotesEdit = computed(() => showEdit.value);
 const showFilesEdit = computed(() => showEdit.value);
 
 const recipeEditPath = computed(() =>
   constructPath(appLinks.recipesEdit, {
-    params: { collectionId: collectionId.value, id: recipe.value.id },
+    params: { collectionId: props.collectionId, id: props.recipe.id },
   }),
 );
 
-const files = computed(() => props.queries.filesQuery.data.value ?? []);
-
-const filesFlow = useDetailFilesFlow(computed(() => recipe.value.id));
+const filesFlow = useDetailFilesFlow(computed(() => props.recipe.id));
 const deleteRecipeMutation = useDeleteRecipeMutation();
 
 const versionHistoryModalOpen = ref(false);
@@ -372,17 +354,17 @@ const expandedImageDialogOpen = computed({
   },
 });
 
-const versionsNewestFirst = computed(() => [...versions.value].reverse());
-const notesByVersionId = computed(() => notesByVersionIdMap(notes.value as import("@sderickson/recipes-spec").RecipeNote[]));
+const versionsNewestFirst = computed(() => [...props.versions].reverse());
+const notesByVersionId = computed(() => notesByVersionIdMap(props.notes));
 const notesForLatestVersion = computed(() =>
-  notesForLatestVersionFn(notes.value as import("@sderickson/recipes-spec").RecipeNote[], currentVersion.value?.id),
+  notesForLatestVersionFn(props.notes, props.currentVersion?.id ?? undefined),
 );
 const notesTimelineOrder = computed(() =>
   [...notesForLatestVersion.value].reverse(),
 );
 
 const noteIdToFiles = computed(() =>
-  groupNoteFilesByNoteId((props.queries.noteFilesByRecipeQuery.data.value ?? []) as import("@sderickson/recipes-spec").RecipeNoteFileInfo[]),
+  groupNoteFilesByNoteId(props.noteFilesByRecipe),
 );
 
 function getFilesForNote(note: { id: string }) {
@@ -396,10 +378,10 @@ function setDeleteFileDialogOpen(v: boolean) {
 }
 
 async function doDeleteRecipe() {
-  await deleteRecipeMutation.mutateAsync(recipe.value.id);
+  await deleteRecipeMutation.mutateAsync(props.recipe.id);
   deleteRecipeDialogOpen.value = false;
   await router.push(
-    constructPath(appLinks.recipesList, { params: { collectionId: collectionId.value } }),
+    constructPath(appLinks.recipesList, { params: { collectionId: props.collectionId } }),
   );
 }
 

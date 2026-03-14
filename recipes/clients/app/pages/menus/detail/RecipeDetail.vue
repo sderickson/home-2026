@@ -27,7 +27,17 @@
         </v-breadcrumbs-item>
       </v-breadcrumbs>
 
-      <RecipeDetailContent :queries="queries" />
+      <RecipeDetailContent
+        :recipe="recipe"
+        :current-version="currentVersion"
+        :collection-id="collectionId"
+        :members="members"
+        :user-email="userEmail"
+        :versions="versions"
+        :notes="notes"
+        :files="files"
+        :note-files-by-recipe="noteFilesByRecipe"
+      />
     </v-container>
   </div>
 </template>
@@ -71,9 +81,22 @@ if (!menuData.value?.menu) {
 }
 
 const recipe = computed(() => queries.recipeQuery.data.value!.recipe);
+const currentVersion = computed(
+  () => queries.recipeQuery.data.value!.currentVersion ?? null,
+);
 const menu = computed(() => menuData.value!.menu);
-const collection = computed(() => queries.collectionQuery.data.value?.collection);
+const collection = computed(
+  () => queries.collectionQuery.data.value?.collection,
+);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
+const members = computed(() => queries.membersQuery.data.value?.members ?? []);
+const userEmail = computed(() => queries.profileQuery.data.value?.email ?? "");
+const versions = computed(() => queries.versionsQuery.data.value ?? []);
+const notes = computed(() => queries.notesQuery.data.value ?? []);
+const files = computed(() => queries.filesQuery.data.value ?? []);
+const noteFilesByRecipe = computed(
+  () => queries.noteFilesByRecipeQuery.data.value ?? [],
+);
 
 const menusListPath = computed(() =>
   constructPath(appLinks.menusList, { params: { collectionId } }),
