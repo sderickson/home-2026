@@ -1,6 +1,7 @@
 import { recipes_common_strings } from "../common/strings.ts";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
+import { collections_detail } from "./pages/collections/detail/Detail.strings.ts";
 import { collections_list } from "./pages/collections/list/List.strings.ts";
 import { collections_table } from "./pages/collections/list/CollectionsTable.strings.ts";
 import { create_collection_dialog } from "./pages/collections/list/CreateCollectionDialog.strings.ts";
@@ -28,6 +29,7 @@ import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDia
 export const app_strings = {
   ...recipes_common_strings,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
+  collections_detail,
   collections_list,
   collections_table,
   create_collection_dialog,

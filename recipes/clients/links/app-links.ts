@@ -50,5 +50,9 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/c/:collectionId/menus/:menuId/recipes/:recipeId",
   },
+  collectionsDetail: {
+    subdomain,
+    path: "/c/:collectionId",
+  },
   // END WORKFLOW AREA
 };
