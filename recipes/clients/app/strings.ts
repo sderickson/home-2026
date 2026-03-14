@@ -6,6 +6,8 @@ import { collections_table } from "./pages/collections/list/CollectionsTable.str
 import { create_collection_dialog } from "./pages/collections/list/CreateCollectionDialog.strings.ts";
 import { home_page } from "./pages/home/Home.strings.ts";
 import { members_management_dialog } from "./pages/collections/list/MembersManagementDialog.strings.ts";
+import { create_menu_form } from "./pages/menus/create/CreateMenuForm.strings.ts";
+import { menus_create } from "./pages/menus/create/Create.strings.ts";
 import { menus_list } from "./pages/menus/list/List.strings.ts";
 import { menus_list_display } from "./pages/menus/list/MenusListDisplay.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
@@ -23,8 +25,10 @@ export const app_strings = {
   collections_list,
   collections_table,
   create_collection_dialog,
+  create_menu_form,
   home_page,
   members_management_dialog,
+  menus_create,
   menus_list,
   menus_list_display,
   recipe_form,
