@@ -9,10 +9,6 @@
         {{ collectionName }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ t(strings.breadcrumb_menus) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
       <v-breadcrumbs-item disabled>
         {{ t(strings.breadcrumb_new) }}
       </v-breadcrumbs-item>

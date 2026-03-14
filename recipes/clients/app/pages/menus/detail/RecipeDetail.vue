@@ -10,10 +10,6 @@
           {{ collectionName }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="collectionDetailPath">
-          {{ t(strings.breadcrumb_menus) }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
         <v-breadcrumbs-item :to="menuDetailPath">
           {{ menu.name }}
         </v-breadcrumbs-item>
