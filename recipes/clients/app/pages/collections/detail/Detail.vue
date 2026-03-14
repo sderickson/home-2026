@@ -119,7 +119,7 @@ import {
 } from "./Detail.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MembersManagementDialog from "../list/MembersManagementDialog.vue";
-import QuickImportDialog from "../../recipes/list/QuickImportDialog.vue";
+import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
