@@ -89,6 +89,18 @@ paths:
       $ref: "./routes/collections/members-update.yaml#/membersUpdateCollections"
     delete:
       $ref: "./routes/collections/members-remove.yaml#/membersRemoveCollections"
+  /menus:
+    get:
+      $ref: "./routes/menus/list.yaml#/listMenus"
+    post:
+      $ref: "./routes/menus/create.yaml#/createMenus"
+  /menus/{id}:
+    get:
+      $ref: "./routes/menus/get.yaml#/getMenus"
+    put:
+      $ref: "./routes/menus/update.yaml#/updateMenus"
+    delete:
+      $ref: "./routes/menus/delete.yaml#/deleteMenus"
   # END WORKFLOW AREA
 
 components:
@@ -119,4 +131,6 @@ components:
       $ref: "./schemas/collection.yaml"
     CollectionMember:
       $ref: "./schemas/collection-member.yaml"
+    Menu:
+      $ref: "./schemas/menu.yaml"
     # END WORKFLOW AREA

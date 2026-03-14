@@ -27,6 +27,14 @@
             {{ t(strings.open_recipes) }}
           </v-btn>
           <v-btn
+            variant="tonal"
+            size="small"
+            class="mr-1"
+            :to="`/c/${collection.id}/menus/list`"
+          >
+            {{ t(strings.open_menus) }}
+          </v-btn>
+          <v-btn
             v-if="isOwner(collection.id)"
             variant="outlined"
             size="small"

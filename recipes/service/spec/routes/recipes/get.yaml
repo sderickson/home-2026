@@ -11,6 +11,12 @@ getRecipe:
       schema:
         type: string
       description: "Recipe id"
+    - name: menuId
+      in: query
+      required: false
+      schema:
+        type: string
+      description: "When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context)."
 
   responses:
     "200":

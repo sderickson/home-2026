@@ -33,5 +33,17 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/c/:collectionId/recipes/:id/edit",
   },
+  menusList: {
+    subdomain,
+    path: "/c/:collectionId/menus/list",
+  },
+  menusCreate: {
+    subdomain,
+    path: "/c/:collectionId/menus/create",
+  },
+  menusDetail: {
+    subdomain,
+    path: "/c/:collectionId/menus/:id",
+  },
   // END WORKFLOW AREA
 };

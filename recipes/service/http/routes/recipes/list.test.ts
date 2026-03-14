@@ -33,7 +33,9 @@ describe("GET /recipes", () => {
   });
 
   it("should return 200 and empty array for publicOnly=true without auth", async () => {
-    const response = await request(app).get("/recipes").query({ publicOnly: true });
+    const response = await request(app)
+      .get("/recipes")
+      .query({ publicOnly: true });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
@@ -50,10 +52,18 @@ describe("GET /recipes", () => {
   });
 
   it("should return 401 or 500 when not authenticated (no auth context)", async () => {
+    const response = await request(app).get("/recipes").query({ collectionId });
+
+    expect(response.status).toBe(401);
+  });
+
+  it("should return 422 when collection does not exist", async () => {
     const response = await request(app)
       .get("/recipes")
-      .query({ collectionId });
+      .query({ collectionId: "00000000-0000-0000-0000-000000000001" })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect([401, 500]).toContain(response.status);
+    expect(response.status).toBe(422);
+    expect(response.body.code).toBe("COLLECTION_NOT_FOUND");
   });
 });

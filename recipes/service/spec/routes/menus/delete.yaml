@@ -1,0 +1,39 @@
+deleteMenus:
+  summary: "Delete menu. Query collectionId when not inferred from path. Editor or owner on collection; menu must belong to collection."
+  operationId: "deleteMenu"
+
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Menu id.
+    - name: collectionId
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Id of the collection (when not inferred from path).
+
+  responses:
+    "204":
+      description: "Menu deleted."
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "403":
+      description: "Forbidden - caller must be editor or owner on the collection; menu must belong to collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+    "404":
+      description: "Not found - menu or collection does not exist."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

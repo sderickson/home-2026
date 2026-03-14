@@ -18,6 +18,7 @@ export type ProductEvent = components["schemas"]["ProductEvent"];
 export type AddRecipeFileFromUnsplashRequest = components["schemas"]["AddRecipeFileFromUnsplashRequest"];
 export type Collection = components["schemas"]["Collection"];
 export type CollectionMember = components["schemas"]["CollectionMember"];
+export type Menu = components["schemas"]["Menu"];
 export type Recipe = components["schemas"]["Recipe"];
 export type RecipeFileInfo = components["schemas"]["RecipeFileInfo"];
 export type RecipeNote = components["schemas"]["RecipeNote"];

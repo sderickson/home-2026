@@ -6,6 +6,9 @@ import { PageNotFound } from "@saflib/vue/components";
 import CollectionLayout from "./layouts/CollectionLayout.vue";
 import CollectionsListAsync from "./pages/collections/list/ListAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
+import MenusCreateAsync from "./pages/menus/create/CreateAsync.vue";
+import MenusDetailAsync from "./pages/menus/detail/DetailAsync.vue";
+import MenusListAsync from "./pages/menus/list/ListAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesEditAsync from "./pages/recipes/edit/EditAsync.vue";
@@ -43,6 +46,18 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
         {
           path: "recipes/:id/edit",
           component: RecipesEditAsync,
+        },
+        {
+          path: "menus/list",
+          component: MenusListAsync,
+        },
+        {
+          path: "menus/create",
+          component: MenusCreateAsync,
+        },
+        {
+          path: "menus/:id",
+          component: MenusDetailAsync,
         },
       ],
     },

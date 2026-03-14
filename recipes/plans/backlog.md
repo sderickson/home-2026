@@ -28,6 +28,12 @@ Features that exist in the current implementation.
 - **Public vs app** — Root client: public recipe list and recipe detail (read-only). App client: full recipe/notes/files/version UX for admins; read-only for non-admins.
 - **Access** — Public/private per recipe; admin role; multiple admins can edit any recipe/notes.
 
+### Collections & multi-tenant
+
+- **Collections** — First-class collections: create, list, get, update, delete; collection members with roles (owner, editor, viewer). Enforce validated-email for non-creators; creator cannot be removed or demoted.
+- **Recipe scoping** — All recipe endpoints require `collectionId` (query or body); scope and permissions (viewer/editor/owner) enforced. App routes under `/c/:collectionId/...`; breadcrumbs show collection name.
+- **Root public recipes** — GET /recipes?publicOnly=true and GET /recipes/:id (no collectionId) for public list and detail on the logged-out site.
+
 ### Added without a formal plan
 
 - **Google Doc–style import** — Quick import from a personal Google Doc format into a recipe (title, ingredients, instructions).
@@ -44,12 +50,7 @@ Ideas and features under consideration, in rough priority/grouping. Not all will
 
 - **Concept** — Group recipes into restaurant-style menus with categories (e.g. veggies, pastas, desserts). Each menu has a name and ordered groupings; each grouping has ordered recipe ids; short description on the menu comes from the recipe.
 - **Use cases** — Healthy dinner menu, quick dinner menu, indulge dinner menu, brunch menu, Christmas menu, etc.
-- **Note** — Menus (API + frontend) were in the original spec but deferred; the data model (e.g. `groupings: { name, recipeIds[] }`) is already specified in `recipes-init.spec.md`.
-
-### Collections & multi-tenant
-
-- **Concept** — Introduce a “collection” as a first-class thing. Allow granting other users the ability to own, edit, and view a full collection (not just one global admin pool).
-- **Tension** — The site might stay “one collection” in practice; this feature mainly pushes on extending the identity service and permission model. Could be deferred or kept small (e.g. single shared collection with invited editors).
+- **Note** — Spec and plan in progress: [notes/2026-03-13-menus/](./notes/2026-03-13-menus/). Data model (e.g. `groupings: { name, recipeIds[] }`) was in `recipes-init.spec.md`; menus are collection-scoped to align with current multi-tenant model.
 
 ### List / search
 
@@ -86,8 +87,10 @@ Ideas and features under consideration, in rough priority/grouping. Not all will
 |-----|--------|
 | [notes/2026-02-20-recipes-init/recipes-init.plan.md](./notes/2026-02-20-recipes-init/recipes-init.plan.md) | Milestone plan and workflows for initial implementation (M1–M4). |
 | [notes/2026-02-20-recipes-init/recipes-init.spec.md](./notes/2026-02-20-recipes-init/recipes-init.spec.md) | Product & technical spec: user stories, schema, API, packages. |
+| [notes/2026-03-12-collections-multi-tenant/](./notes/2026-03-12-collections-multi-tenant/) | Collections & multi-tenant: spec, plan, and workflows (M1–M5). |
 | [notes/2026-03-12-unsplash/](./notes/2026-03-12-unsplash/) | Unsplash image search and add-as-recipe-file (separate initiative). |
+| [notes/2026-03-13-menus/](./notes/2026-03-13-menus/) | Menus: spec (in progress); plan and workflows to follow. |
 
 ---
 
-*Last updated: 2026-03-12*
+*Last updated: 2026-03-13*

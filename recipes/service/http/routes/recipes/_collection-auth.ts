@@ -6,8 +6,10 @@ import createError from "http-errors";
 import { safContextStorage } from "@saflib/node";
 import {
   collectionMemberQueries,
+  collectionQueries,
   recipeQueries,
   CollectionMemberNotFoundError,
+  CollectionNotFoundError,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
 import type {
@@ -18,7 +20,7 @@ import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 
 /**
  * Looks up the caller's collection_member row from context (recipesDbKey, auth), enforces membership + validated-email + role.
- * Returns the member row or throws 401 if no auth, 403 if not a member or insufficient role.
+ * Returns the member row or throws 401 if no auth, 422 if collection does not exist (validation), 403 if not a member or insufficient role.
  */
 export async function requireCollectionMembership(
   collectionId: string,
@@ -31,6 +33,19 @@ export async function requireCollectionMembership(
   const auth = safContextStorage.getStore()?.auth;
   if (!auth) {
     throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
+  }
+
+  const { error: collectionError } = await collectionQueries.getByIdCollection(
+    recipesDbKey,
+    collectionId,
+  );
+  if (collectionError) {
+    if (collectionError instanceof CollectionNotFoundError) {
+      throw createError(422, collectionError.message, {
+        code: "COLLECTION_NOT_FOUND",
+      });
+    }
+    throw collectionError satisfies never;
   }
 
   const emailValidated = auth.emailVerified !== false;
