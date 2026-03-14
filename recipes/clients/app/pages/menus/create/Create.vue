@@ -8,6 +8,7 @@
       <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
         {{ t(strings.breadcrumb_collections) }}
       </v-breadcrumbs-item>
+      <v-breadcrumbs-divider />
       <v-breadcrumbs-item :to="menusListPath">
         {{ collectionName }}
       </v-breadcrumbs-item>
