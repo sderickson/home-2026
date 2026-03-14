@@ -11,12 +11,9 @@ import {
   recipeFileQueries,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
-import {
-  getPhoto,
-  trackDownload,
-  isUnsplashRateLimitError,
-} from "@sderickson/recipes-unsplash";
+import { getPhoto, trackDownload } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { throwOnUnsplashError } from "../../unsplash-errors.ts";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToApiRecipeFile } from "./_helpers.ts";
 
@@ -28,7 +25,11 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const id = req.params.id as string;
     const body =
       req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
-    const { unsplashPhotoId, downloadLocation: _downloadLocation, imageUrl } = body;
+    const {
+      unsplashPhotoId,
+      downloadLocation: _downloadLocation,
+      imageUrl,
+    } = body;
 
     const { recipesDbKey, recipesFileContainer } =
       recipesServiceStorage.getStore()!;
@@ -36,28 +37,14 @@ export const filesFromUnsplashRecipesHandler = createHandler(
 
     const photoResult = await getPhoto(unsplashPhotoId);
     if (photoResult.error) {
-      if (isUnsplashRateLimitError(photoResult.error)) {
-        throw createError(429, "Unsplash rate limit exceeded.", {
-          code: "UNSPLASH_RATE_LIMIT",
-        });
-      }
-      throw createError(502, "Failed to fetch Unsplash photo", {
-        code: "UNSPLASH_ERROR",
-      });
+      throwOnUnsplashError(photoResult.error, "fetch photo");
     }
     const photoResponse = photoResult.result;
-    const user = photoResponse.user as Record<string, unknown>;
+    const user = photoResponse.user as unknown as Record<string, unknown>;
 
     const trackResult = await trackDownload(unsplashPhotoId);
     if (trackResult.error) {
-      if (isUnsplashRateLimitError(trackResult.error)) {
-        throw createError(429, "Unsplash rate limit exceeded.", {
-          code: "UNSPLASH_RATE_LIMIT",
-        });
-      }
-      throw createError(502, "Failed to track Unsplash download", {
-        code: "UNSPLASH_ERROR",
-      });
+      throwOnUnsplashError(trackResult.error, "track download");
     }
 
     const imageResponse = await fetch(imageUrl);

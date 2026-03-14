@@ -2,8 +2,16 @@ export {
   isMocked,
   request,
   isUnsplashRateLimitError,
-  UnsplashClientError,
+  UnsplashMockUseError,
+  UnsplashNetworkError,
+  UnsplashRateLimitError,
+  UnsplashUnauthorizedError,
+  UnsplashNotFoundError,
+  UnsplashApiError,
+  UnsplashNotJsonError,
+  UnsplashParseError,
 } from "./client.ts";
+export type { UnsplashClientError } from "./client.ts";
 export * from "./types.ts";
 export { ping } from "./calls/ping.ts";
 export { search } from "./calls/search.ts";

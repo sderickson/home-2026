@@ -7,7 +7,7 @@ import {
   getPhoto,
   trackDownload,
   isUnsplashRateLimitError,
-  UnsplashClientError,
+  UnsplashRateLimitError,
 } from "@sderickson/recipes-unsplash";
 
 describe("@sderickson/recipes-unsplash", () => {
@@ -47,12 +47,9 @@ describe("@sderickson/recipes-unsplash", () => {
     expect(out.result.url).toBeDefined();
   });
 
-  it("isUnsplashRateLimitError identifies rate limit error", () => {
-    const err = new UnsplashClientError("Rate limited", {
-      statusCode: 429,
-      code: "UNSPLASH_RATE_LIMIT",
-    });
-    expect(isUnsplashRateLimitError(err)).toBe(true);
+  it("isUnsplashRateLimitError identifies rate limit error (403 or 429)", () => {
+    expect(isUnsplashRateLimitError(new UnsplashRateLimitError("Limited", 403))).toBe(true);
+    expect(isUnsplashRateLimitError(new UnsplashRateLimitError("Limited", 429))).toBe(true);
   });
 
   it("isUnsplashRateLimitError returns false for generic error", () => {
