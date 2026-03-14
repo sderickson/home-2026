@@ -1661,18 +1661,19 @@
     },
     "/collections": {
       "get": {
-        "summary": "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator).",
+        "summary": "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). Includes menus for each collection (viewers see public menus only; editors/owners see all).",
         "operationId": "listCollections",
         "responses": {
           "200": {
-            "description": "Collections the current user is a member of.",
+            "description": "Collections the current user is a member of, their members, and menus for those collections.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "required": [
                     "collections",
-                    "members"
+                    "members",
+                    "menus"
                   ],
                   "properties": {
                     "collections": {
@@ -1688,6 +1689,13 @@
                         "$ref": "#/components/schemas/collection-member"
                       },
                       "description": "All members for all returned collections."
+                    },
+                    "menus": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/menu"
+                      },
+                      "description": "All menus for the returned collections (viewers see public only; editors/owners see all)."
                     }
                   }
                 }

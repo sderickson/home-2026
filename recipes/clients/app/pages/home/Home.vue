@@ -16,28 +16,55 @@
     <div v-if="collections.length === 0" class="text-medium-emphasis">
       {{ t(strings.no_collections) }}
     </div>
-    <CollectionsTable
-      v-else
-      :collections="collections"
-      :members="members"
-      :user-email="userEmail"
-      @manage-members="openMembersDialog"
-    />
+    <div v-else class="d-flex flex-column gap-3">
+      <v-card
+        v-for="collection in collections"
+        :key="collection.id"
+        class="collection-card"
+        elevation="2"
+      >
+        <v-card-title class="d-flex align-center">
+          <router-link
+            :to="collectionDetailPath(collection.id)"
+            class="text-primary text-decoration-none text-h6"
+          >
+            {{ collection.name }}
+          </router-link>
+        </v-card-title>
+        <v-card-text class="pt-0">
+          <div v-if="membersForCollection(collection.id).length > 0" class="mb-3">
+            <span class="text-caption text-medium-emphasis">{{ t(strings.members) }}: </span>
+            <span class="text-body-2">{{ memberEmailsForCollection(collection.id) }}</span>
+          </div>
+          <div class="d-flex flex-wrap align-center gap-2 menu-pills">
+            <v-chip
+              v-for="menu in menusForCollection(collection.id)"
+              :key="menu.id"
+              :to="menuDetailPath(collection.id, menu.id)"
+              variant="tonal"
+              color="primary"
+              size="default"
+              class="menu-pill"
+              link
+            >
+              {{ menu.name }}
+            </v-chip>
+          </div>
+        </v-card-text>
+      </v-card>
+    </div>
 
     <CreateCollectionDialog
       v-model="createDialogOpen"
       @success="onCollectionCreated"
-    />
-    <MembersManagementDialog
-      v-model="membersDialogOpen"
-      :collection-id="selectedCollectionId"
-      :collection-name="selectedCollectionName"
     />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { constructPath } from "@saflib/links";
+import { appLinks } from "@sderickson/recipes-links";
 import { home_page as strings } from "./Home.strings.ts";
 import { useHomeLoader } from "./Home.loader.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
@@ -46,9 +73,7 @@ import {
   assertProfileLoaded,
   getCollectionsList,
 } from "../collections/list/List.logic.ts";
-import CollectionsTable from "../collections/list/CollectionsTable.vue";
 import CreateCollectionDialog from "../collections/list/CreateCollectionDialog.vue";
-import MembersManagementDialog from "../collections/list/MembersManagementDialog.vue";
 
 const { t } = useReverseT();
 const { profileQuery, collectionsQuery } = useHomeLoader();
@@ -62,22 +87,49 @@ const collections = computed(() =>
 const members = computed(
   () => collectionsQuery.data.value?.members ?? [],
 );
-const userEmail = computed(
-  () => profileQuery.data.value?.email ?? "",
-);
+const menus = computed(() => collectionsQuery.data.value?.menus ?? []);
+
+function membersForCollection(collectionId: string) {
+  return members.value.filter((m) => m.collectionId === collectionId);
+}
+
+function memberEmailsForCollection(collectionId: string): string {
+  return membersForCollection(collectionId)
+    .map((m) => m.email)
+    .join(", ");
+}
+
+function menusForCollection(collectionId: string) {
+  return menus.value.filter((m) => m.collectionId === collectionId);
+}
+
+function collectionDetailPath(collectionId: string) {
+  return constructPath(appLinks.collectionsDetail, {
+    params: { collectionId },
+  });
+}
+
+function menuDetailPath(collectionId: string, menuId: string) {
+  return constructPath(appLinks.menusDetail, {
+    params: { collectionId, id: menuId },
+  });
+}
 
 const createDialogOpen = ref(false);
-const membersDialogOpen = ref(false);
-const selectedCollectionId = ref("");
-const selectedCollectionName = ref("");
-
-function openMembersDialog(collection: { id: string; name: string }) {
-  selectedCollectionId.value = collection.id;
-  selectedCollectionName.value = collection.name;
-  membersDialogOpen.value = true;
-}
 
 function onCollectionCreated() {
   createDialogOpen.value = false;
 }
 </script>
+
+<style scoped>
+.collection-card {
+  width: 100%;
+}
+.menu-pills {
+  gap: 0.5rem;
+}
+.menu-pill {
+  cursor: pointer;
+}
+</style>
