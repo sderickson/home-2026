@@ -1,4 +1,5 @@
 // BEGIN SORTED WORKFLOW AREA fake-handler-imports FOR sdk/add-query
+import { getMenuHandler } from "./get.fake.ts";
 import { listMenusHandler } from "./list.fake.ts";
 // END WORKFLOW AREA
 
@@ -9,6 +10,7 @@ import { listMenusHandler } from "./list.fake.ts";
 // export all fake handlers for this group
 export const menusFakeHandlers = [
   // BEGIN SORTED WORKFLOW AREA fake-handler-array FOR sdk/add-query
+  getMenuHandler,
   listMenusHandler,
   // END WORKFLOW AREA
 
