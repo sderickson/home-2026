@@ -1,44 +1,41 @@
 <template>
   <div>
-    <!-- Fancy menu layout: centered column, elegant restaurant style -->
+    <!-- Fancy menu layout: masonry columns, centered when fewer sections -->
     <template v-if="viewMode === 'menu'">
-      <div class="menu-fancy">
+      <div
+        class="menu-fancy"
+        :class="[
+          groupings.length === 1 && 'menu-fancy--sections-1',
+          groupings.length === 2 && 'menu-fancy--sections-2',
+        ]"
+      >
         <h1 v-if="menuTitle" class="menu-fancy-title">{{ menuTitle }}</h1>
-        <v-row align="start" class="menu-fancy-row">
-          <v-spacer />
-          <v-col
-            v-for="(grouping, gIndex) in groupings"
-            :key="gIndex"
-            class="menu-fancy-section-col"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <div class="menu-fancy-section">
-              <h2 class="menu-fancy-section-title">{{ grouping.name }}</h2>
-              <ul class="menu-fancy-list">
-                <li
-                  v-for="recipeId in grouping.recipeIds"
-                  :key="recipeId"
-                  class="menu-fancy-item"
+        <div
+          v-for="(grouping, gIndex) in groupings"
+          :key="gIndex"
+          class="menu-fancy-section"
+        >
+          <h2 class="menu-fancy-section-title">{{ grouping.name }}</h2>
+          <ul class="menu-fancy-list">
+            <li
+              v-for="recipeId in grouping.recipeIds"
+              :key="recipeId"
+              class="menu-fancy-item"
+            >
+              <router-link :to="recipeLink(recipeId)" class="menu-fancy-link">
+                <span class="menu-fancy-dish">{{
+                  recipeById.get(recipeId)?.title ?? recipeId
+                }}</span>
+                <span
+                  v-if="subtextByRecipeId.get(recipeId)"
+                  class="menu-fancy-desc"
                 >
-                  <router-link :to="recipeLink(recipeId)" class="menu-fancy-link">
-                    <span class="menu-fancy-dish">{{
-                      recipeById.get(recipeId)?.title ?? recipeId
-                    }}</span>
-                    <span
-                      v-if="subtextByRecipeId.get(recipeId)"
-                      class="menu-fancy-desc"
-                    >
-                      {{ subtextByRecipeId.get(recipeId) }}
-                    </span>
-                  </router-link>
-                </li>
-              </ul>
-            </div>
-          </v-col>
-          <v-spacer />
-        </v-row>
+                  {{ subtextByRecipeId.get(recipeId) }}
+                </span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
       </div>
     </template>
 
@@ -224,21 +221,37 @@ function recipeLink(recipeId: string) {
   margin-right: auto;
   text-align: center;
   padding: 1rem 0;
+  column-count: 1;
+  column-gap: 2rem;
 }
 
-.menu-fancy-row {
-  margin: 0 -1rem;
+/* Narrower width when 1–2 sections so the masonry block is centered */
+.menu-fancy--sections-1 {
+  max-width: 22rem;
+  column-count: 1;
 }
 
-.menu-fancy-section-col {
-  flex: 0 0 auto;
-  width: 100%;
-  max-width: 20rem;
+.menu-fancy--sections-2 {
+  max-width: 44rem;
 }
 
 @media (min-width: 600px) {
-  .menu-fancy-section-col {
-    width: 20rem;
+  .menu-fancy {
+    column-count: 2;
+  }
+
+  .menu-fancy--sections-2 {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 960px) {
+  .menu-fancy {
+    column-count: 3;
+  }
+
+  .menu-fancy--sections-2 {
+    column-count: 2;
   }
 }
 
@@ -251,9 +264,15 @@ function recipeLink(recipeId: string) {
   margin: 0 0 2rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  column-span: all;
 }
 
 .menu-fancy-section {
+  break-inside: avoid;
+  margin-bottom: 2.5rem;
+}
+
+.menu-fancy-section:last-child {
   margin-bottom: 0;
 }
 
