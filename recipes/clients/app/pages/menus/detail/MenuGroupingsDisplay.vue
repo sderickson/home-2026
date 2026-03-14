@@ -33,9 +33,11 @@
       </div>
     </template>
 
-    <!-- Diner layout: label + compact cards with images -->
+    <!-- Diner layout: menu title + compact cards with images -->
     <template v-else>
-      <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
+      <h2 v-if="menuTitle" class="menu-diner-title text-h6 mb-3">
+        {{ menuTitle }}
+      </h2>
       <div
         v-for="(grouping, gIndex) in groupings"
         :key="gIndex"
@@ -58,32 +60,40 @@
               class="menu-diner-card"
               link
             >
-              <v-img
-                v-if="enrichmentByRecipeId.get(recipeId)?.firstImageUrl"
-                :src="enrichmentByRecipeId.get(recipeId)!.firstImageUrl!"
-                :alt="recipeById.get(recipeId)?.title ?? ''"
-                cover
-                height="120"
-              />
-              <v-sheet
-                v-else
-                color="surface-variant"
-                class="d-flex align-center justify-center"
-                height="120"
-              >
-                <v-icon size="32" color="grey-lighten-1">
-                  mdi-book-open-page-variant-outline
-                </v-icon>
-              </v-sheet>
-              <v-card-title class="text-body-2 font-weight-medium py-2 px-3">
-                {{ recipeById.get(recipeId)?.title ?? recipeId }}
-              </v-card-title>
-              <v-card-subtitle
-                v-if="subtextByRecipeId.get(recipeId)"
-                class="text-caption pt-0 px-3 pb-2 text-medium-emphasis menu-diner-subtitle"
-              >
-                {{ subtextByRecipeId.get(recipeId) }}
-              </v-card-subtitle>
+              <div class="menu-diner-card-inner">
+                <div class="menu-diner-card-media">
+                  <v-img
+                    v-if="enrichmentByRecipeId.get(recipeId)?.firstImageUrl"
+                    :src="enrichmentByRecipeId.get(recipeId)!.firstImageUrl!"
+                    :alt="recipeById.get(recipeId)?.title ?? ''"
+                    cover
+                    height="64"
+                    width="64"
+                  />
+                  <v-sheet
+                    v-else
+                    color="surface-variant"
+                    class="menu-diner-card-placeholder d-flex align-center justify-center"
+                    height="64"
+                    width="64"
+                  >
+                    <v-icon size="24" color="grey-lighten-1">
+                      mdi-book-open-page-variant-outline
+                    </v-icon>
+                  </v-sheet>
+                </div>
+                <div class="menu-diner-card-body">
+                  <div class="menu-diner-card-title">
+                    {{ recipeById.get(recipeId)?.title ?? recipeId }}
+                  </div>
+                  <div
+                    v-if="subtextByRecipeId.get(recipeId)"
+                    class="menu-diner-card-subtitle"
+                  >
+                    {{ subtextByRecipeId.get(recipeId) }}
+                  </div>
+                </div>
+              </div>
             </v-card>
           </v-col>
         </v-row>
@@ -291,12 +301,50 @@ function recipeLink(recipeId: string) {
   margin-top: 0.15rem;
 }
 
+.menu-diner-title {
+  margin-top: 0;
+  font-weight: 600;
+}
+
 .menu-diner-card {
   break-inside: avoid;
 }
-.menu-diner-subtitle {
+
+.menu-diner-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.menu-diner-card-media {
+  flex-shrink: 0;
+}
+
+.menu-diner-card-media :deep(.v-img),
+.menu-diner-card-placeholder {
+  border-radius: 4px;
+}
+
+.menu-diner-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.menu-diner-card-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.menu-diner-card-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  line-height: 1.3;
+  margin-top: 0.125rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

@@ -23,10 +23,7 @@
     </v-breadcrumbs>
 
     <v-toolbar density="comfortable" class="mb-4">
-      <v-toolbar-title
-        v-if="isEditing || viewMode === 'diner'"
-        class="text-h6"
-      >
+      <v-toolbar-title v-if="isEditing" class="text-h6">
         {{ menu.name }}
       </v-toolbar-title>
       <template v-if="!isEditing">
@@ -115,7 +112,7 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       :view-mode="viewMode"
-      :menu-title="viewMode === 'menu' ? menu.name : undefined"
+      :menu-title="!isEditing ? menu.name : undefined"
     />
     <MenuEditForm
       v-else
