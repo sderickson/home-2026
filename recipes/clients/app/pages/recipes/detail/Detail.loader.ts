@@ -11,19 +11,25 @@ import { getProfile } from "@saflib/auth";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
-export function useDetailLoader() {
+export type RecipeDetailLoaderParams = {
+  recipeId: string;
+  collectionId: string;
+};
+
+/** Load recipe detail data. Uses route params when no params passed (standalone recipe page). */
+export function useDetailLoader(params?: RecipeDetailLoaderParams) {
   const route = useRoute();
-  const id = route.params.id as string;
-  const collectionId = route.params.collectionId as string;
+  const recipeId = params?.recipeId ?? (route.params.id as string);
+  const collectionId = params?.collectionId ?? (route.params.collectionId as string);
 
   return {
     profileQuery: useQuery(getProfile()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
-    recipeQuery: useQuery(getRecipeQuery(id)),
-    versionsQuery: useQuery(listRecipeVersionsQuery(id)),
-    notesQuery: useQuery(notesListRecipesQuery(id)),
-    filesQuery: useQuery(filesListRecipesQuery(id)),
-    noteFilesByRecipeQuery: useQuery(recipeNoteFilesGetByNoteIdQuery(id)),
+    recipeQuery: useQuery(getRecipeQuery(recipeId)),
+    versionsQuery: useQuery(listRecipeVersionsQuery(recipeId)),
+    notesQuery: useQuery(notesListRecipesQuery(recipeId)),
+    filesQuery: useQuery(filesListRecipesQuery(recipeId)),
+    noteFilesByRecipeQuery: useQuery(recipeNoteFilesGetByNoteIdQuery(recipeId)),
   };
 }

@@ -1,35 +1,139 @@
 <template>
   <div>
     <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
-    <div
-      v-for="(grouping, gIndex) in groupings"
-      :key="gIndex"
-      class="mb-4"
-    >
-      <div class="text-h6 mb-2">{{ grouping.name }}</div>
-      <v-list density="compact">
-        <v-list-item
-          v-for="recipeId in grouping.recipeIds"
-          :key="recipeId"
-          :title="recipeById.get(recipeId)?.title ?? recipeId"
-          :subtitle="recipeById.get(recipeId)?.subtitle ?? ''"
-        />
-      </v-list>
-    </div>
+
+    <!-- Fancy menu layout: text-only, elegant list -->
+    <template v-if="viewMode === 'menu'">
+      <div
+        v-for="(grouping, gIndex) in groupings"
+        :key="gIndex"
+        class="mb-6"
+      >
+        <div class="text-h6 text-medium-emphasis mb-3 font-weight-medium">
+          {{ grouping.name }}
+        </div>
+        <v-list class="menu-fancy-list">
+          <v-list-item
+            v-for="recipeId in grouping.recipeIds"
+            :key="recipeId"
+            :to="recipeLink(recipeId)"
+            :title="recipeById.get(recipeId)?.title ?? recipeId"
+            :subtitle="subtextByRecipeId.get(recipeId) ?? ''"
+            variant="text"
+            class="menu-fancy-item"
+            lines="two"
+          />
+        </v-list>
+      </div>
+    </template>
+
+    <!-- Diner layout: compact cards with images -->
+    <template v-else>
+      <div
+        v-for="(grouping, gIndex) in groupings"
+        :key="gIndex"
+        class="mb-5"
+      >
+        <div class="text-subtitle-1 text-medium-emphasis mb-2">
+          {{ grouping.name }}
+        </div>
+        <v-row dense>
+          <v-col
+            v-for="recipeId in grouping.recipeIds"
+            :key="recipeId"
+            cols="12"
+            sm="6"
+            md="4"
+          >
+            <v-card
+              :to="recipeLink(recipeId)"
+              variant="outlined"
+              class="menu-diner-card"
+              link
+            >
+              <v-img
+                v-if="enrichmentByRecipeId.get(recipeId)?.firstImageUrl"
+                :src="enrichmentByRecipeId.get(recipeId)!.firstImageUrl!"
+                :alt="recipeById.get(recipeId)?.title ?? ''"
+                cover
+                height="120"
+              />
+              <v-sheet
+                v-else
+                color="surface-variant"
+                class="d-flex align-center justify-center"
+                height="120"
+              >
+                <v-icon size="32" color="grey-lighten-1">
+                  mdi-book-open-page-variant-outline
+                </v-icon>
+              </v-sheet>
+              <v-card-title class="text-body-2 font-weight-medium py-2 px-3">
+                {{ recipeById.get(recipeId)?.title ?? recipeId }}
+              </v-card-title>
+              <v-card-subtitle
+                v-if="subtextByRecipeId.get(recipeId)"
+                class="text-caption pt-0 px-3 pb-2 text-medium-emphasis menu-diner-subtitle"
+              >
+                {{ subtextByRecipeId.get(recipeId) }}
+              </v-card-subtitle>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  formatKeyIngredientsDisplay,
+  getCardEnrichment,
+  getRecipeQuery,
+  filesListRecipesQuery,
+} from "@sderickson/recipes-sdk";
 import { computed } from "vue";
-import { menu_groupings_display as strings } from "./MenuGroupingsDisplay.strings.ts";
+import { useQueries } from "@tanstack/vue-query";
+import { appLinks } from "@sderickson/recipes-links";
+import { constructPath } from "@saflib/links";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { menu_groupings_display as strings } from "./MenuGroupingsDisplay.strings.ts";
 
 const props = defineProps<{
   groupings: { name: string; recipeIds: string[] }[];
   recipes: { id: string; title: string; subtitle?: string }[];
+  menuId: string;
+  collectionId: string;
+  viewMode: "menu" | "diner";
 }>();
 
 const { t } = useReverseT();
+
+const uniqueRecipeIds = computed(() => {
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  for (const g of props.groupings) {
+    for (const id of g.recipeIds) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+  }
+  return ids;
+});
+
+const detailQueries = useQueries({
+  queries: computed(() =>
+    uniqueRecipeIds.value.map((id) => getRecipeQuery(id)),
+  ),
+});
+
+const filesQueries = useQueries({
+  queries: computed(() =>
+    uniqueRecipeIds.value.map((id) => filesListRecipesQuery(id)),
+  ),
+});
 
 const recipeById = computed(() => {
   const map = new Map<
@@ -41,4 +145,62 @@ const recipeById = computed(() => {
   }
   return map;
 });
+
+const enrichmentByRecipeId = computed(() => {
+  const map = new Map<
+    string,
+    { firstImageUrl: string | null; keyIngredients: { name: string; quantity: string; unit: string }[] }
+  >();
+  uniqueRecipeIds.value.forEach((id, i) => {
+    const detail = detailQueries.value[i]?.data;
+    const files = filesQueries.value[i]?.data ?? undefined;
+    map.set(id, getCardEnrichment(detail, files ?? undefined));
+  });
+  return map;
+});
+
+const subtextByRecipeId = computed(() => {
+  const map = new Map<string, string>();
+  for (const r of props.recipes) {
+    const sub = r.subtitle?.trim();
+    if (sub) {
+      map.set(r.id, sub);
+    } else {
+      const enrichment = enrichmentByRecipeId.value.get(r.id);
+      const text = enrichment
+        ? formatKeyIngredientsDisplay(enrichment.keyIngredients)
+        : "";
+      if (text) map.set(r.id, text);
+    }
+  }
+  return map;
+});
+
+function recipeLink(recipeId: string) {
+  return constructPath(appLinks.menuRecipeDetail, {
+    params: {
+      collectionId: props.collectionId,
+      menuId: props.menuId,
+      recipeId,
+    },
+  });
+}
 </script>
+
+<style scoped>
+.menu-fancy-list {
+  background: transparent;
+}
+.menu-fancy-item {
+  min-height: 48px;
+}
+.menu-diner-card {
+  break-inside: avoid;
+}
+.menu-diner-subtitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

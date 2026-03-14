@@ -10,8 +10,16 @@
           {{ t(strings.breadcrumb_collections) }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="recipesListPath">
+        <v-breadcrumbs-item :to="menusListPath">
           {{ collectionName }}
+        </v-breadcrumbs-item>
+        <v-breadcrumbs-divider />
+        <v-breadcrumbs-item :to="menusListPath">
+          {{ t(strings.breadcrumb_menus) }}
+        </v-breadcrumbs-item>
+        <v-breadcrumbs-divider />
+        <v-breadcrumbs-item :to="menuDetailPath">
+          {{ menu.name }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
         <v-breadcrumbs-item :to="recipeDetailPath">
@@ -30,7 +38,6 @@ import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
   assertNotesLoaded,
@@ -38,15 +45,18 @@ import {
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-} from "./Detail.logic.ts";
-import { recipes_detail_page as strings } from "./Detail.strings.ts";
-import RecipeDetailContent from "./RecipeDetailContent.vue";
+} from "../../recipes/detail/Detail.logic.ts";
+import RecipeDetailContent from "../../recipes/detail/RecipeDetailContent.vue";
+import { useMenuRecipeDetailLoader } from "./RecipeDetail.loader.ts";
+import { menus_recipe_detail as strings } from "./RecipeDetail.strings.ts";
 
 const { t } = useReverseT();
 const route = useRoute();
 const collectionId = route.params.collectionId as string;
+const menuId = route.params.menuId as string;
 
-const queries = useDetailLoader();
+const loaderResult = useMenuRecipeDetailLoader();
+const { menuQuery, ...queries } = loaderResult;
 
 assertRecipeLoaded(queries.recipeQuery.data.value);
 assertProfileLoaded(queries.profileQuery.data.value);
@@ -55,16 +65,25 @@ assertNotesLoaded(queries.notesQuery.data.value);
 assertFilesLoaded(queries.filesQuery.data.value);
 assertNoteFilesByRecipeLoaded(queries.noteFilesByRecipeQuery.data.value);
 
+const menuData = computed(() => menuQuery.data.value);
+if (!menuData.value?.menu) {
+  throw new Error("Failed to load menu");
+}
+
 const recipe = computed(() => queries.recipeQuery.data.value!.recipe);
+const menu = computed(() => menuData.value!.menu);
 const collection = computed(() => queries.collectionQuery.data.value?.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 
-const recipesListPath = computed(() =>
-  constructPath(appLinks.recipesList, { params: { collectionId } }),
+const menusListPath = computed(() =>
+  constructPath(appLinks.menusList, { params: { collectionId } }),
+);
+const menuDetailPath = computed(() =>
+  constructPath(appLinks.menusDetail, { params: { collectionId, id: menuId } }),
 );
 const recipeDetailPath = computed(() =>
-  constructPath(appLinks.recipesDetail, {
-    params: { collectionId, id: recipe.value.id },
+  constructPath(appLinks.menuRecipeDetail, {
+    params: { collectionId, menuId, recipeId: recipe.value.id },
   }),
 );
 </script>

@@ -27,6 +27,20 @@
       <v-chip size="small" :color="menu.isPublic ? 'success' : 'default'">
         {{ menu.isPublic ? t(strings.public) : t(strings.private) }}
       </v-chip>
+      <v-btn-toggle
+        v-model="viewMode"
+        mandatory
+        density="compact"
+        variant="outlined"
+        class="ml-2"
+      >
+        <v-btn value="menu" size="small">
+          {{ t(strings.view_mode_menu) }}
+        </v-btn>
+        <v-btn value="diner" size="small">
+          {{ t(strings.view_mode_diner) }}
+        </v-btn>
+      </v-btn-toggle>
       <v-spacer />
       <template v-if="showEdit">
         <v-btn
@@ -58,6 +72,9 @@
       v-if="!isEditing"
       :groupings="menu.groupings"
       :recipes="menuRecipesForDisplay"
+      :menu-id="menuId"
+      :collection-id="collectionId"
+      :view-mode="viewMode"
     />
     <MenuEditForm
       v-else
@@ -150,6 +167,7 @@ const menusListPath = computed(() =>
   constructPath(appLinks.menusList, { params: { collectionId } }),
 );
 
+const viewMode = ref<"menu" | "diner">("menu");
 const isEditing = ref(false);
 const deleteDialogOpen = ref(false);
 

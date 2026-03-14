@@ -45,5 +45,10 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/c/:collectionId/menus/:id",
   },
+  /** Recipe detail when navigated from a menu (same content, menu breadcrumbs). */
+  menuRecipeDetail: {
+    subdomain,
+    path: "/c/:collectionId/menus/:menuId/recipes/:recipeId",
+  },
   // END WORKFLOW AREA
 };

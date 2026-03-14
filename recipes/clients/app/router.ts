@@ -8,6 +8,7 @@ import CollectionsListAsync from "./pages/collections/list/ListAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import MenusCreateAsync from "./pages/menus/create/CreateAsync.vue";
 import MenusDetailAsync from "./pages/menus/detail/DetailAsync.vue";
+import MenuRecipeDetailAsync from "./pages/menus/detail/RecipeDetailAsync.vue";
 import MenusListAsync from "./pages/menus/list/ListAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
@@ -54,6 +55,10 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
         {
           path: "menus/create",
           component: MenusCreateAsync,
+        },
+        {
+          path: "menus/:menuId/recipes/:recipeId",
+          component: MenuRecipeDetailAsync,
         },
         {
           path: "menus/:id",

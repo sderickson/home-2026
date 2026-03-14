@@ -14,6 +14,7 @@ import { menus_create } from "./pages/menus/create/Create.strings.ts";
 import { menus_detail } from "./pages/menus/detail/Detail.strings.ts";
 import { menus_list } from "./pages/menus/list/List.strings.ts";
 import { menus_list_display } from "./pages/menus/list/MenusListDisplay.strings.ts";
+import { menus_recipe_detail } from "./pages/menus/detail/RecipeDetail.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
 import { recipes_create_page } from "./pages/recipes/create/Create.strings.ts";
 import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";

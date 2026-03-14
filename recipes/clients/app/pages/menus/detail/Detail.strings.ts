@@ -5,6 +5,8 @@ export const menus_detail = {
   public: "Public",
   private: "Private",
   groupings_label: "Groupings",
+  view_mode_menu: "Menu",
+  view_mode_diner: "Diner",
   edit: "Edit",
   save: "Save",
   cancel: "Cancel",
