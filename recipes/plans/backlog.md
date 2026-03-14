@@ -40,17 +40,25 @@ Features that exist in the current implementation.
 - **Ingredient parsing** — Parsing freeform ingredient text into structured `{ name, quantity, unit }` objects for storage/editing.
 - **Recipe list cards** — Recipe cards on the list view show non-pantry ingredients (e.g. what you’d need to buy or pull from the pantry).
 
+### Site glue (home & navigation)
+
+- **Logged-in home** — Lists collections the user is in; welcome/orientation block; each collection as a card with name (link to collection detail), optional “other members” when not solo, and menu chips linking to menu detail. Create-collection action; no separate collections list page.
+- **Collection detail** — Single page per collection: menus (pills with add), membership pill (opens management dialog), recipes (list + quick import + create). Replaces former menus list and recipes list pages.
+- **Navigation** — Home → collection detail → menu detail or recipe detail. Menu-context recipe detail: Home → collection → menu → recipe (shared recipe body, different breadcrumbs). Breadcrumbs and links no longer reference removed list pages.
+- **API** — Collections list endpoint returns `menus` in addition to collections and members so the home can show menu chips without extra requests.
+
+### Menus
+
+- **Menus** — Collection-scoped: create, list (by collection), get, update, delete. Data model: `groupings: { name, recipeIds[] }`; each recipe in at most one section per menu.
+- **Menu detail (view)** — Two view modes: “fancy” (text-only, column layout, section underlines) and “diner” (cards with images, compact). Subtext from recipe subtitle or comma-separated non-staple ingredients. Links to recipe detail in menu context.
+- **Menu-context recipe detail** — Dedicated route and page; reuses `RecipeDetailContent` with menu-specific breadcrumbs (Home → collection → menu → recipe).
+- **Menu editing** — Single card: toolbar (clickable menu name → edit-in-dialog, public/private icon with tooltips, save disk icon, cancel), then sections in an accordion. Sections and recipes reorderable via Sortable.js (drag handle). Per-section recipe list + autocomplete to add (unassigned recipes only). Add-section button. See [notes/2026-03-14-ux/cursor_menu_detail_page_improvement.md](./notes/2026-03-14-ux/cursor_menu_detail_page_improvement.md).
+
 ---
 
 ## Backlog
 
 Ideas and features under consideration, in rough priority/grouping. Not all will be done; use this to decide scope.
-
-### Menus
-
-- **Concept** — Group recipes into restaurant-style menus with categories (e.g. veggies, pastas, desserts). Each menu has a name and ordered groupings; each grouping has ordered recipe ids; short description on the menu comes from the recipe.
-- **Use cases** — Healthy dinner menu, quick dinner menu, indulge dinner menu, brunch menu, Christmas menu, etc.
-- **Note** — Spec and plan in progress: [notes/2026-03-13-menus/](./notes/2026-03-13-menus/). Data model (e.g. `groupings: { name, recipeIds[] }`) was in `recipes-init.spec.md`; menus are collection-scoped to align with current multi-tenant model.
 
 ### List / search
 
@@ -73,12 +81,6 @@ Ideas and features under consideration, in rough priority/grouping. Not all will
 - **Goal** — Let visitors try the site without affecting real data. Use existing fake/MSW-style handlers so actions (create recipe, edit, etc.) are in-memory and disappear on navigation or refresh.
 - **Value** — Safe way for random users to “play” with the product.
 
-### Site glue (home & navigation)
-
-- **Logged-out home** — Clear entry points: e.g. browse public recipes, start demo mode.
-- **Logged-in home** — Entry to real experiences: recently changed recipes (and later menus), quick actions, possibly demo mode toggle.
-- **Scope** — Make both homes direct users to the right experience; keep navigation and first screen coherent.
-
 ---
 
 ## Related plans
@@ -90,7 +92,8 @@ Ideas and features under consideration, in rough priority/grouping. Not all will
 | [notes/2026-03-12-collections-multi-tenant/](./notes/2026-03-12-collections-multi-tenant/) | Collections & multi-tenant: spec, plan, and workflows (M1–M5). |
 | [notes/2026-03-12-unsplash/](./notes/2026-03-12-unsplash/) | Unsplash image search and add-as-recipe-file (separate initiative). |
 | [notes/2026-03-13-menus/](./notes/2026-03-13-menus/) | Menus: spec (in progress); plan and workflows to follow. |
+| [notes/2026-03-14-ux/cursor_menu_detail_page_improvement.md](./notes/2026-03-14-ux/cursor_menu_detail_page_improvement.md) | Menu detail UX: view modes, edit form (toolbar, accordion, drag-and-drop), home/collection glue. |
 
 ---
 
-*Last updated: 2026-03-13*
+*Last updated: 2026-03-14*
