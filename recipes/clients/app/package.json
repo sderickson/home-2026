@@ -27,8 +27,7 @@
     "@sderickson/recipes-sdk": "*",
     "marked": "^15.0.12",
     "vue-router": "*",
-    "sortablejs": "^1.15.2",
-    "vuedraggable": "^4.1.0"
+    "sortablejs": "^1.15.2"
   },
   "devDependencies": {
     "@types/marked": "^5.0.2",

@@ -1,137 +1,204 @@
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-text-field
-      v-model="form.name"
-      :label="t(strings.name_label)"
-      variant="outlined"
-      class="mb-4"
-    />
-    <v-switch
-      v-model="form.isPublic"
-      :label="t(strings.is_public_label)"
-      class="mb-4"
-    />
-    <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
+    <v-card class="mb-4">
+      <v-toolbar density="comfortable">
+        <v-toolbar-title
+          class="text-h6 menu-edit-title"
+          @click="openNameDialog"
+        >
+          {{ form.name || t(strings.name_placeholder) }}
+        </v-toolbar-title>
+        <v-spacer />
+        <v-tooltip
+          location="bottom"
+          :text="
+            form.isPublic
+              ? t(strings.tooltip_public)
+              : t(strings.tooltip_private)
+          "
+        >
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              type="button"
+              variant="text"
+              icon
+              :aria-label="
+                form.isPublic
+                  ? t(strings.tooltip_public)
+                  : t(strings.tooltip_private)
+              "
+              @click="form.isPublic = !form.isPublic"
+            >
+              <v-icon>{{ form.isPublic ? "mdi-web" : "mdi-cancel" }}</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="bottom" :text="t(strings.submit)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              type="submit"
+              color="primary"
+              icon
+              :loading="updateMutation.isPending.value"
+              :aria-label="t(strings.submit)"
+            >
+              <v-icon>mdi-content-save</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="bottom" :text="t(strings.cancel)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              type="button"
+              variant="text"
+              icon
+              :aria-label="t(strings.cancel)"
+              @click="emit('cancel')"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+      </v-toolbar>
 
-    <v-expansion-panels
-      ref="sectionsPanelsRef"
-      variant="accordion"
-      class="menu-edit-sections mb-4"
-    >
-      <v-expansion-panel
-        v-for="(grouping, gIndex) in form.groupings"
-        :key="grouping._uid ?? gIndex"
-        class="menu-edit-section"
-      >
-        <v-expansion-panel-title>
-          <div class="d-flex align-center gap-2 flex-grow-1">
-            <v-btn
-              type="button"
-              variant="text"
-              size="small"
-              icon="mdi-drag"
-              class="section-drag-handle"
-              :aria-label="t(strings.drag_section)"
-              @click.stop
-            />
-            <v-text-field
-              v-model="grouping.name"
-              :placeholder="t(strings.grouping_name_placeholder)"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="flex-grow-1"
-              style="max-width: 280px"
-              @click.stop
-            />
-            <v-btn
-              type="button"
-              variant="text"
-              color="error"
-              size="small"
-              icon="mdi-close"
-              :aria-label="t(strings.remove_grouping)"
-              @click.stop="emit('removeGrouping', gIndex)"
-            />
-          </div>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <draggable
-            v-model="grouping.recipeIds"
-            :item-key="(id: string) => id"
-            tag="div"
-            class="menu-edit-list mb-2"
-            handle=".menu-edit-drag-handle"
-            ghost-class="menu-edit-drag-ghost"
-            drag-class="menu-edit-drag-dragging"
+      <div class="menu-edit-body pa-3">
+        <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
+
+        <v-expansion-panels
+          ref="sectionsPanelsRef"
+          variant="accordion"
+          class="menu-edit-sections mb-4"
+        >
+          <v-expansion-panel
+            v-for="(grouping, gIndex) in form.groupings"
+            :key="grouping._uid ?? gIndex"
+            class="menu-edit-section"
           >
-            <template #item="{ element: recipeId }">
-              <v-list-item class="menu-edit-list-item">
-                <template #prepend>
-                  <v-btn
-                    type="button"
-                    variant="text"
-                    size="small"
-                    icon="mdi-drag"
-                    class="menu-edit-drag-handle"
-                    :aria-label="t(strings.drag_handle)"
-                  />
-                </template>
-                <span class="flex-grow-1">{{ recipeTitle(recipeId) }}</span>
-                <template #append>
-                  <v-btn
-                    type="button"
-                    variant="text"
-                    size="small"
-                    icon="mdi-close"
-                    :aria-label="t(strings.remove_recipe)"
-                    @click="removeRecipeFromSection(recipeId, gIndex)"
-                  />
-                </template>
-              </v-list-item>
-            </template>
-          </draggable>
-          <v-autocomplete
-            :model-value="autocompleteBySection[gIndex] ?? null"
-            :items="availableRecipes"
-            item-title="title"
-            item-value="id"
-            :placeholder="t(strings.add_recipe_placeholder)"
+            <v-expansion-panel-title>
+              <div class="d-flex align-center gap-2 flex-grow-1">
+                <v-btn
+                  type="button"
+                  variant="text"
+                  size="small"
+                  icon="mdi-drag"
+                  class="section-drag-handle"
+                  :aria-label="t(strings.drag_section)"
+                  @click.stop
+                />
+                <v-text-field
+                  v-model="grouping.name"
+                  :placeholder="t(strings.grouping_name_placeholder)"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="flex-grow-1"
+                  style="max-width: 280px"
+                  @click.stop
+                />
+                <v-btn
+                  type="button"
+                  variant="text"
+                  color="error"
+                  size="small"
+                  icon="mdi-close"
+                  :aria-label="t(strings.remove_grouping)"
+                  @click.stop="emit('removeGrouping', gIndex)"
+                />
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text eager>
+              <div class="menu-edit-list mb-2" :data-section-index="gIndex">
+                <v-list-item
+                  v-for="recipeId in grouping.recipeIds"
+                  :key="recipeId"
+                  class="menu-edit-list-item"
+                >
+                  <template #prepend>
+                    <v-btn
+                      type="button"
+                      variant="text"
+                      size="small"
+                      icon="mdi-drag"
+                      class="menu-edit-drag-handle"
+                      :aria-label="t(strings.drag_handle)"
+                    />
+                  </template>
+                  <span class="flex-grow-1">{{ recipeTitle(recipeId) }}</span>
+                  <template #append>
+                    <v-btn
+                      type="button"
+                      variant="text"
+                      size="small"
+                      icon="mdi-close"
+                      :aria-label="t(strings.remove_recipe)"
+                      @click="removeRecipeFromSection(recipeId, gIndex)"
+                    />
+                  </template>
+                </v-list-item>
+              </div>
+              <v-autocomplete
+                :model-value="autocompleteBySection[gIndex] ?? null"
+                :items="availableRecipes"
+                item-title="title"
+                item-value="id"
+                :placeholder="t(strings.add_recipe_placeholder)"
+                variant="outlined"
+                density="comfortable"
+                hide-details
+                clearable
+                class="menu-edit-autocomplete"
+                @update:model-value="
+                  (id: string | null) => onAutocompleteSelect(id, gIndex)
+                "
+              />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+
+        <v-btn
+          type="button"
+          variant="outlined"
+          class="mt-3"
+          prepend-icon="mdi-plus"
+          @click="emit('addGrouping')"
+        >
+          {{ t(strings.add_grouping) }}
+        </v-btn>
+      </div>
+    </v-card>
+
+    <v-dialog v-model="nameDialogOpen" max-width="400" persistent>
+      <v-card>
+        <v-card-title>{{ t(strings.name_label) }}</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="nameDialogValue"
+            :placeholder="t(strings.name_placeholder)"
             variant="outlined"
-            density="comfortable"
-            hide-details
-            clearable
-            class="menu-edit-autocomplete"
-            @update:model-value="(id: string | null) => onAutocompleteSelect(id, gIndex)"
+            autofocus
+            @keydown.enter.prevent="saveNameAndClose"
           />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-    <v-btn
-      type="button"
-      variant="outlined"
-      class="mb-4"
-      prepend-icon="mdi-plus"
-      @click="emit('addGrouping')"
-    >
-      {{ t(strings.add_grouping) }}
-    </v-btn>
-
-    <v-btn
-      type="submit"
-      color="primary"
-      :loading="updateMutation.isPending.value"
-    >
-      {{ t(strings.submit) }}
-    </v-btn>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="nameDialogOpen = false">
+            {{ t(strings.cancel) }}
+          </v-btn>
+          <v-btn color="primary" @click="saveNameAndClose">
+            {{ t(strings.submit) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-form>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, nextTick, onMounted } from "vue";
+import { ref, computed, reactive, nextTick, onMounted, watch } from "vue";
 import Sortable, { type SortableEvent } from "sortablejs";
-import draggable from "vuedraggable";
 import type { MenuEditFormModel } from "./Detail.logic.ts";
 import { buildUpdateMenuPayload } from "./Detail.logic.ts";
 import { useUpdateMenuMutation } from "@sderickson/recipes-sdk";
@@ -147,6 +214,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   saved: [];
+  cancel: [];
   addGrouping: [];
   removeGrouping: [index: number];
 }>();
@@ -158,8 +226,21 @@ const formRef = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(
 const updateMutation = useUpdateMenuMutation();
 const autocompleteBySection = reactive<Record<number, string | null>>({});
 const sectionsPanelsRef = ref<{ $el: HTMLElement } | null>(null);
+const recipeListSortables = ref<Sortable[]>([]);
+const nameDialogOpen = ref(false);
+const nameDialogValue = ref("");
 
-onMounted(() => {
+function openNameDialog() {
+  nameDialogValue.value = props.form.name;
+  nameDialogOpen.value = true;
+}
+
+function saveNameAndClose() {
+  props.form.name = nameDialogValue.value.trim() || props.form.name;
+  nameDialogOpen.value = false;
+}
+
+function initSectionPanelsSortable() {
   const el = sectionsPanelsRef.value?.$el;
   if (!el || !props.form.groupings.length) return;
   Sortable.create(el, {
@@ -179,7 +260,51 @@ onMounted(() => {
       arr.splice(newIndex, 0, item);
     },
   });
+}
+
+function initRecipeListSortables() {
+  recipeListSortables.value.forEach((s) => s.destroy());
+  recipeListSortables.value = [];
+  const panelsEl = sectionsPanelsRef.value?.$el;
+  if (!panelsEl) return;
+  const listEls = panelsEl.querySelectorAll<HTMLElement>(".menu-edit-list");
+  listEls.forEach((el) => {
+    const sortable = Sortable.create(el, {
+      handle: ".menu-edit-drag-handle",
+      ghostClass: "menu-edit-drag-ghost",
+      dragClass: "menu-edit-drag-dragging",
+      onEnd(evt: SortableEvent) {
+        const { oldIndex, newIndex, from } = evt;
+        if (
+          oldIndex === undefined ||
+          newIndex === undefined ||
+          oldIndex === newIndex
+        )
+          return;
+        const sectionIndex = parseInt(
+          (from as HTMLElement).dataset.sectionIndex ?? "0",
+          10,
+        );
+        const grouping = props.form.groupings[sectionIndex];
+        if (!grouping?.recipeIds) return;
+        const ids = grouping.recipeIds;
+        const [item] = ids.splice(oldIndex, 1);
+        ids.splice(newIndex, 0, item);
+      },
+    });
+    recipeListSortables.value.push(sortable);
+  });
+}
+
+onMounted(() => {
+  initSectionPanelsSortable();
+  nextTick(initRecipeListSortables);
 });
+
+watch(
+  () => props.form.groupings.length,
+  () => nextTick(initRecipeListSortables),
+);
 
 const assignedRecipeIds = computed(() => {
   const set = new Set<string>();
@@ -274,5 +399,11 @@ async function onSubmit() {
 }
 .section-drag-dragging {
   cursor: grabbing;
+}
+.menu-edit-title {
+  cursor: pointer;
+}
+.menu-edit-title:hover {
+  opacity: 0.85;
 }
 </style>

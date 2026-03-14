@@ -14,11 +14,11 @@
       </v-breadcrumbs-item>
     </v-breadcrumbs>
 
-    <v-toolbar density="comfortable" class="mb-4">
-      <v-toolbar-title v-if="isEditing" class="text-h6">
+    <v-toolbar v-if="!isEditing" density="comfortable" class="mb-4">
+      <v-toolbar-title class="text-h6">
         {{ menu.name }}
       </v-toolbar-title>
-      <template v-if="!isEditing">
+      <template>
         <v-tooltip location="bottom" :text="t(strings.tooltip_menu_view)">
           <template #activator="{ props: tooltipProps }">
             <v-btn
@@ -113,6 +113,7 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       @saved="isEditing = false"
+      @cancel="cancelEdit"
       @add-grouping="addGrouping"
       @remove-grouping="removeGrouping"
     />
