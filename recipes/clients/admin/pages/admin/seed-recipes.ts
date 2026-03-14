@@ -651,3 +651,71 @@ export const SEED_RECIPES = [
 ] as const;
 
 export const SEED_COLLECTION_NAME = "Seed Kitchen";
+
+/** Menu definitions for seed data. Groupings use recipe indices (0-based into SEED_RECIPES). */
+export const SEED_MENUS = [
+  {
+    name: "Weeknight Dinners",
+    isPublic: true,
+    groupings: [
+      {
+        name: "Mains",
+        recipeIndices: [0, 9, 13, 18, 23, 28, 33, 37, 43],
+      },
+      {
+        name: "Sides",
+        recipeIndices: [1, 4, 5, 8, 12, 14, 17, 19, 24, 27, 32, 34, 39, 42],
+      },
+      {
+        name: "Soups",
+        recipeIndices: [3, 7, 11, 16, 21, 26, 31, 36, 38, 41],
+      },
+    ],
+  },
+  {
+    name: "Brunch",
+    isPublic: false,
+    groupings: [
+      {
+        name: "Mains",
+        recipeIndices: [2, 6, 10, 15, 20, 25, 35, 40],
+      },
+      {
+        name: "Sides & extras",
+        recipeIndices: [1, 4, 17, 30],
+      },
+    ],
+  },
+  {
+    name: "Soups & Sides",
+    isPublic: true,
+    groupings: [
+      {
+        name: "Soups",
+        recipeIndices: [3, 7, 11, 16, 21, 26, 31, 36, 38, 41],
+      },
+      {
+        name: "Sides",
+        recipeIndices: [1, 4, 5, 8, 12, 14, 19, 24, 27, 29, 32, 34, 39, 42],
+      },
+    ],
+  },
+  {
+    name: "Holiday Feast",
+    isPublic: true,
+    groupings: [
+      {
+        name: "Mains",
+        recipeIndices: [22, 33, 37, 38],
+      },
+      {
+        name: "Sides",
+        recipeIndices: [1, 4, 5, 8, 12, 14, 19, 24, 27, 29, 32, 34, 39, 42],
+      },
+      {
+        name: "Soups",
+        recipeIndices: [3, 7, 11, 16, 21, 26, 31, 36, 41],
+      },
+    ],
+  },
+] as const;

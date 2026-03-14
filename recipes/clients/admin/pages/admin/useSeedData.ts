@@ -4,6 +4,7 @@ import {
   useCreateCollectionsMutation,
   useCreateRecipeMutation,
   useCreateMenuMutation,
+  useUpdateMenuMutation,
   useFilesFromUnsplashRecipesMutation,
   searchUnsplashPhotosQuery,
   listCollectionsQuery,
@@ -11,7 +12,7 @@ import {
   listMenusQuery,
   filesListRecipesQuery,
 } from "@sderickson/recipes-sdk";
-import { SEED_RECIPES, SEED_COLLECTION_NAME } from "./seed-recipes.ts";
+import { SEED_RECIPES, SEED_COLLECTION_NAME, SEED_MENUS } from "./seed-recipes.ts";
 
 function isUnsplashRateLimitError(e: unknown): boolean {
   if (e && typeof e === "object") {
@@ -21,18 +22,12 @@ function isUnsplashRateLimitError(e: unknown): boolean {
   return false;
 }
 
-const SEED_MENU_NAMES = [
-  "Weeknight Dinners",
-  "Brunch",
-  "Soups & Sides",
-  "Holiday Feast",
-] as const;
-
 export function useSeedData(options: { getSuccessMessage: () => string }) {
   const queryClient = useQueryClient();
   const createCollection = useCreateCollectionsMutation();
   const createRecipe = useCreateRecipeMutation();
   const createMenu = useCreateMenuMutation();
+  const updateMenu = useUpdateMenuMutation();
   const addFromUnsplash = useFilesFromUnsplashRecipesMutation();
 
   const seeding = ref(false);
@@ -47,7 +42,7 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
     statusMessage.value = "";
 
     const totalRecipes = SEED_RECIPES.length;
-    const totalMenus = SEED_MENU_NAMES.length;
+    const totalMenus = SEED_MENUS.length;
     const totalSteps = 1 + totalRecipes * 2 + totalMenus;
     let step = 0;
 
@@ -150,59 +145,39 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
         listMenusQuery(collectionId),
       );
       const existingMenus = existingMenusData?.menus ?? [];
-      const existingMenuNames = new Set(
-        existingMenus.map((m: { name?: string }) => m.name),
-      );
+      const existingMenuByName = new Map<string, { id: string }>();
+      for (const m of existingMenus) {
+        const name = (m as { name?: string }).name;
+        if (name && !existingMenuByName.has(name)) {
+          existingMenuByName.set(name, { id: (m as { id: string }).id });
+        }
+      }
 
-      const [r1, r2, r3, r4] = [createdRecipes[0], createdRecipes[1], createdRecipes[2], createdRecipes[3]];
-      const roastChicken = createdRecipes[22];
-      const mashedPotatoes = createdRecipes[12];
-      const garlicBread = createdRecipes[4];
-      const roastedVeg = createdRecipes[8];
+      for (const menuDef of SEED_MENUS) {
+        const groupings = menuDef.groupings.map((g) => ({
+          name: g.name,
+          recipeIds: g.recipeIndices
+            .filter((i) => i >= 0 && i < createdRecipes.length)
+            .map((i) => createdRecipes[i].id),
+        }));
 
-      const menuPayloads: { name: string; isPublic: boolean; groupings: { name: string; recipeIds: string[] }[] }[] = [
-        {
-          name: "Weeknight Dinners",
-          isPublic: true,
-          groupings: [
-            { name: "Mains", recipeIds: [r1.id, r2.id] },
-            { name: "Sides", recipeIds: [r2.id] },
-          ],
-        },
-        {
-          name: "Brunch",
-          isPublic: false,
-          groupings: [{ name: "Mains", recipeIds: [r3.id, r1.id] }],
-        },
-        {
-          name: "Soups & Sides",
-          isPublic: true,
-          groupings: [
-            { name: "Soups", recipeIds: [r4.id] },
-            { name: "Sides", recipeIds: [r2.id] },
-          ],
-        },
-        {
-          name: "Holiday Feast",
-          isPublic: true,
-          groupings: [
-            { name: "Mains", recipeIds: [roastChicken.id, roastedVeg.id] },
-            { name: "Sides", recipeIds: [mashedPotatoes.id, r2.id, garlicBread.id] },
-            { name: "Soups", recipeIds: [r4.id] },
-          ],
-        },
-      ];
-
-      for (const payload of menuPayloads) {
-        if (existingMenuNames.has(payload.name)) {
-          updateProgress(`Skipping existing menu: ${payload.name}`);
+        const existing = existingMenuByName.get(menuDef.name);
+        if (existing) {
+          updateProgress(`Updating menu: ${menuDef.name}…`);
+          await updateMenu.mutateAsync({
+            id: existing.id,
+            collectionId,
+            name: menuDef.name,
+            isPublic: menuDef.isPublic,
+            groupings,
+          });
         } else {
-          updateProgress(`Creating menu: ${payload.name}…`);
+          updateProgress(`Creating menu: ${menuDef.name}…`);
           await createMenu.mutateAsync({
             collectionId,
-            name: payload.name,
-            isPublic: payload.isPublic,
-            groupings: payload.groupings,
+            name: menuDef.name,
+            isPublic: menuDef.isPublic,
+            groupings,
           });
         }
       }
