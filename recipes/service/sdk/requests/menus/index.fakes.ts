@@ -5,6 +5,7 @@ import { listMenusHandler } from "./list.fake.ts";
 
 // BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
 import { createMenuHandler } from "./create.fake.ts";
+import { updateMenuHandler } from "./update.fake.ts";
 // END WORKFLOW AREA
 
 // export all fake handlers for this group
@@ -16,5 +17,6 @@ export const menusFakeHandlers = [
 
   // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
   createMenuHandler,
+  updateMenuHandler,
   // END WORKFLOW AREA
 ];

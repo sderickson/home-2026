@@ -4,4 +4,5 @@ export * from "./list.ts";
 // END WORKFLOW AREA
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
 export * from "./create.ts";
+export * from "./update.ts";
 // END WORKFLOW AREA
