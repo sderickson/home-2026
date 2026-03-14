@@ -119,9 +119,6 @@ import { computed } from "vue";
 import { useQueries } from "@tanstack/vue-query";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
-import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import { menu_groupings_display as strings } from "./MenuGroupingsDisplay.strings.ts";
-
 const props = defineProps<{
   groupings: { name: string; recipeIds: string[] }[];
   recipes: { id: string; title: string; subtitle?: string }[];
@@ -130,8 +127,6 @@ const props = defineProps<{
   viewMode: "menu" | "diner";
   menuTitle?: string;
 }>();
-
-const { t } = useReverseT();
 
 const uniqueRecipeIds = computed(() => {
   const seen = new Set<string>();
