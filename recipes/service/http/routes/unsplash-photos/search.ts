@@ -4,6 +4,10 @@ import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { unsplash } from "@sderickson/recipes-unsplash";
 import {
+  isUnsplashRateLimit,
+  throwUnsplashRateLimitError,
+} from "../../unsplash-rate-limit.ts";
+import {
   type UnsplashSearchPhoto,
   unsplashPhotoToSearchItem,
 } from "./_helpers.ts";
@@ -20,12 +24,21 @@ export const searchUnsplashPhotosHandler = createHandler(
     const perPage =
       perPageRaw !== undefined ? Number(perPageRaw) : 10;
 
-    const apiResult = await unsplash.search.getPhotos({
-      query: q,
-      perPage,
-    });
+    let apiResult: Awaited<ReturnType<typeof unsplash.search.getPhotos>>;
+    try {
+      apiResult = await unsplash.search.getPhotos({
+        query: q,
+        perPage,
+      });
+    } catch (e) {
+      if (isUnsplashRateLimit(e)) throwUnsplashRateLimitError();
+      throw createError(502, "Unsplash search failed", {
+        code: "UNSPLASH_ERROR",
+      });
+    }
 
     if (apiResult.type !== "success") {
+      if (isUnsplashRateLimit(apiResult)) throwUnsplashRateLimitError();
       throw createError(502, "Unsplash search failed", {
         code: "UNSPLASH_ERROR",
       });

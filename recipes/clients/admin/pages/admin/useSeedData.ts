@@ -9,6 +9,14 @@ import {
 } from "@sderickson/recipes-sdk";
 import { SEED_RECIPES, SEED_COLLECTION_NAME } from "./seed-recipes.ts";
 
+function isUnsplashRateLimitError(e: unknown): boolean {
+  if (e && typeof e === "object") {
+    const o = e as { status?: number; code?: string };
+    return o.status === 429 || o.code === "UNSPLASH_RATE_LIMIT";
+  }
+  return false;
+}
+
 export function useSeedData(options: { getSuccessMessage: () => string }) {
   const queryClient = useQueryClient();
   const createCollection = useCreateCollectionsMutation();
@@ -64,17 +72,26 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
         createdRecipes.push({ id: result.recipe.id });
 
         updateProgress(`Adding image for ${r.title}…`);
-        const searchResult = await queryClient.fetchQuery(
-          searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
-        );
-        const photo = searchResult?.unsplashPhotos?.[0];
+        let photo: { id: string; downloadLocation: string; regularUrl: string } | null = null;
+        try {
+          const searchResult = await queryClient.fetchQuery(
+            searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
+          );
+          photo = searchResult?.unsplashPhotos?.[0] ?? null;
+        } catch (e) {
+          if (!isUnsplashRateLimitError(e)) throw e;
+        }
         if (photo) {
-          await addFromUnsplash.mutateAsync({
-            recipeId: result.recipe.id,
-            unsplashPhotoId: photo.id,
-            downloadLocation: photo.downloadLocation,
-            imageUrl: photo.regularUrl,
-          });
+          try {
+            await addFromUnsplash.mutateAsync({
+              recipeId: result.recipe.id,
+              unsplashPhotoId: photo.id,
+              downloadLocation: photo.downloadLocation,
+              imageUrl: photo.regularUrl,
+            });
+          } catch (e) {
+            if (!isUnsplashRateLimitError(e)) throw e;
+          }
         }
       }
 

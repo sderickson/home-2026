@@ -1558,6 +1558,20 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too Many Requests - Unsplash API rate limit exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "example": {
+                  "code": "UNSPLASH_RATE_LIMIT",
+                  "message": "Unsplash rate limit exceeded."
+                }
+              }
+            }
           }
         }
       }
@@ -1624,6 +1638,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Unsplash API rate limit exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "example": {
+                  "code": "UNSPLASH_RATE_LIMIT",
+                  "message": "Unsplash rate limit exceeded."
                 }
               }
             }

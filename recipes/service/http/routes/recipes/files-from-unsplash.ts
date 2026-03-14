@@ -13,10 +13,26 @@ import {
 } from "@sderickson/recipes-db";
 import { unsplash } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import {
+  isUnsplashRateLimit,
+  throwUnsplashRateLimitError,
+} from "../../unsplash-rate-limit.ts";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToApiRecipeFile } from "./_helpers.ts";
 
 type FilesFromUnsplashRecipeError = RecipeNotFoundError;
+
+function unwrapUnsplash<T>(
+  result: { type: "success"; response: T } | { type: string; [k: string]: unknown },
+): T {
+  if (result.type !== "success") {
+    if (isUnsplashRateLimit(result)) throwUnsplashRateLimitError();
+    throw createError(502, "Unsplash request failed", {
+      code: "UNSPLASH_ERROR",
+    });
+  }
+  return result.response as T;
+}
 
 export const filesFromUnsplashRecipesHandler = createHandler(
   async (req, res) => {
@@ -30,25 +46,33 @@ export const filesFromUnsplashRecipesHandler = createHandler(
       recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
-    const photoResult = await unsplash.photos.get({ photoId: unsplashPhotoId });
-    if (photoResult.type !== "success") {
+    let photoResult: Awaited<ReturnType<typeof unsplash.photos.get>>;
+    let trackResult: Awaited<ReturnType<typeof unsplash.photos.trackDownload>>;
+    try {
+      photoResult = await unsplash.photos.get({ photoId: unsplashPhotoId });
+    } catch (e) {
+      if (isUnsplashRateLimit(e)) throwUnsplashRateLimitError();
       throw createError(502, "Failed to fetch Unsplash photo", {
         code: "UNSPLASH_ERROR",
       });
     }
-    const user = photoResult.response.user as unknown as Record<
-      string,
-      unknown
-    >;
+    const photoResponse = unwrapUnsplash(photoResult) as {
+      user: unknown;
+    };
 
-    const trackResult = await unsplash.photos.trackDownload({
-      downloadLocation,
-    });
-    if (trackResult.type !== "success") {
+    try {
+      trackResult = await unsplash.photos.trackDownload({
+        downloadLocation,
+      });
+    } catch (e) {
+      if (isUnsplashRateLimit(e)) throwUnsplashRateLimitError();
       throw createError(502, "Failed to track Unsplash download", {
         code: "UNSPLASH_ERROR",
       });
     }
+    unwrapUnsplash(trackResult);
+
+    const user = photoResponse.user as Record<string, unknown>;
 
     const imageResponse = await fetch(imageUrl);
     if (!imageResponse.ok) {

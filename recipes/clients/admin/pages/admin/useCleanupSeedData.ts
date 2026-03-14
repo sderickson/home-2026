@@ -51,7 +51,8 @@ export function useCleanupSeedData(options: {
         queryClient.fetchQuery(listRecipesQuery(collectionId)),
       ]);
       const menus = menusData?.menus ?? [];
-      const recipes = recipesData?.recipes ?? [];
+      // List recipes API returns the array directly, not { recipes: [...] }
+      const recipes = Array.isArray(recipesData) ? recipesData : [];
 
       const totalSteps = menus.length + recipes.length + 1;
       let step = 0;

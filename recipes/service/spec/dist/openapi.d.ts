@@ -2187,6 +2187,19 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Too Many Requests - Unsplash API rate limit exceeded. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /** @example {
+                     *       "code": "UNSPLASH_RATE_LIMIT",
+                     *       "message": "Unsplash rate limit exceeded."
+                     *     } */
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     filesFromUnsplashRecipes: {
@@ -2238,6 +2251,19 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Too Many Requests - Unsplash API rate limit exceeded. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /** @example {
+                     *       "code": "UNSPLASH_RATE_LIMIT",
+                     *       "message": "Unsplash rate limit exceeded."
+                     *     } */
                     "application/json": components["schemas"]["error"];
                 };
             };
