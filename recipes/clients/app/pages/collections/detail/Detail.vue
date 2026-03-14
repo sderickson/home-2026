@@ -14,7 +14,20 @@
       </v-breadcrumbs-item>
     </v-breadcrumbs>
 
-    <h1 class="text-h4 mb-4">{{ collectionName }}</h1>
+    <div class="d-flex align-center flex-wrap gap-3 mb-0">
+      <h1 class="text-h4 mb-0">{{ collectionName }}</h1>
+      <v-chip
+        variant="tonal"
+        color="primary"
+        class="action-pill collection-members-pill"
+        @click="membersDialogOpen = true"
+      >
+        <v-icon size="small">mdi-account-group</v-icon>
+        <span class="ml-1">{{ membersPillLabel }}</span>
+      </v-chip>
+    </div>
+
+    <v-divider class="my-4" />
 
     <div class="d-flex align-center flex-wrap gap-3 mb-4">
       <h2 class="text-h6 mb-0">{{ t(strings.menus_heading) }}</h2>
@@ -86,6 +99,11 @@
       :collection-id="collectionId"
       @success="onQuickImportSuccess"
     />
+    <MembersManagementDialog
+      v-model="membersDialogOpen"
+      :collection-id="collectionId"
+      :collection-name="collectionName"
+    />
   </v-container>
 </template>
 
@@ -104,6 +122,7 @@ import {
   getRecipesList,
 } from "./Detail.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import MembersManagementDialog from "../list/MembersManagementDialog.vue";
 import QuickImportDialog from "../../recipes/list/QuickImportDialog.vue";
 
 const { t } = useReverseT();
@@ -148,6 +167,14 @@ const menus = computed(
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));
 
 const quickImportOpen = ref(false);
+const membersDialogOpen = ref(false);
+
+const memberCount = computed(() => members.value.length);
+const membersPillLabel = computed(() =>
+  memberCount.value === 1
+    ? t(strings.members_pill_one)
+    : `${memberCount.value} ${t(strings.members_pill_plural)}`,
+);
 
 function getRecipeLinkProps(recipeId: string) {
   return linkToProps(appLinks.recipesDetail, {
@@ -177,5 +204,8 @@ function onQuickImportSuccess(recipeId: string) {
 }
 .action-pill {
   cursor: pointer;
+}
+.collection-members-pill {
+  margin-left: 0.75rem;
 }
 </style>

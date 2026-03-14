@@ -1,6 +1,8 @@
 export const collections_detail = {
   breadcrumb_home: "Home",
   breadcrumb_collections: "Collections",
+  members_pill_one: "1 member",
+  members_pill_plural: "members",
   menus_heading: "Menus",
   menus_private: "Private",
   menus_add: "New",
