@@ -186,12 +186,13 @@ describe("GET /menus", () => {
     expect(response.status).toBe(403);
   });
 
-  it("should return 403 when collectionId does not exist (membership checked first)", async () => {
+  it("should return 422 when collectionId does not exist (validation)", async () => {
     const response = await request(app)
       .get("/menus")
       .query({ collectionId: "nonexistent-collection-id" })
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(422);
+    expect(response.body.code).toBe("COLLECTION_NOT_FOUND");
   });
 });

@@ -73,3 +73,10 @@ createRecipe:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
+
+    "422":
+      description: "Unprocessable - collection does not exist (validation)."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

@@ -137,4 +137,19 @@ describe("POST /recipes", () => {
     expect(response.body.message).toBeDefined();
     expect(response.body.message).toContain("collectionId");
   });
+
+  it("should return 422 when collection does not exist", async () => {
+    const response = await request(app)
+      .post("/recipes")
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
+      .send({
+        collectionId: "00000000-0000-0000-0000-000000000001",
+        title: "Test",
+        subtitle: "Short",
+        isPublic: true,
+      } satisfies RecipesServiceRequestBody["createRecipe"]);
+
+    expect(response.status).toBe(422);
+    expect(response.body.code).toBe("COLLECTION_NOT_FOUND");
+  });
 });

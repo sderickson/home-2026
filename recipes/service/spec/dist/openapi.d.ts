@@ -1104,6 +1104,15 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Unprocessable - collection does not exist (validation). */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     createRecipe: {
@@ -1174,11 +1183,23 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
+            /** @description Unprocessable - collection does not exist (validation). */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
         };
     };
     getRecipe: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context). */
+                menuId?: string;
+            };
             header?: never;
             path: {
                 /** @description Recipe id */
@@ -2813,8 +2834,8 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Not found - collection does not exist (when collectionId provided). */
-            404: {
+            /** @description Unprocessable - collection does not exist (validation, when collectionId provided). */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -56,4 +56,14 @@ describe("GET /recipes", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("should return 422 when collection does not exist", async () => {
+    const response = await request(app)
+      .get("/recipes")
+      .query({ collectionId: "00000000-0000-0000-0000-000000000001" })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
+
+    expect(response.status).toBe(422);
+    expect(response.body.code).toBe("COLLECTION_NOT_FOUND");
+  });
 });

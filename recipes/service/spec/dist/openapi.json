@@ -77,6 +77,16 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Unprocessable - collection does not exist (validation).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
           }
         }
       },
@@ -183,6 +193,16 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Unprocessable - collection does not exist (validation).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
           }
         }
       }
@@ -203,6 +223,15 @@
               "type": "string"
             },
             "description": "Recipe id"
+          },
+          {
+            "name": "menuId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context)."
           }
         ],
         "responses": {
@@ -2388,8 +2417,8 @@
               }
             }
           },
-          "404": {
-            "description": "Not found - collection does not exist (when collectionId provided).",
+          "422": {
+            "description": "Unprocessable - collection does not exist (validation, when collectionId provided).",
             "content": {
               "application/json": {
                 "schema": {

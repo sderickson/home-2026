@@ -52,8 +52,8 @@ listMenus:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
-    "404":
-      description: "Not found - collection does not exist (when collectionId provided)."
+    "422":
+      description: "Unprocessable - collection does not exist (validation, when collectionId provided)."
       content:
         application/json:
           schema:
