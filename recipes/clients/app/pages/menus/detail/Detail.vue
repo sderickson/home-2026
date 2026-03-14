@@ -22,51 +22,91 @@
       </v-breadcrumbs-item>
     </v-breadcrumbs>
 
-    <div class="d-flex align-center flex-wrap gap-2 mb-4">
-      <h1 class="text-h4">{{ menu.name }}</h1>
-      <v-chip size="small" :color="menu.isPublic ? 'success' : 'default'">
+    <v-toolbar density="comfortable" class="mb-4">
+      <v-toolbar-title
+        v-if="isEditing || viewMode === 'diner'"
+        class="text-h6"
+      >
+        {{ menu.name }}
+      </v-toolbar-title>
+      <template v-if="!isEditing">
+        <v-tooltip location="bottom" :text="t(strings.tooltip_menu_view)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              :class="{ 'v-btn--active': viewMode === 'menu' }"
+              @click="viewMode = 'menu'"
+            >
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="bottom" :text="t(strings.tooltip_diner_view)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              :class="{ 'v-btn--active': viewMode === 'diner' }"
+              @click="viewMode = 'diner'"
+            >
+              <v-icon>mdi-view-module</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+      </template>
+      <v-spacer />
+      <v-chip
+        v-if="!isEditing"
+        size="small"
+        density="compact"
+        :color="menu.isPublic ? 'success' : 'default'"
+      >
         {{ menu.isPublic ? t(strings.public) : t(strings.private) }}
       </v-chip>
-      <v-btn-toggle
-        v-model="viewMode"
-        mandatory
-        density="compact"
-        variant="outlined"
-        class="ml-2"
-      >
-        <v-btn value="menu" size="small">
-          {{ t(strings.view_mode_menu) }}
-        </v-btn>
-        <v-btn value="diner" size="small">
-          {{ t(strings.view_mode_diner) }}
-        </v-btn>
-      </v-btn-toggle>
-      <v-spacer />
       <template v-if="showEdit">
-        <v-btn
-          v-if="!isEditing"
-          variant="outlined"
-          prepend-icon="mdi-pencil"
-          @click="startEdit"
-        >
-          {{ t(strings.edit) }}
-        </v-btn>
+        <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              @click="startEdit"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
         <template v-else>
-          <v-btn variant="outlined" @click="cancelEdit">
-            {{ t(strings.cancel) }}
-          </v-btn>
+          <v-tooltip location="bottom" :text="t(strings.cancel)">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn v-bind="tooltipProps" icon variant="text" @click="cancelEdit">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
         </template>
-        <v-btn
+        <v-tooltip
           v-if="!isEditing"
-          variant="text"
-          color="error"
-          prepend-icon="mdi-delete"
-          @click="deleteDialogOpen = true"
+          location="bottom"
+          :text="t(strings.delete)"
         >
-          {{ t(strings.delete) }}
-        </v-btn>
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              icon
+              variant="text"
+              color="error"
+              @click="deleteDialogOpen = true"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </template>
-    </div>
+    </v-toolbar>
 
     <MenuGroupingsDisplay
       v-if="!isEditing"
@@ -75,6 +115,7 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       :view-mode="viewMode"
+      :menu-title="viewMode === 'menu' ? menu.name : undefined"
     />
     <MenuEditForm
       v-else

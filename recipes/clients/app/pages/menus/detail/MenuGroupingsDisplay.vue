@@ -3,6 +3,7 @@
     <!-- Fancy menu layout: centered column, elegant restaurant style -->
     <template v-if="viewMode === 'menu'">
       <div class="menu-fancy">
+        <h1 v-if="menuTitle" class="menu-fancy-title">{{ menuTitle }}</h1>
         <div
           v-for="(grouping, gIndex) in groupings"
           :key="gIndex"
@@ -111,6 +112,7 @@ const props = defineProps<{
   menuId: string;
   collectionId: string;
   viewMode: "menu" | "diner";
+  menuTitle?: string;
 }>();
 
 const { t } = useReverseT();
@@ -217,6 +219,18 @@ function recipeLink(recipeId: string) {
   .menu-fancy {
     column-count: 3;
   }
+}
+
+.menu-fancy-title {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgb(var(--v-theme-on-surface));
+  margin: 0 0 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  column-span: all;
 }
 
 .menu-fancy-section {

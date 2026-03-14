@@ -7,6 +7,8 @@ export const menus_detail = {
   groupings_label: "Groupings",
   view_mode_menu: "Menu",
   view_mode_diner: "Diner",
+  tooltip_menu_view: "Menu view",
+  tooltip_diner_view: "Diner view",
   edit: "Edit",
   save: "Save",
   cancel: "Cancel",
