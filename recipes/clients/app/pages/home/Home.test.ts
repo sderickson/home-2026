@@ -13,7 +13,9 @@ describe("Home", () => {
 
   it("should render", async () => {
     const wrapper = mountTestApp(HomeAsync);
-    await vi.waitFor(() => expect(wrapper.text()).toContain("Your collections"));
+    await vi.waitFor(() =>
+      expect(wrapper.text()).toContain("Your Recipe Collections"),
+    );
     wrapper.unmount();
   });
 });
