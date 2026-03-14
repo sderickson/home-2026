@@ -1,5 +1,10 @@
 <template>
   <v-container>
+    <v-alert type="info" variant="tonal" class="mb-6">
+      <v-alert-title>{{ t(strings.welcome_heading) }}</v-alert-title>
+      <p class="mb-2">{{ t(strings.welcome_intro) }}</p>
+    </v-alert>
+
     <div class="d-flex align-center flex-wrap gap-2 mb-4">
       <h1 class="text-h4">{{ t(strings.title) }}</h1>
       <v-spacer />
@@ -32,9 +37,16 @@
           </router-link>
         </v-card-title>
         <v-card-text class="pt-0">
-          <div v-if="membersForCollection(collection.id).length > 0" class="mb-3">
-            <span class="text-caption text-medium-emphasis">{{ t(strings.members) }}: </span>
-            <span class="text-body-2">{{ memberEmailsForCollection(collection.id) }}</span>
+          <div
+            v-if="membersForCollection(collection.id).length > 0"
+            class="mb-3"
+          >
+            <span class="text-caption text-medium-emphasis"
+              >{{ t(strings.members) }}:
+            </span>
+            <span class="text-body-2">{{
+              memberEmailsForCollection(collection.id)
+            }}</span>
           </div>
           <div class="d-flex flex-wrap align-center gap-2 menu-pills">
             <v-chip
@@ -84,9 +96,7 @@ assertCollectionsLoaded(collectionsQuery.data.value?.collections);
 const collections = computed(() =>
   getCollectionsList(collectionsQuery.data.value?.collections),
 );
-const members = computed(
-  () => collectionsQuery.data.value?.members ?? [],
-);
+const members = computed(() => collectionsQuery.data.value?.members ?? []);
 const menus = computed(() => collectionsQuery.data.value?.menus ?? []);
 
 function membersForCollection(collectionId: string) {
