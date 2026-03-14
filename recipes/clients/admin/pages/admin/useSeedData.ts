@@ -7,6 +7,7 @@ import {
   useFilesFromUnsplashRecipesMutation,
   searchUnsplashPhotosQuery,
 } from "@sderickson/recipes-sdk";
+import { SEED_RECIPES, SEED_COLLECTION_NAME } from "./seed-recipes.ts";
 
 export function useSeedData(options: { getSuccessMessage: () => string }) {
   const queryClient = useQueryClient();
@@ -17,76 +18,37 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
 
   const seeding = ref(false);
   const seedMessage = ref("");
+  const progress = ref(0);
+  const statusMessage = ref("");
 
   async function runSeed() {
     seeding.value = true;
     seedMessage.value = "";
+    progress.value = 0;
+    statusMessage.value = "";
+
+    const totalRecipes = SEED_RECIPES.length;
+    const totalMenus = 4; // Weeknight Dinners, Brunch, Soups & Sides, Holiday Feast
+    const totalSteps = 1 + totalRecipes * 2 + totalMenus; // collection + (create + unsplash) per recipe + menus
+    let step = 0;
+
+    function updateProgress(status: string) {
+      step += 1;
+      progress.value = Math.round((step / totalSteps) * 100);
+      statusMessage.value = status;
+    }
+
     try {
+      updateProgress("Creating collection…");
       const { collection } = await createCollection.mutateAsync({
-        name: "Seed Kitchen",
+        name: SEED_COLLECTION_NAME,
       });
       const collectionId = collection.id;
 
-      const recipes = [
-        {
-          title: "Simple Pasta",
-          subtitle: "Quick weeknight dinner",
-          searchQuery: "pasta",
-          initialVersion: {
-            ingredients: [
-              { name: "Pasta", quantity: "400", unit: "g" },
-              { name: "Olive oil", quantity: "2", unit: "tbsp" },
-              { name: "Garlic", quantity: "2", unit: "cloves" },
-            ],
-            instructionsMarkdown:
-              "Boil pasta. Sauté garlic in oil. Toss and serve.",
-          },
-        },
-        {
-          title: "Green Salad",
-          subtitle: "Fresh side",
-          searchQuery: "green salad",
-          initialVersion: {
-            ingredients: [
-              { name: "Lettuce", quantity: "1", unit: "head" },
-              { name: "Cucumber", quantity: "1", unit: "" },
-              { name: "Olive oil", quantity: "1", unit: "tbsp" },
-            ],
-            instructionsMarkdown:
-              "Chop vegetables. Dress with oil and season.",
-          },
-        },
-        {
-          title: "Scrambled Eggs",
-          subtitle: "Classic breakfast",
-          searchQuery: "scrambled eggs",
-          initialVersion: {
-            ingredients: [
-              { name: "Eggs", quantity: "4", unit: "" },
-              { name: "Butter", quantity: "1", unit: "tbsp" },
-            ],
-            instructionsMarkdown:
-              "Beat eggs. Melt butter in pan. Scramble over low heat.",
-          },
-        },
-        {
-          title: "Tomato Soup",
-          subtitle: "Comfort in a bowl",
-          searchQuery: "tomato soup",
-          initialVersion: {
-            ingredients: [
-              { name: "Canned tomatoes", quantity: "400", unit: "g" },
-              { name: "Onion", quantity: "1", unit: "" },
-              { name: "Basil", quantity: "few", unit: "leaves" },
-            ],
-            instructionsMarkdown:
-              "Sauté onion. Add tomatoes and basil. Simmer and blend.",
-          },
-        },
-      ];
-
       const createdRecipes: { id: string }[] = [];
-      for (const r of recipes) {
+      for (let i = 0; i < SEED_RECIPES.length; i++) {
+        const r = SEED_RECIPES[i];
+        updateProgress(`Creating recipe: ${r.title}…`);
         const result = await createRecipe.mutateAsync({
           collectionId,
           title: r.title,
@@ -94,13 +56,14 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           isPublic: true,
           initialVersion: {
             content: {
-              ingredients: r.initialVersion.ingredients,
+              ingredients: [...r.initialVersion.ingredients],
               instructionsMarkdown: r.initialVersion.instructionsMarkdown,
             },
           },
         });
         createdRecipes.push({ id: result.recipe.id });
 
+        updateProgress(`Adding image for ${r.title}…`);
         const searchResult = await queryClient.fetchQuery(
           searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
         );
@@ -115,8 +78,13 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
         }
       }
 
-      const [r1, r2, r3, r4] = createdRecipes;
+      const [r1, r2, r3, r4] = [createdRecipes[0], createdRecipes[1], createdRecipes[2], createdRecipes[3]];
+      const roastChicken = createdRecipes[22];
+      const mashedPotatoes = createdRecipes[12];
+      const garlicBread = createdRecipes[4];
+      const roastedVeg = createdRecipes[8];
 
+      updateProgress("Creating menu: Weeknight Dinners…");
       await createMenu.mutateAsync({
         collectionId,
         name: "Weeknight Dinners",
@@ -126,12 +94,16 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           { name: "Sides", recipeIds: [r2.id] },
         ],
       });
+
+      updateProgress("Creating menu: Brunch…");
       await createMenu.mutateAsync({
         collectionId,
         name: "Brunch",
         isPublic: false,
         groupings: [{ name: "Mains", recipeIds: [r3.id, r1.id] }],
       });
+
+      updateProgress("Creating menu: Soups & Sides…");
       await createMenu.mutateAsync({
         collectionId,
         name: "Soups & Sides",
@@ -142,13 +114,28 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
         ],
       });
 
+      updateProgress("Creating menu: Holiday Feast…");
+      await createMenu.mutateAsync({
+        collectionId,
+        name: "Holiday Feast",
+        isPublic: true,
+        groupings: [
+          { name: "Mains", recipeIds: [roastChicken.id, roastedVeg.id] },
+          { name: "Sides", recipeIds: [mashedPotatoes.id, r2.id, garlicBread.id] },
+          { name: "Soups", recipeIds: [r4.id] },
+        ],
+      });
+
+      progress.value = 100;
+      statusMessage.value = "";
       seedMessage.value = options.getSuccessMessage();
     } catch (e) {
       seedMessage.value = e instanceof Error ? e.message : String(e);
+      statusMessage.value = "";
     } finally {
       seeding.value = false;
     }
   }
 
-  return { runSeed, seeding, seedMessage };
+  return { runSeed, seeding, seedMessage, progress, statusMessage };
 }
