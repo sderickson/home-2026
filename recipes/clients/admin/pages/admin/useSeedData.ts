@@ -6,6 +6,10 @@ import {
   useCreateMenuMutation,
   useFilesFromUnsplashRecipesMutation,
   searchUnsplashPhotosQuery,
+  listCollectionsQuery,
+  listRecipesQuery,
+  listMenusQuery,
+  filesListRecipesQuery,
 } from "@sderickson/recipes-sdk";
 import { SEED_RECIPES, SEED_COLLECTION_NAME } from "./seed-recipes.ts";
 
@@ -16,6 +20,13 @@ function isUnsplashRateLimitError(e: unknown): boolean {
   }
   return false;
 }
+
+const SEED_MENU_NAMES = [
+  "Weeknight Dinners",
+  "Brunch",
+  "Soups & Sides",
+  "Holiday Feast",
+] as const;
 
 export function useSeedData(options: { getSuccessMessage: () => string }) {
   const queryClient = useQueryClient();
@@ -36,8 +47,8 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
     statusMessage.value = "";
 
     const totalRecipes = SEED_RECIPES.length;
-    const totalMenus = 4; // Weeknight Dinners, Brunch, Soups & Sides, Holiday Feast
-    const totalSteps = 1 + totalRecipes * 2 + totalMenus; // collection + (create + unsplash) per recipe + menus
+    const totalMenus = SEED_MENU_NAMES.length;
+    const totalSteps = 1 + totalRecipes * 2 + totalMenus;
     let step = 0;
 
     function updateProgress(status: string) {
@@ -47,53 +58,101 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
     }
 
     try {
-      updateProgress("Creating collection…");
-      const { collection } = await createCollection.mutateAsync({
-        name: SEED_COLLECTION_NAME,
-      });
-      const collectionId = collection.id;
+      updateProgress("Finding or creating collection…");
+      const collectionsData = await queryClient.fetchQuery(listCollectionsQuery());
+      const collections = collectionsData?.collections ?? [];
+      let seedCollection = collections.find(
+        (c: { name?: string }) => c.name === SEED_COLLECTION_NAME,
+      );
+      if (!seedCollection) {
+        const { collection } = await createCollection.mutateAsync({
+          name: SEED_COLLECTION_NAME,
+        });
+        seedCollection = collection;
+      }
+      const collectionId = seedCollection.id;
+
+      const existingRecipesRaw = await queryClient.fetchQuery(
+        listRecipesQuery(collectionId),
+      );
+      const existingRecipesList = Array.isArray(existingRecipesRaw)
+        ? existingRecipesRaw
+        : [];
+      const byTitle = new Map<string, { id: string }>();
+      for (const recipe of existingRecipesList) {
+        const title = (recipe as { title?: string }).title;
+        if (title && !byTitle.has(title)) byTitle.set(title, { id: (recipe as { id: string }).id });
+      }
 
       const createdRecipes: { id: string }[] = [];
       for (let i = 0; i < SEED_RECIPES.length; i++) {
         const r = SEED_RECIPES[i];
-        updateProgress(`Creating recipe: ${r.title}…`);
-        const result = await createRecipe.mutateAsync({
-          collectionId,
-          title: r.title,
-          subtitle: r.subtitle,
-          isPublic: true,
-          initialVersion: {
-            content: {
-              ingredients: [...r.initialVersion.ingredients],
-              instructionsMarkdown: r.initialVersion.instructionsMarkdown,
+        let recipeId: string;
+        const existing = byTitle.get(r.title);
+        if (existing) {
+          updateProgress(`Using existing recipe: ${r.title}…`);
+          recipeId = existing.id;
+        } else {
+          updateProgress(`Creating recipe: ${r.title}…`);
+          const result = await createRecipe.mutateAsync({
+            collectionId,
+            title: r.title,
+            subtitle: r.subtitle,
+            isPublic: true,
+            initialVersion: {
+              content: {
+                ingredients: [...r.initialVersion.ingredients],
+                instructionsMarkdown: r.initialVersion.instructionsMarkdown,
+              },
             },
-          },
-        });
-        createdRecipes.push({ id: result.recipe.id });
+          });
+          recipeId = result.recipe.id;
+          byTitle.set(r.title, { id: recipeId });
+        }
+        createdRecipes.push({ id: recipeId });
 
         updateProgress(`Adding image for ${r.title}…`);
-        let photo: { id: string; downloadLocation: string; regularUrl: string } | null = null;
+        let hasImage = false;
         try {
-          const searchResult = await queryClient.fetchQuery(
-            searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
+          const files = await queryClient.fetchQuery(
+            filesListRecipesQuery(recipeId),
           );
-          photo = searchResult?.unsplashPhotos?.[0] ?? null;
-        } catch (e) {
-          if (!isUnsplashRateLimitError(e)) throw e;
+          hasImage = Array.isArray(files) && files.length > 0;
+        } catch {
+          // ignore list errors; we'll try to add image
         }
-        if (photo) {
+        if (!hasImage) {
+          let photo: { id: string; downloadLocation: string; regularUrl: string } | null = null;
           try {
-            await addFromUnsplash.mutateAsync({
-              recipeId: result.recipe.id,
-              unsplashPhotoId: photo.id,
-              downloadLocation: photo.downloadLocation,
-              imageUrl: photo.regularUrl,
-            });
+            const searchResult = await queryClient.fetchQuery(
+              searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
+            );
+            photo = searchResult?.unsplashPhotos?.[0] ?? null;
           } catch (e) {
             if (!isUnsplashRateLimitError(e)) throw e;
           }
+          if (photo) {
+            try {
+              await addFromUnsplash.mutateAsync({
+                recipeId,
+                unsplashPhotoId: photo.id,
+                downloadLocation: photo.downloadLocation,
+                imageUrl: photo.regularUrl,
+              });
+            } catch (e) {
+              if (!isUnsplashRateLimitError(e)) throw e;
+            }
+          }
         }
       }
+
+      const existingMenusData = await queryClient.fetchQuery(
+        listMenusQuery(collectionId),
+      );
+      const existingMenus = existingMenusData?.menus ?? [];
+      const existingMenuNames = new Set(
+        existingMenus.map((m: { name?: string }) => m.name),
+      );
 
       const [r1, r2, r3, r4] = [createdRecipes[0], createdRecipes[1], createdRecipes[2], createdRecipes[3]];
       const roastChicken = createdRecipes[22];
@@ -101,47 +160,52 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
       const garlicBread = createdRecipes[4];
       const roastedVeg = createdRecipes[8];
 
-      updateProgress("Creating menu: Weeknight Dinners…");
-      await createMenu.mutateAsync({
-        collectionId,
-        name: "Weeknight Dinners",
-        isPublic: true,
-        groupings: [
-          { name: "Mains", recipeIds: [r1.id, r2.id] },
-          { name: "Sides", recipeIds: [r2.id] },
-        ],
-      });
+      const menuPayloads: { name: string; isPublic: boolean; groupings: { name: string; recipeIds: string[] }[] }[] = [
+        {
+          name: "Weeknight Dinners",
+          isPublic: true,
+          groupings: [
+            { name: "Mains", recipeIds: [r1.id, r2.id] },
+            { name: "Sides", recipeIds: [r2.id] },
+          ],
+        },
+        {
+          name: "Brunch",
+          isPublic: false,
+          groupings: [{ name: "Mains", recipeIds: [r3.id, r1.id] }],
+        },
+        {
+          name: "Soups & Sides",
+          isPublic: true,
+          groupings: [
+            { name: "Soups", recipeIds: [r4.id] },
+            { name: "Sides", recipeIds: [r2.id] },
+          ],
+        },
+        {
+          name: "Holiday Feast",
+          isPublic: true,
+          groupings: [
+            { name: "Mains", recipeIds: [roastChicken.id, roastedVeg.id] },
+            { name: "Sides", recipeIds: [mashedPotatoes.id, r2.id, garlicBread.id] },
+            { name: "Soups", recipeIds: [r4.id] },
+          ],
+        },
+      ];
 
-      updateProgress("Creating menu: Brunch…");
-      await createMenu.mutateAsync({
-        collectionId,
-        name: "Brunch",
-        isPublic: false,
-        groupings: [{ name: "Mains", recipeIds: [r3.id, r1.id] }],
-      });
-
-      updateProgress("Creating menu: Soups & Sides…");
-      await createMenu.mutateAsync({
-        collectionId,
-        name: "Soups & Sides",
-        isPublic: true,
-        groupings: [
-          { name: "Soups", recipeIds: [r4.id] },
-          { name: "Sides", recipeIds: [r2.id] },
-        ],
-      });
-
-      updateProgress("Creating menu: Holiday Feast…");
-      await createMenu.mutateAsync({
-        collectionId,
-        name: "Holiday Feast",
-        isPublic: true,
-        groupings: [
-          { name: "Mains", recipeIds: [roastChicken.id, roastedVeg.id] },
-          { name: "Sides", recipeIds: [mashedPotatoes.id, r2.id, garlicBread.id] },
-          { name: "Soups", recipeIds: [r4.id] },
-        ],
-      });
+      for (const payload of menuPayloads) {
+        if (existingMenuNames.has(payload.name)) {
+          updateProgress(`Skipping existing menu: ${payload.name}`);
+        } else {
+          updateProgress(`Creating menu: ${payload.name}…`);
+          await createMenu.mutateAsync({
+            collectionId,
+            name: payload.name,
+            isPublic: payload.isPublic,
+            groupings: payload.groupings,
+          });
+        }
+      }
 
       progress.value = 100;
       statusMessage.value = "";
