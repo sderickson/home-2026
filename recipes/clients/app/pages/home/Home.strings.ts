@@ -7,5 +7,5 @@ export const home_page = {
   create_collection: "Create collection",
   no_collections:
     "You are not in any collections yet. Create one to get started.",
-  members: "Members",
+  members: "Other members",
 };

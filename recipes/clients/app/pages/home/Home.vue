@@ -38,14 +38,14 @@
         </v-card-title>
         <v-card-text class="pt-0">
           <div
-            v-if="membersForCollection(collection.id).length > 0"
+            v-if="otherMemberEmailsForCollection(collection.id).length > 0"
             class="mb-3"
           >
             <span class="text-caption text-medium-emphasis"
               >{{ t(strings.members) }}:
             </span>
             <span class="text-body-2">{{
-              memberEmailsForCollection(collection.id)
+              otherMemberEmailsForCollection(collection.id)
             }}</span>
           </div>
           <div class="d-flex flex-wrap align-center gap-2 menu-pills">
@@ -98,13 +98,17 @@ const collections = computed(() =>
 );
 const members = computed(() => collectionsQuery.data.value?.members ?? []);
 const menus = computed(() => collectionsQuery.data.value?.menus ?? []);
+const userEmail = computed(
+  () => profileQuery.data.value?.email ?? "",
+);
 
 function membersForCollection(collectionId: string) {
   return members.value.filter((m) => m.collectionId === collectionId);
 }
 
-function memberEmailsForCollection(collectionId: string): string {
+function otherMemberEmailsForCollection(collectionId: string): string {
   return membersForCollection(collectionId)
+    .filter((m) => m.email !== userEmail.value)
     .map((m) => m.email)
     .join(", ");
 }
