@@ -10,7 +10,10 @@ import {
   menuQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-import { createTestCollection, SEED_USER_ID } from "../recipes/_test-helpers.ts";
+import {
+  createTestCollection,
+  SEED_USER_ID,
+} from "../recipes/_test-helpers.ts";
 
 describe("DELETE /menus/:id", () => {
   let app: express.Express;
@@ -115,7 +118,7 @@ describe("DELETE /menus/:id", () => {
       .delete(`/menus/${menu!.id}`)
       .query({ collectionId });
 
-    expect([401, 500]).toContain(response.status);
+    expect(response.status).toBe(401);
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {

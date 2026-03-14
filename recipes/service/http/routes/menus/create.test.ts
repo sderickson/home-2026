@@ -10,7 +10,10 @@ import {
   recipeQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-import { createTestCollection, SEED_USER_ID } from "../recipes/_test-helpers.ts";
+import {
+  createTestCollection,
+  SEED_USER_ID,
+} from "../recipes/_test-helpers.ts";
 
 describe("POST /menus", () => {
   let app: express.Express;
@@ -134,9 +137,7 @@ describe("POST /menus", () => {
       collectionId,
       name: "Menu",
       isPublic: true,
-      groupings: [
-        { name: "Mains", recipeIds: ["nonexistent-recipe-id"] },
-      ],
+      groupings: [{ name: "Mains", recipeIds: ["nonexistent-recipe-id"] }],
     };
 
     const response = await request(app)
@@ -196,16 +197,15 @@ describe("POST /menus", () => {
   });
 
   it("should return 401 or 500 when not authenticated", async () => {
-    const response = await request(app)
-      .post("/menus")
-      .send({
-        collectionId,
-        name: "My Menu",
-        isPublic: true,
-        groupings: [],
-      });
+    const response = await request(app).post("/menus").send({
+      collectionId,
+      name: "My Menu",
+      isPublic: true,
+      groupings: [],
+    });
+    console.log(response.body);
 
-    expect([401, 500]).toContain(response.status);
+    expect(response.status).toBe(401);
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {

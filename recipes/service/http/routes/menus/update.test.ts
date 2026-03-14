@@ -11,7 +11,10 @@ import {
   recipeQueries,
 } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
-import { createTestCollection, SEED_USER_ID } from "../recipes/_test-helpers.ts";
+import {
+  createTestCollection,
+  SEED_USER_ID,
+} from "../recipes/_test-helpers.ts";
 
 describe("PUT /menus/:id", () => {
   let app: express.Express;
@@ -187,9 +190,7 @@ describe("PUT /menus/:id", () => {
         collectionId,
         name: "Menu",
         isPublic: true,
-        groupings: [
-          { name: "Mains", recipeIds: ["nonexistent-recipe-id"] },
-        ],
+        groupings: [{ name: "Mains", recipeIds: ["nonexistent-recipe-id"] }],
       });
 
     expect(response.status).toBe(400);
@@ -259,16 +260,14 @@ describe("PUT /menus/:id", () => {
     });
     expect(menu).toBeDefined();
 
-    const response = await request(app)
-      .put(`/menus/${menu!.id}`)
-      .send({
-        collectionId,
-        name: "Updated",
-        isPublic: true,
-        groupings: [],
-      });
+    const response = await request(app).put(`/menus/${menu!.id}`).send({
+      collectionId,
+      name: "Updated",
+      isPublic: true,
+      groupings: [],
+    });
 
-    expect([401, 500]).toContain(response.status);
+    expect(response.status).toBe(401);
   });
 
   it("should return 403 when menu does not belong to body collectionId", async () => {
