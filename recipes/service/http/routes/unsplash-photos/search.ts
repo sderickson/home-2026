@@ -2,15 +2,11 @@ import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import { unsplash } from "@sderickson/recipes-unsplash";
 import {
-  isUnsplashRateLimit,
-  throwUnsplashRateLimitError,
-} from "../../unsplash-rate-limit.ts";
-import {
-  type UnsplashSearchPhoto,
-  unsplashPhotoToSearchItem,
-} from "./_helpers.ts";
+  search,
+  isUnsplashRateLimitError,
+} from "@sderickson/recipes-unsplash";
+import { unsplashPhotoToSearchItem } from "./_helpers.ts";
 
 export const searchUnsplashPhotosHandler = createHandler(
   async (req, res) => {
@@ -24,28 +20,23 @@ export const searchUnsplashPhotosHandler = createHandler(
     const perPage =
       perPageRaw !== undefined ? Number(perPageRaw) : 10;
 
-    let apiResult: Awaited<ReturnType<typeof unsplash.search.getPhotos>>;
-    try {
-      apiResult = await unsplash.search.getPhotos({
-        query: q,
-        perPage,
-      });
-    } catch (e) {
-      if (isUnsplashRateLimit(e)) throwUnsplashRateLimitError();
+    const apiResult = await search({
+      query: q,
+      per_page: perPage,
+    });
+
+    if (apiResult.error) {
+      if (isUnsplashRateLimitError(apiResult.error)) {
+        throw createError(429, "Unsplash rate limit exceeded.", {
+          code: "UNSPLASH_RATE_LIMIT",
+        });
+      }
       throw createError(502, "Unsplash search failed", {
         code: "UNSPLASH_ERROR",
       });
     }
 
-    if (apiResult.type !== "success") {
-      if (isUnsplashRateLimit(apiResult)) throwUnsplashRateLimitError();
-      throw createError(502, "Unsplash search failed", {
-        code: "UNSPLASH_ERROR",
-      });
-    }
-
-    const results = apiResult.response.results as UnsplashSearchPhoto[];
-    const unsplashPhotos = results.map(unsplashPhotoToSearchItem);
+    const unsplashPhotos = apiResult.result.results.map(unsplashPhotoToSearchItem);
 
     const response: RecipesServiceResponseBody["searchUnsplashPhotos"][200] = {
       unsplashPhotos,

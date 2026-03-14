@@ -1,6 +1,6 @@
-import { ping } from "../calls/ping.ts";
+import { search } from "../calls/search.ts";
 
-const result = await ping();
+const result = await search({ query: "nature", per_page: 3 });
 if (result.error) {
   console.error(result.error);
   process.exit(1);
