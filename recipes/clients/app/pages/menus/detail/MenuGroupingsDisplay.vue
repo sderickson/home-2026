@@ -1,34 +1,40 @@
 <template>
   <div>
-    <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
-
-    <!-- Fancy menu layout: text-only, elegant list -->
+    <!-- Fancy menu layout: centered column, elegant restaurant style -->
     <template v-if="viewMode === 'menu'">
-      <div
-        v-for="(grouping, gIndex) in groupings"
-        :key="gIndex"
-        class="mb-6"
-      >
-        <div class="text-h6 text-medium-emphasis mb-3 font-weight-medium">
-          {{ grouping.name }}
+      <div class="menu-fancy">
+        <div
+          v-for="(grouping, gIndex) in groupings"
+          :key="gIndex"
+          class="menu-fancy-section"
+        >
+          <h2 class="menu-fancy-section-title">{{ grouping.name }}</h2>
+          <ul class="menu-fancy-list">
+            <li
+              v-for="recipeId in grouping.recipeIds"
+              :key="recipeId"
+              class="menu-fancy-item"
+            >
+              <router-link :to="recipeLink(recipeId)" class="menu-fancy-link">
+                <span class="menu-fancy-dish">{{
+                  recipeById.get(recipeId)?.title ?? recipeId
+                }}</span>
+                <span
+                  v-if="subtextByRecipeId.get(recipeId)"
+                  class="menu-fancy-desc"
+                >
+                  {{ subtextByRecipeId.get(recipeId) }}
+                </span>
+              </router-link>
+            </li>
+          </ul>
         </div>
-        <v-list class="menu-fancy-list">
-          <v-list-item
-            v-for="recipeId in grouping.recipeIds"
-            :key="recipeId"
-            :to="recipeLink(recipeId)"
-            :title="recipeById.get(recipeId)?.title ?? recipeId"
-            :subtitle="subtextByRecipeId.get(recipeId) ?? ''"
-            variant="text"
-            class="menu-fancy-item"
-            lines="two"
-          />
-        </v-list>
       </div>
     </template>
 
-    <!-- Diner layout: compact cards with images -->
+    <!-- Diner layout: label + compact cards with images -->
     <template v-else>
+      <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
       <div
         v-for="(grouping, gIndex) in groupings"
         :key="gIndex"
@@ -188,12 +194,89 @@ function recipeLink(recipeId: string) {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
+
+.menu-fancy {
+  font-family: "Outfit", system-ui, sans-serif;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  padding: 1rem 0;
+  column-count: 1;
+  column-gap: 2rem;
+}
+
+@media (min-width: 600px) {
+  .menu-fancy {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 960px) {
+  .menu-fancy {
+    column-count: 3;
+  }
+}
+
+.menu-fancy-section {
+  break-inside: avoid;
+  margin-bottom: 2.5rem;
+}
+
+.menu-fancy-section:last-child {
+  margin-bottom: 0;
+}
+
+.menu-fancy-section-title {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-on-surface));
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
 .menu-fancy-list {
-  background: transparent;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 1rem;
 }
+
 .menu-fancy-item {
-  min-height: 48px;
+  padding: 0.5rem 0;
 }
+
+.menu-fancy-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: color 0.15s ease;
+}
+
+.menu-fancy-link:hover {
+  color: rgb(var(--v-theme-primary));
+}
+
+.menu-fancy-dish {
+  font-size: 1.125rem;
+  font-weight: 500;
+  display: block;
+}
+
+.menu-fancy-desc {
+  font-size: 0.875rem;
+  font-weight: 300;
+  font-style: normal;
+  opacity: 0.8;
+  display: block;
+  margin-top: 0.15rem;
+}
+
 .menu-diner-card {
   break-inside: avoid;
 }
