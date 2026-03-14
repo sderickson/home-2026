@@ -22,7 +22,7 @@
             variant="tonal"
             size="small"
             class="mr-1"
-            :to="`/c/${collection.id}/recipes/list`"
+            :to="`/c/${collection.id}`"
           >
             {{ t(strings.open_recipes) }}
           </v-btn>
@@ -30,7 +30,7 @@
             variant="tonal"
             size="small"
             class="mr-1"
-            :to="`/c/${collection.id}/menus/list`"
+            :to="`/c/${collection.id}`"
           >
             {{ t(strings.open_menus) }}
           </v-btn>

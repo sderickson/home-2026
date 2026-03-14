@@ -50,7 +50,7 @@ async function onConfirm() {
   emit("update:modelValue", false);
   emit("deleted");
   router.push(
-    constructPath(appLinks.menusList, {
+    constructPath(appLinks.collectionsDetail, {
       params: { collectionId: props.collectionId },
     }),
   );

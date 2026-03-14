@@ -9,18 +9,6 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/",
   },
-  collectionsHome: {
-    subdomain,
-    path: "/collections",
-  },
-  collectionsList: {
-    subdomain,
-    path: "/collections",
-  },
-  recipesList: {
-    subdomain,
-    path: "/c/:collectionId/recipes/list",
-  },
   recipesDetail: {
     subdomain,
     path: "/c/:collectionId/recipes/:id",
@@ -32,10 +20,6 @@ export const appLinks: LinkMap = {
   recipesEdit: {
     subdomain,
     path: "/c/:collectionId/recipes/:id/edit",
-  },
-  menusList: {
-    subdomain,
-    path: "/c/:collectionId/menus/list",
   },
   menusCreate: {
     subdomain,

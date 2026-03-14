@@ -381,7 +381,7 @@ async function doDeleteRecipe() {
   await deleteRecipeMutation.mutateAsync(props.recipe.id);
   deleteRecipeDialogOpen.value = false;
   await router.push(
-    constructPath(appLinks.recipesList, { params: { collectionId: props.collectionId } }),
+    constructPath(appLinks.collectionsDetail, { params: { collectionId: props.collectionId } }),
   );
 }
 

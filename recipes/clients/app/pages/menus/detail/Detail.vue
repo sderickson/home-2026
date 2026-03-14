@@ -5,15 +5,11 @@
         {{ t(strings.breadcrumb_home) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
-        {{ t(strings.breadcrumb_collections) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="menusListPath">
+      <v-breadcrumbs-item :to="collectionDetailPath">
         {{ collectionName }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="menusListPath">
+      <v-breadcrumbs-item :to="collectionDetailPath">
         {{ t(strings.breadcrumb_menus) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
@@ -201,8 +197,8 @@ const recipesList = computed(
     })),
 );
 
-const menusListPath = computed(() =>
-  constructPath(appLinks.menusList, { params: { collectionId } }),
+const collectionDetailPath = computed(() =>
+  constructPath(appLinks.collectionsDetail, { params: { collectionId } }),
 );
 
 const viewMode = ref<"menu" | "diner">("menu");

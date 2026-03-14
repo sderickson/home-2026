@@ -13,7 +13,7 @@ describe("Home", () => {
 
   it("should render", async () => {
     const wrapper = mountTestApp(HomeAsync);
-    await vi.waitFor(() => expect(wrapper.text()).toContain("App Home"));
+    await vi.waitFor(() => expect(wrapper.text()).toContain("Your collections"));
     wrapper.unmount();
   });
 });

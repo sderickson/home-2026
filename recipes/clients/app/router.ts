@@ -5,16 +5,13 @@ import { PageNotFound } from "@saflib/vue/components";
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import CollectionLayout from "./layouts/CollectionLayout.vue";
 import CollectionsDetailAsync from "./pages/collections/detail/DetailAsync.vue";
-import CollectionsListAsync from "./pages/collections/list/ListAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import MenuRecipeDetailAsync from "./pages/menus/detail/RecipeDetailAsync.vue";
 import MenusCreateAsync from "./pages/menus/create/CreateAsync.vue";
 import MenusDetailAsync from "./pages/menus/detail/DetailAsync.vue";
-import MenusListAsync from "./pages/menus/list/ListAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesEditAsync from "./pages/recipes/edit/EditAsync.vue";
-import RecipesListAsync from "./pages/recipes/list/ListAsync.vue";
 // END WORKFLOW AREA
 
 export const createAppRouter = (options?: { history?: RouterHistory }) => {
@@ -26,20 +23,12 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
       component: HomeAsync,
     },
     {
-      path: appLinks.collectionsList.path,
-      component: CollectionsListAsync,
-    },
-    {
       path: "/c/:collectionId",
       component: CollectionLayout,
       children: [
         {
           path: "",
           component: CollectionsDetailAsync,
-        },
-        {
-          path: "recipes/list",
-          component: RecipesListAsync,
         },
         {
           path: "recipes/create",
@@ -52,10 +41,6 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
         {
           path: "recipes/:id/edit",
           component: RecipesEditAsync,
-        },
-        {
-          path: "menus/list",
-          component: MenusListAsync,
         },
         {
           path: "menus/create",

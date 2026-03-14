@@ -6,13 +6,9 @@
           {{ t(strings.breadcrumb_home) }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
-          {{ t(strings.breadcrumb_collections) }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="recipesListPath">
-          {{ collectionName }}
-        </v-breadcrumbs-item>
+      <v-breadcrumbs-item :to="collectionDetailPath">
+        {{ collectionName }}
+      </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
         <v-breadcrumbs-item :to="recipeDetailPath">
           {{ recipe.title }}
@@ -82,8 +78,8 @@ const noteFilesByRecipe = computed(
   () => queries.noteFilesByRecipeQuery.data.value ?? [],
 );
 
-const recipesListPath = computed(() =>
-  constructPath(appLinks.recipesList, { params: { collectionId } }),
+const collectionDetailPath = computed(() =>
+  constructPath(appLinks.collectionsDetail, { params: { collectionId } }),
 );
 const recipeDetailPath = computed(() =>
   constructPath(appLinks.recipesDetail, {

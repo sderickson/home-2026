@@ -5,10 +5,6 @@
         {{ t(strings.breadcrumb_home) }}
       </v-breadcrumbs-item>
       <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="appLinks.collectionsHome.path">
-        {{ t(strings.breadcrumb_collections) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
       <v-breadcrumbs-item disabled>
         {{ collectionName }}
       </v-breadcrumbs-item>
