@@ -26,7 +26,8 @@
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
     "marked": "^15.0.12",
-    "vue-router": "*"
+    "vue-router": "*",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/marked": "^5.0.2"

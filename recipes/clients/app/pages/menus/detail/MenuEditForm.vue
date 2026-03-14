@@ -37,23 +37,41 @@
           @click="emit('removeGrouping', gIndex)"
         />
       </div>
-      <v-list density="compact" class="menu-edit-list mb-2">
-        <v-list-item
-          v-for="recipeId in grouping.recipeIds"
-          :key="recipeId"
-          class="menu-edit-list-item"
-        >
-          <span class="flex-grow-1">{{ recipeTitle(recipeId) }}</span>
-          <v-btn
-            type="button"
-            variant="text"
-            size="small"
-            icon="mdi-close"
-            :aria-label="t(strings.remove_recipe)"
-            @click="removeRecipeFromSection(recipeId, gIndex)"
-          />
-        </v-list-item>
-      </v-list>
+      <draggable
+        v-model="grouping.recipeIds"
+        :item-key="(id: string) => id"
+        tag="div"
+        class="menu-edit-list mb-2"
+        handle=".menu-edit-drag-handle"
+        ghost-class="menu-edit-drag-ghost"
+        drag-class="menu-edit-drag-dragging"
+      >
+        <template #item="{ element: recipeId }">
+          <v-list-item class="menu-edit-list-item">
+            <template #prepend>
+              <v-btn
+                type="button"
+                variant="text"
+                size="small"
+                icon="mdi-drag"
+                class="menu-edit-drag-handle"
+                :aria-label="t(strings.drag_handle)"
+              />
+            </template>
+            <span class="flex-grow-1">{{ recipeTitle(recipeId) }}</span>
+            <template #append>
+              <v-btn
+                type="button"
+                variant="text"
+                size="small"
+                icon="mdi-close"
+                :aria-label="t(strings.remove_recipe)"
+                @click="removeRecipeFromSection(recipeId, gIndex)"
+              />
+            </template>
+          </v-list-item>
+        </template>
+      </draggable>
       <v-autocomplete
         :model-value="autocompleteBySection[gIndex] ?? null"
         :items="availableRecipes"
@@ -91,6 +109,7 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive, nextTick } from "vue";
+import draggable from "vuedraggable";
 import type { MenuEditFormModel } from "./Detail.logic.ts";
 import { buildUpdateMenuPayload } from "./Detail.logic.ts";
 import { useUpdateMenuMutation } from "@sderickson/recipes-sdk";
@@ -188,6 +207,18 @@ async function onSubmit() {
 }
 .menu-edit-list-item {
   min-height: 40px;
+}
+.menu-edit-drag-handle {
+  cursor: grab;
+}
+.menu-edit-drag-handle:active {
+  cursor: grabbing;
+}
+.menu-edit-drag-ghost {
+  opacity: 0.5;
+}
+.menu-edit-drag-dragging {
+  cursor: grabbing;
 }
 .menu-edit-autocomplete {
   max-width: 320px;
