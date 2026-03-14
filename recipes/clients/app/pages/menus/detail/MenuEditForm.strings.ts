@@ -9,6 +9,7 @@ export const menu_edit_form = {
   remove_grouping: "Remove section",
   remove_recipe: "Remove recipe",
   drag_handle: "Drag to reorder",
+  drag_section: "Drag to reorder section",
   add_recipe_placeholder: "Add recipe…",
   submit: "Save",
 };

@@ -43,7 +43,7 @@ export function canEditMenuForRole(role: string | undefined): boolean {
 export type MenuEditFormModel = {
   name: string;
   isPublic: boolean;
-  groupings: { name: string; recipeIds: string[] }[];
+  groupings: { name: string; recipeIds: string[]; _uid?: number }[];
 };
 
 /**

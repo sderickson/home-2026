@@ -210,9 +210,10 @@ const editForm = reactive<MenuEditFormModel>({
 function syncEditFormFromMenu() {
   editForm.name = menu.value.name;
   editForm.isPublic = menu.value.isPublic;
-  editForm.groupings = menu.value.groupings.map((g) => ({
+  editForm.groupings = menu.value.groupings.map((g, i) => ({
     name: g.name,
     recipeIds: [...g.recipeIds],
+    _uid: Date.now() + i,
   }));
 }
 
@@ -230,7 +231,11 @@ function startEdit() {
 }
 
 function addGrouping() {
-  editForm.groupings.push({ name: "", recipeIds: [] });
+  editForm.groupings.push({
+    name: "",
+    recipeIds: [],
+    _uid: Date.now(),
+  });
 }
 
 function removeGrouping(index: number) {
