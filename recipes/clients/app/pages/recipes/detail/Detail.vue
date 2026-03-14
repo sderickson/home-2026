@@ -39,8 +39,8 @@ import {
   assertRecipeLoaded,
   assertVersionsLoaded,
 } from "./Detail.logic.ts";
+import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
-import RecipeDetailContent from "./RecipeDetailContent.vue";
 
 const { t } = useReverseT();
 const route = useRoute();

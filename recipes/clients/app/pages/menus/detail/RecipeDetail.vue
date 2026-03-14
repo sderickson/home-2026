@@ -38,15 +38,15 @@ import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import {
   assertFilesLoaded,
-  assertNotesLoaded,
   assertNoteFilesByRecipeLoaded,
+  assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-} from "../../recipes/detail/Detail.logic.ts";
-import RecipeDetailContent from "../../recipes/detail/RecipeDetailContent.vue";
+} from "../../../components/recipe-detail/recipeDetailLogic.ts";
 import { useMenuRecipeDetailLoader } from "./RecipeDetail.loader.ts";
 import { menus_recipe_detail as strings } from "./RecipeDetail.strings.ts";
 

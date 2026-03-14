@@ -15,6 +15,7 @@ import { menus_detail } from "./pages/menus/detail/Detail.strings.ts";
 import { menus_list } from "./pages/menus/list/List.strings.ts";
 import { menus_list_display } from "./pages/menus/list/MenusListDisplay.strings.ts";
 import { menus_recipe_detail } from "./pages/menus/detail/RecipeDetail.strings.ts";
+import { recipe_detail_content } from "./components/recipe-detail/RecipeDetailContent.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
 import { recipes_create_page } from "./pages/recipes/create/Create.strings.ts";
 import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
@@ -40,6 +41,8 @@ export const app_strings = {
   menus_detail,
   menus_list,
   menus_list_display,
+  menus_recipe_detail,
+  recipe_detail_content,
   recipe_form,
   recipes_create_page,
   recipes_detail,

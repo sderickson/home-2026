@@ -275,32 +275,54 @@
 </template>
 
 <script setup lang="ts">
-import type { RecipeFileInfo } from "@sderickson/recipes-spec";
-import type { useDetailLoader } from "./Detail.loader.ts";
+import type {
+  Recipe,
+  RecipeFileInfo,
+  RecipeVersion,
+} from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { recipes_detail_page as strings } from "./Detail.strings.ts";
+import { recipe_detail_content as strings } from "./RecipeDetailContent.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import {
   groupNoteFilesByNoteId,
   notesByVersionIdMap,
   notesForLatestVersion as notesForLatestVersionFn,
-} from "./Detail.logic.ts";
-import { useDetailFilesFlow } from "./useDetailFilesFlow.ts";
+} from "./recipeDetailLogic.ts";
+import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
 import {
   RecipeContentPreview,
   useDeleteRecipeMutation,
 } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import AddNoteCard from "./AddNoteCard.vue";
-import NoteCard from "./NoteCard.vue";
-import VersionHistoryModal from "./VersionHistoryModal.vue";
-import ConfirmDialog from "./ConfirmDialog.vue";
-import UnsplashPickerDialog from "./UnsplashPickerDialog.vue";
+import AddNoteCard from "../../pages/recipes/detail/AddNoteCard.vue";
+import NoteCard from "../../pages/recipes/detail/NoteCard.vue";
+import VersionHistoryModal from "../../pages/recipes/detail/VersionHistoryModal.vue";
+import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
+import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
+
+/** Queries shape from recipe detail loader (standalone or menu-context). */
+export interface RecipeDetailQueries {
+  profileQuery: { data: { value?: unknown } };
+  collectionQuery: { data: { value?: { collection?: { id?: string } } } };
+  membersQuery: { data: { value?: { members?: Array<{ email: string; role: string }> } } };
+  recipeQuery: {
+    data: {
+      value?: {
+        recipe: Recipe;
+        currentVersion?: RecipeVersion | null;
+      } | null;
+    };
+  };
+  versionsQuery: { data: { value?: RecipeVersion[] } };
+  notesQuery: { data: { value?: unknown[] } };
+  filesQuery: { data: { value?: RecipeFileInfo[] } };
+  noteFilesByRecipeQuery: { data: { value?: unknown[] } };
+}
 
 const props = defineProps<{
-  queries: ReturnType<typeof useDetailLoader>;
+  queries: RecipeDetailQueries;
 }>();
 
 const { t, lookupTKey } = useReverseT();
@@ -314,8 +336,8 @@ const collectionId = computed(
   () => props.queries.collectionQuery.data.value?.collection?.id ?? "",
 );
 const showEdit = computed(() => {
-  const members = props.queries.membersQuery.data.value?.members ?? [];
-  const userEmail = props.queries.profileQuery.data.value?.email ?? "";
+  const members = (props.queries.membersQuery.data.value as { members?: Array<{ email: string; role: string }> } | undefined)?.members ?? [];
+  const userEmail = (props.queries.profileQuery.data.value as { email?: string } | undefined)?.email ?? "";
   const currentMember = members.find((m) => m.email === userEmail);
   return currentMember?.role === "editor" || currentMember?.role === "owner";
 });
@@ -351,16 +373,16 @@ const expandedImageDialogOpen = computed({
 });
 
 const versionsNewestFirst = computed(() => [...versions.value].reverse());
-const notesByVersionId = computed(() => notesByVersionIdMap(notes.value));
+const notesByVersionId = computed(() => notesByVersionIdMap(notes.value as import("@sderickson/recipes-spec").RecipeNote[]));
 const notesForLatestVersion = computed(() =>
-  notesForLatestVersionFn(notes.value, currentVersion.value?.id),
+  notesForLatestVersionFn(notes.value as import("@sderickson/recipes-spec").RecipeNote[], currentVersion.value?.id),
 );
 const notesTimelineOrder = computed(() =>
   [...notesForLatestVersion.value].reverse(),
 );
 
 const noteIdToFiles = computed(() =>
-  groupNoteFilesByNoteId(props.queries.noteFilesByRecipeQuery.data.value ?? []),
+  groupNoteFilesByNoteId((props.queries.noteFilesByRecipeQuery.data.value ?? []) as import("@sderickson/recipes-spec").RecipeNoteFileInfo[]),
 );
 
 function getFilesForNote(note: { id: string }) {
