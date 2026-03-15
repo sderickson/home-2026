@@ -36,6 +36,12 @@ export const getMenuHandler = createHandler(async (req, res) => {
       ? req.query.collectionId.trim()
       : "";
 
+  if (!collectionId) {
+    throw createError(400, "collectionId is required", {
+      code: "VALIDATION_ERROR",
+    });
+  }
+
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
   const { result: menu, error: menuError } = await menuQueries.getByIdMenu(
@@ -52,23 +58,13 @@ export const getMenuHandler = createHandler(async (req, res) => {
     }
   }
 
-  const hasCollection = collectionId.length > 0;
-
-  if (hasCollection) {
-    if (menu!.collectionId !== collectionId) {
-      throw createError(403, "Menu not in collection", { code: "FORBIDDEN" });
-    }
-    const member = await requireCollectionMembership(collectionId, {
-      requireMutate: false,
-    });
-    if (member.role === "viewer" && !menu!.isPublic) {
-      throw createError(403, "Forbidden", { code: "FORBIDDEN" });
-    }
-  } else {
-    if (!menu!.isPublic) {
-      throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
-    }
+  if (menu!.collectionId !== collectionId) {
+    throw createError(403, "Menu not in collection", { code: "FORBIDDEN" });
   }
+
+  await requireCollectionMembership(collectionId, {
+    requireMutate: false,
+  });
 
   const recipeIds = recipeIdsFromGroupings(menu!.groupings);
   const recipeEntities: RecipeEntity[] = [];

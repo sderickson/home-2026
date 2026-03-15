@@ -157,7 +157,6 @@ const menus = computed(
     getMenusList(menusQuery.data.value) as {
       id: string;
       name: string;
-      isPublic: boolean;
     }[],
 );
 const recipes = computed(() => getRecipesList(recipesQuery.data.value));

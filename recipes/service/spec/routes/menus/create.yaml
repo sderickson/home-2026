@@ -11,7 +11,6 @@ createMenus:
           required:
             - collectionId
             - name
-            - isPublic
             - groupings
           properties:
             collectionId:
@@ -21,9 +20,6 @@ createMenus:
               type: string
               description: Human-readable name for the menu.
               minLength: 1
-            isPublic:
-              type: boolean
-              description: Whether the menu is visible to non-editors.
             groupings:
               $ref: "../../schemas/menu.yaml#/properties/groupings"
 

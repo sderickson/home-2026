@@ -6,8 +6,6 @@ export const recipe_form = {
   subtitle_placeholder: "Brief subtitle for menus and lists",
   description_label: "Description (optional)",
   description_placeholder: "Longer description for recipe detail",
-  is_public_label: "Public",
-  is_public_hint: "Visible to everyone when checked",
   ingredients_label: "Ingredients",
   instructions_label: "Instructions (markdown)",
   instructions_placeholder: "1. Preheat oven...\n2. Mix ingredients...",

@@ -4,8 +4,6 @@ import { PageNotFound } from "@saflib/vue/components";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import HomeAsync from "./pages/home/HomeAsync.vue";
-import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
-import RecipesListAsync from "./pages/recipes/list/ListAsync.vue";
 // END WORKFLOW AREA
 
 export const createRootRouter = (options?: { history?: RouterHistory }) => {
@@ -15,14 +13,6 @@ export const createRootRouter = (options?: { history?: RouterHistory }) => {
     {
       path: rootLinks.home.path,
       component: HomeAsync,
-    },
-    {
-      path: rootLinks.recipesList.path,
-      component: RecipesListAsync,
-    },
-    {
-      path: rootLinks.recipesDetail.path,
-      component: RecipesDetailAsync,
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

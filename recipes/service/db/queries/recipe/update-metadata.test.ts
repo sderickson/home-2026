@@ -25,7 +25,6 @@ describe("updateMetadataRecipe", () => {
       title: "Original Title",
       subtitle: "Short",
       description: "Long",
-      isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
       versionContent: {
@@ -42,7 +41,6 @@ describe("updateMetadataRecipe", () => {
       title: "Updated Title",
       subtitle: "Updated Short",
       description: "Updated Long",
-      isPublic: true,
       updatedBy: "user-2",
     });
 
@@ -53,7 +51,6 @@ describe("updateMetadataRecipe", () => {
     expect(result.title).toBe("Updated Title");
     expect(result.subtitle).toBe("Updated Short");
     expect(result.description).toBe("Updated Long");
-    expect(result.isPublic).toBe(true);
     expect(result.updatedBy).toBe("user-2");
     expect(result.updatedAt).toBeInstanceOf(Date);
   });
@@ -65,7 +62,6 @@ describe("updateMetadataRecipe", () => {
       title: "Title",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       updatedBy: "user-1",
     });
 

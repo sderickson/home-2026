@@ -3,7 +3,7 @@ import { handleClientMethod } from "@saflib/sdk";
 import { getClient } from "../../client.ts";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
 
-/** POST /menus. Body: collectionId, name, isPublic, groupings. Response: { menu: Menu }. */
+/** POST /menus. Body: collectionId, name, groupings. Response: { menu: Menu }. */
 export const useCreateMenuMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

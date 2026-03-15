@@ -34,7 +34,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "To Delete",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -70,7 +69,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
-      isPublic: true,
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -88,7 +86,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -108,7 +105,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -133,7 +129,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
-      isPublic: false,
       createdBy: "other@example.com",
       groupings: [],
     });
@@ -165,7 +160,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
-      isPublic: true,
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -193,7 +187,6 @@ describe("DELETE /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu in My Collection",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });

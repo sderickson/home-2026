@@ -22,7 +22,7 @@ describe("GET /recipes", () => {
     recipesDb.disconnect(dbKey);
   });
 
-  it("should return 400 when neither collectionId nor publicOnly is provided", async () => {
+  it("should return 400 when collectionId is not provided", async () => {
     const response = await request(app)
       .get("/recipes")
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
@@ -30,15 +30,6 @@ describe("GET /recipes", () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toBeDefined();
     expect(response.body.message).toContain("collectionId");
-  });
-
-  it("should return 200 and empty array for publicOnly=true without auth", async () => {
-    const response = await request(app)
-      .get("/recipes")
-      .query({ publicOnly: true });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
   });
 
   it("should return 200 and empty array when no recipes exist", async () => {

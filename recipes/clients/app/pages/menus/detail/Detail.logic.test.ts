@@ -86,7 +86,6 @@ describe("buildUpdateMenuPayload", () => {
     const payload = buildUpdateMenuPayload(
       {
         name: "  Updated Name  ",
-        isPublic: true,
         groupings: [
           { name: "Mains", recipeIds: ["r1"] },
           { name: "  ", recipeIds: [] },
@@ -100,7 +99,6 @@ describe("buildUpdateMenuPayload", () => {
       id: "menu-1",
       collectionId: "coll-1",
       name: "Updated Name",
-      isPublic: true,
       groupings: [
         { name: "Mains", recipeIds: ["r1"] },
         { name: "Sides", recipeIds: [] },

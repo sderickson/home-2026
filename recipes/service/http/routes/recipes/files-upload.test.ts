@@ -24,7 +24,6 @@ describe("POST /recipes/:id/files (filesUploadRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {

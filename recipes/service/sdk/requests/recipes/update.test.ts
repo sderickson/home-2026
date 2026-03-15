@@ -41,12 +41,10 @@ describe("updateRecipe", () => {
     await mutation.mutateAsync({
       id,
       title: "Renamed Salad",
-      isPublic: true,
     });
 
     await getQuery.refetch();
     expect(getQuery.data.value?.recipe.title).toBe("Renamed Salad");
-    expect(getQuery.data.value?.recipe.isPublic).toBe(true);
 
     app.unmount();
   });

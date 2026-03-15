@@ -12,7 +12,6 @@ export type CreateMenuError = CollectionNotFoundError;
 export interface CreateMenuParams {
   collectionId: string;
   name: string;
-  isPublic: boolean;
   createdBy: string;
   groupings: MenuGrouping[];
   /** Defaults to [createdBy] when omitted. */
@@ -49,7 +48,6 @@ export const createMenu = queryWrapper(
       .values({
         collectionId: params.collectionId,
         name: params.name,
-        isPublic: params.isPublic,
         createdBy: params.createdBy,
         createdAt: now,
         updatedBy: params.createdBy,

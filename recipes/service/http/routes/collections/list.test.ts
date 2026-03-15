@@ -81,7 +81,6 @@ describe("GET /collections", () => {
       await menuQueries.createMenu(dbKey, {
         collectionId: "with-menus",
         name: "Weeknight Dinners",
-        isPublic: true,
         createdBy: SEED_USER_EMAIL,
         groupings: [],
       });
@@ -98,7 +97,6 @@ describe("GET /collections", () => {
     expect(response.body.menus[0]).toMatchObject({
       collectionId: "with-menus",
       name: "Weeknight Dinners",
-      isPublic: true,
       createdBy: SEED_USER_EMAIL,
     });
     expect(response.body.menus[0].id).toEqual(expect.any(String));

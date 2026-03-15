@@ -18,10 +18,6 @@ properties:
     nullable: true
     description: Optional longer description shown on recipe detail (not on menu)
     example: "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
-  isPublic:
-    type: boolean
-    description: Whether the recipe is visible to non-admin users
-    example: true
   createdBy:
     type: string
     description: User id of the creator
@@ -48,7 +44,6 @@ required:
   - id
   - title
   - subtitle
-  - isPublic
   - createdBy
   - createdAt
   - updatedBy

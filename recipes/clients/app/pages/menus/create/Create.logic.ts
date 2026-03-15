@@ -34,7 +34,6 @@ export function canEditMenuForRole(role: string | undefined): boolean {
 
 export type CreateMenuFormModel = {
   name: string;
-  isPublic: boolean;
   groupings: { name: string; recipeIds: string[] }[];
 };
 
@@ -48,13 +47,11 @@ export function buildCreateMenuPayload(
 ): {
   collectionId: string;
   name: string;
-  isPublic: boolean;
   groupings: { name: string; recipeIds: string[] }[];
 } {
   return {
     collectionId,
     name: form.name.trim(),
-    isPublic: form.isPublic,
     groupings: form.groupings
       .filter((g) => g.name.trim() !== "")
       .map((g) => ({

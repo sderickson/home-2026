@@ -1,7 +1,5 @@
 export const home_page = {
-  title: "Welcome",
-  description:
-    "This is my personal recipe site for iterating on and sharing my recipes.",
-  cta_browse: "Browse recipes",
-  cta_register: "Create account",
+  title: "Recipes",
+  description: "A recipe app. Sign up to create and manage your recipes.",
+  cta_register: "Sign up",
 };

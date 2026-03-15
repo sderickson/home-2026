@@ -90,7 +90,6 @@ describe("buildCreateMenuPayload", () => {
     const payload = buildCreateMenuPayload(
       {
         name: "  Weeknight Dinners  ",
-        isPublic: true,
         groupings: [
           { name: "Mains", recipeIds: ["r1"] },
           { name: "  ", recipeIds: [] },
@@ -102,7 +101,6 @@ describe("buildCreateMenuPayload", () => {
     expect(payload).toEqual({
       collectionId: "my-kitchen",
       name: "Weeknight Dinners",
-      isPublic: true,
       groupings: [
         { name: "Mains", recipeIds: ["r1"] },
         { name: "Sides", recipeIds: [] },
@@ -114,7 +112,6 @@ describe("buildCreateMenuPayload", () => {
     const payload = buildCreateMenuPayload(
       {
         name: "Menu",
-        isPublic: false,
         groupings: [{ name: "Starters", recipeIds: [] }],
       },
       "c1",
@@ -126,7 +123,6 @@ describe("buildCreateMenuPayload", () => {
     const payload = buildCreateMenuPayload(
       {
         name: "Menu",
-        isPublic: false,
         groupings: [{ name: "  Mains  ", recipeIds: ["r1"] }],
       },
       "c1",

@@ -14,7 +14,6 @@ export const updateRecipesHandler = recipesHandler({
         recipe.subtitle = body.subtitle;
       if (body.description !== undefined)
         recipe.description = body.description;
-      if (body.isPublic !== undefined) recipe.isPublic = body.isPublic;
       recipe.updatedAt = new Date().toISOString();
     }
     return recipe;

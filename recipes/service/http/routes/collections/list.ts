@@ -46,9 +46,7 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
     );
     const role = member?.role ?? "viewer";
     const list = menuRows ?? [];
-    const filtered =
-      role === "viewer" ? list.filter((m) => m.isPublic) : list;
-    allMenuRows.push(...filtered);
+    allMenuRows.push(...list);
   }
 
   const response: RecipesServiceResponseBody["listCollections"][200] =

@@ -1,8 +1,6 @@
 getRecipe:
-  summary: "Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection."
+  summary: "Get one recipe. Auth required; caller must be at least viewer on the recipe's collection."
   operationId: "getRecipe"
-  tags:
-    - "no-auth"
 
   parameters:
     - name: "id"
@@ -11,12 +9,6 @@ getRecipe:
       schema:
         type: string
       description: "Recipe id"
-    - name: menuId
-      in: query
-      required: false
-      schema:
-        type: string
-      description: "When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context)."
 
   responses:
     "200":
@@ -45,7 +37,7 @@ getRecipe:
                   type: object
 
     "401":
-      description: "Unauthorized - recipe is private and caller is not authenticated."
+      description: "Unauthorized - authentication required."
       content:
         application/json:
           schema:

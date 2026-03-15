@@ -12,7 +12,6 @@ createRecipe:
             - collectionId
             - title
             - subtitle
-            - isPublic
           properties:
             collectionId:
               type: string
@@ -27,9 +26,6 @@ createRecipe:
               type: string
               nullable: true
               description: Optional longer description shown on recipe detail
-            isPublic:
-              type: boolean
-              description: Whether the recipe is visible to non-admin users
             initialVersion:
               type: object
               description: Optional initial version content for the first version

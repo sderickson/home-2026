@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth). */
+        /** List recipes in a collection. Auth required; caller must be at least viewer on the collection. */
         get: operations["listRecipes"];
         put?: never;
         /** Create recipe (and optionally initial version). Admin only. */
@@ -29,9 +29,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection. */
+        /** Get one recipe. Auth required; caller must be at least viewer on the recipe's collection. */
         get: operations["getRecipe"];
-        /** Update recipe metadata only (title, descriptions, isPublic). Admin only. */
+        /** Update recipe metadata only (title, descriptions). Admin only. */
         put: operations["updateRecipe"];
         post?: never;
         /** Delete recipe (and handle versions/notes/files per policy). Admin only. */
@@ -347,7 +347,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth). */
+        /** List menus in a collection. Auth required; caller must be at least viewer on the collection. */
         get: operations["listMenus"];
         put?: never;
         /** Create menu in a collection. Editor or owner on collection only. Recipe ids in groupings must belong to the same collection. */
@@ -365,9 +365,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one menu with groupings and full Recipe objects for every recipe in the menu. Optional query collectionId when in collection context. When no collectionId (public detail), allowed if menu is public. */
+        /** Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required. */
         get: operations["getMenu"];
-        /** Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection. */
+        /** Update menu name and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection. */
         put: operations["updateMenu"];
         post?: never;
         /** Delete menu. Query collectionId when not inferred from path. Editor or owner on collection; menu must belong to collection. */
@@ -415,11 +415,6 @@ export interface components {
              * @example A crowd-pleasing recipe that works every time. Best with room-temperature butter.
              */
             description?: string | null;
-            /**
-             * @description Whether the recipe is visible to non-admin users
-             * @example true
-             */
-            isPublic: boolean;
             /**
              * @description User id of the creator
              * @example a1b2c3d4-e89b-12d3-a456-426614174001
@@ -911,11 +906,6 @@ export interface components {
              */
             name: string;
             /**
-             * @description Whether the menu is visible to non-editors (e.g. public menu list)
-             * @example false
-             */
-            isPublic: boolean;
-            /**
              * @description User id of the menu creator (short id)
              * @example a1b2c3d4
              */
@@ -1056,11 +1046,9 @@ export type $defs = Record<string, never>;
 export interface operations {
     listRecipes: {
         parameters: {
-            query?: {
-                /** @description Id of the collection to list recipes from. Omit when publicOnly=true. */
-                collectionId?: string;
-                /** @description When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this. */
-                publicOnly?: boolean;
+            query: {
+                /** @description Id of the collection to list recipes from. */
+                collectionId: string;
             };
             header?: never;
             path?: never;
@@ -1068,7 +1056,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of recipes (public only when not admin, includes private for admins). */
+            /** @description List of recipes in the collection. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1077,7 +1065,7 @@ export interface operations {
                     "application/json": components["schemas"]["recipe"][];
                 };
             };
-            /** @description Bad request - provide either collectionId or publicOnly=true, not both nor neither. */
+            /** @description Bad request - collectionId is required. */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -1133,8 +1121,6 @@ export interface operations {
                     subtitle: string;
                     /** @description Optional longer description shown on recipe detail */
                     description?: string | null;
-                    /** @description Whether the recipe is visible to non-admin users */
-                    isPublic: boolean;
                     /** @description Optional initial version content for the first version */
                     initialVersion?: {
                         content?: components["schemas"]["content"];
@@ -1196,10 +1182,7 @@ export interface operations {
     };
     getRecipe: {
         parameters: {
-            query?: {
-                /** @description When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context). */
-                menuId?: string;
-            };
+            query?: never;
             header?: never;
             path: {
                 /** @description Recipe id */
@@ -1225,7 +1208,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            /** @description Unauthorized - authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -1273,8 +1256,6 @@ export interface operations {
                     subtitle?: string;
                     /** @description Optional longer description shown on recipe detail */
                     description?: string | null;
-                    /** @description Whether the recipe is visible to non-admin users */
-                    isPublic?: boolean;
                 };
             };
         };
@@ -2811,11 +2792,9 @@ export interface operations {
     };
     listMenus: {
         parameters: {
-            query?: {
-                /** @description Id of the collection to list menus from. Omit when publicOnly=true. */
-                collectionId?: string;
-                /** @description When true, return all public menus across all collections. Used by root (logged-out) app. Do not send collectionId when using this. */
-                publicOnly?: boolean;
+            query: {
+                /** @description Id of the collection to list menus from. */
+                collectionId: string;
             };
             header?: never;
             path?: never;
@@ -2823,7 +2802,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Menus in the collection (viewers get public only; editors/owners get all) or all public menus when publicOnly=true. */
+            /** @description Menus in the collection. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2835,7 +2814,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Bad request - provide either collectionId or publicOnly=true, not both nor neither. */
+            /** @description Bad request - collectionId is required. */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -2844,7 +2823,7 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Unauthorized - collection-scoped listing requires authentication. */
+            /** @description Unauthorized - collection listing requires authentication. */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2862,7 +2841,7 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Unprocessable - collection does not exist (validation, when collectionId provided). */
+            /** @description Unprocessable - collection does not exist (validation). */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2887,8 +2866,6 @@ export interface operations {
                     collectionId: string;
                     /** @description Human-readable name for the menu. */
                     name: string;
-                    /** @description Whether the menu is visible to non-editors. */
-                    isPublic: boolean;
                     groupings: components["schemas"]["groupings"];
                 };
             };
@@ -2945,9 +2922,9 @@ export interface operations {
     };
     getMenu: {
         parameters: {
-            query?: {
-                /** @description Id of the collection (when in collection context). Omit for public menu detail. */
-                collectionId?: string;
+            query: {
+                /** @description Id of the collection (required for access). */
+                collectionId: string;
             };
             header?: never;
             path: {
@@ -2971,7 +2948,7 @@ export interface operations {
                     };
                 };
             };
-            /** @description Unauthorized - menu is private and caller is not authenticated. */
+            /** @description Unauthorized - authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2980,7 +2957,7 @@ export interface operations {
                     "application/json": components["schemas"]["error"];
                 };
             };
-            /** @description Forbidden - menu not in collection or private and caller has only viewer access. */
+            /** @description Forbidden - not a member of the collection or insufficient role. */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3017,8 +2994,6 @@ export interface operations {
                     collectionId: string;
                     /** @description Human-readable name for the menu. */
                     name: string;
-                    /** @description Whether the menu is visible to non-editors. */
-                    isPublic: boolean;
                     groupings: components["schemas"]["groupings"];
                 };
             };

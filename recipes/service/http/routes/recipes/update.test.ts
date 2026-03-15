@@ -21,7 +21,6 @@ describe("PUT /recipes/:id", () => {
       title: "Original Title",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -38,7 +37,6 @@ describe("PUT /recipes/:id", () => {
   it("should return 200 with updated recipe when admin sends partial body", async () => {
     const updateBody = {
       title: "Updated Title",
-      isPublic: true,
     } satisfies RecipesServiceRequestBody["updateRecipe"];
 
     const response = await request(app)
@@ -51,7 +49,6 @@ describe("PUT /recipes/:id", () => {
       id: recipeId,
       title: updateBody.title,
       subtitle: "Short",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       createdAt: expect.any(String),

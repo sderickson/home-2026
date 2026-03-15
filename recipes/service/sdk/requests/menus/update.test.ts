@@ -18,7 +18,6 @@ describe("updateMenu", () => {
       id: menu.id,
       collectionId: menu.collectionId,
       name: "Updated Menu Name",
-      isPublic: true,
       groupings: [{ name: "Updated Group", recipeIds: [] }],
     };
 
@@ -27,7 +26,6 @@ describe("updateMenu", () => {
     expect(result).toBeDefined();
     expect(result.menu).toBeDefined();
     expect(result.menu.name).toBe(body.name);
-    expect(result.menu.isPublic).toBe(body.isPublic);
     expect(result.menu.groupings).toEqual(body.groupings);
     expect(mockMenus[0].name).toBe(body.name);
 
@@ -46,7 +44,6 @@ describe("updateMenu", () => {
       id: menu.id,
       collectionId: menu.collectionId,
       name: "Cache Test Updated",
-      isPublic: menu.isPublic,
       groupings: menu.groupings,
     });
     await listQuery.refetch();

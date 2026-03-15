@@ -8,35 +8,22 @@
   "paths": {
     "/recipes": {
       "get": {
-        "summary": "List recipes. Either (a) collectionId: list recipes in that collection (auth required). Or (b) publicOnly=true: all public recipes across collections (no auth).",
+        "summary": "List recipes in a collection. Auth required; caller must be at least viewer on the collection.",
         "operationId": "listRecipes",
-        "tags": [
-          "no-auth"
-        ],
         "parameters": [
           {
             "name": "collectionId",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             },
-            "description": "Id of the collection to list recipes from. Omit when publicOnly=true."
-          },
-          {
-            "name": "publicOnly",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "When true, return all public recipes across all collections. Used by root (logged-out) app. Do not send collectionId when using this."
+            "description": "Id of the collection to list recipes from."
           }
         ],
         "responses": {
           "200": {
-            "description": "List of recipes (public only when not admin, includes private for admins).",
+            "description": "List of recipes in the collection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -49,7 +36,7 @@
             }
           },
           "400": {
-            "description": "Bad request - provide either collectionId or publicOnly=true, not both nor neither.",
+            "description": "Bad request - collectionId is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -102,8 +89,7 @@
                 "required": [
                   "collectionId",
                   "title",
-                  "subtitle",
-                  "isPublic"
+                  "subtitle"
                 ],
                 "properties": {
                   "collectionId": {
@@ -122,10 +108,6 @@
                     "type": "string",
                     "nullable": true,
                     "description": "Optional longer description shown on recipe detail"
-                  },
-                  "isPublic": {
-                    "type": "boolean",
-                    "description": "Whether the recipe is visible to non-admin users"
                   },
                   "initialVersion": {
                     "type": "object",
@@ -209,11 +191,8 @@
     },
     "/recipes/{id}": {
       "get": {
-        "summary": "Get one recipe. Access from the recipe: public recipes allowed without auth; private recipes require auth and membership in the recipe's collection.",
+        "summary": "Get one recipe. Auth required; caller must be at least viewer on the recipe's collection.",
         "operationId": "getRecipe",
-        "tags": [
-          "no-auth"
-        ],
         "parameters": [
           {
             "name": "id",
@@ -223,15 +202,6 @@
               "type": "string"
             },
             "description": "Recipe id"
-          },
-          {
-            "name": "menuId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "description": "When provided, if the menu is public and contains this recipe, the recipe is returned even when the recipe itself is private (recipe effectively public in menu context)."
           }
         ],
         "responses": {
@@ -272,7 +242,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - recipe is private and caller is not authenticated.",
+            "description": "Unauthorized - authentication required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -304,7 +274,7 @@
         }
       },
       "put": {
-        "summary": "Update recipe metadata only (title, descriptions, isPublic). Admin only.",
+        "summary": "Update recipe metadata only (title, descriptions). Admin only.",
         "operationId": "updateRecipe",
         "parameters": [
           {
@@ -337,10 +307,6 @@
                     "type": "string",
                     "nullable": true,
                     "description": "Optional longer description shown on recipe detail"
-                  },
-                  "isPublic": {
-                    "type": "boolean",
-                    "description": "Whether the recipe is visible to non-admin users"
                   }
                 }
               }
@@ -2374,35 +2340,22 @@
     },
     "/menus": {
       "get": {
-        "summary": "List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth).",
+        "summary": "List menus in a collection. Auth required; caller must be at least viewer on the collection.",
         "operationId": "listMenus",
-        "tags": [
-          "no-auth"
-        ],
         "parameters": [
           {
             "name": "collectionId",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             },
-            "description": "Id of the collection to list menus from. Omit when publicOnly=true."
-          },
-          {
-            "name": "publicOnly",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "When true, return all public menus across all collections. Used by root (logged-out) app. Do not send collectionId when using this."
+            "description": "Id of the collection to list menus from."
           }
         ],
         "responses": {
           "200": {
-            "description": "Menus in the collection (viewers get public only; editors/owners get all) or all public menus when publicOnly=true.",
+            "description": "Menus in the collection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2424,7 +2377,7 @@
             }
           },
           "400": {
-            "description": "Bad request - provide either collectionId or publicOnly=true, not both nor neither.",
+            "description": "Bad request - collectionId is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2434,7 +2387,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - collection-scoped listing requires authentication.",
+            "description": "Unauthorized - collection listing requires authentication.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2454,7 +2407,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable - collection does not exist (validation, when collectionId provided).",
+            "description": "Unprocessable - collection does not exist (validation).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2477,7 +2430,6 @@
                 "required": [
                   "collectionId",
                   "name",
-                  "isPublic",
                   "groupings"
                 ],
                 "properties": {
@@ -2489,10 +2441,6 @@
                     "type": "string",
                     "description": "Human-readable name for the menu.",
                     "minLength": 1
-                  },
-                  "isPublic": {
-                    "type": "boolean",
-                    "description": "Whether the menu is visible to non-editors."
                   },
                   "groupings": {
                     "$ref": "#/components/schemas/groupings"
@@ -2566,11 +2514,8 @@
     },
     "/menus/{id}": {
       "get": {
-        "summary": "Get one menu with groupings and full Recipe objects for every recipe in the menu. Optional query collectionId when in collection context. When no collectionId (public detail), allowed if menu is public.",
+        "summary": "Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required.",
         "operationId": "getMenu",
-        "tags": [
-          "no-auth"
-        ],
         "parameters": [
           {
             "name": "id",
@@ -2584,11 +2529,11 @@
           {
             "name": "collectionId",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             },
-            "description": "Id of the collection (when in collection context). Omit for public menu detail."
+            "description": "Id of the collection (required for access)."
           }
         ],
         "responses": {
@@ -2619,7 +2564,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - menu is private and caller is not authenticated.",
+            "description": "Unauthorized - authentication required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2629,7 +2574,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - menu not in collection or private and caller has only viewer access.",
+            "description": "Forbidden - not a member of the collection or insufficient role.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2651,7 +2596,7 @@
         }
       },
       "put": {
-        "summary": "Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection.",
+        "summary": "Update menu name and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection.",
         "operationId": "updateMenu",
         "parameters": [
           {
@@ -2673,7 +2618,6 @@
                 "required": [
                   "collectionId",
                   "name",
-                  "isPublic",
                   "groupings"
                 ],
                 "properties": {
@@ -2685,10 +2629,6 @@
                     "type": "string",
                     "description": "Human-readable name for the menu.",
                     "minLength": 1
-                  },
-                  "isPublic": {
-                    "type": "boolean",
-                    "description": "Whether the menu is visible to non-editors."
                   },
                   "groupings": {
                     "$ref": "#/components/schemas/groupings"
@@ -2885,11 +2825,6 @@
             "description": "Optional longer description shown on recipe detail (not on menu)",
             "example": "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
           },
-          "isPublic": {
-            "type": "boolean",
-            "description": "Whether the recipe is visible to non-admin users",
-            "example": true
-          },
           "createdBy": {
             "type": "string",
             "description": "User id of the creator",
@@ -2922,7 +2857,6 @@
           "id",
           "title",
           "subtitle",
-          "isPublic",
           "createdBy",
           "createdAt",
           "updatedBy",
@@ -3536,11 +3470,6 @@
             "example": "Weeknight Dinners",
             "minLength": 1
           },
-          "isPublic": {
-            "type": "boolean",
-            "description": "Whether the menu is visible to non-editors (e.g. public menu list)",
-            "example": false
-          },
           "createdBy": {
             "type": "string",
             "description": "User id of the menu creator (short id)",
@@ -3624,7 +3553,6 @@
           "id",
           "collectionId",
           "name",
-          "isPublic",
           "createdBy",
           "createdAt",
           "updatedBy",

@@ -31,59 +31,22 @@ describe("listRecipes", () => {
     expect(out.result).toHaveLength(0);
   });
 
-  it("should return only public recipes when includePrivate is omitted", async () => {
+  it("should return all recipes in the collection", async () => {
     const db = recipesDbManager.get(dbKey)!;
     await db
       .insert(recipe)
       .values([
-        makeRecipeRow({ title: "Public One", isPublic: true }),
-        makeRecipeRow({ title: "Private One", isPublic: false }),
+        makeRecipeRow({ title: "First" }),
+        makeRecipeRow({ title: "Second" }),
       ]);
     const out = await listRecipes(dbKey, {
       collectionId: TEST_COLLECTION_ID,
-    });
-    assert("result" in out);
-    assert(out.result !== undefined);
-    expect(out.result).toHaveLength(1);
-    expect(out.result[0].title).toBe("Public One");
-    expect(out.result[0].isPublic).toBe(true);
-  });
-
-  it("should return only public recipes when includePrivate is false", async () => {
-    const db = recipesDbManager.get(dbKey)!;
-    await db
-      .insert(recipe)
-      .values([
-        makeRecipeRow({ title: "Public", isPublic: true }),
-        makeRecipeRow({ title: "Private", isPublic: false }),
-      ]);
-    const out = await listRecipes(dbKey, {
-      collectionId: TEST_COLLECTION_ID,
-      includePrivate: false,
-    });
-    assert("result" in out);
-    assert(out.result !== undefined);
-    expect(out.result).toHaveLength(1);
-    expect(out.result[0].title).toBe("Public");
-  });
-
-  it("should return all recipes when includePrivate is true", async () => {
-    const db = recipesDbManager.get(dbKey)!;
-    await db
-      .insert(recipe)
-      .values([
-        makeRecipeRow({ title: "Public", isPublic: true }),
-        makeRecipeRow({ title: "Private", isPublic: false }),
-      ]);
-    const out = await listRecipes(dbKey, {
-      collectionId: TEST_COLLECTION_ID,
-      includePrivate: true,
     });
     assert("result" in out);
     assert(out.result !== undefined);
     expect(out.result).toHaveLength(2);
     const titles = out.result.map((r) => r.title).sort();
-    expect(titles).toEqual(["Private", "Public"]);
+    expect(titles).toEqual(["First", "Second"]);
   });
 
   it("should return array of recipe entities with expected shape", async () => {
@@ -96,7 +59,6 @@ describe("listRecipes", () => {
     await db.insert(recipe).values(row);
     const out = await listRecipes(dbKey, {
       collectionId: TEST_COLLECTION_ID,
-      includePrivate: true,
     });
     assert("result" in out);
     assert(out.result !== undefined);
@@ -106,7 +68,6 @@ describe("listRecipes", () => {
     expect(r).toHaveProperty("title", "Shaped");
     expect(r).toHaveProperty("subtitle", "Desc");
     expect(r).toHaveProperty("description", "Long");
-    expect(r).toHaveProperty("isPublic", true);
     expect(r).toHaveProperty("createdBy");
     expect(r).toHaveProperty("createdAt");
     expect(r).toHaveProperty("updatedBy");

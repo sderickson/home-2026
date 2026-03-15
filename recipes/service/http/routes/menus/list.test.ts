@@ -27,7 +27,7 @@ describe("GET /menus", () => {
     recipesDb.disconnect(dbKey);
   });
 
-  it("should return 400 when neither collectionId nor publicOnly is provided", async () => {
+  it("should return 400 when collectionId is not provided", async () => {
     const response = await request(app)
       .get("/menus")
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
@@ -35,55 +35,6 @@ describe("GET /menus", () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toBeDefined();
     expect(response.body.message).toContain("collectionId");
-  });
-
-  it("should return 400 when both collectionId and publicOnly are provided", async () => {
-    const response = await request(app)
-      .get("/menus")
-      .query({ collectionId, publicOnly: true })
-      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBeDefined();
-    expect(response.body.message).toContain("not both");
-  });
-
-  it("should return 200 with empty menus for publicOnly=true without auth", async () => {
-    const response = await request(app)
-      .get("/menus")
-      .query({ publicOnly: true });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ menus: [] });
-  });
-
-  it("should return 200 with public menus for publicOnly=true without auth", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
-      collectionId,
-      name: "Public Menu",
-      isPublic: true,
-      createdBy: SEED_USER_ID,
-      groupings: [],
-    });
-    expect(menu).toBeDefined();
-
-    const response = await request(app)
-      .get("/menus")
-      .query({ publicOnly: true });
-
-    expect(response.status).toBe(200);
-    expect(response.body.menus).toHaveLength(1);
-    expect(response.body.menus[0]).toMatchObject({
-      id: menu!.id,
-      collectionId,
-      name: "Public Menu",
-      isPublic: true,
-      createdBy: SEED_USER_ID,
-      groupings: [],
-    });
-    expect(response.body.menus[0].createdAt).toEqual(expect.any(String));
-    expect(response.body.menus[0].updatedAt).toEqual(expect.any(String));
-    expect(response.body.menus[0].editedByUserIds).toEqual([SEED_USER_ID]);
   });
 
   it("should return 200 with empty array when collection has no menus", async () => {
@@ -97,22 +48,18 @@ describe("GET /menus", () => {
   });
 
   it("should return 200 with all menus when caller is owner", async () => {
-    const { result: publicMenu } = await menuQueries.createMenu(dbKey, {
+    await menuQueries.createMenu(dbKey, {
       collectionId,
-      name: "Public",
-      isPublic: true,
+      name: "First",
       createdBy: SEED_USER_ID,
       groupings: [],
     });
-    const { result: privateMenu } = await menuQueries.createMenu(dbKey, {
+    await menuQueries.createMenu(dbKey, {
       collectionId,
-      name: "Private",
-      isPublic: false,
+      name: "Second",
       createdBy: SEED_USER_ID,
       groupings: [],
     });
-    expect(publicMenu).toBeDefined();
-    expect(privateMenu).toBeDefined();
 
     const response = await request(app)
       .get("/menus")
@@ -122,10 +69,10 @@ describe("GET /menus", () => {
     expect(response.status).toBe(200);
     expect(response.body.menus).toHaveLength(2);
     const names = response.body.menus.map((m: { name: string }) => m.name).sort();
-    expect(names).toEqual(["Private", "Public"]);
+    expect(names).toEqual(["First", "Second"]);
   });
 
-  it("should return 200 with only public menus when caller is viewer", async () => {
+  it("should return 200 with all menus when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
     const { result: ownerColl } = await collectionQueries.createCollection(dbKey, {
       name: "Owner Collection",
@@ -139,15 +86,13 @@ describe("GET /menus", () => {
     });
     await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
-      name: "Public",
-      isPublic: true,
+      name: "First",
       createdBy: "owner@example.com",
       groupings: [],
     });
     await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
-      name: "Private",
-      isPublic: false,
+      name: "Second",
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -158,9 +103,9 @@ describe("GET /menus", () => {
       .set(makeUserHeaders("viewer-user-id", viewerEmail));
 
     expect(response.status).toBe(200);
-    expect(response.body.menus).toHaveLength(1);
-    expect(response.body.menus[0].name).toBe("Public");
-    expect(response.body.menus[0].isPublic).toBe(true);
+    expect(response.body.menus).toHaveLength(2);
+    const names = response.body.menus.map((m: { name: string }) => m.name).sort();
+    expect(names).toEqual(["First", "Second"]);
   });
 
   it("should return 401 when collectionId provided and not authenticated", async () => {

@@ -25,7 +25,6 @@ describe("PUT /recipes/:id/versions/latest", () => {
       title: "Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -110,7 +109,6 @@ describe("PUT /recipes/:id/versions/latest", () => {
       title: "Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
     });

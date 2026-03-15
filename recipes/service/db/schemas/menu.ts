@@ -17,7 +17,6 @@ export interface MenuEntity {
   id: string;
   collectionId: string;
   name: string;
-  isPublic: boolean;
   createdBy: string;
   createdAt: Date;
   updatedBy: string;
@@ -36,7 +35,6 @@ export const menu = sqliteTable(
       .notNull()
       .references(() => collection.id),
     name: text("name").notNull(),
-    isPublic: integer("is_public", { mode: "boolean" }).notNull(),
     createdBy: text("created_by").notNull(),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedBy: text("updated_by").notNull(),

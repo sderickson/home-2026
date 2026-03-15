@@ -24,7 +24,7 @@ describe("listRecipes", () => {
     app.unmount();
   });
 
-  it("returns recipes with expected shape (id, title, isPublic)", async () => {
+  it("returns recipes with expected shape (id, title)", async () => {
     const [query, app] = withVueQuery(() =>
       useQuery(listRecipesQuery("my-kitchen")),
     );
@@ -35,7 +35,6 @@ describe("listRecipes", () => {
     expect(data?.[0]).toMatchObject({
       id: expect.any(String),
       title: expect.any(String),
-      isPublic: expect.any(Boolean),
     });
 
     app.unmount();

@@ -104,7 +104,6 @@ const previewRecipe = computed(
     title: title.value || "(Untitled)",
     subtitle: "",
     description: null,
-    isPublic: true,
     createdBy: "",
     createdAt: "",
     updatedBy: "",
@@ -153,7 +152,6 @@ async function handleSave() {
       collectionId: props.collectionId,
       title: title.value.trim(),
       subtitle: "",
-      isPublic: true,
       initialVersion: {
         content: {
           ingredients: parsed.value.ingredients,

@@ -167,7 +167,6 @@ export function recipeToApiRecipe(
     title: row.title,
     subtitle: row.subtitle,
     description: row.description ?? undefined,
-    isPublic: row.isPublic,
     createdBy: row.createdBy,
     createdAt: row.createdAt.toISOString(),
     updatedBy: row.updatedBy,

@@ -26,7 +26,6 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -105,7 +104,6 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
         title: "Other Recipe",
         subtitle: "Other",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },

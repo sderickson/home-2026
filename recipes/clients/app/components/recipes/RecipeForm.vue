@@ -126,14 +126,6 @@
                   variant="outlined"
                   class="mb-2"
                 />
-                <v-switch
-                  v-model="model.isPublic"
-                  :label="t(strings.is_public_label)"
-                  :hint="t(strings.is_public_hint)"
-                  persistent-hint
-                  color="primary"
-                  class="mb-2"
-                />
               </v-col>
               <v-col cols="12" md="7" class="recipe-form__col-min">
                 <v-textarea
@@ -292,7 +284,6 @@ const previewRecipe = computed((): Recipe => {
         title: m.title,
         subtitle: m.subtitle,
         description: m.description ?? null,
-        isPublic: m.isPublic ?? true,
         createdBy: "",
         createdAt: "",
         updatedBy: "",
@@ -357,7 +348,6 @@ async function handleUpdateLatest() {
     title: model.value.title,
     subtitle: model.value.subtitle,
     description: model.value.description ?? undefined,
-    isPublic: model.value.isPublic,
   });
   const version = await updateLatestMutation.mutateAsync({
     id: recipe.id,
@@ -383,7 +373,6 @@ async function doSaveNewVersion(noteBody: string) {
     title: model.value.title,
     subtitle: model.value.subtitle,
     description: model.value.description ?? undefined,
-    isPublic: model.value.isPublic,
   });
   const version = await createVersionMutation.mutateAsync({
     id: recipe.id,

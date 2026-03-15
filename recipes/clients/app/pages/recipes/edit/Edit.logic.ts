@@ -24,7 +24,6 @@ export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel 
     title: recipe.title,
     subtitle: recipe.subtitle,
     description: recipe.description ?? null,
-    isPublic: recipe.isPublic,
     initialVersion: {
       content: {
         ingredients: [...currentVersion.content.ingredients],

@@ -80,7 +80,6 @@ export const createMenuHandler = createHandler(async (req, res) => {
   const { result, error } = await menuQueries.createMenu(recipesDbKey, {
     collectionId,
     name: data.name ?? "",
-    isPublic: Boolean(data.isPublic),
     createdBy: userId,
     groupings,
     editedByUserIds: [userId],

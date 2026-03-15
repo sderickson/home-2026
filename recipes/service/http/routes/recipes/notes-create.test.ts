@@ -25,7 +25,6 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -71,7 +70,6 @@ describe("POST /recipes/:id/notes (notesCreateRecipes)", () => {
       title: "With version",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

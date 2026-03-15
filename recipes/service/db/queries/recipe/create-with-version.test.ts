@@ -24,7 +24,6 @@ describe("createWithVersionRecipe", () => {
       title: "Test Recipe",
       subtitle: "A short description",
       description: null,
-      isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
       versionContent: {
@@ -39,7 +38,6 @@ describe("createWithVersionRecipe", () => {
     expect(out.result.recipe.title).toBe(params.title);
     expect(out.result.recipe.subtitle).toBe(params.subtitle);
     expect(out.result.recipe.description).toBe(params.description);
-    expect(out.result.recipe.isPublic).toBe(params.isPublic);
     expect(out.result.recipe.createdBy).toBe(params.createdBy);
     expect(out.result.recipe.updatedBy).toBe(params.updatedBy);
     expect(out.result.recipe.id).toBeDefined();
@@ -54,13 +52,12 @@ describe("createWithVersionRecipe", () => {
     expect(out.result.version.createdAt).toBeDefined();
   });
 
-  it("should persist recipe with description and isPublic true", async () => {
+  it("should persist recipe with description", async () => {
     const params = {
       collectionId: TEST_COLLECTION_ID,
       title: "Public Recipe",
       subtitle: "Short",
       description: "A longer description for the recipe.",
-      isPublic: true,
       createdBy: "user-2",
       updatedBy: "user-2",
       versionContent: {
@@ -76,7 +73,6 @@ describe("createWithVersionRecipe", () => {
     expect(out.result).toBeDefined();
     assert(out.result);
     expect(out.result.recipe.description).toBe(params.description);
-    expect(out.result.recipe.isPublic).toBe(true);
     expect(out.result.version.content.ingredients).toHaveLength(2);
     expect(out.result.version.content.instructionsMarkdown).toBe(
       params.versionContent.instructionsMarkdown,
@@ -94,7 +90,6 @@ describe("createWithVersionRecipe", () => {
       title: "First",
       subtitle: "First short",
       description: null,
-      isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
       versionContent: {
@@ -107,7 +102,6 @@ describe("createWithVersionRecipe", () => {
       title: "Second",
       subtitle: "Second short",
       description: null,
-      isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
       versionContent: {

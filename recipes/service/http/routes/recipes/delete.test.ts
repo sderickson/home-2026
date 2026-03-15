@@ -20,7 +20,6 @@ describe("DELETE /recipes/:id", () => {
       title: "To Delete",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

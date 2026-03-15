@@ -2,14 +2,12 @@ import { recipesDbManager } from "../../instances.ts";
 import { queryWrapper } from "@saflib/drizzle";
 import type { DbKey } from "@saflib/drizzle";
 import type { ReturnsError } from "@saflib/monorepo";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { recipe } from "../../schemas/recipe.ts";
 
 export interface ListRecipesParams {
-  /** Id of the collection to list recipes from. Required when not listing public only. */
+  /** Id of the collection to list recipes from. */
   collectionId: string;
-  /** When true (admin), return all recipes in the collection. When false or omitted, only public recipes. */
-  includePrivate?: boolean;
 }
 
 export const listRecipes = queryWrapper(
@@ -18,28 +16,10 @@ export const listRecipes = queryWrapper(
     params: ListRecipesParams,
   ): Promise<ReturnsError<typeof recipe.$inferSelect[], never>> => {
     const db = recipesDbManager.get(dbKey)!;
-    const collectionCondition = eq(recipe.collectionId, params.collectionId);
-    const result =
-      params.includePrivate === true
-        ? await db.select().from(recipe).where(collectionCondition)
-        : await db
-            .select()
-            .from(recipe)
-            .where(and(collectionCondition, eq(recipe.isPublic, true)));
-    return { result };
-  },
-);
-
-/** List all public recipes across all collections. Used by root app (GET /recipes?publicOnly=true). */
-export const listPublicRecipes = queryWrapper(
-  async (
-    dbKey: DbKey,
-  ): Promise<ReturnsError<typeof recipe.$inferSelect[], never>> => {
-    const db = recipesDbManager.get(dbKey)!;
     const result = await db
       .select()
       .from(recipe)
-      .where(eq(recipe.isPublic, true));
+      .where(eq(recipe.collectionId, params.collectionId));
     return { result };
   },
 );

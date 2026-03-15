@@ -17,7 +17,6 @@ describe("assertEditDataLoaded", () => {
         title: "Test",
         subtitle: "Short",
         description: null,
-        isPublic: false,
         createdBy: "u1",
         createdAt: "",
         updatedBy: "u1",
@@ -45,7 +44,6 @@ describe("recipeToFormModel", () => {
         title: "Title",
         subtitle: "Short",
         description: "Long",
-        isPublic: true,
         createdBy: "u1",
         createdAt: "",
         updatedBy: "u1",
@@ -68,7 +66,6 @@ describe("recipeToFormModel", () => {
     expect(model.title).toBe("Title");
     expect(model.subtitle).toBe("Short");
     expect(model.description).toBe("Long");
-    expect(model.isPublic).toBe(true);
     expect(model.initialVersion.content.ingredients).toHaveLength(1);
     expect(model.initialVersion.content.ingredients[0].name).toBe("Flour");
     expect(model.initialVersion.content.instructionsMarkdown).toBe("Mix.");

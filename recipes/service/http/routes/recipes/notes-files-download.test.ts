@@ -32,7 +32,6 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -104,7 +103,6 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
         title: "Private Recipe",
         subtitle: "Private",
         description: null,
-        isPublic: false,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -198,7 +196,6 @@ describe("GET /recipes/:id/notes/:noteId/files/:fileId/blob (notesFilesDownloadR
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

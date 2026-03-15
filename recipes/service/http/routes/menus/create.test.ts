@@ -34,7 +34,6 @@ describe("POST /menus", () => {
     const body = {
       collectionId,
       name: "Weeknight Dinners",
-      isPublic: true,
       groupings: [],
     };
 
@@ -48,7 +47,6 @@ describe("POST /menus", () => {
     expect(response.body.menu).toMatchObject({
       collectionId,
       name: "Weeknight Dinners",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -66,7 +64,6 @@ describe("POST /menus", () => {
         title: "Pasta",
         subtitle: "Quick",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -79,7 +76,6 @@ describe("POST /menus", () => {
         title: "Salad",
         subtitle: "Fresh",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -91,7 +87,6 @@ describe("POST /menus", () => {
     const body = {
       collectionId,
       name: "Dinner Menu",
-      isPublic: false,
       groupings: [
         { name: "Mains", recipeIds: [recipe1!.recipe.id, recipe2!.recipe.id] },
         { name: "Sides", recipeIds: [recipe2!.recipe.id] },
@@ -123,7 +118,6 @@ describe("POST /menus", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         name: "My Menu",
-        isPublic: true,
         groupings: [],
       });
 
@@ -136,7 +130,6 @@ describe("POST /menus", () => {
     const body = {
       collectionId,
       name: "Menu",
-      isPublic: true,
       groupings: [{ name: "Mains", recipeIds: ["nonexistent-recipe-id"] }],
     };
 
@@ -171,7 +164,6 @@ describe("POST /menus", () => {
         title: "Mine",
         subtitle: "Mine",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -181,7 +173,6 @@ describe("POST /menus", () => {
     const body = {
       collectionId: otherColl!.id,
       name: "Menu in Other",
-      isPublic: true,
       groupings: [
         { name: "Mains", recipeIds: [recipeInMyCollection!.recipe.id] },
       ],
@@ -200,7 +191,6 @@ describe("POST /menus", () => {
     const response = await request(app).post("/menus").send({
       collectionId,
       name: "My Menu",
-      isPublic: true,
       groupings: [],
     });
     console.log(response.body);
@@ -224,7 +214,6 @@ describe("POST /menus", () => {
       .send({
         collectionId: otherColl!.id,
         name: "Their Menu",
-        isPublic: true,
         groupings: [],
       });
 
@@ -253,7 +242,6 @@ describe("POST /menus", () => {
       .send({
         collectionId: ownerColl!.id,
         name: "Menu",
-        isPublic: true,
         groupings: [],
       });
 

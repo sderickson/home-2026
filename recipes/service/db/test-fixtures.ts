@@ -43,7 +43,6 @@ export function makeRecipeRow(
     title?: string;
     subtitle?: string;
     description?: string | null;
-    isPublic?: boolean;
     createdBy?: string;
     updatedBy?: string;
     [k: string]: unknown;
@@ -53,7 +52,6 @@ export function makeRecipeRow(
   title: string;
   subtitle: string;
   description: string | null;
-  isPublic: boolean;
   createdBy: string;
   createdAt: Date;
   updatedBy: string;
@@ -65,7 +63,6 @@ export function makeRecipeRow(
     title: "Test Recipe",
     subtitle: "Short",
     description: null,
-    isPublic: true,
     createdBy: "user-1",
     createdAt: now,
     updatedBy: "user-1",

@@ -2,14 +2,14 @@ import { queryOptions } from "@tanstack/vue-query";
 import { handleClientMethod } from "@saflib/sdk";
 import { getClient } from "../../client.ts";
 
-/** GET /menus/:id with optional collectionId query param. Response: { menu: Menu, recipes: Recipe[] }. */
-export const getMenuQuery = (id: string, collectionId?: string) => {
+/** GET /menus/:id with collectionId query param. Response: { menu: Menu, recipes: Recipe[] }. Auth required. */
+export const getMenuQuery = (id: string, collectionId: string) => {
   return queryOptions({
-    queryKey: ["menus", id, collectionId ?? ""],
+    queryKey: ["menus", id, collectionId],
     queryFn: async () =>
       handleClientMethod(
         getClient().GET("/menus/{id}", {
-          params: { path: { id }, query: collectionId ? { collectionId } : {} },
+          params: { path: { id }, query: { collectionId } },
         }),
       ),
   });

@@ -5,7 +5,6 @@ export interface RecipeFormModelForDiff {
   title: string;
   subtitle: string;
   description?: string | null;
-  isPublic: boolean;
   initialVersion: {
     content: {
       ingredients: { name: string; quantity: string; unit: string }[];
@@ -29,7 +28,6 @@ const FIELD_LABELS: Record<string, string> = {
   title: "title",
   subtitle: "subtitle",
   description: "description",
-  isPublic: "public",
   ingredients: "ingredients",
   instructions: "instructions",
 };
@@ -57,7 +55,6 @@ export function getEditedFields(
   if (initial.subtitle !== current.subtitle) fields.push(FIELD_LABELS.subtitle);
   if ((initial.description ?? null) !== (current.description ?? null))
     fields.push(FIELD_LABELS.description);
-  if (initial.isPublic !== current.isPublic) fields.push(FIELD_LABELS.isPublic);
   const ic = current.initialVersion.content;
   const ii = initial.initialVersion.content;
   if (!ingredientsEqual(ic.ingredients ?? [], ii.ingredients ?? []))

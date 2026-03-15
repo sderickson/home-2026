@@ -76,7 +76,6 @@ describe("requireCollectionMembership (via list/create recipes)", () => {
         collectionId: NON_EXISTENT_COLLECTION_ID,
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
     expect(response.status).toBe(422);
@@ -98,7 +97,6 @@ describe("getRecipeAndRequireCollectionAuth (via GET /recipes/:id)", () => {
       title: "Auth Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {

@@ -9,31 +9,6 @@
           {{ form.name || t(strings.name_placeholder) }}
         </v-toolbar-title>
         <v-spacer />
-        <v-tooltip
-          location="bottom"
-          :text="
-            form.isPublic
-              ? t(strings.tooltip_public)
-              : t(strings.tooltip_private)
-          "
-        >
-          <template #activator="{ props: tooltipProps }">
-            <v-btn
-              v-bind="tooltipProps"
-              type="button"
-              variant="text"
-              icon
-              :aria-label="
-                form.isPublic
-                  ? t(strings.tooltip_public)
-                  : t(strings.tooltip_private)
-              "
-              @click="form.isPublic = !form.isPublic"
-            >
-              <v-icon>{{ form.isPublic ? "mdi-web" : "mdi-cancel" }}</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
         <v-tooltip location="bottom" :text="t(strings.submit)">
           <template #activator="{ props: tooltipProps }">
             <v-btn
@@ -359,7 +334,6 @@ async function onSubmit() {
     id: payload.id,
     collectionId: payload.collectionId,
     name: payload.name,
-    isPublic: payload.isPublic,
     groupings: payload.groupings,
   });
   emit("saved");

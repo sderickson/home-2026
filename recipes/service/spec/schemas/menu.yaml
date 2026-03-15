@@ -15,10 +15,6 @@ properties:
     description: Human-readable name for the menu
     example: "Weeknight Dinners"
     minLength: 1
-  isPublic:
-    type: boolean
-    description: Whether the menu is visible to non-editors (e.g. public menu list)
-    example: false
   createdBy:
     type: string
     description: User id of the menu creator (short id)
@@ -72,7 +68,6 @@ required:
   - id
   - collectionId
   - name
-  - isPublic
   - createdBy
   - createdAt
   - updatedBy

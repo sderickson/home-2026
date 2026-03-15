@@ -63,7 +63,6 @@ describe("listByCollectionIdMenu", () => {
     await db.insert(menu).values({
       collectionId: "single-menu-col",
       name: "Dinner",
-      isPublic: true,
       createdBy: "owner@example.com",
       createdAt: now,
       updatedBy: "owner@example.com",
@@ -80,7 +79,6 @@ describe("listByCollectionIdMenu", () => {
     assert(result);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Dinner");
-    expect(result[0].isPublic).toBe(true);
     expect(result[0].editedByUserIds).toEqual(["user-1"]);
     expect(result[0].groupings).toEqual([
       { name: "Mains", recipeIds: ["r1", "r2"] },
@@ -99,7 +97,6 @@ describe("listByCollectionIdMenu", () => {
       {
         collectionId: "col-with-menus",
         name: "Brunch",
-        isPublic: true,
         createdBy: "owner@example.com",
         createdAt: now,
         updatedBy: "owner@example.com",
@@ -110,7 +107,6 @@ describe("listByCollectionIdMenu", () => {
       {
         collectionId: "col-with-menus",
         name: "Quick Dinner",
-        isPublic: false,
         createdBy: "owner@example.com",
         createdAt: now,
         updatedBy: "owner@example.com",
@@ -131,7 +127,6 @@ describe("listByCollectionIdMenu", () => {
     expect(names).toEqual(["Brunch", "Quick Dinner"]);
     const brunch = result.find((m) => m.name === "Brunch");
     assert(brunch);
-    expect(brunch.isPublic).toBe(true);
     expect(brunch.groupings).toEqual([{ name: "Mains", recipeIds: [] }]);
   });
 });
