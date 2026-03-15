@@ -29,7 +29,7 @@ describe("requireCollectionMembership (via list/create recipes)", () => {
     recipesDb.disconnect(dbKey);
   });
 
-  it.only("returns 401 when no auth", async () => {
+  it("returns 401 when no auth", async () => {
     const response = await request(app).get("/recipes").query({ collectionId });
 
     expect(response.status).toBe(401);
