@@ -41,10 +41,6 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
       recipesDbKey,
       { collectionId },
     );
-    const member = members.find(
-      (m) => m.collectionId === collectionId && m.email === email,
-    );
-    const role = member?.role ?? "viewer";
     const list = menuRows ?? [];
     allMenuRows.push(...list);
   }

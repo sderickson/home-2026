@@ -43,7 +43,6 @@ describe("deleteMenu", () => {
     const { result: created } = await createMenu(dbKey, {
       collectionId: "col-1",
       name: "To Delete",
-      isPublic: true,
       createdBy: "u@example.com",
       groupings: [{ name: "Mains", recipeIds: [] }],
     });
@@ -56,7 +55,11 @@ describe("deleteMenu", () => {
     expect(deleted.id).toBe(created.id);
     expect(deleted.name).toBe("To Delete");
 
-    const rows = await db.select().from(menu).where(eq(menu.id, created.id)).limit(1);
+    const rows = await db
+      .select()
+      .from(menu)
+      .where(eq(menu.id, created.id))
+      .limit(1);
     expect(rows).toHaveLength(0);
   });
 });
