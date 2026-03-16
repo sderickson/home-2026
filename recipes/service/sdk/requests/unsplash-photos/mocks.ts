@@ -5,29 +5,31 @@
 // data that other operations might mutate).
 //
 // Export resetMocks() so tests that mutate this array can restore initial state (e.g. in afterEach).
+//
+// Image URLs use Picsum Photos (https://picsum.photos) — no API key, deterministic per seed.
 
 import type { UnsplashPhotoSearchItem } from "@sderickson/recipes-spec";
 
-export const mockUnsplashPhotos: UnsplashPhotoSearchItem[] = [
-  {
-    id: "mock-photo-1",
-    thumbUrl: "https://images.unsplash.com/photo-1/thumb",
-    regularUrl: "https://images.unsplash.com/photo-1/regular",
-    downloadLocation: "https://api.unsplash.com/photos/mock-photo-1/download",
-  },
-  {
-    id: "mock-photo-2",
-    thumbUrl: "https://images.unsplash.com/photo-2/thumb",
-    regularUrl: "https://images.unsplash.com/photo-2/regular",
-    downloadLocation: "https://api.unsplash.com/photos/mock-photo-2/download",
-  },
-  {
-    id: "mock-photo-3",
-    thumbUrl: "https://images.unsplash.com/photo-3/thumb",
-    regularUrl: "https://images.unsplash.com/photo-3/regular",
-    downloadLocation: "https://api.unsplash.com/photos/mock-photo-3/download",
-  },
-];
+/** Build Picsum Photos URLs for fake Unsplash results. Same seed = same image. */
+export function picsumPhotoUrls(seed: string): Pick<
+  UnsplashPhotoSearchItem,
+  "thumbUrl" | "regularUrl"
+> {
+  return {
+    thumbUrl: `https://picsum.photos/seed/${seed}/400/300`,
+    regularUrl: `https://picsum.photos/seed/${seed}/800/600`,
+  };
+}
+
+const PHOTO_SEEDS = ["food-1", "food-2", "food-3", "meal-1", "meal-2", "recipe-1", "recipe-2", "recipe-3", "cook-1", "cook-2"];
+
+export const mockUnsplashPhotos: UnsplashPhotoSearchItem[] = PHOTO_SEEDS.map(
+  (seed, i) => ({
+    id: `mock-photo-${i + 1}`,
+    ...picsumPhotoUrls(seed),
+    downloadLocation: `https://api.unsplash.com/photos/mock-photo-${i + 1}/download`,
+  }),
+);
 
 const initialMockUnsplashPhotos = JSON.parse(
   JSON.stringify(mockUnsplashPhotos),

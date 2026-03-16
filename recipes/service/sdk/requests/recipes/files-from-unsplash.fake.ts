@@ -12,6 +12,7 @@ export const filesFromUnsplashRecipesHandler = recipesHandler({
   handler: async ({ params, body }) => {
     const recipeId = params.id;
     const unsplashPhotoId = body?.unsplashPhotoId ?? "unknown";
+    const imageUrl = body?.imageUrl;
     const now = new Date().toISOString();
     const id = generateShortId();
     const fileInfo: RecipeFileInfo = {
@@ -24,7 +25,7 @@ export const filesFromUnsplashRecipesHandler = recipesHandler({
       createdAt: now,
       updatedAt: now,
       uploadedBy: placeholderUserId,
-      downloadUrl: `https://storage.example.com/recipes/${recipeId}/${id}`,
+      downloadUrl: imageUrl ?? `https://storage.example.com/recipes/${recipeId}/${id}`,
       unsplashAttribution: {
         photographerName: "Fake Photographer",
         photographerProfileUrl: `https://unsplash.com/@fake?utm_source=recipes&utm_medium=referral`,

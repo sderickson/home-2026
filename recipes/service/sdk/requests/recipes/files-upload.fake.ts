@@ -16,14 +16,14 @@ export const filesUploadRecipesHandler = recipesHandler({
     const fileInfo: RecipeFileInfo = {
       id,
       recipeId,
-      blobName: `recipes/${recipeId}/${id}`,
-      fileOriginalName: "uploaded-file",
-      mimetype: "application/octet-stream",
+      blobName: `recipes/${recipeId}/${id}.jpg`,
+      fileOriginalName: "uploaded-image.jpg",
+      mimetype: "image/jpeg",
       size: 0,
       createdAt: now,
       updatedAt: now,
       uploadedBy: placeholderUserId,
-      downloadUrl: `https://storage.example.com/recipes/${recipeId}/${id}`,
+      downloadUrl: `https://picsum.photos/seed/${id}/800/600`,
     };
     mockRecipeFiles.push(fileInfo);
     return fileInfo;
