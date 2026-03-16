@@ -1,3 +1,5 @@
+setClientName("app.recipes");
+
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
 import Spa from "./AppSpa.vue";
@@ -15,7 +17,9 @@ async function startDemoWorker() {
     ...recipesServiceFakeHandlers,
     http.get("*", ({ request }) => {
       const originalUrl = new URL(request.url);
-      return fetch(bypass(new Request(originalUrl, { headers: request.headers })));
+      return fetch(
+        bypass(new Request(originalUrl, { headers: request.headers })),
+      );
     }),
   );
   await worker.start({
@@ -25,7 +29,6 @@ async function startDemoWorker() {
 }
 
 export const main = async () => {
-  setClientName("app.recipes");
   const router = createAppRouter();
   if (isDemoMode()) {
     await startDemoWorker();
