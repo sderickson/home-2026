@@ -8,7 +8,7 @@ import {
   listMenusQuery,
   listRecipesQuery,
 } from "@sderickson/recipes-sdk";
-import { SEED_COLLECTION_NAME } from "./seed-recipes.ts";
+import { SEED_COLLECTION_NAME } from "@sderickson/recipes-clients-common/seed";
 
 export function useCleanupSeedData(options: {
   getSuccessMessage: () => string;
