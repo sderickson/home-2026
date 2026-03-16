@@ -24,14 +24,45 @@
         </v-btn>
       </v-toolbar-items>
 
-      <!-- Mobile Menu Button (hidden on desktop) -->
+      <!-- Demo mode indicator + dialog trigger -->
       <template #append>
+        <v-btn
+          v-if="demo.isDemoMode"
+          class="text-uppercase font-weight-regular mr-2"
+          @click="demoDialogOpen = true"
+        >
+          {{ t(recipes_layout.demo_mode) }}
+        </v-btn>
         <v-app-bar-nav-icon class="d-md-none mr-4" @click="drawer = !drawer">
           <v-icon v-if="!drawer">mdi-menu</v-icon>
           <v-icon v-else>mdi-close</v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-app-bar>
+
+    <v-dialog v-model="demoDialogOpen" max-width="400" persistent>
+      <v-card>
+        <v-card-title>{{ t(recipes_layout.demo_dialog_title) }}</v-card-title>
+        <v-card-text>
+          {{ t(recipes_layout.demo_banner_message) }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="
+              demo.resetDemoData();
+              demoDialogOpen = false;
+            "
+          >
+            {{ t(recipes_layout.demo_reset) }}
+          </v-btn>
+          <v-btn color="primary" variant="flat" @click="demo.exitDemoMode()">
+            {{ t(recipes_layout.demo_exit) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Mobile Navigation Drawer -->
     <v-navigation-drawer
@@ -51,23 +82,6 @@
 
     <v-main>
       <v-container>
-        <v-alert
-          v-if="demo.isDemoMode"
-          type="warning"
-          variant="tonal"
-          class="mb-4"
-          density="compact"
-        >
-          <div class="d-flex align-center flex-wrap gap-2">
-            <span>{{ t(recipes_layout.demo_banner_message) }}</span>
-            <v-btn size="small" variant="outlined" @click="demo.resetDemoData()">
-              {{ t(recipes_layout.demo_reset) }}
-            </v-btn>
-            <v-btn size="small" variant="outlined" @click="demo.exitDemoMode()">
-              {{ t(recipes_layout.demo_exit) }}
-            </v-btn>
-          </div>
-        </v-alert>
         <slot />
       </v-container>
     </v-main>
@@ -108,6 +122,7 @@ const demo = useDemoMode();
 const { t } = useReverseT();
 
 const drawer = ref(false);
+const demoDialogOpen = ref(false);
 
 type LinkWithName = Link & { name: string; options?: LinkOptions };
 

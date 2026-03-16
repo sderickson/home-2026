@@ -7,25 +7,36 @@
 // Export resetMocks() so tests that mutate this array can restore initial state (e.g. in afterEach).
 
 import type { Collection, CollectionMember } from "@sderickson/recipes-spec";
+import { identityServiceFakeConstants } from "@saflib/auth/fakes";
+
+const defaultUser = identityServiceFakeConstants.defaultUser;
 
 export const mockCollections: Collection[] = [
   {
     id: "my-kitchen",
     name: "My Kitchen",
-    createdBy: "K3m9_xR2",
+    createdBy: defaultUser.id,
     createdAt: "2023-01-15T14:30:00Z",
     updatedAt: "2023-02-01T09:00:00Z",
   },
   {
     id: "team-recipes",
     name: "Team Recipes",
-    createdBy: "K3m9_xR2",
+    createdBy: defaultUser.id,
     createdAt: "2023-03-10T10:00:00Z",
     updatedAt: "2023-03-10T10:00:00Z",
   },
 ];
 
 export const mockCollectionMembers: CollectionMember[] = [
+  {
+    id: "mem-my-kitchen-default",
+    collectionId: "my-kitchen",
+    email: defaultUser.email,
+    role: "owner",
+    isCreator: true,
+    createdAt: "2023-01-15T14:30:00Z",
+  },
   {
     id: "mem-my-kitchen-1",
     collectionId: "my-kitchen",
@@ -41,6 +52,14 @@ export const mockCollectionMembers: CollectionMember[] = [
     role: "editor",
     isCreator: false,
     createdAt: "2023-01-20T10:00:00Z",
+  },
+  {
+    id: "mem-team-default",
+    collectionId: "team-recipes",
+    email: defaultUser.email,
+    role: "owner",
+    isCreator: true,
+    createdAt: "2023-03-10T10:00:00Z",
   },
   {
     id: "mem-team-1",
