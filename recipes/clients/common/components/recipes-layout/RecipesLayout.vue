@@ -3,7 +3,7 @@
     <!-- Events are rendered here for playwright tests to assert on -->
     <pre class="d-none" data-testid="events">{{ events }}</pre>
 
-    <v-app-bar height="90" class="px-4" flat>
+    <v-app-bar height="90" class="px-4">
       <!-- Logo -->
       <v-app-bar-title>
         <SpaLink :link="rootLinks.home" class="logo-link">
@@ -65,7 +65,10 @@
           <v-spacer />
           <v-btn
             variant="text"
-            @click="onResetDemo(); demoDialogOpen = false"
+            @click="
+              onResetDemo();
+              demoDialogOpen = false;
+            "
           >
             {{ t(recipes_layout.demo_reset) }}
           </v-btn>
