@@ -21,6 +21,7 @@
         <v-icon size="small">mdi-account-group</v-icon>
         <span class="ml-1">{{ membersPillLabel }}</span>
       </v-chip>
+      <v-spacer />
       <v-tooltip
         v-if="isOwner"
         :text="
@@ -31,17 +32,16 @@
         location="bottom"
       >
         <template #activator="{ props: tooltipProps }">
-          <v-btn
-            v-bind="tooltipProps"
-            variant="outlined"
-            color="error"
-            prepend-icon="mdi-delete-outline"
-            :disabled="!canDeleteCollection"
-            :loading="deleteMutation.isPending.value"
-            @click="onDeleteCollection"
-          >
-            {{ t(strings.delete_collection) }}
-          </v-btn>
+          <span v-bind="tooltipProps" class="d-inline-block">
+            <v-btn
+              icon="mdi-delete-outline"
+              variant="outlined"
+              color="error"
+              :disabled="!canDeleteCollection"
+              :loading="deleteMutation.isPending.value"
+              @click="onDeleteCollection"
+            />
+          </span>
         </template>
       </v-tooltip>
     </div>
