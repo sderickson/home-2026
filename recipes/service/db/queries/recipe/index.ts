@@ -9,6 +9,7 @@ import {
   type GetByIdRecipeResult,
 } from "./get-by-id.ts";
 export type { GetByIdRecipeResult };
+import { getByIdsRecipe } from "./get-by-ids.ts";
 import { listRecipes } from "./list.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 import { updateMetadataRecipe } from "./update-metadata.ts";
@@ -22,6 +23,7 @@ export const recipeQueries = {
   createWithVersionRecipe,
   deleteRecipe,
   getByIdRecipe,
+  getByIdsRecipe,
   listRecipes,
   updateLatestVersionRecipe,
   updateMetadataRecipe,

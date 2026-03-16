@@ -1,13 +1,7 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import {
-  menuQueries,
-  recipeQueries,
-  MenuNotFoundError,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
-import type { RecipeEntity } from "@sderickson/recipes-db";
+import { menuQueries, recipeQueries, MenuNotFoundError } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
 import { getMenuResultToGetMenuResponse } from "./_helpers.ts";
@@ -67,30 +61,21 @@ export const getMenuHandler = createHandler(async (req, res) => {
   });
 
   const recipeIds = recipeIdsFromGroupings(menu!.groupings);
-  const recipeEntities: RecipeEntity[] = [];
+  const recipeEntities = await recipeQueries.getByIdsRecipe(
+    recipesDbKey,
+    recipeIds,
+    menu!.collectionId,
+  );
 
-  for (const recipeId of recipeIds) {
-    const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
-    if (out.error) {
-      switch (true) {
-        case out.error instanceof RecipeNotFoundError:
-          throw createError(404, out.error.message, {
-            code: "RECIPE_NOT_FOUND",
-          });
-        default:
-          throw out.error satisfies never;
-      }
-    }
-    if (out.result.recipe.collectionId !== menu!.collectionId) {
-      throw createError(404, "Recipe not in menu collection", {
-        code: "RECIPE_NOT_FOUND",
-      });
-    }
-    recipeEntities.push(out.result.recipe);
-  }
+  const foundRecipeIds = new Set(recipeEntities.map((r) => r.id));
+  const filteredGroupings = menu!.groupings.map((g) => ({
+    name: g.name,
+    recipeIds: g.recipeIds.filter((id) => foundRecipeIds.has(id)),
+  }));
 
+  const menuForResponse = { ...menu!, groupings: filteredGroupings };
   const response: RecipesServiceResponseBody["getMenu"][200] =
-    getMenuResultToGetMenuResponse(menu!, recipeEntities);
+    getMenuResultToGetMenuResponse(menuForResponse, recipeEntities);
 
   res.status(200).json(response);
 });
