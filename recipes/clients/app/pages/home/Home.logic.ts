@@ -4,6 +4,32 @@ import { appLinks } from "@sderickson/recipes-links";
 import { setDemoMode } from "@sderickson/recipes-clients-common";
 
 /**
+ * Asserts that profile data is loaded. The AsyncPage only renders the page when
+ * loader queries are ready, so this is a guard for type narrowing and consistency.
+ */
+export function assertProfileLoaded(profile: unknown): asserts profile {
+  if (!profile) {
+    throw new Error("Failed to load profile");
+  }
+}
+
+/**
+ * Asserts that collections list data is loaded.
+ */
+export function assertCollectionsLoaded(data: unknown): asserts data {
+  if (data === undefined || data === null) {
+    throw new Error("Failed to load collections");
+  }
+}
+
+/**
+ * Returns the collections array from list data, or empty array.
+ */
+export function getCollectionsList<T>(data: T[] | undefined): T[] {
+  return data ?? [];
+}
+
+/**
  * Returns props for the login CTA. Redirect after login goes to recipes app home.
  */
 export function getLoginLinkProps() {
