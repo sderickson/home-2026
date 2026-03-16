@@ -8,4 +8,5 @@ export const home_page = {
   no_collections:
     "You are not in any collections yet. Create one to get started.",
   members: "Other members",
+  enter_demo_mode: "Enter demo mode",
 };

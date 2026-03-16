@@ -9,6 +9,14 @@
       <h1 class="text-h4">{{ t(strings.title) }}</h1>
       <v-spacer />
       <v-btn
+        v-if="!isDemoMode"
+        variant="outlined"
+        prepend-icon="mdi-play-circle-outline"
+        @click="enterDemoMode"
+      >
+        {{ t(strings.enter_demo_mode) }}
+      </v-btn>
+      <v-btn
         color="primary"
         prepend-icon="mdi-plus"
         @click="createDialogOpen = true"
@@ -86,8 +94,10 @@ import {
   getCollectionsList,
 } from "./Home.logic.ts";
 import CreateCollectionDialog from "../../components/collections/CreateCollectionDialog.vue";
+import { useDemoMode } from "../../useDemoMode.ts";
 
 const { t } = useReverseT();
+const { isDemoMode, enterDemoMode } = useDemoMode();
 const { profileQuery, collectionsQuery } = useHomeLoader();
 
 assertProfileLoaded(profileQuery.data.value);

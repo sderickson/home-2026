@@ -51,6 +51,23 @@
 
     <v-main>
       <v-container>
+        <v-alert
+          v-if="demoMode"
+          type="warning"
+          variant="tonal"
+          class="mb-4"
+          density="compact"
+        >
+          <div class="d-flex align-center flex-wrap gap-2">
+            <span>{{ t(recipes_layout.demo_banner_message) }}</span>
+            <v-btn size="small" variant="outlined" @click="onResetDemo?.()">
+              {{ t(recipes_layout.demo_reset) }}
+            </v-btn>
+            <v-btn size="small" variant="outlined" @click="onExitDemo?.()">
+              {{ t(recipes_layout.demo_exit) }}
+            </v-btn>
+          </div>
+        </v-alert>
         <slot />
       </v-container>
     </v-main>
@@ -83,6 +100,9 @@ import {
 const props = defineProps<{
   loggedIn?: boolean;
   isAdmin?: boolean;
+  demoMode?: boolean;
+  onResetDemo?: () => void;
+  onExitDemo?: () => void;
 }>();
 
 const { t } = useReverseT();

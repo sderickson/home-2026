@@ -26,6 +26,7 @@
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
     "marked": "^15.0.12",
+    "msw": "^2.11.3",
     "vue-router": "*",
     "sortablejs": "^1.15.2"
   },
