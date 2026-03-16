@@ -1,5 +1,5 @@
-import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockMenus } from "./mocks.ts";
 
 const placeholderCreatedBy = "a1b2c3d4";
@@ -16,7 +16,7 @@ export const createMenuHandler = recipesHandler({
   handler: async ({ body }) => {
     const now = new Date().toISOString();
     const menu = {
-      id: generateShortId(),
+      id: nextDeterministicId("menu", mockMenus.length),
       collectionId: body.collectionId,
       name: body.name,
       createdBy: placeholderCreatedBy,

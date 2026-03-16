@@ -6,9 +6,9 @@
           {{ t(strings.breadcrumb_home) }}
         </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ collectionName }}
-      </v-breadcrumbs-item>
+        <v-breadcrumbs-item :to="collectionDetailPath">
+          {{ collectionName }}
+        </v-breadcrumbs-item>
         <v-breadcrumbs-divider />
         <v-breadcrumbs-item :to="recipeDetailPath">
           {{ recipe.title }}

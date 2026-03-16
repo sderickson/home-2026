@@ -1,6 +1,6 @@
-import { generateShortId } from "@saflib/utils";
 import { identityServiceFakeConstants } from "@saflib/auth/fakes";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockCollections, mockCollectionMembers } from "./mocks.ts";
 
 const defaultUser = identityServiceFakeConstants.defaultUser;
@@ -11,7 +11,7 @@ export const createCollectionsHandler = recipesHandler({
   status: 200,
   handler: async ({ body }) => {
     const now = new Date().toISOString();
-    const id = body.id ?? generateShortId();
+    const id = body.id ?? nextDeterministicId("col", mockCollections.length);
     const collection = {
       id,
       name: body.name,

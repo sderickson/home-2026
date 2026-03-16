@@ -1,5 +1,5 @@
-import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockCollectionMembers } from "./mocks.ts";
 
 export const membersAddCollectionsHandler = recipesHandler({
@@ -9,7 +9,7 @@ export const membersAddCollectionsHandler = recipesHandler({
   handler: async ({ params, body }) => {
     const now = new Date().toISOString();
     const member = {
-      id: generateShortId(),
+      id: nextDeterministicId("mem", mockCollectionMembers.length),
       collectionId: params.id,
       email: body.email,
       role: body.role,
