@@ -1,19 +1,23 @@
+import { linkToProps, linkToHref, getHost } from "@saflib/links";
+import { authLinks } from "@saflib/auth-links";
+import { appLinks } from "@sderickson/recipes-links";
+import { setDemoMode } from "@sderickson/recipes-clients-common";
+
 /**
- * Assertions and list helpers for the home page (collections list data).
+ * Returns props for the login CTA. Redirect after login goes to recipes app home.
  */
-
-export function assertProfileLoaded(profile: unknown): asserts profile {
-  if (!profile) {
-    throw new Error("Failed to load profile");
-  }
+export function getLoginLinkProps() {
+  const redirect =
+    typeof window !== "undefined"
+      ? linkToHref(appLinks.home, { domain: getHost() })
+      : "";
+  return linkToProps(authLinks.login, { params: { redirect } });
 }
 
-export function assertCollectionsLoaded(data: unknown): asserts data {
-  if (data === undefined || data === null) {
-    throw new Error("Failed to load collections");
-  }
-}
-
-export function getCollectionsList<T>(data: T[] | undefined): T[] {
-  return data ?? [];
+/**
+ * Turn on demo mode and reload so MSW and seed data run.
+ */
+export function enterDemoModeFromError() {
+  setDemoMode(true);
+  window.location.reload();
 }

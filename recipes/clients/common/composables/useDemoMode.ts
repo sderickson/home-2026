@@ -1,5 +1,7 @@
 import { ref, onMounted } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
+import { navigateToLink } from "@saflib/links";
+import { appLinks } from "@sderickson/recipes-links";
 import { isDemoMode as getIsDemoMode, setDemoMode } from "../demo-mode.ts";
 
 export function useDemoMode() {
@@ -17,7 +19,7 @@ export function useDemoMode() {
 
   function exitDemoMode() {
     setDemoMode(false);
-    window.location.reload();
+    navigateToLink(appLinks.home);
   }
 
   async function resetDemoData() {

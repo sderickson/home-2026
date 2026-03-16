@@ -9,4 +9,7 @@ export const home_page = {
     "You are not in any collections yet. Create one to get started.",
   members: "Other members",
   enter_demo_mode: "Enter demo mode",
+  not_logged_in: "You're not logged in.",
+  cta_login: "Log in",
+  cta_demo: "Try demo mode",
 };

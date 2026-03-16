@@ -27,7 +27,7 @@
       <!-- Demo mode indicator + dialog trigger -->
       <template #append>
         <v-btn
-          v-if="demo.isDemoMode"
+          v-if="demo.isDemoMode.value"
           color="warning"
           variant="flat"
           prepend-icon="mdi-exclamation"
@@ -65,10 +65,7 @@
           <v-spacer />
           <v-btn
             variant="text"
-            @click="
-              demo.resetDemoData();
-              demoDialogOpen = false;
-            "
+            @click="onResetDemo(); demoDialogOpen = false"
           >
             {{ t(recipes_layout.demo_reset) }}
           </v-btn>
@@ -125,16 +122,29 @@ import {
   appLinks,
   rootLinks,
 } from "@sderickson/recipes-links";
+import { useQueryClient } from "@tanstack/vue-query";
 import { useDemoMode } from "../../composables/useDemoMode.ts";
+import { useSeedData } from "../../seed/useSeedData.ts";
 
 const props = defineProps<{
   loggedIn?: boolean;
   isAdmin?: boolean;
 }>();
 
-const demo = useDemoMode();
-
 const { t } = useReverseT();
+const demo = useDemoMode();
+const queryClient = useQueryClient();
+const { runSeed } = useSeedData({
+  getSuccessMessage: () => t(recipes_layout.demo_reset_done),
+});
+
+async function onResetDemo() {
+  const { clearMocks } = await import("@sderickson/recipes-sdk/fakes");
+  clearMocks();
+  queryClient.invalidateQueries();
+  await runSeed();
+  queryClient.invalidateQueries();
+}
 
 const drawer = ref(false);
 const demoDialogOpen = ref(false);
