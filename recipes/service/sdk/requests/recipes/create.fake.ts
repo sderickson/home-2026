@@ -36,7 +36,6 @@ export const createRecipesHandler = recipesHandler({
       title: body.title,
       subtitle: body.subtitle,
       description: body.description ?? null,
-      isPublic: body.isPublic,
       collectionId: body.collectionId,
       createdBy: placeholderUserId,
       createdAt: now,

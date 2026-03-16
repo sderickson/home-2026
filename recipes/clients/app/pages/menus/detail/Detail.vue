@@ -47,14 +47,6 @@
         </v-tooltip>
       </template>
       <v-spacer />
-      <v-chip
-        v-if="!isEditing"
-        size="small"
-        density="compact"
-        :color="menu.isPublic ? 'success' : 'default'"
-      >
-        {{ menu.isPublic ? t(strings.public) : t(strings.private) }}
-      </v-chip>
       <template v-if="showEdit">
         <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
           <template #activator="{ props: tooltipProps }">
@@ -204,13 +196,11 @@ const deleteDialogOpen = ref(false);
 
 const editForm = reactive<MenuEditFormModel>({
   name: "",
-  isPublic: false,
   groupings: [],
 });
 
 function syncEditFormFromMenu() {
   editForm.name = menu.value.name;
-  editForm.isPublic = menu.value.isPublic;
   editForm.groupings = menu.value.groupings.map((g, i) => ({
     name: g.name,
     recipeIds: [...g.recipeIds],

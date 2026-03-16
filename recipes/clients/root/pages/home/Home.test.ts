@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { stubGlobals } from "@saflib/vue/testing";
 import HomeAsync from "./HomeAsync.vue";
-import { mountTestApp, testAppHandlers } from "@sderickson/recipes-root-spa/test-app";
+import {
+  mountTestApp,
+  testAppHandlers,
+} from "@sderickson/recipes-root-spa/test-app";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 
 // Renders the page to capture baseline coverage.
@@ -13,7 +16,7 @@ describe("Home", () => {
 
   it("should render", async () => {
     const wrapper = mountTestApp(HomeAsync);
-    await vi.waitFor(() => expect(wrapper.text()).toContain("Welcome"));
+    await vi.waitFor(() => expect(wrapper.text()).toContain("A recipe app."));
     wrapper.unmount();
   });
 });

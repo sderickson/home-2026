@@ -77,9 +77,7 @@ export async function requireCollectionMembership(
 }
 
 /**
- * Load recipe by id. Access is determined from the recipe itself:
- * - No auth: return only if recipe is public; else 401.
- * - Auth: require membership on the recipe's collection (recipe.collectionId); return if member, 403 if not.
+ * Load recipe by id. Auth required; caller must be at least viewer on the recipe's collection.
  */
 export async function getRecipeAndRequireCollectionAuth(
   recipeId: string,
@@ -89,7 +87,6 @@ export async function getRecipeAndRequireCollectionAuth(
   if (!recipesDbKey) {
     throw new Error("Recipes service context not found");
   }
-  const auth = safContextStorage.getStore()?.auth;
 
   const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
   if (out.error) {
@@ -100,13 +97,6 @@ export async function getRecipeAndRequireCollectionAuth(
   }
 
   const { recipe } = out.result;
-
-  if (!auth) {
-    if (!recipe.isPublic) {
-      throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
-    }
-    return out.result;
-  }
 
   await requireCollectionMembership(recipe.collectionId, {
     requireMutate: options.requireMutate,

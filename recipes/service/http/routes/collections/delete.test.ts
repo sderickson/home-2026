@@ -128,7 +128,6 @@ describe("DELETE /collections/:id", () => {
       title: "A Recipe",
       subtitle: "",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
     });

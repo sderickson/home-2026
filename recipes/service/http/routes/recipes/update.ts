@@ -33,7 +33,6 @@ export const updateRecipeHandler = createHandler(
         data.description !== undefined
           ? data.description
           : existing.description,
-      isPublic: data.isPublic ?? existing.isPublic,
     };
 
     const { result, error } = await recipeQueries.updateMetadataRecipe(

@@ -2,8 +2,6 @@ export const menus_detail = {
   breadcrumb_home: "Home",
   breadcrumb_collections: "Collections",
   breadcrumb_menus: "Menus",
-  public: "Public",
-  private: "Private",
   groupings_label: "Groupings",
   view_mode_menu: "Menu",
   view_mode_diner: "Diner",

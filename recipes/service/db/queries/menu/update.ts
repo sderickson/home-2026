@@ -11,7 +11,6 @@ export type UpdateMenuError = MenuNotFoundError;
 export interface UpdateMenuParams {
   id: string;
   name: string;
-  isPublic: boolean;
   groupings: MenuGrouping[];
   /** Full replacement; handler appends and passes the new array. */
   editedByUserIds: string[];
@@ -31,7 +30,6 @@ export const updateMenu = queryWrapper(
       .update(menu)
       .set({
         name: params.name,
-        isPublic: params.isPublic,
         groupings: params.groupings,
         editedByUserIds: params.editedByUserIds,
         updatedAt: now,

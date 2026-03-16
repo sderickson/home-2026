@@ -1,27 +1,18 @@
 listMenus:
-  summary: "List menus. (a) Collection-scoped: query collectionId; list menus in that collection (viewers see public only; editors/owners see all). (b) Public: query publicOnly=true, no collectionId; return all public menus across collections (no auth)."
+  summary: "List menus in a collection. Auth required; caller must be at least viewer on the collection."
   operationId: "listMenus"
-  tags:
-    - "no-auth"
 
   parameters:
     - name: collectionId
       in: query
-      required: false
+      required: true
       schema:
         type: string
-      description: Id of the collection to list menus from. Omit when publicOnly=true.
-    - name: publicOnly
-      in: query
-      required: false
-      schema:
-        type: boolean
-        default: false
-      description: When true, return all public menus across all collections. Used by root (logged-out) app. Do not send collectionId when using this.
+      description: Id of the collection to list menus from.
 
   responses:
     "200":
-      description: "Menus in the collection (viewers get public only; editors/owners get all) or all public menus when publicOnly=true."
+      description: "Menus in the collection."
       content:
         application/json:
           schema:
@@ -35,13 +26,13 @@ listMenus:
                   $ref: "../../schemas/menu.yaml"
                 description: List of menus.
     "400":
-      description: "Bad request - provide either collectionId or publicOnly=true, not both nor neither."
+      description: "Bad request - collectionId is required."
       content:
         application/json:
           schema:
             $ref: "../../schemas/error.yaml"
     "401":
-      description: "Unauthorized - collection-scoped listing requires authentication."
+      description: "Unauthorized - collection listing requires authentication."
       content:
         application/json:
           schema:
@@ -53,7 +44,7 @@ listMenus:
           schema:
             $ref: "../../schemas/error.yaml"
     "422":
-      description: "Unprocessable - collection does not exist (validation, when collectionId provided)."
+      description: "Unprocessable - collection does not exist (validation)."
       content:
         application/json:
           schema:

@@ -8,13 +8,6 @@
       variant="outlined"
     />
 
-    <v-switch
-      v-model="form.isPublic"
-      :label="t(strings.is_public_label)"
-      :hint="t(strings.is_public_hint)"
-      class="mb-4"
-    />
-
     <div class="text-subtitle-1 mb-2">{{ t(strings.groupings_label) }}</div>
     <div
       v-for="(grouping, index) in form.groupings"
@@ -91,7 +84,6 @@ const router = useRouter();
 const formRef = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null);
 const form = reactive<CreateMenuFormModel>({
   name: "",
-  isPublic: false,
   groupings: [],
 });
 

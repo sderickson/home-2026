@@ -16,7 +16,6 @@ describe("createMenu", () => {
     const body = {
       collectionId: "my-kitchen",
       name: "New Menu",
-      isPublic: false,
       groupings: [{ name: "Starters", recipeIds: [] }],
     };
 
@@ -45,7 +44,6 @@ describe("createMenu", () => {
     await mutation.mutateAsync({
       collectionId,
       name: "Cache Test Menu",
-      isPublic: false,
       groupings: [],
     });
     await listQuery.refetch();

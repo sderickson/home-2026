@@ -7,7 +7,7 @@ type UpdateMenuVariables = {
   id: string;
 } & RecipesServiceRequestBody["updateMenu"];
 
-/** PUT /menus/:id. Body: collectionId, name, isPublic, groupings. Response: { menu: Menu }. */
+/** PUT /menus/:id. Body: collectionId, name, groupings. Response: { menu: Menu }. */
 export const useUpdateMenuMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -3,7 +3,6 @@ import { createMenu } from "./create.ts";
 import { deleteMenu } from "./delete.ts";
 import { getByIdMenu } from "./get-by-id.ts";
 import { listByCollectionIdMenu } from "./list-by-collection-id.ts";
-import { listPublicMenu } from "./list-public.ts";
 import { updateMenu } from "./update.ts";
 // END WORKFLOW AREA
 
@@ -13,7 +12,6 @@ export const menuQueries = {
   deleteMenu,
   getByIdMenu,
   listByCollectionIdMenu,
-  listPublicMenu,
   updateMenu,
   // END WORKFLOW AREA
 };

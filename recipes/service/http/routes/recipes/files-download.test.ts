@@ -30,7 +30,6 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -90,7 +89,6 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
         title: "Private Recipe",
         subtitle: "Private",
         description: null,
-        isPublic: false,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -159,7 +157,6 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

@@ -42,7 +42,6 @@ export function canEditMenuForRole(role: string | undefined): boolean {
 
 export type MenuEditFormModel = {
   name: string;
-  isPublic: boolean;
   groupings: { name: string; recipeIds: string[]; _uid?: number }[];
 };
 
@@ -58,14 +57,12 @@ export function buildUpdateMenuPayload(
   id: string;
   collectionId: string;
   name: string;
-  isPublic: boolean;
   groupings: { name: string; recipeIds: string[] }[];
 } {
   return {
     id: menuId,
     collectionId,
     name: form.name.trim(),
-    isPublic: form.isPublic,
     groupings: form.groupings
       .filter((g) => g.name.trim() !== "")
       .map((g) => ({

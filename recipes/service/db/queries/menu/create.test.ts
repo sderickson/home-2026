@@ -27,7 +27,6 @@ describe("createMenu", () => {
     const { result, error } = await createMenu(dbKey, {
       collectionId: "non-existent-id",
       name: "Test Menu",
-      isPublic: true,
       createdBy: "u@example.com",
       groupings: [],
     });
@@ -51,7 +50,6 @@ describe("createMenu", () => {
     const { result, error } = await createMenu(dbKey, {
       collectionId: "col-1",
       name: "Brunch",
-      isPublic: true,
       createdBy: "u@example.com",
       groupings: [{ name: "Mains", recipeIds: ["r1"] }],
     });
@@ -60,7 +58,6 @@ describe("createMenu", () => {
     assert(result);
     expect(result.collectionId).toBe("col-1");
     expect(result.name).toBe("Brunch");
-    expect(result.isPublic).toBe(true);
     expect(result.createdBy).toBe("u@example.com");
     expect(result.editedByUserIds).toEqual(["u@example.com"]);
     expect(result.groupings).toEqual([{ name: "Mains", recipeIds: ["r1"] }]);
@@ -81,7 +78,6 @@ describe("createMenu", () => {
     const { result, error } = await createMenu(dbKey, {
       collectionId: "col-2",
       name: "Dinner",
-      isPublic: false,
       createdBy: "owner@example.com",
       groupings: [{ name: "Starters", recipeIds: [] }, { name: "Desserts", recipeIds: ["d1"] }],
       editedByUserIds: ["owner@example.com", "editor@example.com"],
@@ -90,7 +86,6 @@ describe("createMenu", () => {
     expect(result).toBeDefined();
     assert(result);
     expect(result.name).toBe("Dinner");
-    expect(result.isPublic).toBe(false);
     expect(result.editedByUserIds).toEqual(["owner@example.com", "editor@example.com"]);
     expect(result.groupings).toEqual([
       { name: "Starters", recipeIds: [] },

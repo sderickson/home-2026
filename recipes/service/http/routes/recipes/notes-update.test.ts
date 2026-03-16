@@ -27,7 +27,6 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -119,7 +118,6 @@ describe("PUT /recipes/:id/notes/:noteId (notesUpdateRecipes)", () => {
       title: "Other Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

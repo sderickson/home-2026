@@ -12,7 +12,11 @@ import {
   listMenusQuery,
   filesListRecipesQuery,
 } from "@sderickson/recipes-sdk";
-import { SEED_RECIPES, SEED_COLLECTION_NAME, SEED_MENUS } from "./seed-recipes.ts";
+import {
+  SEED_RECIPES,
+  SEED_COLLECTION_NAME,
+  SEED_MENUS,
+} from "./seed-recipes.ts";
 
 function isUnsplashRateLimitError(e: unknown): boolean {
   if (e && typeof e === "object") {
@@ -54,7 +58,9 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
 
     try {
       updateProgress("Finding or creating collection…");
-      const collectionsData = await queryClient.fetchQuery(listCollectionsQuery());
+      const collectionsData = await queryClient.fetchQuery(
+        listCollectionsQuery(),
+      );
       const collections = collectionsData?.collections ?? [];
       let seedCollection = collections.find(
         (c: { name?: string }) => c.name === SEED_COLLECTION_NAME,
@@ -76,7 +82,8 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
       const byTitle = new Map<string, { id: string }>();
       for (const recipe of existingRecipesList) {
         const title = (recipe as { title?: string }).title;
-        if (title && !byTitle.has(title)) byTitle.set(title, { id: (recipe as { id: string }).id });
+        if (title && !byTitle.has(title))
+          byTitle.set(title, { id: (recipe as { id: string }).id });
       }
 
       const createdRecipes: { id: string }[] = [];
@@ -93,7 +100,6 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
             collectionId,
             title: r.title,
             subtitle: r.subtitle,
-            isPublic: true,
             initialVersion: {
               content: {
                 ingredients: [...r.initialVersion.ingredients],
@@ -117,7 +123,11 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           // ignore list errors; we'll try to add image
         }
         if (!hasImage) {
-          let photo: { id: string; downloadLocation: string; regularUrl: string } | null = null;
+          let photo: {
+            id: string;
+            downloadLocation: string;
+            regularUrl: string;
+          } | null = null;
           try {
             const searchResult = await queryClient.fetchQuery(
               searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
@@ -168,7 +178,6 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
             id: existing.id,
             collectionId,
             name: menuDef.name,
-            isPublic: menuDef.isPublic,
             groupings,
           });
         } else {
@@ -176,7 +185,6 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           await createMenu.mutateAsync({
             collectionId,
             name: menuDef.name,
-            isPublic: menuDef.isPublic,
             groupings,
           });
         }

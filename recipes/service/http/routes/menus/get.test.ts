@@ -28,11 +28,10 @@ describe("GET /menus/:id", () => {
     recipesDb.disconnect(dbKey);
   });
 
-  it("should return 200 with menu and empty recipes for public menu without auth", async () => {
+  it("should return 400 when collectionId is not provided", async () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
-      name: "Public Menu",
-      isPublic: true,
+      name: "A Menu",
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -40,13 +39,29 @@ describe("GET /menus/:id", () => {
 
     const response = await request(app).get(`/menus/${menu!.id}`);
 
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 200 with menu and empty recipes when authenticated with collectionId", async () => {
+    const { result: menu } = await menuQueries.createMenu(dbKey, {
+      collectionId,
+      name: "Test Menu",
+      createdBy: SEED_USER_ID,
+      groupings: [],
+    });
+    expect(menu).toBeDefined();
+
+    const response = await request(app)
+      .get(`/menus/${menu!.id}`)
+      .query({ collectionId })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
+
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
       menu: {
         id: menu!.id,
         collectionId,
-        name: "Public Menu",
-        isPublic: true,
+        name: "Test Menu",
         createdBy: SEED_USER_ID,
         groupings: [],
       },
@@ -57,7 +72,7 @@ describe("GET /menus/:id", () => {
     expect(response.body.menu.editedByUserIds).toEqual([SEED_USER_ID]);
   });
 
-  it("should return 200 with menu and recipes for public menu with groupings", async () => {
+  it("should return 200 with menu and recipes when menu has groupings", async () => {
     const { result: recipe1 } = await recipeQueries.createWithVersionRecipe(
       dbKey,
       {
@@ -65,7 +80,6 @@ describe("GET /menus/:id", () => {
         title: "Recipe One",
         subtitle: "First",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -78,7 +92,6 @@ describe("GET /menus/:id", () => {
         title: "Recipe Two",
         subtitle: "Second",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -90,7 +103,6 @@ describe("GET /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu With Recipes",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [
         { name: "Mains", recipeIds: [recipe1!.recipe.id, recipe2!.recipe.id] },
@@ -98,7 +110,10 @@ describe("GET /menus/:id", () => {
     });
     expect(menu).toBeDefined();
 
-    const response = await request(app).get(`/menus/${menu!.id}`);
+    const response = await request(app)
+      .get(`/menus/${menu!.id}`)
+      .query({ collectionId })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
     expect(response.body.menu.id).toBe(menu!.id);
@@ -110,34 +125,12 @@ describe("GET /menus/:id", () => {
     expect(response.body.recipes[0]).toMatchObject({
       title: expect.any(String),
       subtitle: expect.any(String),
-      isPublic: true,
       createdBy: SEED_USER_ID,
     });
     expect(response.body.recipes[0].createdAt).toEqual(expect.any(String));
   });
 
-  it("should return 200 with menu when collection-scoped and caller is owner", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
-      collectionId,
-      name: "Private Menu",
-      isPublic: false,
-      createdBy: SEED_USER_ID,
-      groupings: [],
-    });
-    expect(menu).toBeDefined();
-
-    const response = await request(app)
-      .get(`/menus/${menu!.id}`)
-      .query({ collectionId })
-      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
-
-    expect(response.status).toBe(200);
-    expect(response.body.menu.id).toBe(menu!.id);
-    expect(response.body.menu.isPublic).toBe(false);
-    expect(response.body.recipes).toEqual([]);
-  });
-
-  it("should return 200 when collection-scoped and caller is viewer and menu is public", async () => {
+  it("should return 200 when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
     const { result: ownerColl } = await collectionQueries.createCollection(
       dbKey,
@@ -154,8 +147,7 @@ describe("GET /menus/:id", () => {
     });
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
-      name: "Public Menu",
-      isPublic: true,
+      name: "Viewer Menu",
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -170,17 +162,18 @@ describe("GET /menus/:id", () => {
     expect(response.body.menu.id).toBe(menu!.id);
   });
 
-  it("should return 401 when no collectionId and menu is private", async () => {
+  it("should return 401 when not authenticated", async () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
-      name: "Private Menu",
-      isPublic: false,
+      name: "A Menu",
       createdBy: SEED_USER_ID,
       groupings: [],
     });
     expect(menu).toBeDefined();
 
-    const response = await request(app).get(`/menus/${menu!.id}`);
+    const response = await request(app)
+      .get(`/menus/${menu!.id}`)
+      .query({ collectionId });
 
     expect(response.status).toBe(401);
   });
@@ -189,7 +182,6 @@ describe("GET /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -203,7 +195,7 @@ describe("GET /menus/:id", () => {
     expect(response.status).toBe(403);
   });
 
-  it("should return 403 when collection-scoped and caller is not a member", async () => {
+  it("should return 403 when caller is not a member of the collection", async () => {
     const { result: otherColl } = await collectionQueries.createCollection(
       dbKey,
       {
@@ -215,7 +207,6 @@ describe("GET /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
-      isPublic: false,
       createdBy: "other@example.com",
       groupings: [],
     });
@@ -229,41 +220,10 @@ describe("GET /menus/:id", () => {
     expect(response.status).toBe(403);
   });
 
-  it("should return 403 when caller is viewer and menu is private", async () => {
-    const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
-      dbKey,
-      {
-        name: "Owner Collection",
-        creatorEmail: "owner@example.com",
-      },
-    );
-    expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
-      collectionId: ownerColl!.id,
-      email: viewerEmail,
-      role: "viewer",
-    });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
-      collectionId: ownerColl!.id,
-      name: "Private Menu",
-      isPublic: false,
-      createdBy: "owner@example.com",
-      groupings: [],
-    });
-    expect(menu).toBeDefined();
-
-    const response = await request(app)
-      .get(`/menus/${menu!.id}`)
-      .query({ collectionId: ownerColl!.id })
-      .set(makeUserHeaders("viewer-user-id", viewerEmail));
-
-    expect(response.status).toBe(403);
-  });
-
   it("should return 404 when menu does not exist", async () => {
     const response = await request(app)
       .get("/menus/nonexistent-menu-id")
+      .query({ collectionId })
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
@@ -274,7 +234,6 @@ describe("GET /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu With Bad Recipe Id",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [
         { name: "Mains", recipeIds: ["nonexistent-recipe-id"] },
@@ -282,7 +241,10 @@ describe("GET /menus/:id", () => {
     });
     expect(menu).toBeDefined();
 
-    const response = await request(app).get(`/menus/${menu!.id}`);
+    const response = await request(app)
+      .get(`/menus/${menu!.id}`)
+      .query({ collectionId })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(404);
     expect(response.body.code).toBe("RECIPE_NOT_FOUND");

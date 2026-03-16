@@ -9,13 +9,5 @@ export const rootLinks: LinkMap = {
     subdomain,
     path: "/",
   },
-  recipesList: {
-    subdomain,
-    path: "/recipes/list",
-  },
-  recipesDetail: {
-    subdomain,
-    path: "/recipes/:id",
-  },
   // END WORKFLOW AREA
 };

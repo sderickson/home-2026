@@ -20,7 +20,6 @@ export interface RecipeEntity {
   title: string;
   subtitle: string;
   description: string | null;
-  isPublic: boolean;
   createdBy: string;
   createdAt: Date;
   updatedBy: string;
@@ -39,7 +38,6 @@ export const recipe = sqliteTable(
     title: text("title").notNull(),
     subtitle: text("subtitle").notNull(),
     description: text("description"),
-    isPublic: integer("is_public", { mode: "boolean" }).notNull(),
     createdBy: text("created_by").notNull(),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedBy: text("updated_by").notNull(),

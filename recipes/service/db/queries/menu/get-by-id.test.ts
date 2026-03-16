@@ -43,7 +43,6 @@ describe("getByIdMenu", () => {
     await db.insert(menu).values({
       collectionId: "col-1",
       name: "Brunch",
-      isPublic: true,
       createdBy: "u@example.com",
       createdAt: now,
       updatedBy: "u@example.com",
@@ -61,7 +60,6 @@ describe("getByIdMenu", () => {
     assert(result);
     expect(result.id).toBe(menuId);
     expect(result.name).toBe("Brunch");
-    expect(result.isPublic).toBe(true);
     expect(result.groupings).toEqual([{ name: "Mains", recipeIds: ["r1"] }]);
   });
 });

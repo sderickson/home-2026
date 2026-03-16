@@ -26,7 +26,6 @@ describe("updateMenu", () => {
     const { result, error } = await updateMenu(dbKey, {
       id: "non-existent-id",
       name: "Updated",
-      isPublic: true,
       groupings: [],
       editedByUserIds: ["u@example.com"],
     });
@@ -47,7 +46,6 @@ describe("updateMenu", () => {
     const { result: created } = await createMenu(dbKey, {
       collectionId: "col-1",
       name: "Brunch",
-      isPublic: true,
       createdBy: "owner@example.com",
       groupings: [{ name: "Mains", recipeIds: [] }],
     });
@@ -56,7 +54,6 @@ describe("updateMenu", () => {
     const { result: updated, error } = await updateMenu(dbKey, {
       id: created.id,
       name: "Brunch Updated",
-      isPublic: false,
       groupings: [{ name: "Starters", recipeIds: ["r1"] }, { name: "Mains", recipeIds: [] }],
       editedByUserIds: ["owner@example.com", "editor@example.com"],
       updatedBy: "editor@example.com",
@@ -65,7 +62,6 @@ describe("updateMenu", () => {
     expect(updated).toBeDefined();
     assert(updated);
     expect(updated.name).toBe("Brunch Updated");
-    expect(updated.isPublic).toBe(false);
     expect(updated.updatedBy).toBe("editor@example.com");
     expect(updated.editedByUserIds).toEqual(["owner@example.com", "editor@example.com"]);
     expect(updated.groupings).toEqual([
@@ -84,7 +80,6 @@ describe("updateMenu", () => {
     const { result: created } = await createMenu(dbKey, {
       collectionId: "col-2",
       name: "Dinner",
-      isPublic: false,
       createdBy: "u@example.com",
       groupings: [],
     });
@@ -94,7 +89,6 @@ describe("updateMenu", () => {
     const { result: updated, error } = await updateMenu(dbKey, {
       id: created.id,
       name: "Dinner Revised",
-      isPublic: true,
       groupings: [{ name: "Desserts", recipeIds: [] }],
       editedByUserIds: ["u@example.com"],
     });
@@ -102,7 +96,6 @@ describe("updateMenu", () => {
     expect(updated).toBeDefined();
     assert(updated);
     expect(updated.name).toBe("Dinner Revised");
-    expect(updated.isPublic).toBe(true);
     expect(updated.updatedBy).toBe("u@example.com");
     expect(updated.groupings).toEqual([{ name: "Desserts", recipeIds: [] }]);
   });

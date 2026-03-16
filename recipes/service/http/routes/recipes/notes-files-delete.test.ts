@@ -27,7 +27,6 @@ describe("DELETE /recipes/:id/notes/:noteId/files/:fileId (notesFilesDeleteRecip
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {

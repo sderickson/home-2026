@@ -15,7 +15,6 @@ export function menuToApiMenu(row: MenuEntity): MenuApi {
     id: row.id,
     collectionId: row.collectionId,
     name: row.name,
-    isPublic: row.isPublic,
     createdBy: row.createdBy,
     createdAt: row.createdAt.toISOString(),
     updatedBy: row.updatedBy,

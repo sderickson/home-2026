@@ -7,7 +7,7 @@ const placeholderCreatedBy = "a1b2c3d4";
 /**
  * Fake handler for POST /menus.
  * Imports shared mockMenus from ./mocks.ts and pushes a new item so create/list/delete affect one another (TanStack caching tests).
- * Reflects request body (collectionId, name, isPublic, groupings). No validation.
+ * Reflects request body (collectionId, name, groupings). No validation.
  */
 export const createMenuHandler = recipesHandler({
   verb: "post",
@@ -19,7 +19,6 @@ export const createMenuHandler = recipesHandler({
       id: generateShortId(),
       collectionId: body.collectionId,
       name: body.name,
-      isPublic: body.isPublic,
       createdBy: placeholderCreatedBy,
       createdAt: now,
       updatedBy: placeholderCreatedBy,

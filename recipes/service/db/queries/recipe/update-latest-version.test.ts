@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, assert } from "vitest";
 import type { DbKey } from "@saflib/drizzle";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeVersionNotFoundError } from "../../errors.ts";
-import { insertTestCollection, makeRecipeRow, TEST_COLLECTION_ID } from "../../test-fixtures.ts";
+import {
+  insertTestCollection,
+  makeRecipeRow,
+  TEST_COLLECTION_ID,
+} from "../../test-fixtures.ts";
 import { recipe } from "../../schemas/recipe.ts";
 import { createWithVersionRecipe } from "./create-with-version.ts";
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
@@ -26,7 +30,6 @@ describe("updateLatestVersionRecipe", () => {
       title: "Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: "user-1",
       updatedBy: "user-1",
       versionContent: {

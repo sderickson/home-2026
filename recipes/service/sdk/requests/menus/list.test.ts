@@ -37,7 +37,6 @@ describe("listMenus", () => {
       id: expect.any(String),
       collectionId: "my-kitchen",
       name: expect.any(String),
-      isPublic: expect.any(Boolean),
       groupings: expect.any(Array),
     });
 

@@ -1,5 +1,5 @@
 updateMenus:
-  summary: "Update menu name, isPublic, and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection."
+  summary: "Update menu name and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection."
   operationId: "updateMenu"
 
   parameters:
@@ -19,7 +19,6 @@ updateMenus:
           required:
             - collectionId
             - name
-            - isPublic
             - groupings
           properties:
             collectionId:
@@ -29,9 +28,6 @@ updateMenus:
               type: string
               description: Human-readable name for the menu.
               minLength: 1
-            isPublic:
-              type: boolean
-              description: Whether the menu is visible to non-editors.
             groupings:
               $ref: "../../schemas/menu.yaml#/properties/groupings"
 

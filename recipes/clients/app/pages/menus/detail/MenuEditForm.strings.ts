@@ -1,8 +1,6 @@
 export const menu_edit_form = {
   name_label: "Menu name",
   name_placeholder: "e.g. Weeknight Dinners",
-  tooltip_public: "Public",
-  tooltip_private: "Private",
   groupings_label: "Sections",
   grouping_name_placeholder: "e.g. Mains, Sides, Desserts",
   add_grouping: "Add section",

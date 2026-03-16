@@ -51,7 +51,6 @@ const formModel = ref<RecipeFormModel>({
   title: "",
   subtitle: "",
   description: null,
-  isPublic: false,
   initialVersion: {
     content: {
       ingredients: [],

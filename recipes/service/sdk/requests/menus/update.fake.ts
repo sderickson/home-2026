@@ -4,7 +4,7 @@ import { mockMenus } from "./mocks.ts";
 /**
  * Fake handler for PUT /menus/:id.
  * Imports shared mockMenus from ./mocks.ts and modifies in place so create/list/get/delete affect one another (TanStack caching tests).
- * Reflects path id and request body (collectionId, name, isPublic, groupings). No validation.
+ * Reflects path id and request body (collectionId, name, groupings). No validation.
  */
 export const updateMenuHandler = recipesHandler({
   verb: "put",
@@ -15,7 +15,6 @@ export const updateMenuHandler = recipesHandler({
     if (!menu) return undefined;
     menu.collectionId = body.collectionId;
     menu.name = body.name;
-    menu.isPublic = body.isPublic;
     menu.groupings = body.groupings;
     menu.updatedAt = new Date().toISOString();
     menu.updatedBy = menu.createdBy;

@@ -40,7 +40,6 @@ export const createRecipeHandler = createHandler(
           title: data.title,
           subtitle: data.subtitle,
           description: data.description ?? null,
-          isPublic: data.isPublic,
           createdBy: userId,
           updatedBy: userId,
           versionContent: {
@@ -71,7 +70,6 @@ export const createRecipeHandler = createHandler(
       title: data.title,
       subtitle: data.subtitle,
       description: data.description ?? null,
-      isPublic: data.isPublic,
       createdBy: userId,
       updatedBy: userId,
     });

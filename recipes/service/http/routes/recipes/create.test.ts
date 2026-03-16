@@ -28,7 +28,6 @@ describe("POST /recipes", () => {
       collectionId,
       title: "New Recipe",
       subtitle: "A short description",
-      isPublic: true,
       initialVersion: {
         content: {
           ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
@@ -47,7 +46,6 @@ describe("POST /recipes", () => {
       recipe: {
         title: body.title,
         subtitle: body.subtitle,
-        isPublic: true,
         id: expect.any(String),
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
@@ -71,7 +69,6 @@ describe("POST /recipes", () => {
       collectionId,
       title: "Recipe Without Version",
       subtitle: "Short",
-      isPublic: false,
     } satisfies RecipesServiceRequestBody["createRecipe"];
 
     const response = await request(app)
@@ -84,7 +81,6 @@ describe("POST /recipes", () => {
       recipe: {
         title: body.title,
         subtitle: body.subtitle,
-        isPublic: false,
         id: expect.any(String),
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
@@ -102,7 +98,6 @@ describe("POST /recipes", () => {
         collectionId,
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
     expect(response.status).toBe(401);
@@ -116,7 +111,6 @@ describe("POST /recipes", () => {
         collectionId,
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
     expect(response.status).toBe(403);
@@ -130,7 +124,6 @@ describe("POST /recipes", () => {
       .send({
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       });
 
     expect(response.status).toBe(400);
@@ -146,7 +139,6 @@ describe("POST /recipes", () => {
         collectionId: "00000000-0000-0000-0000-000000000001",
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
     expect(response.status).toBe(422);

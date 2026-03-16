@@ -24,7 +24,6 @@ describe("POST /recipes/:id/versions", () => {
       title: "Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {

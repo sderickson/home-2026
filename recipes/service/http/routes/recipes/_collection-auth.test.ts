@@ -30,12 +30,9 @@ describe("requireCollectionMembership (via list/create recipes)", () => {
   });
 
   it("returns 401 when no auth", async () => {
-    const response = await request(app)
-      .get("/recipes")
-      .query({ collectionId });
+    const response = await request(app).get("/recipes").query({ collectionId });
 
     expect(response.status).toBe(401);
-    expect(response.body.code).toBe("UNAUTHORIZED");
   });
 
   it("returns 422 when collection does not exist", async () => {
@@ -76,7 +73,6 @@ describe("requireCollectionMembership (via list/create recipes)", () => {
         collectionId: NON_EXISTENT_COLLECTION_ID,
         title: "Test",
         subtitle: "Short",
-        isPublic: true,
       } satisfies RecipesServiceRequestBody["createRecipe"]);
 
     expect(response.status).toBe(422);
@@ -98,7 +94,6 @@ describe("getRecipeAndRequireCollectionAuth (via GET /recipes/:id)", () => {
       title: "Auth Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {

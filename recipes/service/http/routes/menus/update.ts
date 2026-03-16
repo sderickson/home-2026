@@ -104,7 +104,6 @@ export const updateMenuHandler = createHandler(async (req, res) => {
     await menuQueries.updateMenu(recipesDbKey, {
       id,
       name: data.name ?? "",
-      isPublic: Boolean(data.isPublic),
       groupings,
       editedByUserIds,
       updatedBy: userId,

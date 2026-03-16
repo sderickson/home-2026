@@ -35,7 +35,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Original Name",
-      isPublic: false,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -44,7 +43,6 @@ describe("PUT /menus/:id", () => {
     const body = {
       collectionId,
       name: "Updated Name",
-      isPublic: true,
       groupings: [],
     };
 
@@ -58,7 +56,6 @@ describe("PUT /menus/:id", () => {
     expect(response.body.menu).toMatchObject({
       collectionId,
       name: "Updated Name",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -83,7 +80,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
-      isPublic: true,
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -96,7 +92,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId: ownerColl!.id,
         name: "Menu Updated",
-        isPublic: true,
         groupings: [],
       });
 
@@ -115,7 +110,6 @@ describe("PUT /menus/:id", () => {
         title: "Pasta",
         subtitle: "Quick",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -126,7 +120,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -138,7 +131,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId,
         name: "Menu",
-        isPublic: true,
         groupings: [{ name: "Mains", recipeIds: [recipe!.recipe.id] }],
       });
 
@@ -154,7 +146,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -165,7 +156,6 @@ describe("PUT /menus/:id", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         name: "Updated",
-        isPublic: true,
         groupings: [],
       });
 
@@ -177,7 +167,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -189,7 +178,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId,
         name: "Menu",
-        isPublic: true,
         groupings: [{ name: "Mains", recipeIds: ["nonexistent-recipe-id"] }],
       });
 
@@ -218,7 +206,6 @@ describe("PUT /menus/:id", () => {
         title: "Mine",
         subtitle: "Mine",
         description: null,
-        isPublic: true,
         createdBy: SEED_USER_ID,
         updatedBy: SEED_USER_ID,
         versionContent: { ingredients: [], instructionsMarkdown: "" },
@@ -228,7 +215,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Menu in Other",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -240,7 +226,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId: otherColl!.id,
         name: "Menu",
-        isPublic: true,
         groupings: [
           { name: "Mains", recipeIds: [recipeInMyCollection!.recipe.id] },
         ],
@@ -254,7 +239,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -263,7 +247,6 @@ describe("PUT /menus/:id", () => {
     const response = await request(app).put(`/menus/${menu!.id}`).send({
       collectionId,
       name: "Updated",
-      isPublic: true,
       groupings: [],
     });
 
@@ -283,7 +266,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu in My Collection",
-      isPublic: true,
       createdBy: SEED_USER_ID,
       groupings: [],
     });
@@ -295,7 +277,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId: otherColl!.id,
         name: "Hacked",
-        isPublic: true,
         groupings: [],
       });
 
@@ -314,7 +295,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
-      isPublic: false,
       createdBy: "other@example.com",
       groupings: [],
     });
@@ -326,7 +306,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId: otherColl!.id,
         name: "Hacked",
-        isPublic: true,
         groupings: [],
       });
 
@@ -351,7 +330,6 @@ describe("PUT /menus/:id", () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
-      isPublic: true,
       createdBy: "owner@example.com",
       groupings: [],
     });
@@ -363,7 +341,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId: ownerColl!.id,
         name: "Updated",
-        isPublic: true,
         groupings: [],
       });
 
@@ -377,7 +354,6 @@ describe("PUT /menus/:id", () => {
       .send({
         collectionId,
         name: "Updated",
-        isPublic: true,
         groupings: [],
       });
 

@@ -31,7 +31,6 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       title: "Test Recipe",
       subtitle: "Short",
       description: null,
-      isPublic: true,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: {
@@ -131,7 +130,6 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
       title: "Private Recipe",
       subtitle: "Private",
       description: null,
-      isPublic: false,
       createdBy: SEED_USER_ID,
       updatedBy: SEED_USER_ID,
       versionContent: { ingredients: [], instructionsMarkdown: "" },

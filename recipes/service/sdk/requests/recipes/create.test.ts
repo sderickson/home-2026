@@ -18,7 +18,6 @@ describe("createRecipe", () => {
       collectionId: "my-kitchen",
       title: "New Recipe",
       subtitle: "A new test recipe",
-      isPublic: true,
     });
 
     expect(result).toBeDefined();
@@ -42,7 +41,6 @@ describe("createRecipe", () => {
       collectionId: "my-kitchen",
       title: "Cache Test Recipe",
       subtitle: "For invalidation test",
-      isPublic: false,
     });
 
     await listQuery.refetch();
