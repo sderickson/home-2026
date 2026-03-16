@@ -4,7 +4,7 @@ import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockUnsplashPhotos, resetMocks } from "./mocks.ts";
+import { resetMocks } from "./mocks.ts";
 
 describe("searchUnsplashPhotos", () => {
   setupMockServer(recipesServiceFakeHandlers);
