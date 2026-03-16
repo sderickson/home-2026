@@ -1,12 +1,15 @@
 <template>
   <v-container v-if="is401">
-    <v-alert type="info" variant="tonal" class="my-4">
+    <v-alert type="info" variant="tonal" class="pa-6">
       <v-alert-title>{{ t(strings.not_logged_in) }}</v-alert-title>
+      <p class="my-4">
+        {{ t(strings.not_logged_in_message) }}
+      </p>
       <div class="d-flex flex-wrap gap-2 mt-2">
-        <v-btn v-bind="loginLinkProps" color="primary">
+        <v-btn v-bind="loginLinkProps" color="primary" class="mr-4">
           {{ t(strings.cta_login) }}
         </v-btn>
-        <v-btn variant="outlined" @click="enterDemoModeFromError">
+        <v-btn color="primary" @click="enterDemoModeFromError">
           {{ t(strings.cta_demo) }}
         </v-btn>
       </div>
@@ -20,10 +23,7 @@ import { computed } from "vue";
 import { AsyncPageError } from "@saflib/vue/components";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { home_page as strings } from "./Home.strings.ts";
-import {
-  getLoginLinkProps,
-  enterDemoModeFromError,
-} from "./Home.logic.ts";
+import { getLoginLinkProps, enterDemoModeFromError } from "./Home.logic.ts";
 
 const props = defineProps<{
   error?: unknown;
