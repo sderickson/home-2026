@@ -10,4 +10,9 @@ export const collections_detail = {
   create_menu: "Create menu",
   create_recipe: "Create recipe",
   quick_import: "Quick import",
+  delete_collection: "Delete collection",
+  delete_collection_tooltip_empty:
+    "Delete this collection. Only available when it has no recipes and no menus.",
+  delete_collection_tooltip_disabled:
+    "Remove all recipes and menus before you can delete this collection.",
 };

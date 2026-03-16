@@ -8,7 +8,8 @@
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
     "./fixtures": "./fixtures/index.ts",
-    "./playwright.config": "./playwright.config.ts"
+    "./playwright.config": "./playwright.config.ts",
+    "./seed": "./seed/index.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -22,6 +23,8 @@
     "@saflib/vue": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-spec": "*",
+    "@sderickson/recipes-sdk": "*",
+    "@tanstack/vue-query": "^5.85.9",
     "@sentry/vue": "^10.21.0"
   }
 }

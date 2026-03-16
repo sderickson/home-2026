@@ -23,6 +23,7 @@
     "@testing-library/vue": "^8.1.0"
   },
   "dependencies": {
+    "@saflib/auth": "*",
     "@saflib/monorepo": "*",
     "@saflib/utils": "*",
     "@saflib/sdk": "*",

@@ -74,7 +74,7 @@
 import { admin_page as strings } from "./Admin.strings.ts";
 import { useAdminLoader } from "./Admin.loader.ts";
 import { useReverseT } from "@sderickson/recipes-admin-spa/i18n";
-import { useSeedData } from "./useSeedData.ts";
+import { useSeedData } from "@sderickson/recipes-clients-common/seed";
 import { useCleanupSeedData } from "./useCleanupSeedData.ts";
 
 const { t } = useReverseT();

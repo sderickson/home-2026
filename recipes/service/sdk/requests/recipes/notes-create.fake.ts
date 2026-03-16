@@ -1,5 +1,5 @@
-import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockRecipeNotes } from "./mocks.ts";
 
 const placeholderUserId = "a1b2c3d4-e89b-12d3-a456-426614174001";
@@ -11,7 +11,7 @@ export const notesCreateRecipesHandler = recipesHandler({
   handler: async ({ params, query: _query, body }) => {
     const now = new Date().toISOString();
     const note = {
-      id: generateShortId(),
+      id: nextDeterministicId("note", mockRecipeNotes.length),
       recipeId: params.id,
       recipeVersionId: body.recipeVersionId ?? null,
       body: body.body,

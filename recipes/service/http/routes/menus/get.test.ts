@@ -230,7 +230,7 @@ describe("GET /menus/:id", () => {
     expect(response.body.code).toBe("MENU_NOT_FOUND");
   });
 
-  it("should return 404 when menu references recipe that does not exist", async () => {
+  it("should return 200 and filter out missing recipes when menu references recipe that does not exist", async () => {
     const { result: menu } = await menuQueries.createMenu(dbKey, {
       collectionId,
       name: "Menu With Bad Recipe Id",
@@ -246,7 +246,11 @@ describe("GET /menus/:id", () => {
       .query({ collectionId })
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(404);
-    expect(response.body.code).toBe("RECIPE_NOT_FOUND");
+    expect(response.status).toBe(200);
+    expect(response.body.menu).toBeDefined();
+    expect(response.body.menu.groupings).toEqual([
+      { name: "Mains", recipeIds: [] },
+    ]);
+    expect(response.body.recipes).toEqual([]);
   });
 });

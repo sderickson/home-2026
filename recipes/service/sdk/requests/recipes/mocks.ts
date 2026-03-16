@@ -113,15 +113,14 @@ export const mockRecipeFiles: RecipeFileInfo[] = [
     id: "713e4567-e89b-12d3-a456-426614174001",
     recipeId: "123e4567-e89b-12d3-a456-426614174000",
     blobName:
-      "recipes/123e4567-e89b-12d3-a456-426614174000/713e4567-e89b-12d3-a456-426614174001.pdf",
-    fileOriginalName: "grandmas-cookies.pdf",
-    mimetype: "application/pdf",
+      "recipes/123e4567-e89b-12d3-a456-426614174000/713e4567-e89b-12d3-a456-426614174001.jpg",
+    fileOriginalName: "cookies-photo-1.jpg",
+    mimetype: "image/jpeg",
     size: 102400,
     createdAt: "2023-01-16T10:00:00Z",
     updatedAt: "2023-01-16T10:00:00Z",
     uploadedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
-    downloadUrl:
-      "https://storage.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/713e4567-e89b-12d3-a456-426614174001.pdf",
+    downloadUrl: "https://picsum.photos/seed/cookies-1/800/600",
   },
   {
     id: "723e4567-e89b-12d3-a456-426614174002",
@@ -134,22 +133,20 @@ export const mockRecipeFiles: RecipeFileInfo[] = [
     createdAt: "2023-01-18T14:00:00Z",
     updatedAt: "2023-01-18T14:00:00Z",
     uploadedBy: "a1b2c3d4-e89b-12d3-a456-426614174001",
-    downloadUrl:
-      "https://storage.example.com/recipes/123e4567-e89b-12d3-a456-426614174000/723e4567-e89b-12d3-a456-426614174002.jpg",
+    downloadUrl: "https://picsum.photos/seed/cookies-2/800/600",
   },
   {
     id: "733e4567-e89b-12d3-a456-426614174003",
     recipeId: "223e4567-e89b-12d3-a456-426614174001",
     blobName:
-      "recipes/223e4567-e89b-12d3-a456-426614174001/733e4567-e89b-12d3-a456-426614174003.pdf",
-    fileOriginalName: "dressing-recipe.pdf",
-    mimetype: "application/pdf",
-    size: 15360,
+      "recipes/223e4567-e89b-12d3-a456-426614174001/733e4567-e89b-12d3-a456-426614174003.jpg",
+    fileOriginalName: "salad-photo.jpg",
+    mimetype: "image/jpeg",
+    size: 153600,
     createdAt: "2023-03-11T09:00:00Z",
     updatedAt: "2023-03-11T09:00:00Z",
     uploadedBy: null,
-    downloadUrl:
-      "https://storage.example.com/recipes/223e4567-e89b-12d3-a456-426614174001/733e4567-e89b-12d3-a456-426614174003.pdf",
+    downloadUrl: "https://picsum.photos/seed/salad-1/800/600",
   },
 ];
 
@@ -216,4 +213,13 @@ export function resetMocks(): void {
   mockRecipeNoteFiles.push(
     ...JSON.parse(JSON.stringify(initialMockRecipeNoteFiles)),
   );
+}
+
+/** Empty all recipe mocks (e.g. before demo seed). */
+export function clearMocks(): void {
+  mockRecipes.length = 0;
+  mockRecipeVersions.length = 0;
+  mockRecipeNotes.length = 0;
+  mockRecipeFiles.length = 0;
+  mockRecipeNoteFiles.length = 0;
 }

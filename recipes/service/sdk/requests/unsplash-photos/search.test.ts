@@ -4,7 +4,7 @@ import { recipesServiceFakeHandlers } from "../../fakes.ts";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { useQuery } from "@tanstack/vue-query";
-import { mockUnsplashPhotos, resetMocks } from "./mocks.ts";
+import { resetMocks } from "./mocks.ts";
 
 describe("searchUnsplashPhotos", () => {
   setupMockServer(recipesServiceFakeHandlers);
@@ -40,8 +40,8 @@ describe("searchUnsplashPhotos", () => {
 
     expect(query.data.value).toBeDefined();
     expect(query.data.value!.unsplashPhotos).toHaveLength(2);
-    expect(query.data.value!.unsplashPhotos[0].id).toBe(mockUnsplashPhotos[0].id);
-    expect(query.data.value!.unsplashPhotos[1].id).toBe(mockUnsplashPhotos[1].id);
+    expect(query.data.value!.unsplashPhotos[0].id).toBe("mock-salad-0");
+    expect(query.data.value!.unsplashPhotos[1].id).toBe("mock-salad-1");
 
     app.unmount();
   });

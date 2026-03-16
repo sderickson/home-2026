@@ -31,7 +31,7 @@ describe("filesUploadRecipes", () => {
 
     expect(result).toBeDefined();
     expect(result.recipeId).toBe(recipeId);
-    expect(result.fileOriginalName).toBe("uploaded-file");
+    expect(result.fileOriginalName).toBe("uploaded-image.jpg");
     expect(mockRecipeFiles.filter((f) => f.recipeId === recipeId)).toHaveLength(
       initialCount + 1,
     );

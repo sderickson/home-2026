@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <v-alert type="info" variant="tonal" class="mb-6">
+    <v-alert
+      type="info"
+      variant="tonal"
+      class="mb-6"
+      v-if="!collections.length"
+    >
       <v-alert-title>{{ t(strings.welcome_heading) }}</v-alert-title>
       <p class="mb-2">{{ t(strings.welcome_intro) }}</p>
     </v-alert>
@@ -98,9 +103,7 @@ const collections = computed(() =>
 );
 const members = computed(() => collectionsQuery.data.value?.members ?? []);
 const menus = computed(() => collectionsQuery.data.value?.menus ?? []);
-const userEmail = computed(
-  () => profileQuery.data.value?.email ?? "",
-);
+const userEmail = computed(() => profileQuery.data.value?.email ?? "");
 
 function membersForCollection(collectionId: string) {
   return members.value.filter((m) => m.collectionId === collectionId);

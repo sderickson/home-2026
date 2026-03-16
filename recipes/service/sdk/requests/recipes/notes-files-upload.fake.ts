@@ -1,6 +1,6 @@
-import { generateShortId } from "@saflib/utils";
 import type { RecipeNoteFileInfo } from "@sderickson/recipes-spec";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockRecipeNoteFiles } from "./mocks.ts";
 
 const placeholderUserId = "a1b2c3d4-e89b-12d3-a456-426614174001";
@@ -11,7 +11,7 @@ export const notesFilesUploadRecipesHandler = recipesHandler({
   status: 200,
   handler: async ({ params, query: _query, body: _body }) => {
     const now = new Date().toISOString();
-    const id = generateShortId();
+    const id = nextDeterministicId("nf", mockRecipeNoteFiles.length);
     const recipeId = params.id;
     const recipeNoteId = params.noteId;
     const fileInfo: RecipeNoteFileInfo = {

@@ -21,6 +21,29 @@
         <v-icon size="small">mdi-account-group</v-icon>
         <span class="ml-1">{{ membersPillLabel }}</span>
       </v-chip>
+      <v-spacer />
+      <v-tooltip
+        v-if="isOwner"
+        :text="
+          canDeleteCollection
+            ? t(strings.delete_collection_tooltip_empty)
+            : t(strings.delete_collection_tooltip_disabled)
+        "
+        location="bottom"
+      >
+        <template #activator="{ props: tooltipProps }">
+          <span v-bind="tooltipProps" class="d-inline-block">
+            <v-btn
+              icon="mdi-delete-outline"
+              variant="outlined"
+              color="error"
+              :disabled="!canDeleteCollection"
+              :loading="deleteMutation.isPending.value"
+              @click="onDeleteCollection"
+            />
+          </span>
+        </template>
+      </v-tooltip>
     </div>
 
     <v-divider class="my-4" />
@@ -106,7 +129,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { RecipeList } from "@sderickson/recipes-sdk";
+import { RecipeList, useDeleteCollectionsMutation } from "@sderickson/recipes-sdk";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { collections_detail as strings } from "./Detail.strings.ts";
@@ -151,6 +174,12 @@ const currentMember = computed(() =>
 const canEdit = computed(() =>
   canShowCreateRecipeForRole(currentMember.value?.role),
 );
+const isOwner = computed(() => currentMember.value?.role === "owner");
+const canDeleteCollection = computed(
+  () => recipes.value.length === 0 && menus.value.length === 0,
+);
+
+const deleteMutation = useDeleteCollectionsMutation();
 
 const menus = computed(
   () =>
@@ -183,6 +212,16 @@ function onQuickImportSuccess(recipeId: string) {
       params: { collectionId, id: recipeId },
     }),
   );
+}
+
+async function onDeleteCollection() {
+  if (!canDeleteCollection.value) return;
+  try {
+    await deleteMutation.mutateAsync(collectionId);
+    router.push(appLinks.home.path);
+  } catch {
+    // Error handled by mutation / global snackbar if configured
+  }
 }
 </script>
 

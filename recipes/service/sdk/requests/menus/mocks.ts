@@ -47,3 +47,8 @@ export function resetMocks(): void {
   mockMenus.length = 0;
   mockMenus.push(...JSON.parse(JSON.stringify(initialMockMenus)));
 }
+
+/** Empty all menu mocks (e.g. before demo seed). */
+export function clearMocks(): void {
+  mockMenus.length = 0;
+}

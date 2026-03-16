@@ -1,5 +1,5 @@
-import { generateShortId } from "@saflib/utils";
 import { recipesHandler } from "../../typed-fake.ts";
+import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
 
 const placeholderUserId = "a1b2c3d4-e89b-12d3-a456-426614174001";
@@ -12,7 +12,7 @@ export const versionsCreateRecipesHandler = recipesHandler({
     const recipe = mockRecipes.find((r) => r.id === params.id);
     if (!recipe || !body) return undefined;
     const now = new Date().toISOString();
-    const versionId = generateShortId();
+    const versionId = nextDeterministicId("ver", mockRecipeVersions.length);
     for (const v of mockRecipeVersions) {
       if (v.recipeId === params.id) v.isLatest = false;
     }
