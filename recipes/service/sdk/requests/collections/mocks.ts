@@ -88,3 +88,9 @@ export function resetMocks(): void {
     ...JSON.parse(JSON.stringify(initialMockCollectionMembers)),
   );
 }
+
+/** Empty all collection mocks (e.g. before demo seed so only seed data appears). */
+export function clearMocks(): void {
+  mockCollections.length = 0;
+  mockCollectionMembers.length = 0;
+}

@@ -214,3 +214,12 @@ export function resetMocks(): void {
     ...JSON.parse(JSON.stringify(initialMockRecipeNoteFiles)),
   );
 }
+
+/** Empty all recipe mocks (e.g. before demo seed). */
+export function clearMocks(): void {
+  mockRecipes.length = 0;
+  mockRecipeVersions.length = 0;
+  mockRecipeNotes.length = 0;
+  mockRecipeFiles.length = 0;
+  mockRecipeNoteFiles.length = 0;
+}

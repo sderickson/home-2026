@@ -8,6 +8,9 @@ import { unsplashPhotosFakeHandlers } from "./requests/unsplash-photos/index.fak
 // END WORKFLOW AREA
 
 // BEGIN SORTED WORKFLOW AREA import-mocks FOR sdk/add-query sdk/add-mutation
+import { clearMocks as collectionsClearMocks } from "./requests/collections/mocks.ts";
+import { clearMocks as menusClearMocks } from "./requests/menus/mocks.ts";
+import { clearMocks as recipesClearMocks } from "./requests/recipes/mocks.ts";
 import { resetMocks as collectionsResetMocks } from "./requests/collections/mocks.ts";
 import { resetMocks as menusResetMocks } from "./requests/menus/mocks.ts";
 import { resetMocks as recipesResetMocks } from "./requests/recipes/mocks.ts";
@@ -38,4 +41,11 @@ export const resetMocks = () => {
   recipesResetMocks();
   unsplashPhotosResetMocks();
   // END WORKFLOW AREA
+};
+
+/** Empty collection, menu, and recipe mocks (e.g. before demo seed so only Seed Kitchen appears). */
+export const clearMocks = () => {
+  collectionsClearMocks();
+  menusClearMocks();
+  recipesClearMocks();
 };
