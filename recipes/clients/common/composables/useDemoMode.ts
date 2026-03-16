@@ -1,12 +1,14 @@
-import { computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
-import { isDemoMode as getIsDemoMode, setDemoMode } from "./demo-mode.ts";
-import { resetMocks } from "@sderickson/recipes-sdk/fakes";
+import { isDemoMode as getIsDemoMode, setDemoMode } from "../demo-mode.ts";
 
 export function useDemoMode() {
   const queryClient = useQueryClient();
+  const isDemoMode = ref(false);
 
-  const isDemoMode = computed(() => getIsDemoMode());
+  onMounted(() => {
+    isDemoMode.value = getIsDemoMode();
+  });
 
   function enterDemoMode() {
     setDemoMode(true);
@@ -18,7 +20,8 @@ export function useDemoMode() {
     window.location.reload();
   }
 
-  function resetDemoData() {
+  async function resetDemoData() {
+    const { resetMocks } = await import("@sderickson/recipes-sdk/fakes");
     resetMocks();
     queryClient.invalidateQueries();
   }

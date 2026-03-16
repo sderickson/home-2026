@@ -22,6 +22,8 @@
     "@saflib/vue": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-spec": "*",
+    "@sderickson/recipes-sdk": "*",
+    "@tanstack/vue-query": "^5.85.9",
     "@sentry/vue": "^10.21.0"
   }
 }

@@ -52,7 +52,7 @@
     <v-main>
       <v-container>
         <v-alert
-          v-if="demoMode"
+          v-if="demo.isDemoMode"
           type="warning"
           variant="tonal"
           class="mb-4"
@@ -60,10 +60,10 @@
         >
           <div class="d-flex align-center flex-wrap gap-2">
             <span>{{ t(recipes_layout.demo_banner_message) }}</span>
-            <v-btn size="small" variant="outlined" @click="onResetDemo?.()">
+            <v-btn size="small" variant="outlined" @click="demo.resetDemoData()">
               {{ t(recipes_layout.demo_reset) }}
             </v-btn>
-            <v-btn size="small" variant="outlined" @click="onExitDemo?.()">
+            <v-btn size="small" variant="outlined" @click="demo.exitDemoMode()">
               {{ t(recipes_layout.demo_exit) }}
             </v-btn>
           </div>
@@ -96,14 +96,14 @@ import {
   appLinks,
   rootLinks,
 } from "@sderickson/recipes-links";
+import { useDemoMode } from "../../composables/useDemoMode.ts";
 
 const props = defineProps<{
   loggedIn?: boolean;
   isAdmin?: boolean;
-  demoMode?: boolean;
-  onResetDemo?: () => void;
-  onExitDemo?: () => void;
 }>();
+
+const demo = useDemoMode();
 
 const { t } = useReverseT();
 

@@ -94,7 +94,7 @@ import {
   getCollectionsList,
 } from "./Home.logic.ts";
 import CreateCollectionDialog from "../../components/collections/CreateCollectionDialog.vue";
-import { useDemoMode } from "../../useDemoMode.ts";
+import { useDemoMode } from "@sderickson/recipes-clients-common";
 
 const { t } = useReverseT();
 const { isDemoMode, enterDemoMode } = useDemoMode();
