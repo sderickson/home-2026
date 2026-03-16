@@ -28,6 +28,9 @@
       <template #append>
         <v-btn
           v-if="demo.isDemoMode"
+          color="warning"
+          variant="flat"
+          prepend-icon="mdi-exclamation"
           class="text-uppercase font-weight-regular mr-2"
           @click="demoDialogOpen = true"
         >
@@ -40,13 +43,25 @@
       </template>
     </v-app-bar>
 
-    <v-dialog v-model="demoDialogOpen" max-width="400" persistent>
+    <v-dialog v-model="demoDialogOpen" max-width="400">
       <v-card>
-        <v-card-title>{{ t(recipes_layout.demo_dialog_title) }}</v-card-title>
+        <v-card-title class="d-flex align-center">
+          <span>{{ t(recipes_layout.demo_dialog_title) }}</span>
+          <v-spacer />
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            size="small"
+            @click="demoDialogOpen = false"
+          />
+        </v-card-title>
         <v-card-text>
           {{ t(recipes_layout.demo_banner_message) }}
         </v-card-text>
         <v-card-actions>
+          <v-btn variant="text" @click="demoDialogOpen = false">
+            {{ t(recipes_layout.demo_cancel) }}
+          </v-btn>
           <v-spacer />
           <v-btn
             variant="text"

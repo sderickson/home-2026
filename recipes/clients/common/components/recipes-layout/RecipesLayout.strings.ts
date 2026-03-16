@@ -6,4 +6,5 @@ export const recipes_layout = {
     "You're in demo mode. Changes are in-memory only and will be lost on refresh.",
   demo_reset: "Reset data",
   demo_exit: "Exit demo mode",
+  demo_cancel: "Cancel",
 } as const;
