@@ -3,6 +3,7 @@ export {
   request,
   isUnsplashRateLimitError,
   UnsplashMockUseError,
+  UnsplashApiKeyUnavailableError,
   UnsplashNetworkError,
   UnsplashRateLimitError,
   UnsplashUnauthorizedError,

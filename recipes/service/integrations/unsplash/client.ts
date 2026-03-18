@@ -1,18 +1,42 @@
 import type { ReturnsError } from "@saflib/monorepo";
+import { getSecretByName } from "@sderickson/recipes-infisical";
 import { UNSPLASH_API_BASE } from "./types.ts";
 import { typedEnv } from "./env.ts";
 
-const apiKey = typedEnv.UNSPLASH_API_KEY;
 const isTest = typedEnv.NODE_ENV === "test";
+let apiKey: string | undefined;
+let lastFetchAttemptAt = 0;
+const FETCH_COOLDOWN_MS = 10_000;
 
-if (!apiKey && !isTest) {
-  throw new Error(
-    "UNSPLASH_API_KEY is required. Set it in your environment or .env file.",
+const initial = await getSecretByName("UNSPLASH_API_KEY");
+if (initial.result !== undefined) {
+  apiKey = initial.result;
+} else {
+  console.warn(
+    "[Unsplash] UNSPLASH_API_KEY not found in Infisical:",
+    initial.error?.message,
   );
 }
 
 /** Use mocks when key is "mock" or when running tests. Client must not be used when mocking. */
-export const isMocked = !apiKey || apiKey === "mock" || isTest;
+export const isMocked = (apiKey !== undefined && apiKey === "mock") || isTest;
+
+async function ensureApiKey(): Promise<boolean> {
+  if (apiKey) return true;
+  const now = Date.now();
+  if (now - lastFetchAttemptAt < FETCH_COOLDOWN_MS) return false;
+  lastFetchAttemptAt = now;
+  const out = await getSecretByName("UNSPLASH_API_KEY");
+  if (out.result !== undefined) {
+    apiKey = out.result;
+    return true;
+  }
+  console.warn(
+    "[Unsplash] UNSPLASH_API_KEY not found in Infisical (retry):",
+    out.error?.message,
+  );
+  return false;
+}
 
 // ---------------------------------------------------------------------------
 // Error classes — one per kind of error for exhaustive instanceof checks
@@ -20,15 +44,30 @@ export const isMocked = !apiKey || apiKey === "mock" || isTest;
 
 /** Client was used while mocking; call layer should use mocks instead. */
 export class UnsplashMockUseError extends Error {
-  constructor(message = "Unsplash client must not be used when mocking; use call mocks.") {
+  constructor(
+    message = "Unsplash client must not be used when mocking; use call mocks.",
+  ) {
     super(message);
     this.name = "UnsplashMockUseError";
   }
 }
 
+/** API key could not be loaded from Infisical (e.g. not found or after cooldown). */
+export class UnsplashApiKeyUnavailableError extends Error {
+  readonly statusCode = 503;
+
+  constructor(message = "Unsplash API key is not available") {
+    super(message);
+    this.name = "UnsplashApiKeyUnavailableError";
+  }
+}
+
 /** Network or fetch failed (e.g. DNS, connection refused). */
 export class UnsplashNetworkError extends Error {
-  constructor(message = "Unsplash request failed", options?: { cause?: unknown }) {
+  constructor(
+    message = "Unsplash request failed",
+    options?: { cause?: unknown },
+  ) {
     super(message, { cause: options?.cause });
     this.name = "UnsplashNetworkError";
   }
@@ -98,6 +137,7 @@ export class UnsplashParseError extends Error {
 /** Union of all Unsplash client errors for ReturnsError and exhaustive switches. */
 export type UnsplashClientError =
   | UnsplashMockUseError
+  | UnsplashApiKeyUnavailableError
   | UnsplashNetworkError
   | UnsplashRateLimitError
   | UnsplashUnauthorizedError
@@ -116,6 +156,7 @@ export function isUnsplashRateLimitError(
 /**
  * Raw request to the Unsplash API. Adds Authorization and Accept-Version.
  * When isMocked, returns error — call layer should use mocks instead.
+ * If API key is not yet available, tries to fetch from Infisical (with 10s cooldown); returns UnsplashApiKeyUnavailableError if still unavailable.
  */
 export async function request<T>(
   path: string,
@@ -125,9 +166,18 @@ export async function request<T>(
     return { error: new UnsplashMockUseError() };
   }
 
+  const hasKey = await ensureApiKey();
+  if (!hasKey) {
+    return {
+      error: new UnsplashApiKeyUnavailableError(
+        "Unsplash API key is not available. Ensure UNSPLASH_API_KEY is set in Infisical or in env.",
+      ),
+    };
+  }
+
   const url = path.startsWith("http") ? path : `${UNSPLASH_API_BASE}${path}`;
   const headers = new Headers(init?.headers);
-  headers.set("Authorization", `Client-ID ${apiKey!}`);
+  headers.set("Authorization", `Client-ID ${apiKey}`);
   headers.set("Accept-Version", "v1");
 
   let response: Response;
@@ -178,10 +228,9 @@ export async function request<T>(
     return { result: body };
   } catch (e) {
     return {
-      error: new UnsplashParseError(
-        "Failed to parse Unsplash API response",
-        { cause: e },
-      ),
+      error: new UnsplashParseError("Failed to parse Unsplash API response", {
+        cause: e,
+      }),
     };
   }
 }

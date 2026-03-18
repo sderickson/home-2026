@@ -5,9 +5,17 @@ const MOCK_SECRET_VALUE = "mock-secret-value";
 
 /**
  * Returns a mock result for getSecretByName (used when isMocked or MOCK_INTEGRATIONS is set).
+ * If process.env has a value for the given secret name, returns that; otherwise returns the mock value.
  */
 export function mockGetSecretByName(
-  _name: string,
+  name: string,
 ): ReturnsError<string, InfisicalClientError> {
-  return { result: MOCK_SECRET_VALUE };
+  const fromEnv =
+    typeof process !== "undefined" &&
+    process.env &&
+    typeof process.env[name] === "string" &&
+    process.env[name]!.trim() !== ""
+      ? process.env[name]!.trim()
+      : null;
+  return { result: fromEnv ?? MOCK_SECRET_VALUE };
 }
