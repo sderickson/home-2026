@@ -91,7 +91,7 @@ export async function getSecretByName(
   }
 
   try {
-    const secret = await infisical.secrets.getSecret({
+    const secret = await infisical.secrets().getSecret({
       projectId,
       environment,
       secretName: name,

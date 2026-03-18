@@ -16,8 +16,9 @@ if (!apiKey && !isTest) {
 export const isMocked = apiKey === "mock" || isTest;
 
 type InfisicalApi = InstanceType<typeof InfisicalSDK>;
+type SecretsClient = ReturnType<InfisicalApi["secrets"]>;
 export type ScopedInfisicalClient = {
-  secrets: Pick<ReturnType<InfisicalApi["secrets"]>, "getSecret" | "listSecrets">;
+  secrets: () => Pick<SecretsClient, "getSecret" | "listSecrets">;
 };
 
 let infisicalClient: ScopedInfisicalClient;
@@ -27,7 +28,7 @@ if (isMocked) {
 } else {
   const sdk = new InfisicalSDK();
   sdk.auth().accessToken(apiKey as string);
-  infisicalClient = sdk as unknown as ScopedInfisicalClient;
+  infisicalClient = sdk;
 }
 
 export const infisical = infisicalClient;

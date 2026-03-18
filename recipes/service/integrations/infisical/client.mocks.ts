@@ -5,7 +5,7 @@ import type { ScopedInfisicalClient } from "./client.ts";
 const MOCK_SECRET_VALUE = "mock-secret-value";
 
 export const mockInfisicalClient: ScopedInfisicalClient = {
-  secrets: {
+  secrets: () => ({
     listSecrets: async () => ({ secrets: [] }),
     getSecret: async (options) => ({
       id: "mock-id",
@@ -21,5 +21,5 @@ export const mockInfisicalClient: ScopedInfisicalClient = {
       version: 1,
       tags: [],
     }),
-  },
+  }),
 };

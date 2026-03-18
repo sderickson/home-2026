@@ -7,7 +7,7 @@ import { typedEnv } from "../env.ts";
  */
 export async function ping() {
   if (isMocked) {
-    return infisical.secrets.listSecrets({
+    return infisical.secrets().listSecrets({
       projectId: "mock-project",
       environment: "dev",
     });
@@ -19,5 +19,5 @@ export async function ping() {
       "INFISICAL_PROJECT_ID and INFISICAL_ENVIRONMENT are required for ping. Set them in your environment or .env file.",
     );
   }
-  return infisical.secrets.listSecrets({ projectId, environment });
+  return infisical.secrets().listSecrets({ projectId, environment });
 }
