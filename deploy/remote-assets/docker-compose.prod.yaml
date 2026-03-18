@@ -44,6 +44,9 @@ services:
     build:
       context: ../..
       dockerfile: hub/service/monolith/Dockerfile
+      args:
+        GIT_HASH_ROOT: ${GIT_HASH_ROOT:-unknown}
+        GIT_HASH_SAFLIB: ${GIT_HASH_SAFLIB:-unknown}
 
     env_file:
       - ./env.monolith.config

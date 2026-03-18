@@ -10,6 +10,11 @@ import { startNotebookService } from "@sderickson/notebook-service";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
+
+const gitHashRoot = process.env.GIT_HASH_ROOT ?? "unknown";
+const gitHashSaflib = process.env.GIT_HASH_SAFLIB ?? "unknown";
+console.log("[hub] git hashes: root=%s saflib=%s", gitHashRoot, gitHashSaflib);
+
 addLokiTransport();
 initSentry();
 collectSystemMetrics();

@@ -1,16 +1,25 @@
 # BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
 FROM sderickson-recipes-clients:latest AS recipes-builder
-
+ARG GIT_HASH_ROOT
+ARG GIT_HASH_SAFLIB
+ENV VITE_GIT_HASH_ROOT=$GIT_HASH_ROOT
+ENV VITE_GIT_HASH_SAFLIB=$GIT_HASH_SAFLIB
 COPY ./deploy/env.recipes.prod-local /app/env.recipes.prod-local
 RUN export $(grep -v "^#" /app/env.recipes.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
 
 FROM sderickson-notebook-clients:latest AS notebook-builder
-
+ARG GIT_HASH_ROOT
+ARG GIT_HASH_SAFLIB
+ENV VITE_GIT_HASH_ROOT=$GIT_HASH_ROOT
+ENV VITE_GIT_HASH_SAFLIB=$GIT_HASH_SAFLIB
 COPY ./deploy/env.notebook.prod-local /app/env.notebook.prod-local
 RUN export $(grep -v "^#" /app/env.notebook.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
 
 FROM sderickson-hub-clients:latest AS hub-builder
-
+ARG GIT_HASH_ROOT
+ARG GIT_HASH_SAFLIB
+ENV VITE_GIT_HASH_ROOT=$GIT_HASH_ROOT
+ENV VITE_GIT_HASH_SAFLIB=$GIT_HASH_SAFLIB
 COPY ./deploy/env.hub.prod-local /app/env.hub.prod-local
 RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
 
