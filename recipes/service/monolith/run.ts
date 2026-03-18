@@ -8,6 +8,11 @@ import { startHubIdentityService } from "@sderickson/hub-identity";
 
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
+
+const gitHashRoot = process.env.GIT_HASH_ROOT ?? "unknown";
+const gitHashSaflib = process.env.GIT_HASH_SAFLIB ?? "unknown";
+console.log("[recipes] git hashes: root=%s saflib=%s", gitHashRoot, gitHashSaflib);
+
 addLokiTransport();
 initSentry();
 collectSystemMetrics();

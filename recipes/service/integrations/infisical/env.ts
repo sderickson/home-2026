@@ -25,6 +25,14 @@ export interface RecipesInfisicalEnvSchema {
    */
   DOMAIN_REDIRECTS?: string;
   /**
+   * Git commit hash of the repo root (e.g. home-2026). Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_ROOT?: string;
+  /**
+   * Git commit hash of the saflib submodule. Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_SAFLIB?: string;
+  /**
    * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
    */
   INFISICAL_ENVIRONMENT?: string;
@@ -65,4 +73,6 @@ export interface RecipesInfisicalEnvSchema {
 /**
  * `process.env` casted to the `RecipesInfisicalEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesInfisicalEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesInfisicalEnvSchema;

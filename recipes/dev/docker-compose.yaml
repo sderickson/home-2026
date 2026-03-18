@@ -24,6 +24,8 @@ services:
       - PROTOCOL=${PROTOCOL}
       - SERVICE_SUBDOMAINS=identity,api.recipes
       - TZ=${TZ}
+      - VITE_GIT_HASH_ROOT=${GIT_HASH_ROOT:-unknown}
+      - VITE_GIT_HASH_SAFLIB=${GIT_HASH_SAFLIB:-unknown}
     volumes:
       - ../../recipes/clients/:/app/recipes/clients/
       - ../../saflib/:/app/saflib/
@@ -46,6 +48,9 @@ services:
     env_file:
       - ./.env
       - ./env.dev
+    environment:
+      - GIT_HASH_ROOT=${GIT_HASH_ROOT:-unknown}
+      - GIT_HASH_SAFLIB=${GIT_HASH_SAFLIB:-unknown}
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite

@@ -36,6 +36,16 @@
     </v-card>
 
     <v-card class="mt-6" max-width="600">
+      <v-card-title>{{ t(strings.git_hashes_title) }}</v-card-title>
+      <v-card-text>
+        <p class="text-body-2">
+          Root: <code>{{ gitHashRoot }}</code><br />
+          Saflib: <code>{{ gitHashSaflib }}</code>
+        </p>
+      </v-card-text>
+    </v-card>
+
+    <v-card class="mt-6" max-width="600">
       <v-card-title>{{ t(strings.cleanup_section_title) }}</v-card-title>
       <v-card-text>
         <p>{{ t(strings.cleanup_section_description) }}</p>
@@ -100,4 +110,13 @@ const {
   getSuccessMessage: () => t(strings.cleanup_success),
   getNotFoundMessage: () => t(strings.cleanup_not_found),
 });
+
+const gitHashRoot =
+  typeof import.meta.env.VITE_GIT_HASH_ROOT === "string"
+    ? import.meta.env.VITE_GIT_HASH_ROOT
+    : "unknown";
+const gitHashSaflib =
+  typeof import.meta.env.VITE_GIT_HASH_SAFLIB === "string"
+    ? import.meta.env.VITE_GIT_HASH_SAFLIB
+    : "unknown";
 </script>

@@ -9,6 +9,22 @@ export interface RecipesServiceCommonEnvSchema {
    */
   ALLOW_DB_CREATION?: "true" | "false";
   /**
+   * The Azure Client ID.
+   */
+  AZURE_CLIENT_ID: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COLD_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COOL_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_HOT_BLOB_STORAGE_URL?: string;
+  /**
    * Comma-separated list of client subdomains, e.g. 'www,app,auth,'. Include an empty string (such as in the example) to indicate there's a client for the root domain.
    */
   CLIENT_SUBDOMAINS: string;
@@ -24,6 +40,14 @@ export interface RecipesServiceCommonEnvSchema {
    * Comma-separated list of domains to redirect to the root domain, e.g. 'old-subdomain1.saf.com,old-subdomain2.saf.com'.
    */
   DOMAIN_REDIRECTS?: string;
+  /**
+   * Git commit hash of the repo root (e.g. home-2026). Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_ROOT?: string;
+  /**
+   * Git commit hash of the saflib submodule. Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_SAFLIB?: string;
   /**
    * The hostname or URL of the Loki instance to send logs to (e.g., http://loki:3100)
    */
@@ -62,4 +86,6 @@ export interface RecipesServiceCommonEnvSchema {
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesServiceCommonEnvSchema;

@@ -24,6 +24,14 @@ export interface HubServiceEnvSchema {
    * Comma-separated list of domains to redirect to the root domain, e.g. 'old-subdomain1.saf.com,old-subdomain2.saf.com'.
    */
   DOMAIN_REDIRECTS?: string;
+  /**
+   * Git commit hash of the repo root (e.g. home-2026). Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_ROOT?: string;
+  /**
+   * Git commit hash of the saflib submodule. Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
+   */
+  GIT_HASH_SAFLIB?: string;
   HUB_SERVICE_HTTP_HOST: string;
   /**
    * The hostname or URL of the Loki instance to send logs to (e.g., http://loki:3100)
@@ -62,4 +70,6 @@ export interface HubServiceEnvSchema {
 /**
  * `process.env` casted to the `HubServiceEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as HubServiceEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as HubServiceEnvSchema;
