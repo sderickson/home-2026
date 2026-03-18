@@ -84,6 +84,7 @@
 import { admin_page as strings } from "./Admin.strings.ts";
 import { useAdminLoader } from "./Admin.loader.ts";
 import { useReverseT } from "@sderickson/recipes-admin-spa/i18n";
+import { getGitHashes } from "@saflib/vue";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
 import { useCleanupSeedData } from "./useCleanupSeedData.ts";
 
@@ -111,12 +112,5 @@ const {
   getNotFoundMessage: () => t(strings.cleanup_not_found),
 });
 
-const gitHashRoot =
-  typeof import.meta.env.VITE_GIT_HASH_ROOT === "string"
-    ? import.meta.env.VITE_GIT_HASH_ROOT
-    : "unknown";
-const gitHashSaflib =
-  typeof import.meta.env.VITE_GIT_HASH_SAFLIB === "string"
-    ? import.meta.env.VITE_GIT_HASH_SAFLIB
-    : "unknown";
+const { root: gitHashRoot, saflib: gitHashSaflib } = getGitHashes();
 </script>
