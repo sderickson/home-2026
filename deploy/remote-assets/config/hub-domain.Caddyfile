@@ -21,6 +21,12 @@
 	import admin-proxy {$IDENTITY_SERVICE_HTTP_HOST} {args[0]}
 }
 
+# Blog client subdomains
+
+{$PROTOCOL}://blog.{$DOMAIN} {
+	import static-site /blog-client
+}
+
 # Hub client subdomains
 
 {$PROTOCOL}://{$DOMAIN} {

@@ -1,3 +1,6 @@
+FROM sderickson-blog-client:latest AS blog_builder
+RUN npm run build
+
 # BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
 FROM sderickson-recipes-clients:latest AS recipes-builder
 COPY ./deploy/env.recipes.prod-local /app/env.recipes.prod-local
@@ -16,6 +19,7 @@ RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} C
 FROM caddy:2.9.1
 
 # BEGIN WORKFLOW AREA copy-product-assets FOR product/init
+COPY --from=blog_builder /app/blog/.vitepress/dist /srv/blog-client
 COPY --from=recipes-builder /app/recipes/clients/build/dist /srv/recipes-clients
 COPY --from=notebook-builder /app/notebook/clients/build/dist /srv/notebook-clients
 COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients

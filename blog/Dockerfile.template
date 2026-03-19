@@ -7,4 +7,4 @@ RUN npm install --omit=dev
 #{ copy_src }#
 
 # # Vue app setup
-WORKDIR /app/clients/blog
+WORKDIR /app/blog
