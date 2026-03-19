@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <v-app-bar height="90" class="px-4">
+    <v-app-bar height="90" class="px-4" v-if="mounted">
       <!-- Logo -->
       <v-app-bar-title>
-        <a :href="linkToHrefWithHost(rootLinks.home)" class="logo-link">
+        <a :href="toHref(rootLinks.home)" class="logo-link">
           {{ recipes_layout.nav_title }}
         </a>
       </v-app-bar-title>
@@ -55,14 +55,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { authLinks } from "@saflib/auth-links";
-import {
-  type Link,
-  linkToHrefWithHost,
-  type LinkOptions,
-} from "@saflib/links";
+import { type Link, linkToHrefWithHost, type LinkOptions } from "@saflib/links";
 import {
   accountLinks,
   adminLinks,
@@ -77,10 +73,17 @@ const props = defineProps<{
 
 const drawer = ref(false);
 
-type LinkWithName = Link & { name: string; options?: LinkOptions };
-const toHref = (link: Link, options?: LinkOptions) =>
-  linkToHrefWithHost(link, options);
+// Forces a re-render after SSG hydration so links recompute with the real domain.
+const mounted = ref(false);
+onMounted(() => {
+  mounted.value = true;
+});
 
+type LinkWithName = Link & { name: string; options?: LinkOptions };
+const toHref = (link: Link, options?: LinkOptions) => {
+  void mounted.value;
+  return linkToHrefWithHost(link, options);
+};
 const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
