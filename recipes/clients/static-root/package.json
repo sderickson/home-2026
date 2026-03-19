@@ -1,0 +1,19 @@
+{
+  "name": "@sderickson/recipes-static-root",
+  "description": "Static root site for recipes using VitePress + Vuetify",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@sderickson/recipes-clients-common": "*",
+    "sass": "^1.93.2",
+    "vite-plugin-vuetify": "^2.1.2",
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.13",
+    "vuetify": "^3.10.5"
+  }
+}
