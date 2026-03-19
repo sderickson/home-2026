@@ -7,6 +7,11 @@ WORKDIR /app
 RUN npm install --omit=dev
 #{ copy_src }#
 
+ARG GIT_HASH_ROOT=unknown
+ARG GIT_HASH_SAFLIB=unknown
+ENV GIT_HASH_ROOT=$GIT_HASH_ROOT
+ENV GIT_HASH_SAFLIB=$GIT_HASH_SAFLIB
+
 WORKDIR /app/hub/service/monolith
 CMD ["npm", "start"]
 
