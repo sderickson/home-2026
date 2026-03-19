@@ -7,6 +7,10 @@ import "./style.css";
 import StaticSiteLayout from "./components/StaticSiteLayout.vue";
 import StaticRootHome from "./components/StaticRootHome.vue";
 
+import { setClientName } from "@saflib/links";
+
+setClientName("recipes");
+
 const vuetify = createVuetify(vuetifyConfig);
 
 export default {
