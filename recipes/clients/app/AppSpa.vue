@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
-import { RecipesLayout, isDemoMode } from "@sderickson/recipes-clients-common";
+import {
+  DynamicRecipesLayout,
+  isDemoMode,
+} from "@sderickson/recipes-clients-common";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
 import { useProfile } from "@saflib/auth";
 
@@ -22,7 +25,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <RecipesLayout :logged-in="loggedIn" :is-admin="isAdmin">
+  <DynamicRecipesLayout :logged-in="loggedIn" :is-admin="isAdmin">
     <router-view />
-  </RecipesLayout>
+  </DynamicRecipesLayout>
 </template>
