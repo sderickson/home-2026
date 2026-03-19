@@ -8,6 +8,9 @@
     "down": "saf-docker generate && docker compose --env-file env.dev --env-file .env -f docker-compose.yaml down"
   },
   "dependencies": {
-    "@saflib/dev-tools": "*"
+    "@saflib/dev-tools": "*",
+    "@sderickson/hub-root-clients": "*",
+    "@sderickson/recipes-root-clients": "*",
+    "@sderickson/recipes-static-root": "*"
   }
 }

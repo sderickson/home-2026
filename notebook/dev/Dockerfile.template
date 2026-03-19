@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:labs
+
+# Hub static clients for notebook dev (hub.* subdomains on Caddy)
+FROM node:22-slim AS hub-builder
+
+WORKDIR /app
+
+#{ copy_packages }#
+RUN npm install --omit=dev
+
+#{ copy_src }#
+
+WORKDIR /app/hub/clients/build
+RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=,app,auth,account,admin SERVICE_SUBDOMAINS=identity DEPLOYMENT_NAME=development TZ=UTC npm run build
+
+FROM caddy:2.9.1
+COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients
