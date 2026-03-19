@@ -40,14 +40,6 @@ export interface HubMonolithEnvSchema {
    * Comma-separated list of domains to redirect to the root domain, e.g. 'old-subdomain1.saf.com,old-subdomain2.saf.com'.
    */
   DOMAIN_REDIRECTS?: string;
-  /**
-   * Git commit hash of the repo root (e.g. home-2026). Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
-   */
-  GIT_HASH_ROOT?: string;
-  /**
-   * Git commit hash of the saflib submodule. Set at build/start for display; use scripts/git-hashes.sh in recipes/dev.
-   */
-  GIT_HASH_SAFLIB?: string;
   HUB_SERVICE_HTTP_HOST: string;
   /**
    * Comma-separated list of emails who will get the 'admin' scope. Emails must be validated to receive this scope.

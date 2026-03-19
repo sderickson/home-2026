@@ -1,5 +1,5 @@
 import { startRecipesService } from "./index.ts";
-import { addLokiTransport, collectSystemMetrics } from "@saflib/node";
+import { addLokiTransport, collectSystemMetrics, getGitHashes } from "@saflib/node";
 import { setServiceName } from "@saflib/node";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
@@ -9,9 +9,8 @@ import { startHubIdentityService } from "@sderickson/hub-identity";
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
 
-const gitHashRoot = process.env.GIT_HASH_ROOT ?? "unknown";
-const gitHashSaflib = process.env.GIT_HASH_SAFLIB ?? "unknown";
-console.log("[recipes] git hashes: root=%s saflib=%s", gitHashRoot, gitHashSaflib);
+const { root, saflib } = getGitHashes();
+console.log("[recipes] git hashes: root=%s saflib=%s", root, saflib);
 
 addLokiTransport();
 initSentry();

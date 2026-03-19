@@ -17,8 +17,6 @@ services:
     build:
       context: ../..
       dockerfile: ./recipes/clients/build/Dockerfile
-    env_file:
-      - ./.env.git-hashes
     environment:
       - CLIENT_SUBDOMAINS=recipes,app.recipes,admin.recipes,account.recipes
       - DOMAIN=docker.localhost
@@ -48,7 +46,6 @@ services:
     env_file:
       - ./.env
       - ./env.dev
-      - ./.env.git-hashes
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite

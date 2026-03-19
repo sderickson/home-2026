@@ -4,6 +4,7 @@ coverage
 Dockerfile
 .env
 .env.git-hashes
+**/git-hashes.json
 
 # Editor directories and files
 .vscode/*
