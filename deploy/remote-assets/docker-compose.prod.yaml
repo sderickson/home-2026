@@ -18,11 +18,15 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
 
   # Single hub monolith runs identity + hub + recipes + notebook services (Phase 6)
   monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     deploy:
       resources:
         limits:
@@ -83,6 +87,20 @@ services:
       - "--path.sysfs=/host/sys"
       - "--path.rootfs=/rootfs"
       - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    command:
+      # Poll every 5 seconds so local "push new :latest" tests are fast.
+      - "--interval=5"
+      # Only update containers explicitly opted-in via the enable label.
+      - "--label-enable"
+      - "--cleanup"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # GHCR auth: assume docker login has written credentials to ~/.docker/config.json on the host.
+      - ${HOME}/.docker/config.json:/config.json:ro
+    restart: unless-stopped
 
 volumes:
   caddy_data:
