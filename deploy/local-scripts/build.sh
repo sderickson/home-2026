@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
 
-source ./deploy/env.remote
+# CI sets CONTAINER_REGISTRY; local dev uses deploy/env.remote
+if [ -z "$CONTAINER_REGISTRY" ]; then
+  source ./deploy/env.remote
+fi
 echo "Container registry: $CONTAINER_REGISTRY"
 
 # Generate git-hashes.json files that get COPY'd into images
@@ -24,6 +27,14 @@ docker build -f ./hub/service/monolith/Dockerfile . --platform linux/amd64 \
 	-t "$CONTAINER_REGISTRY/sderickson-hub-monolith:latest"
 
 # END WORKFLOW AREA
+
+# SPA client images (intermediate; bundled into caddy by deploy/Dockerfile.prod)
+docker build -f ./recipes/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-recipes-clients:latest
+docker build -f ./notebook/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-notebook-clients:latest
+docker build -f ./hub/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-hub-clients:latest
 
 # Build reverse proxy image
 docker build -f ./deploy/Dockerfile.prod . --platform linux/amd64 \

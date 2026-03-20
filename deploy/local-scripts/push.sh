@@ -1,7 +1,9 @@
 #!/bin/bash
 # Push images to the container registry
 
-source ./deploy/env.remote
+if [ -z "$CONTAINER_REGISTRY" ]; then
+  source ./deploy/env.remote
+fi
 echo "Container registry: $CONTAINER_REGISTRY"
 
 docker push $CONTAINER_REGISTRY/sderickson-caddy:latest

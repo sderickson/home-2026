@@ -1,0 +1,54 @@
+# Build production images and push to GHCR. Intended to move from pull_request
+# (for validation) to push on merge to main once Watchtower + remote deploy are wired.
+
+name: Push images to GHCR
+
+on:
+  pull_request:
+    branches:
+      - main
+# TODO: switch to this once confirmed everything is working
+# on:
+#   push:
+#     branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  push-images:
+    # Fork PRs cannot push to the base repo's GHCR with GITHUB_TOKEN
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      CONTAINER_REGISTRY: ghcr.io/${{ github.repository_owner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install submodules
+        run: git submodule update --init
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install rollup for linux
+        run: npm install @rollup/rollup-linux-x64-gnu
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build images
+        run: npm run build --workspace=@sderickson/deploy
+
+      - name: Push images
+        run: npm run push --workspace=@sderickson/deploy
