@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@saflib/links": "*",
+    "@saflib/vue": "*",
     "@sderickson/recipes-clients-common": "*",
+    "@sderickson/recipes-links": "*",
     "sass": "^1.93.2",
     "vite-plugin-vuetify": "^2.1.2",
     "vitepress": "^1.6.3",

@@ -5,7 +5,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import "./style.css";
 import StaticSiteLayout from "./components/StaticSiteLayout.vue";
-import StaticRootHome from "./components/StaticRootHome.vue";
+import RootHomeTryActions from "./components/RootHomeTryActions.vue";
 
 import { setClientName } from "@saflib/links";
 
@@ -17,6 +17,6 @@ export default {
   Layout: StaticSiteLayout,
   enhanceApp({ app }) {
     app.use(vuetify);
-    app.component("StaticRootHome", StaticRootHome);
+    app.component("RootHomeTryActions", RootHomeTryActions);
   },
 } satisfies Theme;
