@@ -1,6 +1,9 @@
 FROM sderickson-blog-client:latest AS blog_builder
 RUN npm run build
 
+FROM sderickson-recipes-static-root:latest AS recipes_static_root_builder
+RUN npm run build
+
 # BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
 FROM sderickson-recipes-clients:latest AS recipes-builder
 COPY ./deploy/env.recipes.prod-local /app/env.recipes.prod-local
@@ -20,6 +23,7 @@ FROM caddy:2.9.1
 
 # BEGIN WORKFLOW AREA copy-product-assets FOR product/init
 COPY --from=blog_builder /app/blog/.vitepress/dist /srv/blog-client
+COPY --from=recipes_static_root_builder /app/recipes/clients/static-root/.vitepress/dist /srv/recipes-static-root
 COPY --from=recipes-builder /app/recipes/clients/build/dist /srv/recipes-clients
 COPY --from=notebook-builder /app/notebook/clients/build/dist /srv/notebook-clients
 COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients

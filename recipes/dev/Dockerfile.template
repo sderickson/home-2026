@@ -1,7 +1,12 @@
 # syntax=docker/dockerfile:labs
 
-# Monorepo install once — COPY list is the workspace closure of @sderickson/recipes-dev
-# (hub build + recipes SPA build + static-root). Declare those as deps in recipes/dev/package.json.
+# Requires a local tag first: recipes/dev npm scripts run `docker build` on
+# recipes/clients/static-root before compose (compose builds services in parallel).
+# Logged-out recipes marketing site — same base image as deploy (recipes/clients/static-root).
+FROM sderickson-recipes-static-root:latest AS static-root-builder
+RUN npm run build
+
+# Monorepo install once — workspace closure of @sderickson/recipes-dev (hub static builds for this stack).
 FROM node:22-slim AS deps
 
 WORKDIR /app
@@ -16,12 +21,6 @@ FROM deps AS hub-builder
 
 WORKDIR /app/hub/clients/build
 RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=,app,auth,account,admin SERVICE_SUBDOMAINS=identity DEPLOYMENT_NAME=development TZ=UTC npm run build
-
-# Recipes logged-out static site (VitePress) for docker.localhost
-FROM deps AS static-root-builder
-
-WORKDIR /app/recipes/clients/static-root
-RUN npm run build
 
 FROM caddy:2.9.1
 COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients

@@ -16,6 +16,9 @@ npx saf-git-hashes
 docker build -f ./blog/Dockerfile . --platform linux/amd64 \
 	-t sderickson-blog-client:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-blog-client:latest"
+docker build -f ./recipes/clients/static-root/Dockerfile . --platform linux/amd64 \
+	-t sderickson-recipes-static-root:latest \
+	-t "$CONTAINER_REGISTRY/sderickson-recipes-static-root:latest"
 docker build -f ./recipes/service/monolith/Dockerfile . --platform linux/amd64 \
 	-t sderickson-recipes-monolith:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-recipes-monolith:latest"

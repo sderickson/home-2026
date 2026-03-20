@@ -1,0 +1,4 @@
+// Keep in sync with recipes/clients/build/overrides.scss
+@use "vuetify/settings" with (
+  $body-font-family: "Roboto"
+);

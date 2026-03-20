@@ -52,7 +52,7 @@
 # Recipes client subdomains
 
 {$PROTOCOL}://recipes.{$DOMAIN} {
-	import recipes-spa /recipes/index.html
+	import static-site /recipes-static-root
 }
 
 {$PROTOCOL}://app.recipes.{$DOMAIN} {

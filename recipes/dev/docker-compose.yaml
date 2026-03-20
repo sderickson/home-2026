@@ -1,5 +1,7 @@
 services:
   caddy:
+    depends_on:
+      - recipes-clients
     build:
       context: ../..
       dockerfile: ./recipes/dev/Dockerfile
@@ -9,8 +11,6 @@ services:
       - ./caddy-config:/etc/caddy/
       - caddy_data:/data
       - caddy_config:/config
-    depends_on:
-      - recipes-clients
 
   recipes-clients:
     image: sderickson-recipes-clients:latest
