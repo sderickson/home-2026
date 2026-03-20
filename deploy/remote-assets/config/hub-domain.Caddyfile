@@ -88,6 +88,7 @@
 # API subdomains (forward_auth to identity, then proxy to product service)
 
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
+	import cors recipes.docker.localhost
 	import api-proxy-identity {$RECIPES_SERVICE_HTTP_HOST}
 }
 
