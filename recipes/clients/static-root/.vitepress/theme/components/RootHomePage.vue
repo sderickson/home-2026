@@ -143,18 +143,18 @@
       </v-col>
     </v-row>
 
-    <!-- Footer CTAs -->
+    <!-- Footer CTAs (dark band: use light text + high-contrast buttons) -->
     <v-sheet
       rounded="xl"
       class="pa-8 text-center"
-      color="surface-variant"
+      color="grey-darken-3"
       border="opacity-25 sm"
     >
-      <h2 class="text-h5 font-weight-medium mb-2">
+      <h2 class="text-h5 font-weight-medium mb-2 text-white">
         Try it or peek under the hood
       </h2>
       <p
-        class="text-body-2 text-medium-emphasis mb-6 mx-auto"
+        class="text-body-2 mb-6 mx-auto text-grey-lighten-4"
         style="max-width: 28rem"
       >
         Load the in-browser demo, create an account if you’re in, or read the
@@ -167,7 +167,7 @@
         <v-btn
           :href="demoHref"
           variant="outlined"
-          color="primary"
+          color="white"
           size="large"
           rounded="lg"
         >
@@ -176,7 +176,7 @@
         <v-btn
           :href="sourceHref"
           variant="text"
-          color="primary"
+          color="white"
           size="large"
           target="_blank"
           rel="noopener noreferrer"
