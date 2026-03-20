@@ -13,4 +13,5 @@ export const admin_page = {
   cleanup_success: "Seed data removed.",
   cleanup_not_found: "No Seed Kitchen collection found.",
   progress_label: "Progress",
+  git_hashes_title: "Build git hashes",
 };

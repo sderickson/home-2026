@@ -9,6 +9,22 @@ export interface RecipesMonolithEnvSchema {
    */
   ALLOW_DB_CREATION?: "true" | "false";
   /**
+   * The Azure Client ID.
+   */
+  AZURE_CLIENT_ID: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COLD_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COOL_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_HOT_BLOB_STORAGE_URL?: string;
+  /**
    * Comma-separated list of client subdomains, e.g. 'www,app,auth,'. Include an empty string (such as in the example) to indicate there's a client for the root domain.
    */
   CLIENT_SUBDOMAINS: string;
@@ -29,6 +45,10 @@ export interface RecipesMonolithEnvSchema {
    */
   IDENTITY_SERVICE_ADMIN_EMAILS?: string;
   /**
+   * When set to 'true', only emails listed in IDENTITY_SERVICE_ADMIN_EMAILS may register. All other signups return 403.
+   */
+  IDENTITY_SERVICE_ADMIN_SIGNUP_ONLY?: string;
+  /**
    * Whether to disable rate limiting. Set to 'true' to disable.
    */
   IDENTITY_SERVICE_DISABLE_RATE_LIMITING?: string;
@@ -40,6 +60,18 @@ export interface RecipesMonolithEnvSchema {
    * Host URL for the identity service
    */
   IDENTITY_SERVICE_HTTP_HOST: string;
+  /**
+   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
+   */
+  INFISICAL_ENVIRONMENT?: string;
+  /**
+   * Infisical project ID. Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
+   */
+  INFISICAL_PROJECT_ID?: string;
+  /**
+   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  INFISICAL_TOKEN?: string;
   /**
    * The hostname or URL of the Loki instance to send logs to (e.g., http://loki:3100)
    */
@@ -78,9 +110,15 @@ export interface RecipesMonolithEnvSchema {
    * The timezone of the deployment, e.g. 'America/New_York'. Must be UTC.
    */
   TZ: "UTC";
+  /**
+   * Unsplash API Access Key. Create an application at https://unsplash.com/developers to obtain an access key. Required for live API calls; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  UNSPLASH_API_KEY?: string;
 }
 
 /**
  * `process.env` casted to the `RecipesMonolithEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesMonolithEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesMonolithEnvSchema;

@@ -1,2 +1,3 @@
 // keep form, layout, and display components shared across SPAs in this folder, and re-export them from here
 export { default as RecipesLayout } from "./recipes-layout/RecipesLayout.vue";
+export { default as DynamicRecipesLayout } from "./recipes-layout/DynamicRecipesLayout.vue";

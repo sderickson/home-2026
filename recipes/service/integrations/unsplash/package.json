@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "@saflib/env": "*",
-    "@saflib/monorepo": "*"
+    "@saflib/monorepo": "*",
+    "@sderickson/recipes-infisical": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"

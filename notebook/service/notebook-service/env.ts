@@ -62,4 +62,6 @@ export interface NotebookServiceEnvSchema {
 /**
  * `process.env` casted to the `NotebookServiceEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as NotebookServiceEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as NotebookServiceEnvSchema;

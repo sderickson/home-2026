@@ -3,7 +3,7 @@ import common.Caddyfile
 # Recipes client subdomains → vite dev server
 
 http://recipes.docker.localhost {
-	reverse_proxy recipes-clients:5173
+	import spa /recipes-static-root /index.html
 }
 
 http://app.recipes.docker.localhost {

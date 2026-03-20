@@ -5,6 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./components": "./components/index.ts",
+    "./components/recipes-layout": "./components/recipes-layout/RecipesLayout.vue",
+    "./vuetify-config": "./vuetify-config.ts",
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
     "./fixtures": "./fixtures/index.ts",

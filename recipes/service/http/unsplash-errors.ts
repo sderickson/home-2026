@@ -1,6 +1,7 @@
 import createError from "http-errors";
 import {
   UnsplashApiError,
+  UnsplashApiKeyUnavailableError,
   UnsplashMockUseError,
   UnsplashNetworkError,
   UnsplashNotFoundError,
@@ -19,7 +20,9 @@ export function throwOnUnsplashError(
   err: UnsplashClientError,
   context?: "fetch photo" | "track download" | "search",
 ): never {
-  const msg = err.message ?? (context ? `Unsplash ${context} failed` : "Unsplash request failed");
+  const msg =
+    err.message ??
+    (context ? `Unsplash ${context} failed` : "Unsplash request failed");
   switch (true) {
     case err instanceof UnsplashRateLimitError:
       throw createError(429, "Unsplash rate limit exceeded.", {
@@ -38,12 +41,18 @@ export function throwOnUnsplashError(
         code: "UNSPLASH_ERROR",
       });
     case err instanceof UnsplashMockUseError:
-      throw createError(500, "Misconfiguration: Unsplash client used while mocking.", {
-        code: "UNSPLASH_ERROR",
-      });
+      throw createError(
+        500,
+        "Misconfiguration: Unsplash client used while mocking.",
+        {
+          code: "UNSPLASH_ERROR",
+        },
+      );
     case err instanceof UnsplashNotJsonError:
       throw createError(502, msg, { code: "UNSPLASH_ERROR" });
     case err instanceof UnsplashParseError:
+      throw createError(502, msg, { code: "UNSPLASH_ERROR" });
+    case err instanceof UnsplashApiKeyUnavailableError:
       throw createError(502, msg, { code: "UNSPLASH_ERROR" });
     default:
       throw err satisfies never;

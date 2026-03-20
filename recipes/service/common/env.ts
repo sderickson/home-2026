@@ -9,6 +9,22 @@ export interface RecipesServiceCommonEnvSchema {
    */
   ALLOW_DB_CREATION?: "true" | "false";
   /**
+   * The Azure Client ID.
+   */
+  AZURE_CLIENT_ID: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COLD_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COOL_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_HOT_BLOB_STORAGE_URL?: string;
+  /**
    * Comma-separated list of client subdomains, e.g. 'www,app,auth,'. Include an empty string (such as in the example) to indicate there's a client for the root domain.
    */
   CLIENT_SUBDOMAINS: string;
@@ -62,4 +78,6 @@ export interface RecipesServiceCommonEnvSchema {
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesServiceCommonEnvSchema;

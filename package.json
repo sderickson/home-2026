@@ -14,6 +14,7 @@
   },
   "author": "Scott Erickson <sderickson@gmail.com>",
   "workspaces": [
+    "blog/**",
     "deploy/**",
     "hub/**",
     "notebook/**",

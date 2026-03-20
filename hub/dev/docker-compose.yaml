@@ -2,7 +2,7 @@ services:
   caddy:
     build:
       context: ../..
-      dockerfile: ./hub/dev/Dockerfile.caddy
+      dockerfile: ./hub/dev/Dockerfile
     ports:
       - 80:80
     volumes:

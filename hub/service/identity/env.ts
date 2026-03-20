@@ -29,6 +29,10 @@ export interface HubIdentityEnvSchema {
    */
   IDENTITY_SERVICE_ADMIN_EMAILS?: string;
   /**
+   * When set to 'true', only emails listed in IDENTITY_SERVICE_ADMIN_EMAILS may register. All other signups return 403.
+   */
+  IDENTITY_SERVICE_ADMIN_SIGNUP_ONLY?: string;
+  /**
    * Whether to disable rate limiting. Set to 'true' to disable.
    */
   IDENTITY_SERVICE_DISABLE_RATE_LIMITING?: string;
@@ -81,4 +85,6 @@ export interface HubIdentityEnvSchema {
 /**
  * `process.env` casted to the `HubIdentityEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as HubIdentityEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as HubIdentityEnvSchema;

@@ -36,6 +36,16 @@
     </v-card>
 
     <v-card class="mt-6" max-width="600">
+      <v-card-title>{{ t(strings.git_hashes_title) }}</v-card-title>
+      <v-card-text>
+        <p class="text-body-2">
+          Root: <code>{{ gitHashRoot }}</code><br />
+          Saflib: <code>{{ gitHashSaflib }}</code>
+        </p>
+      </v-card-text>
+    </v-card>
+
+    <v-card class="mt-6" max-width="600">
       <v-card-title>{{ t(strings.cleanup_section_title) }}</v-card-title>
       <v-card-text>
         <p>{{ t(strings.cleanup_section_description) }}</p>
@@ -74,6 +84,7 @@
 import { admin_page as strings } from "./Admin.strings.ts";
 import { useAdminLoader } from "./Admin.loader.ts";
 import { useReverseT } from "@sderickson/recipes-admin-spa/i18n";
+import { getGitHashes } from "@saflib/vue";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
 import { useCleanupSeedData } from "./useCleanupSeedData.ts";
 
@@ -100,4 +111,6 @@ const {
   getSuccessMessage: () => t(strings.cleanup_success),
   getNotFoundMessage: () => t(strings.cleanup_not_found),
 });
+
+const { root: gitHashRoot, saflib: gitHashSaflib } = getGitHashes();
 </script>

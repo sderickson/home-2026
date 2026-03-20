@@ -62,4 +62,6 @@ export interface HubServiceEnvSchema {
 /**
  * `process.env` casted to the `HubServiceEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as HubServiceEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as HubServiceEnvSchema;
