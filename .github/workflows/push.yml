@@ -18,6 +18,9 @@ permissions:
 
 jobs:
   push-images:
+    permissions:
+      packages: write
+      contents: read
     # Fork PRs cannot push to the base repo's GHCR with GITHUB_TOKEN
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
