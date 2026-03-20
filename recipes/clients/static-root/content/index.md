@@ -15,21 +15,15 @@ const inlineRegisterHref = useResolvedHref(() =>
 
 # Scott's Recipe List
 
-A place to organize, iterate on, and share recipes.
-
-Built to suit the way I organize and iterate on my recipes. It's available for
-friends and family by invite. If you're not signed in, you can try the demo or
-browse the source.
-
 ## What it is
 
-Access is invite-only for friends and family. Others can
+A place to organize, iterate on, and share recipes.
+
+Full access is invite-only for friends and family. Others can
 <a :href="inlineDemoHref" class="text-primary">try the demo</a>
 or
-<a :href="inlineRegisterHref" class="text-primary">sign up</a>
-or
 <a href="https://github.com/sderickson/home-2026/tree/main/recipes" target="_blank" rel="noopener noreferrer" class="text-primary">
-view source on GitHub
+view the source on GitHub
 </a>
 
 ## Features
