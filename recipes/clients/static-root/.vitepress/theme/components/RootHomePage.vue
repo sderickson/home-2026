@@ -150,16 +150,7 @@
       color="grey-darken-3"
       border="opacity-25 sm"
     >
-      <h2 class="text-h5 font-weight-medium mb-2 text-white">
-        Try it or peek under the hood
-      </h2>
-      <p
-        class="text-body-2 mb-6 mx-auto text-grey-lighten-4"
-        style="max-width: 28rem"
-      >
-        Load the in-browser demo, create an account if you’re in, or read the
-        code—it’s all there.
-      </p>
+      <h2 class="text-h5 font-weight-medium mb-2 text-white">Give it a try</h2>
       <div class="d-flex flex-wrap justify-center ga-3">
         <v-btn :href="registerHref" color="primary" size="large" rounded="lg">
           Sign up

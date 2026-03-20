@@ -1367,8 +1367,17 @@ export interface operations {
                     "application/json": components["schemas"]["recipe-version"][];
                 };
             };
-            /** @description Unauthorized - recipe is private and caller is not authenticated. */
+            /** @description Unauthorized - authentication required. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection, or insufficient role. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1516,6 +1525,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-note"][];
+                };
+            };
+            /** @description Unauthorized - authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection, or insufficient role. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
@@ -1718,6 +1745,24 @@ export interface operations {
                     "application/json": components["schemas"]["recipe-file-info"][];
                 };
             };
+            /** @description Unauthorized - authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection, or insufficient role. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1912,6 +1957,24 @@ export interface operations {
                     "application/json": components["schemas"]["recipe-note-file-info"][];
                 };
             };
+            /** @description Unauthorized - authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection, or insufficient role. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1944,6 +2007,24 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["recipe-note-file-info"][];
+                };
+            };
+            /** @description Unauthorized - authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - not a member of the recipe's collection, or insufficient role. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Not Found */
