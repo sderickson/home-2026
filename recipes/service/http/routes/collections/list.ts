@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
@@ -15,6 +16,9 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
   const email = auth.userEmail;
+  if (!email) {
+    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+  }
   const emailValidated =
     (auth as { emailVerified?: boolean }).emailVerified !== false;
 

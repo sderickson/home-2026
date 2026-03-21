@@ -44,7 +44,7 @@ http://admin.docker.localhost {
 
 http://api.recipes.docker.localhost {
 	import cors recipes.docker.localhost
-	import api-proxy monolith:3000 monolith:3002
+	import kratos-api-proxy monolith:3002
 }
 
 # Identity service

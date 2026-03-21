@@ -8,7 +8,7 @@ import { unsplashPhotoToSearchItem } from "./_helpers.ts";
 
 export const searchUnsplashPhotosHandler = createHandler(async (req, res) => {
   const { auth } = getSafContextWithAuth();
-  if (!auth.userScopes.includes("*")) {
+  if (!auth.userScopes?.includes("*")) {
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 

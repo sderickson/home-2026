@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type {
@@ -12,13 +13,18 @@ export const createCollectionsHandler = createHandler(async (req, res) => {
   const { auth } = getSafContextWithAuth();
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
+  const userEmail = auth.userEmail;
+  if (!userEmail) {
+    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+  }
+
   const data: RecipesServiceRequestBody["createCollections"] = req.body ?? {};
   const { result, error } = await collectionQueries.createCollection(
     recipesDbKey,
     {
       name: data.name,
       id: data.id,
-      creatorEmail: auth.userEmail,
+      creatorEmail: userEmail,
     },
   );
 
