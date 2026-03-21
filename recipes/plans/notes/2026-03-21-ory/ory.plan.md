@@ -20,23 +20,31 @@
      - `selfservice.methods.password.enabled`: true
      - `session.cookie.domain`: `.docker.localhost`
      - `session.cookie.same_site`: `Lax`
-     - `courier.smtp.connection_uri`: `smtp://mailpit:1025/?disable_starttls=true`
+     - `courier`: HTTP delivery strategy, POSTing to `http://monolith:3000/email/kratos-courier`
    - `identity.schema.json` — identity schema:
      - Single trait: `email` (string, format: email)
      - Configured as password identifier and verification/recovery address
 
 2. **Update `recipes/dev/docker-compose.yaml`**:
-   - Add `kratos-migrate` service (runs `migrate sql -e --yes`, exits)
-   - Add `kratos` service (depends on `kratos-migrate`, runs `serve -c /etc/config/kratos/kratos.yml --dev --watch-courier`)
-   - Add `mailpit` service for email capture (image: `axllent/mailpit`, expose port 8025 for web UI)
+   - Add `kratos-migrate` service:
+     - `image: oryd/kratos:v1.3.1` (or latest stable)
+     - `command: migrate sql -e --yes`
+     - `environment: DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc`
+     - `volumes: kratos-sqlite:/var/lib/sqlite, ./kratos:/etc/config/kratos`
+   - Add `kratos` service:
+     - Same image, depends on `kratos-migrate` (condition: `service_completed_successfully`)
+     - `command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier`
+     - Same DSN and volumes
    - Add `kratos-sqlite` volume
 
 3. **Update `recipes/dev/caddy-config/Caddyfile`**:
    - Add `http://kratos.docker.localhost` block:
-     - `import cors docker.localhost`
-     - `reverse_proxy kratos:4433`
-   - Add `http://mailpit.docker.localhost` block (optional, for easy access to Mailpit UI):
-     - `reverse_proxy mailpit:8025`
+     ```
+     http://kratos.docker.localhost {
+       import cors docker.localhost
+       reverse_proxy kratos:4433
+     }
+     ```
 
 4. **Verify**: `docker compose up`, then in browser console on any `*.docker.localhost` page:
    ```js
@@ -47,8 +55,9 @@
    Should return a registration flow JSON object.
 
 ### Risks / Notes
-- Kratos CORS must allow credentials from `*.docker.localhost` origins. If Kratos's built-in CORS wildcard doesn't match subdomains correctly, Caddy can handle CORS instead.
+- Kratos CORS must allow credentials from `*.docker.localhost` origins. If Kratos's built-in CORS wildcard doesn't match subdomains correctly, Caddy can handle CORS instead (it already has a `cors` snippet).
 - The `--dev` flag disables some security checks (like requiring HTTPS) which is appropriate for local dev.
+- The courier HTTP delivery config needs to match whatever endpoint we build in milestone 4. For now it can point to a non-existent endpoint; courier will retry.
 
 ---
 
@@ -58,30 +67,37 @@
 
 ### Tasks
 
-1. **Install `@ory/client`** in `hub/clients/auth/` (or at the monorepo root if using workspaces).
+1. **Install `@ory/client`** in `hub/clients/auth/` (or at an appropriate workspace level).
 
-2. **Create test page** (e.g. `hub/clients/auth/pages/KratosTest.vue`):
-   - On mount, call `FrontendApi.toSession()` to check if there's an active session.
+2. **Create Kratos SDK wrapper** (e.g. `hub/clients/auth/kratos.ts` or shared location):
+   - Initialize `FrontendApi` with `basePath: "http://kratos.docker.localhost"` and `withCredentials: true`.
+   - Create `useKratosSession()` — a tanstack `useQuery` wrapping `FrontendApi.toSession()`.
+     - Returns session + identity on success, or null/error when not authenticated.
+     - Handles 401 (not logged in) gracefully — not an error, just "no session".
+   - Optionally: tanstack queries for `createBrowserLoginFlow()` and `createBrowserRegistrationFlow()`.
+
+3. **Create test page** (`hub/clients/auth/pages/KratosTest.vue`):
+   - On mount, use `useKratosSession()` to check session state.
    - **Logged out state**: Show two sections:
-     - **Login**: Call `FrontendApi.createBrowserLoginFlow()`, render the returned UI nodes as form fields, submit to Kratos's `action` URL.
-     - **Registration**: Call `FrontendApi.createBrowserRegistrationFlow()`, render UI nodes, submit.
-   - **Logged in state**: Display identity ID, email, verification status. Show a logout button that calls `FrontendApi.createBrowserLogoutFlow()` then navigates to the logout URL.
-   - All SDK calls use `withCredentials: true` and `basePath: "http://kratos.docker.localhost"`.
+     - **Login**: Fetch login flow, render the returned UI nodes as form fields, submit via `FrontendApi.updateLoginFlow()`. On success, invalidate session query.
+     - **Registration**: Fetch registration flow, render UI nodes, submit via `FrontendApi.updateRegistrationFlow()`. On success, invalidate session query.
+   - **Logged in state**: Display identity ID, email (from `identity.traits.email`), verification status. Show a logout button that calls `FrontendApi.createBrowserLogoutFlow()` then navigates to the logout URL.
+   - Kratos returns "UI nodes" — JSON descriptions of form fields (email input, password input, submit button, CSRF token). Render them as HTML `<input>` elements. The CSRF node is a hidden input that Kratos requires for submission.
 
-3. **Add route** in `hub/clients/auth/router.ts` for the test page (e.g. `/kratos-test`).
+4. **Add route** in `hub/clients/auth/router.ts` for the test page (e.g. `/kratos-test`).
 
-4. **Verify**:
+5. **Verify**:
    - Navigate to `http://auth.docker.localhost/kratos-test`.
    - Register a new account with email/password.
    - Observe the session is active (identity details shown).
    - Log out, confirm session is cleared.
    - Log back in with the same credentials.
-   - Check Mailpit at `http://mailpit.docker.localhost` for verification emails.
 
 ### Risks / Notes
-- Kratos browser flows redirect between the Kratos API and the UI. The test page needs to handle the `flow` query parameter (Kratos redirects back with `?flow=<uuid>`, and the page fetches flow details with that ID).
-- `@ory/client` is a plain REST SDK, no React dependency. Works fine with Vue.
-- Kratos returns UI "nodes" (input fields, buttons, messages) as JSON. The test page renders them as HTML form elements. This is intentionally low-level for the test page; nicer components can come later.
+- Kratos browser flows redirect between the Kratos API and the UI. When the browser calls `createBrowserLoginFlow()`, Kratos may redirect to the UI URL with a `?flow=<uuid>` parameter. The test page should check for this query parameter on mount and fetch the flow data if present. Alternatively, using the SDK's AJAX methods (`updateLoginFlow` etc.) avoids full-page redirects.
+- `@ory/client` is a plain REST SDK with no framework dependency — works fine in Vue.
+- Kratos returns UI "nodes" (input fields, buttons, messages) as JSON. For the test page, rendering them as basic HTML inputs is sufficient. Nicer components can come later when replacing the existing auth pages.
+- Kratos manages its own CSRF for self-service flows via hidden form fields in the UI nodes. This is separate from the API CSRF concern handled in milestone 4.
 
 ---
 
@@ -91,77 +107,91 @@
 
 ### Tasks
 
-1. **Update `recipes/clients/app/AppSpa.vue`**:
-   - Add a session status indicator (e.g. a banner or small status display) that calls Kratos `toSession()` on mount.
+1. **Add `@ory/client`** as a dependency for `recipes/clients/app/` (or shared).
+
+2. **Create or reuse `useKratosSession()`** — same tanstack query as milestone 2, possibly extracted to a shared package.
+
+3. **Update `recipes/clients/app/AppSpa.vue`**:
+   - Add a session status indicator (e.g. a banner or small text display) that uses `useKratosSession()`.
    - If session active: show "Logged in as {email}".
    - If no session: show "Not logged in".
    - This should be visible regardless of which page/route is active.
-   - Keep the existing `useProfile` / `DynamicRecipesLayout` logic intact for now — this is additive.
+   - Keep the existing `useProfile` / `DynamicRecipesLayout` logic intact for now — this is purely additive.
 
-2. **Verify cookie sharing**:
+4. **Verify cookie sharing**:
    - Log in via `http://auth.docker.localhost/kratos-test`.
    - Navigate to `http://app.recipes.docker.localhost/`.
    - The session status should show "Logged in as {email}".
    - Log out via the test page, refresh recipes app, status should show "Not logged in".
 
 ### Risks / Notes
-- The Kratos session cookie domain `.docker.localhost` must be sent by the browser to `app.recipes.docker.localhost`. This should work since both are subdomains of `docker.localhost`, but worth testing early.
-- The `toSession()` call goes directly to `http://kratos.docker.localhost/sessions/whoami` from the browser. CORS must allow `http://app.recipes.docker.localhost` as an origin with credentials.
-- This step is intentionally lightweight — it only proves session sharing works. Full integration with the existing layout/profile system comes in step 4 and beyond.
+- The Kratos session cookie (domain `.docker.localhost`) must be sent by the browser to `app.recipes.docker.localhost`. This should work since both are subdomains of `docker.localhost`, but worth testing early.
+- The `toSession()` call from the recipes app goes to `http://kratos.docker.localhost/sessions/whoami`. CORS must allow the `http://app.recipes.docker.localhost` origin with credentials.
+- This step is intentionally lightweight — it only proves session sharing works. Full integration with the existing layout/profile system comes later.
 
 ---
 
-## Milestone 4: API Server Integration via Auth Bridge
+## Milestone 4: API Server Integration
 
-**Goal**: API requests to `api.recipes.docker.localhost` are authenticated via Kratos sessions, with identity data propagated to the Express API server via the same `X-User-*` headers as before.
+**Goal**: API requests to `api.recipes.docker.localhost` are authenticated via Kratos sessions, with the user ID propagated to the Express API server. CSRF and admin checks are handled in Express.
 
 ### Tasks
 
-1. **Create auth bridge endpoint** in the monolith (e.g. a new route or small Express middleware):
-   - Endpoint: `GET /auth/kratos-verify` (or reuse `/auth/verify` path)
-   - Implementation:
+1. **Update `recipes/dev/caddy-config/common.Caddyfile`**:
+   - Update `api-proxy` snippet to use Kratos whoami for `forward_auth`:
      ```
-     1. Extract cookies from the incoming request (forwarded by Caddy).
-     2. Call Kratos admin or public API: GET http://kratos:4433/sessions/whoami
-        with the Cookie header forwarded.
-     3. If 401 → return 200 with no user headers (allow unauthenticated, let auth middleware handle it).
-        If 200 → parse the session JSON.
-     4. Extract: identity.id, identity.traits.email,
-        identity.verifiable_addresses[0].verified
-     5. Check admin: if email is in IDENTITY_SERVICE_ADMIN_EMAILS and verified → scope "*".
-     6. Set response headers:
-        X-User-ID: {identity.id}
-        X-User-Email: {identity.traits.email}
-        X-User-Email-Verified: {verified ? "true" : "false"}
-        X-User-Scopes: {scopes joined by comma}
-     7. Return 200.
+     (api-proxy) {
+       handle {
+         forward_auth kratos:4433 {
+           uri /sessions/whoami
+           header_up X-Request-ID {http.request.uuid}
+           copy_headers X-Kratos-Authenticated-Identity-Id
+         }
+         reverse_proxy {args[0]} {
+           import reverse_proxy_common
+         }
+       }
+     }
      ```
-   - **Open question**: Should unauthenticated requests return 200 (let downstream decide) or 401 (block at Caddy)? Current verify returns 200 with empty user data for unauthenticated requests. Recommend keeping this behavior for compatibility.
+   - Note: `api-proxy` changes from 2 args (identity host + target host) to 1 arg (just target host), since the auth target is always Kratos. All call sites need updating.
+   - Update call sites in `Caddyfile`: `import api-proxy monolith:3000 monolith:3002` → `import api-proxy monolith:3002`.
 
-2. **Update `recipes/dev/caddy-config/common.Caddyfile`**:
-   - Update `api-proxy` snippet's `forward_auth` to point to the bridge endpoint.
-   - The `uri`, `copy_headers`, and `header_up` directives should match the bridge's response headers.
-   - May be as simple as changing the `uri` path if the bridge reuses the same host and header names.
+2. **Update `saflib/express/src/middleware/context.ts`**:
+   - Read `X-Kratos-Authenticated-Identity-Id` header instead of `X-User-ID`, `X-User-Email`, etc.
+   - Set `auth.userId` from this header. That's it — no email or scopes from headers.
+   - Simplify the `Auth` type if desired (remove fields that are no longer header-sourced).
 
-3. **Update `saflib/express/src/middleware/context.ts`**:
-   - Minimal change: the headers are the same names, so the middleware may not need changes at all.
-   - If `userId` format changes (numeric → UUID), ensure downstream code handles string IDs (it already treats `userId` as `string`, so this should be fine).
+3. **Add CSRF middleware to Express** (`saflib/express/src/middleware/auth.ts` or new file):
+   - For non-GET/HEAD requests, require a custom header (e.g. `X-Requested-With: XMLHttpRequest` or a CSRF token).
+   - This replaces the CSRF check that was previously in the identity server's verify endpoint.
+   - The SDK already sets headers for API calls, so this should be straightforward.
 
-4. **CSRF handling** (for API mutations):
-   - For dev: the bridge can skip CSRF checking initially. SameSite=Lax cookies on `docker.localhost` subdomains provide baseline CSRF protection.
-   - Longer term: add a custom header check (e.g. require `X-Requested-With` or `X-CSRF-Token` for non-GET requests) in the bridge.
+4. **Add admin determination to Express**:
+   - Read admin email list from env var (e.g. `ADMIN_EMAILS`).
+   - When `auth.userId` is present, look up the user's email from the product database or by calling Kratos admin API (`GET kratos:4434/admin/identities/{id}`).
+   - If email matches admin list, set `auth.userScopes = ["*"]` (or a cleaner admin flag).
+   - Consider caching the identity lookup to avoid per-request calls to Kratos.
 
-5. **Verify**:
+5. **Add Kratos courier email endpoint** to the monolith:
+   - `POST /email/kratos-courier` — receives email data from Kratos HTTP courier.
+   - Parses the Kratos courier payload (recipient, template type, template data including verification/recovery URLs).
+   - Formats into an email and sends via `emailClient.sendEmail()`.
+   - In dev (with `MOCK_INTEGRATIONS=true`), emails land in the `sentEmails` array and are accessible via `GET /email/sent` for Playwright tests.
+
+6. **Verify**:
    - Log in via `http://auth.docker.localhost/kratos-test`.
    - Make an API call from `app.recipes.docker.localhost` (e.g. load recipes).
-   - Confirm the API server receives correct `X-User-*` headers (check server logs).
-   - Confirm the recipes app works end-to-end with authenticated API calls.
+   - Confirm the API server receives `X-Kratos-Authenticated-Identity-Id` and resolves the user correctly.
+   - Test CSRF: confirm that POST/PUT/DELETE requests without the CSRF header are rejected.
+   - Test admin: log in with an admin email, confirm admin access works.
    - Test unauthenticated access: log out, confirm API returns 401 for protected routes.
+   - Test email: register a new user, confirm verification email appears in `GET /email/sent`.
 
 ### Risks / Notes
-- The bridge endpoint is the linchpin — it translates between Kratos's session model and the existing header-based auth contract. Keep it simple and well-tested.
-- Kratos's admin API (`kratos:4434`) can also be used for whoami and provides more data, but the public API with forwarded cookies is simpler and sufficient.
-- The `identity.id` in Kratos is a UUID (e.g. `"a1b2c3d4-..."`) vs. the current numeric user ID. The `Auth.userId` type is already `string`, so this should be compatible, but any database foreign keys referencing user IDs will need attention when migrating existing data.
+- The `api-proxy` snippet interface changes (2 args → 1 arg). All Caddyfile call sites need updating. The `identity` snippet and `admin-proxy`/`admin-file-server` snippets also reference the identity server and will need attention.
+- Admin email lookup adds a per-request call to Kratos admin API (or product DB). For dev this is fine. For production, cache the mapping or store admin status in the product DB.
+- The Kratos HTTP courier payload format should be verified against the exact Kratos version. The Express endpoint needs to handle template types: `verification_valid`, `verification_invalid`, `recovery_valid`, `recovery_invalid`.
+- CSRF: the simplest approach is requiring `X-Requested-With` header on mutations. The SDK's `fetch` calls can set this. This is less robust than a full double-submit cookie but sufficient for dev and typical SPA usage.
 
 ---
 
@@ -171,11 +201,11 @@
 |---|---|---|
 | Kratos API access | Expose via `kratos.docker.localhost` through Caddy | Browser needs direct access for self-service flows |
 | Session sharing | Cookie domain `.docker.localhost`, SameSite=Lax | Same as current approach, matches subdomain structure |
-| API auth (forward_auth) | Thin bridge endpoint wrapping Kratos whoami | Minimizes changes to Caddy config and downstream services |
-| Admin scopes | Email allowlist check in bridge (same as current) | Simplest migration path; can move to Kratos metadata later |
-| CSRF for API mutations | Defer; SameSite=Lax for dev | Matches current security posture for dev; productionize later |
-| Email in dev | Mailpit container + Kratos built-in courier | Simpler than routing through Express; provides inspection UI |
-| Frontend SDK | `@ory/client` (REST SDK) | Framework-agnostic, works with Vue |
+| API auth (forward_auth) | Caddy forward_auth directly to Kratos whoami | No bridge needed — only user ID is passed via `X-Kratos-Authenticated-Identity-Id` |
+| Admin determination | Express middleware checks email against env var admin list | Moved from identity verify to product layer where it belongs |
+| CSRF for API mutations | Express middleware requires custom header | Moved from identity verify to product layer; SameSite=Lax provides baseline |
+| Email delivery | Kratos HTTP courier → Express endpoint → existing nodemailer/EmailClient | Keeps existing test infrastructure (sentEmails array, /email/sent endpoint, Playwright fixtures) |
+| Frontend SDK | `@ory/client` + tanstack query for session | `useKratosSession()` as a cached query; flow submissions as plain async |
 | Existing auth pages | Keep alongside Kratos test page | Migrate incrementally after core integration is proven |
 
 ## Post-Integration Follow-up Tasks
@@ -187,5 +217,5 @@ Once all 4 milestones are complete:
 3. **Implement recovery flow UI** — password reset via Kratos.
 4. **Account settings** — email change, password change via Kratos settings flow.
 5. **Remove identity server** — once all flows are on Kratos, remove `@saflib/identity` and the monolith's identity service.
-6. **User data migration** — script to import existing users from SQLite into Kratos.
-7. **Production config** — PostgreSQL, real SMTP, HTTPS, Oathkeeper or production-grade auth gateway.
+6. **Production config** — PostgreSQL, real SMTP, HTTPS, production-grade auth gateway.
+7. **Registration restriction** — restrict signups to invited/allowed emails (Kratos webhook or client-side check).
