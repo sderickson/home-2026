@@ -19,7 +19,7 @@ RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} C
 
 # END WORKFLOW AREA
 
-FROM caddy:2.9.1
+FROM caddy:2.11.2
 
 # BEGIN WORKFLOW AREA copy-product-assets FOR product/init
 COPY --from=blog_builder /app/blog/.vitepress/dist /srv/blog-client
