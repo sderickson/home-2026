@@ -18,7 +18,7 @@ jobs:
       - name: Install submodules
         run: git submodule update --init
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       # For some reason, github actions hang when I do `npm exec saf-docker generate`. So we run the script directly.
       - name: Generate Docker
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning saflib/dev-tools/src/saf-docker-cli.ts generate
