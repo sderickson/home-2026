@@ -22,6 +22,20 @@ filesListRecipes:
             items:
               $ref: "../../schemas/recipe-file-info.yaml"
 
+    "401":
+      description: "Unauthorized - authentication required."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - not a member of the recipe's collection, or insufficient role."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
     "404":
       description: "Not Found"
       content:

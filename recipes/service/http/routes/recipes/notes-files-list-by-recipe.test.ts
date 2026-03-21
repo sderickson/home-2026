@@ -123,6 +123,12 @@ describe("GET /recipes/:id/note-files (recipeNoteFilesGetByNoteId)", () => {
     expect(response.body.every((f: { downloadUrl: string }) => typeof f.downloadUrl === "string" && f.downloadUrl.length > 0)).toBe(true);
   });
 
+  it("returns 401 when not authenticated", async () => {
+    const response = await request(app).get(`/recipes/${recipeId}/note-files`);
+
+    expect(response.status).toBe(401);
+  });
+
   it("returns 404 when recipe does not exist", async () => {
     const response = await request(app)
       .get("/recipes/00000000-0000-0000-0000-000000000099/note-files")

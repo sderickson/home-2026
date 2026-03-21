@@ -104,6 +104,14 @@ describe("GET /recipes/:id/notes/:noteId/files (notesFilesListRecipes)", () => {
     expect(response.body[0].downloadUrl).toBeDefined();
   });
 
+  it("should return 401 when not authenticated", async () => {
+    const response = await request(app).get(
+      `/recipes/${recipeId}/notes/${noteId}/files`,
+    );
+
+    expect(response.status).toBe(401);
+  });
+
   it("should return 404 when recipe not found", async () => {
     const response = await request(app)
       .get(
