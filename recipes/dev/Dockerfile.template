@@ -22,6 +22,6 @@ FROM deps AS hub-builder
 WORKDIR /app/hub/clients/build
 RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=,app,auth,account,admin SERVICE_SUBDOMAINS=identity DEPLOYMENT_NAME=development TZ=UTC npm run build
 
-FROM caddy:2.9.1
+FROM caddy:2.11.2
 COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients
 COPY --from=static-root-builder /app/recipes/clients/static-root/.vitepress/dist /srv/recipes-static-root
