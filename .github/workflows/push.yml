@@ -3,14 +3,14 @@
 
 name: Push images to GHCR
 
-on:
-  pull_request:
-    branches:
-      - main
-# TODO: switch to this once confirmed everything is working
 # on:
-#   push:
-#     branches: [main]
+#   pull_request:
+#     branches:
+#       - main
+# TODO: switch to this once confirmed everything is working
+on:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
       packages: write
       contents: read
     # Fork PRs cannot push to the base repo's GHCR with GITHUB_TOKEN
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     env:
       CONTAINER_REGISTRY: ghcr.io/${{ github.repository_owner }}
