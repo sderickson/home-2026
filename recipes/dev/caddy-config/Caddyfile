@@ -53,6 +53,13 @@ http://identity.docker.localhost {
 	import identity docker.localhost monolith:3000
 }
 
+# Kratos public API
+
+http://kratos.docker.localhost {
+	import cors docker.localhost
+	reverse_proxy kratos:4433
+}
+
 # Azurite
 
 http://azurite.docker.localhost {
