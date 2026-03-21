@@ -71,9 +71,9 @@
 
 ### Tasks
 
-1. **Install `@ory/client`** in `hub/clients/auth/` (or at an appropriate workspace level).
+1. **Install `@ory/client`** in `recipes/service/sdk/` (TanStack queries and mutations live there).
 
-2. **Create Kratos SDK wrapper** (e.g. `hub/clients/auth/kratos.ts` or shared location):
+2. **Create Kratos SDK wrapper** in `recipes/service/sdk/requests/kratos/` (e.g. `kratos-client.ts`, `kratos-session.ts`):
    - Initialize `FrontendApi` with `basePath: "http://kratos.docker.localhost"` and `withCredentials: true`.
    - Create `useKratosSession()` — a tanstack `useQuery` wrapping `FrontendApi.toSession()`.
      - Returns session + identity on success, or null/error when not authenticated.
