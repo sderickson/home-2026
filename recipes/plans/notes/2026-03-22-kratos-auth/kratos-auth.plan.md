@@ -6,6 +6,37 @@ This plan follows [kratos-auth.spec.md](./kratos-auth.spec.md). Run workflows fr
 
 ---
 
+## Implementation workflows
+
+Work is broken into **one workflow file per milestone** (same idea as [menus-m2-menus-frontend.workflow.ts](../2026-03-13-menus/menus-m2-menus-frontend.workflow.ts): composed of `CdStepMachine`, `makeWorkflowMachine(...)`, and agent prompts). The **orchestrator** is [kratos-auth.workflow.ts](./kratos-auth.workflow.ts); run it to execute milestones in order, or run an individual milestone workflow by id (e.g. `plans/kratos-auth-m1-registration-logout`).
+
+**Working directory:** Run `npm exec saf-workflow` from **`recipes/plans`** so relative `Cd` paths match the menus project (`../service/sdk` → `recipes/service/sdk`, `../../hub/clients/auth` → hub auth SPA).
+
+**How this differs from menus (OpenAPI + product API):** Register/login/etc. are **not** new OpenAPI routes on the monolith, so **`openapi/add-route`**, **`sdk/add-query`**, and **`sdk/add-mutation`** do **not** apply to Kratos traffic. Instead:
+
+| Need | Menus-style analogue | Kratos approach |
+|------|----------------------|-----------------|
+| Session + flow helpers | `sdk/add-query` to `/menus` | Hand-written **`recipes/service/sdk/requests/kratos/*.ts`** (TanStack `useQuery` / async helpers wrapping `@ory/client` `FrontendApi`). Use **`PromptStepMachine`** steps with prompts that point at spec + existing `kratos-session.ts` / `kratos-flows.ts` patterns. |
+| Auth pages | `vue/add-view` (`AddSpaViewWorkflowDefinition`) | Same: **`vue/add-view`** for each route under **`hub/clients/auth`** (`./pages/...`, `urlPath` aligned with Kratos `ui_url` and `authLinks`). |
+| Config / monolith edits | N/A | **`PromptStepMachine`** (or focused prompts) for **`kratos.yml`**, **`run.ts`**, env, Caddy — no dedicated generator in `saf-workflow list`. |
+| E2E | `vue/add-e2e-test` | **`makeWorkflowMachine(AddE2eTestWorkflowDefinition)`** after `Cd` to `hub/clients/auth` (or recipes client if tests live there). |
+
+**Route alignment:** Kratos `selfservice.flows.registration.ui_url` uses **`/registration`** in dev; `authLinks.register` uses **`/register`**. Implementation should either align router + Kratos config or pick one path and update both — workflows call this out in prompts.
+
+### Workflow files
+
+| Milestone | Workflow id | File |
+|-----------|----------------|------|
+| 0 | `plans/kratos-auth-m0-config-sdk` | [kratos-auth-m0-config-sdk.workflow.ts](./kratos-auth-m0-config-sdk.workflow.ts) |
+| 1 | `plans/kratos-auth-m1-registration-logout` | [kratos-auth-m1-registration-logout.workflow.ts](./kratos-auth-m1-registration-logout.workflow.ts) |
+| 2 | `plans/kratos-auth-m2-login` | [kratos-auth-m2-login.workflow.ts](./kratos-auth-m2-login.workflow.ts) |
+| 3 | `plans/kratos-auth-m3-verification` | [kratos-auth-m3-verification.workflow.ts](./kratos-auth-m3-verification.workflow.ts) |
+| 4 | `plans/kratos-auth-m4-recovery` | [kratos-auth-m4-recovery.workflow.ts](./kratos-auth-m4-recovery.workflow.ts) |
+| 5 | `plans/kratos-auth-m5-remove-hub-identity` | [kratos-auth-m5-remove-hub-identity.workflow.ts](./kratos-auth-m5-remove-hub-identity.workflow.ts) |
+| 6 | `plans/kratos-auth-m6-tests-polish` | [kratos-auth-m6-tests-polish.workflow.ts](./kratos-auth-m6-tests-polish.workflow.ts) |
+
+---
+
 ## Milestone 0 — SDK + Kratos config groundwork
 
 **Packages:** `recipes/service/sdk`, the three `kratos.yml` files above.
