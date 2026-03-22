@@ -1,6 +1,6 @@
 /**
- * Milestone 2 — Login flow.
- * Packages: hub/clients/auth, recipes wiring.
+ * Milestone 2 — Login: JIT TanStack hooks for login, then login page.
+ * Packages: recipes/service/sdk, hub/clients/auth.
  */
 import {
   defineWorkflow,
@@ -8,6 +8,7 @@ import {
   makeWorkflowMachine,
   CdStepMachine,
   PromptStepMachine,
+  CommandStepMachine,
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import { GetFeedbackStep } from "@saflib/processes/workflows";
@@ -21,7 +22,7 @@ export const KratosAuthM2LoginWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/kratos-auth-m2-login",
-  description: "Kratos M2: login page + router wiring; redirect to recipes.",
+  description: "Kratos M2: JIT SDK login mutation/query + login view + router; redirect to recipes.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -34,24 +35,53 @@ export const KratosAuthM2LoginWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
+    step(CdStepMachine, () => ({ path: "../service/sdk" })),
+
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
+
+CWD is \`recipes/service/sdk\`. **TanStack mutation: update login flow**
+
+Add \`useUpdateLoginFlowMutation\` (or equivalent) wrapping \`getKratosFrontendApi().updateLoginFlow\`, same structural pattern as M1 registration mutation (FrontendApi, not OpenAPI \`getClient()\`).`,
+    })),
+
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
+
+CWD is \`recipes/service/sdk\`. **TanStack query (optional): login flow**
+
+If the login page needs a cached flow: \`useLoginFlowQuery\` via \`queryOptions\` + \`fetchBrowserLoginFlow\` / \`fetchLoginFlowById\` from \`kratos-flows.ts\`.
+
+Export new hooks from \`requests/kratos/index.ts\`.`,
+    })),
+
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck recipes SDK after login JIT hooks.",
+    })),
+
+    step(CdStepMachine, () => ({ path: "../../../hub/clients/auth" })),
 
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/kratos/login",
       urlPath: "/login",
       prompt: `Read ${context.docFiles!.spec} and ${context.docFiles!.plan} (Milestone 2).
 
-Create **Kratos login** at \`/login\`:
-- \`createBrowserLoginFlow\` / \`getLoginFlow\`, render \`ui.nodes\`, \`updateLoginFlow\`; handle error responses that return an updated LoginFlow.
-- Support optional \`?flow=\` for email-related returns if applicable.
-- On success: invalidate session query, redirect to **recipes** (same pattern as registration).
-- Replace or bypass legacy \`LoginPage\` from \`@saflib/auth\` for this client when wired.`,
+Create **Kratos login** at \`/login\` using JIT SDK hooks + \`kratos-flows\`:
+- Handle LoginFlow errors in Axios body; invalidate session on success; redirect to **recipes**.`,
     })),
 
     step(PromptStepMachine, ({ context }) => ({
       prompt: `Read ${context.docFiles!.spec} (M2).
 
-Wire **router** so \`/login\` uses the new Kratos login view. Confirm manual path: logout → login → recipes with session.`,
+Wire **hub auth router** so \`/login\` resolves to the new view. Manual check: logout → login → recipes with session.`,
+    })),
+
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck hub auth SPA.",
     })),
 
     GetFeedbackStep,

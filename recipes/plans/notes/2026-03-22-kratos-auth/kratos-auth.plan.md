@@ -8,20 +8,27 @@ This plan follows [kratos-auth.spec.md](./kratos-auth.spec.md). Run workflows fr
 
 ## Implementation workflows
 
-Work is broken into **one workflow file per milestone** (same idea as [menus-m2-menus-frontend.workflow.ts](../2026-03-13-menus/menus-m2-menus-frontend.workflow.ts): composed of `CdStepMachine`, `makeWorkflowMachine(...)`, and agent prompts). The **orchestrator** is [kratos-auth.workflow.ts](./kratos-auth.workflow.ts); run it to execute milestones in order, or run an individual milestone workflow by id (e.g. `plans/kratos-auth-m1-registration-logout`).
+Work is broken into **one workflow file per milestone** (same idea as [menus-m2-menus-frontend.workflow.ts](../2026-03-13-menus/menus-m2-menus-frontend.workflow.ts): composed of `CdStepMachine`, `makeWorkflowMachine(...)`, `CommandStepMachine`, and focused prompts). The **orchestrator** is [kratos-auth.workflow.ts](./kratos-auth.workflow.ts).
 
-**Working directory:** Run `npm exec saf-workflow` from **`recipes/plans`** so relative `Cd` paths match the menus project (`../service/sdk` → `recipes/service/sdk`, `../../hub/clients/auth` → hub auth SPA).
+**Working directory:** Run `npm exec saf-workflow` from **`recipes/plans`** so relative `Cd` paths resolve (`../service/sdk` → `recipes/service/sdk`, `../../../hub/clients/auth` → hub auth SPA from the SDK directory).
 
-**How this differs from menus (OpenAPI + product API):** Register/login/etc. are **not** new OpenAPI routes on the monolith, so **`openapi/add-route`**, **`sdk/add-query`**, and **`sdk/add-mutation`** do **not** apply to Kratos traffic. Instead:
+### TanStack hooks: `sdk/add-query` / `sdk/add-mutation` vs Kratos
 
-| Need | Menus-style analogue | Kratos approach |
-|------|----------------------|-----------------|
-| Session + flow helpers | `sdk/add-query` to `/menus` | Hand-written **`recipes/service/sdk/requests/kratos/*.ts`** (TanStack `useQuery` / async helpers wrapping `@ory/client` `FrontendApi`). Use **`PromptStepMachine`** steps with prompts that point at spec + existing `kratos-session.ts` / `kratos-flows.ts` patterns. |
-| Auth pages | `vue/add-view` (`AddSpaViewWorkflowDefinition`) | Same: **`vue/add-view`** for each route under **`hub/clients/auth`** (`./pages/...`, `urlPath` aligned with Kratos `ui_url` and `authLinks`). |
-| Config / monolith edits | N/A | **`PromptStepMachine`** (or focused prompts) for **`kratos.yml`**, **`run.ts`**, env, Caddy — no dedicated generator in `saf-workflow list`. |
-| E2E | `vue/add-e2e-test` | **`makeWorkflowMachine(AddE2eTestWorkflowDefinition)`** after `Cd` to `hub/clients/auth` (or recipes client if tests live there). |
+The **`sdk/add-query`** and **`sdk/add-mutation`** workflows generate modules that call **`getClient()`** against the **product OpenAPI** spec. **Kratos** uses **`@ory/client` `FrontendApi`** (`toSession`, `updateLoginFlow`, etc.) — those methods are **not** on the OpenAPI client.
 
-**Route alignment:** Kratos `selfservice.flows.registration.ui_url` uses **`/registration`** in dev; `authLinks.register` uses **`/register`**. Implementation should either align router + Kratos config or pick one path and update both — workflows call this out in prompts.
+So for Kratos we **do not** run those generators against fake REST paths (they would emit the wrong HTTP layer). Instead, each milestone uses **one `PromptStepMachine` per hook** (or per small group), written to mirror the **same shape** as generated SDK code (`queryOptions`, `useQuery`, `useMutation`, exports from `requests/kratos/index.ts`), but calling **`getKratosFrontendApi()`** or **`kratos-flows`** async helpers.
+
+**JIT:** Registration/login/recovery/verification TanStack wrappers are added in **M1–M4** when the corresponding views land, not all in M0. M0 only cements **session query** + **kratos.yml** + **kratos-client** / **kratos-flows** async fetchers.
+
+### SDK inventory (by milestone)
+
+| Milestone | Query-ish | Mutation-ish | Plain async (`kratos-flows.ts`) |
+|-----------|-----------|--------------|----------------------------------|
+| **M0** | Session: `useKratosSession` / `kratosSessionQueryOptions` (`toSession`) | — | Already: `fetchBrowserLoginFlow`, `fetchBrowserRegistrationFlow`, `fetch*FlowById` |
+| **M1** | Optional: registration flow `useQuery` (cache create/get-by-id) | `useUpdateRegistrationFlowMutation` | Extend only if new `fetch*` needed |
+| **M2** | Optional: login flow `useQuery` | `useUpdateLoginFlowMutation` | Extend only if new `fetch*` needed |
+| **M3** | Verification flow `useQuery` | `useUpdateVerificationFlowMutation` | `fetchBrowserVerificationFlow` / `getVerificationFlow` if missing |
+| **M4** | Recovery flow `useQuery` | `useUpdateRecoveryFlowMutation` | `fetchBrowserRecoveryFlow`, `getRecoveryFlow`, etc. |
 
 ### Workflow files
 
@@ -35,70 +42,78 @@ Work is broken into **one workflow file per milestone** (same idea as [menus-m2-
 | 5 | `plans/kratos-auth-m5-remove-hub-identity` | [kratos-auth-m5-remove-hub-identity.workflow.ts](./kratos-auth-m5-remove-hub-identity.workflow.ts) |
 | 6 | `plans/kratos-auth-m6-tests-polish` | [kratos-auth-m6-tests-polish.workflow.ts](./kratos-auth-m6-tests-polish.workflow.ts) |
 
----
+**Route alignment:** Kratos `registration.ui_url` may use **`/registration`**; `authLinks.register` uses **`/register`**. Pick one path and align **router + kratos.yml**.
 
-## Milestone 0 — SDK + Kratos config groundwork
+**Verify wall (M3):** Lives in **`hub/clients/auth`** (shared auth SPA), **not** in `recipes/clients/app`, so any product using hub auth gets the same post-registration / unverified-email behavior.
 
-**Packages:** `recipes/service/sdk`, the three `kratos.yml` files above.
-
-**Goal:** SDK helpers for flows you will need next (at minimum registration + session). Enable **recovery** blocks + `ui_url` in all three configs; confirm **verification** `ui_url` and `use: code` match `hub/clients/auth` routes.
-
-**Stopping point:** Dev Kratos reflects config; SDK can create/update registration flow from the app.
+| Auth pages | `vue/add-view` (`AddSpaViewWorkflowDefinition`) | Under **`hub/clients/auth`** (`./pages/...`). |
+| Config / monolith | `PromptStepMachine` | `kratos.yml`, `run.ts`, env, Caddy. |
+| E2E | `vue/add-e2e-test` | After `Cd` to `hub/clients/auth`. |
 
 ---
 
-## Milestone 1 — Registration + logout (first vertical slice)
+## Milestone 0 — Kratos config + session query + kratos client/fetchers
 
-**Packages:** `hub/clients/auth`, `recipes/clients/...`, SDK as needed.
+**Packages:** `recipes/service/sdk`, the three `kratos.yml` files.
 
-**Goal:** Kratos **registration** end-to-end: user registers, ends **logged in**, redirects to **recipes app**. Include **logout** in the same milestone (`createBrowserLogoutFlow` → `logout_url`) so you can clear the session while exercising later milestones (login, verification, recovery) without juggling stale sessions. Wire routes only for this slice (no login page yet beyond what’s needed for navigation if any).
+**Goal:** Three YAML files updated; **`kratos-session`** session query solid; **`kratos-client`** + **`kratos-flows`** ready; **no** registration/login JIT hooks in M0.
 
-**Stopping point:** Manual test on dev: register → lands in recipes with session → **logout** → session cleared (whoami / `toSession` shows logged out).
+**Stopping point:** Dev Kratos config includes recovery block; SDK typechecks; session query works.
+
+---
+
+## Milestone 1 — Registration + logout
+
+**Packages:** `recipes/service/sdk` (JIT registration hooks), `hub/clients/auth`, recipes redirect wiring.
+
+**Goal:** JIT **registration** query/mutation modules; registration **vue/add-view**; **logout**; replace **createAuthRouter** with a plain router or register Kratos routes first / drop legacy auth shell; redirect to recipes.
+
+**Stopping point:** register → recipes → logout → session cleared.
 
 ---
 
 ## Milestone 2 — Login
 
-**Packages:** `hub/clients/auth`, recipes wiring.
+**Packages:** `recipes/service/sdk` (JIT login hooks), `hub/clients/auth`.
 
-**Goal:** **Login** flow; successful login redirects into recipes per product rules.
+**Goal:** JIT login mutation + optional login-flow query; login page; router; redirect to recipes.
 
-**Stopping point:** Register (existing) + login both work; session shared as expected.
+**Stopping point:** Login works end-to-end with M1.
 
 ---
 
-## Milestone 3 — Verification + verify wall
+## Milestone 3 — Verification + verify wall (auth app)
 
-**Packages:** `hub/clients/auth`, recipes (gating).
+**Packages:** `recipes/service/sdk` (JIT verification hooks), `hub/clients/auth`.
 
-**Goal:** **Verification** (code method). If the user is logged in but email is not verified, show **verify wall** (reuse or add page) instead of the main app—do not redirect straight into the app until policy is satisfied.
+**Goal:** Verification flow page; **verify wall** route/guard in **hub auth** so unverified users stay in the shared SPA; **no** verify wall in recipes.
 
-**Stopping point:** Unverified user sees wall; after verification, can use recipes normally.
+**Stopping point:** Unverified user hits wall in auth app; after verification, can reach recipes.
 
 ---
 
 ## Milestone 4 — Recovery
 
-**Packages:** `hub/clients/auth`, SDK (recovery helpers if not already), all three `kratos.yml` recovery entries verified against routes.
+**Packages:** `recipes/service/sdk` first, then `hub/clients/auth`.
 
-**Goal:** Forgot password → email → complete reset → can log in again.
+**Goal:** JIT recovery query/mutation + async `fetch*` in `kratos-flows`; recovery **vue/add-view**; email link + `?flow=` works.
 
-**Stopping point:** Full recovery path works in dev.
+**Stopping point:** Full recovery path in dev.
 
 ---
 
 ## Milestone 5 — Remove hub identity from hub + recipes
 
-**Packages:** `hub/service/monolith`, `recipes/service/monolith`, `package.json` deps, deploy env / Caddy / docker as needed.
+**Packages:** `hub/service/monolith`, `recipes/service/monolith`, deps, deploy env / Caddy / docker.
 
-**Goal:** No `startHubIdentityService()` (and no `@sderickson/hub-identity` dependency) on these monoliths; env vars and proxies no longer assume identity gRPC service for this stack.
+**Goal:** No `startHubIdentityService()` on these monoliths; env/proxies updated for hub/recipes.
 
-**Stopping point:** Hub and recipes monoliths start without identity service; auth works via Kratos only.
+**Stopping point:** Monoliths start; Kratos-only auth.
 
 ---
 
 ## Milestone 6 — Tests and polish
 
-**Goal:** Playwright or integration tests where the repo mocks email; remove or retire prototype-only pages (e.g. Kratos test page) if redundant; i18n/accessibility as needed.
+**Goal:** E2E; retire redundant prototype pages if replaced; i18n/a11y.
 
-**Stopping point:** CI green; spec acceptance criteria met.
+**Stopping point:** CI green; spec met.

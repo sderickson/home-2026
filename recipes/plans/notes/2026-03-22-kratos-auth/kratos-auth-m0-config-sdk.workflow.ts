@@ -1,12 +1,18 @@
 /**
- * Milestone 0 — Kratos config (all three yml) + recipes SDK Kratos helpers.
+ * Milestone 0 — Kratos config (all three yml) + recipes SDK: TanStack hooks for Kratos.
  * Run from recipes/plans so paths resolve.
+ *
+ * Note: `sdk/add-query` and `sdk/add-mutation` generate `getClient()` OpenAPI calls. Kratos uses
+ * `@ory/client` `FrontendApi`, not the product OpenAPI spec — so we do **not** invoke those
+ * generators for Kratos (they would emit wrong HTTP). Each step below is one **focused prompt**
+ * structured like a single generator run (one concern, one file or small set, then typecheck).
  */
 import {
   defineWorkflow,
   step,
   CdStepMachine,
   PromptStepMachine,
+  CommandStepMachine,
 } from "@saflib/workflows";
 import { GetFeedbackStep } from "@saflib/processes/workflows";
 import path from "path";
@@ -20,7 +26,7 @@ export const KratosAuthM0ConfigSdkWorkflowDefinition = defineWorkflow<
 >({
   id: "plans/kratos-auth-m0-config-sdk",
   description:
-    "Kratos M0: recovery + ui_url in three kratos.yml files; extend recipes SDK requests/kratos for registration + session.",
+    "Kratos M0: three kratos.yml files + M0 SDK scope (session query only; registration/login/etc. JIT in M1+).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -36,18 +42,50 @@ export const KratosAuthM0ConfigSdkWorkflowDefinition = defineWorkflow<
     step(CdStepMachine, () => ({ path: ".." })),
 
     step(PromptStepMachine, ({ context }) => ({
-      prompt: `Read **${context.docFiles!.spec}** and **${context.docFiles!.plan}** (Milestone 0).
+      prompt: `Read **${context.docFiles!.spec}** and **${context.docFiles!.plan}** (Milestone 0 — config only).
 
-CWD is \`recipes/\`. Implement M0 only:
+CWD is \`recipes/\`. Edit **three** Kratos configs in place:
+- \`dev/kratos/kratos.yml\`
+- \`../deploy/kratos-prod-local/kratos.yml\`
+- \`../deploy/remote-assets/kratos/kratos.yml\`
 
-1. **Kratos YAML (three files)** — Add \`selfservice.flows.recovery\` with \`enabled: true\` and \`ui_url\` matching the hub auth SPA route you will use for recovery. Keep **verification** \`ui_url\` and \`use: code\` consistent with the spec. Edit:
-   - \`dev/kratos/kratos.yml\`
-   - \`../deploy/kratos-prod-local/kratos.yml\`
-   - \`../deploy/remote-assets/kratos/kratos.yml\`
+Add \`selfservice.flows.recovery\` with \`enabled: true\` and \`ui_url\` for the hub auth recovery route. Keep **verification** \`ui_url\` and \`use: code\` aligned with planned routes.
 
-2. **Recipes SDK** — Under \`service/sdk/requests/kratos/\`, extend existing modules (\`kratos-client.ts\`, \`kratos-flows.ts\`, \`kratos-session.ts\`) so the app can create/update **browser registration flow** and read **session** (\`toSession\`). Follow patterns already used for login/registration in \`kratos-flows.ts\` and \`KratosTest.vue\`. Export anything new from the SDK package index if that is the project convention.
+Do not change SDK or Vue in this step. Do not change \`post-kratos-courier\`.`,
+    })),
 
-Do not implement Vue pages in this step. Do not change \`post-kratos-courier\`.`,
+    step(CdStepMachine, () => ({ path: "service/sdk" })),
+
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (SDK inventory — M0).
+
+CWD is \`recipes/service/sdk\`. **TanStack query (session only for M0)**
+
+Target file: \`requests/kratos/kratos-session.ts\`
+
+- Ensure \`kratosSessionQueryOptions\` / \`useKratosSession\` wrap \`getKratosFrontendApi().toSession\` and treat 401 as \`null\` session.
+- Keep \`useInvalidateKratosSession\` for post-login/register/logout.
+
+This step mirrors **one** \`sdk/add-query\` run in scope (single module), but uses Ory \`FrontendApi\` instead of \`getClient()\`. **Do not** add registration/login/recovery/verification TanStack wrappers here — those are **JIT** in M1–M4 per plan.`,
+    })),
+
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}**.
+
+CWD is \`recipes/service/sdk\`. **Kratos client + flow fetchers (no new TanStack hooks unless already missing)**
+
+- \`requests/kratos/kratos-client.ts\` — base URL / \`new Configuration\` / credentials as needed for browser.
+- \`requests/kratos/kratos-flows.ts\` — keep **async** \`fetchBrowserLoginFlow\`, \`fetchBrowserRegistrationFlow\`, \`fetch*FlowById\` as today; **do not** add \`useMutation\`/\`useQuery\` here in M0 unless required to compile.
+
+- \`requests/kratos/index.ts\` — export public surface.
+
+Run typecheck for this package after edits.`,
+    })),
+
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck recipes SDK after Kratos session/client edits.",
     })),
 
     GetFeedbackStep,

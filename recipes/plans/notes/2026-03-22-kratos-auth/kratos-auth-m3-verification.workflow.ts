@@ -1,6 +1,6 @@
 /**
- * Milestone 3 — Verification (code) + verify wall in recipes.
- * Packages: hub/clients/auth, recipes/clients/app.
+ * Milestone 3 — Verification (code) + verify wall in the shared auth SPA only.
+ * Packages: hub/clients/auth, recipes/service/sdk (JIT).
  */
 import {
   defineWorkflow,
@@ -8,6 +8,7 @@ import {
   makeWorkflowMachine,
   CdStepMachine,
   PromptStepMachine,
+  CommandStepMachine,
 } from "@saflib/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import { GetFeedbackStep } from "@saflib/processes/workflows";
@@ -22,7 +23,7 @@ export const KratosAuthM3VerificationWorkflowDefinition = defineWorkflow<
 >({
   id: "plans/kratos-auth-m3-verification",
   description:
-    "Kratos M3: verification flow (code) + recipes verify wall gating unverified users.",
+    "Kratos M3: JIT SDK for verification + verification page + verify wall in hub auth app (not recipes).",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -35,7 +36,27 @@ export const KratosAuthM3VerificationWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
+    step(CdStepMachine, () => ({ path: "../service/sdk" })),
+
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (M3 — JIT SDK).
+
+CWD is \`recipes/service/sdk\`. **Verification flow — TanStack (query + mutation)**
+
+Add modules under \`requests/kratos/\` structured like **sdk/add-query** / **sdk/add-mutation** (thin \`useQuery\` / \`useMutation\`), but calling **FrontendApi**:
+- Query: load verification flow — \`createBrowserVerificationFlow\` / \`getVerificationFlow\` (flow id from route/\`?flow=\`).
+- Mutation: \`updateVerificationFlow\`.
+
+Export from \`requests/kratos/index.ts\`.`,
+    })),
+
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck recipes SDK after verification JIT hooks.",
+    })),
+
+    step(CdStepMachine, () => ({ path: "../../../hub/clients/auth" })),
 
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/kratos/verification",
@@ -43,19 +64,27 @@ export const KratosAuthM3VerificationWorkflowDefinition = defineWorkflow<
       prompt: `Read ${context.docFiles!.spec} and ${context.docFiles!.plan} (Milestone 3).
 
 Create **email verification** at \`/verification\` (match Kratos \`verification.ui_url\`):
-- \`createBrowserVerificationFlow\` / \`getVerificationFlow\` (including \`?flow=\` from email links).
-- Config uses **code** method: render nodes from Kratos (\`updateVerificationFlow\`).
-- After success, refresh session and route user appropriately.`,
+- Code method: render \`ui.nodes\`, \`updateVerificationFlow\`.
+- Support \`?flow=\` from email links.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "../../../recipes/clients/app" })),
-
-    step(PromptStepMachine, ({ context }) => ({
+    step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
+      path: "./pages/kratos/verify-wall",
+      urlPath: "/verify-wall",
       prompt: `Read ${context.docFiles!.spec} (M3).
 
-In **recipes client** (\`recipes/clients/app\`): implement **verify wall** behavior — if the user is authenticated but email is **not** verified, show the verify wall / verification UX instead of the main app shell. Reuse or adapt existing verify-wall routes from \`@saflib/identity/auth\` patterns if present.
+Create **verify wall** in the **hub auth app** at \`/verify-wall\` (or the path aligned with product links):
 
-Do not send unverified users straight into the main app experience until policy is satisfied.`,
+- When the user has a Kratos session but **email is not verified**, keep them on this **shared auth SPA** (show message + link to verification flow / resend as Kratos allows).
+- **Do not** implement this wall inside \`recipes/clients/app\` — the wall is shared for any product that uses hub auth post-registration.
+
+Wire **navigation guards** or post-login routing in **hub auth** so post-registration and post-login send unverified users here before redirecting to recipes (or other products).`,
+    })),
+
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck hub auth SPA.",
     })),
 
     GetFeedbackStep,

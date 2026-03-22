@@ -18,7 +18,7 @@ The SPA uses Kratos’s **[Frontend API](https://www.ory.com/docs/kratos/referen
 
 - As a user, I want to **register** with email and password and land **logged in**, then be sent to the **recipes** app.
 - As a user, I want to **log in** with email and password to access the app.
-- As a user, I want to **verify my email** using the **code** flow; until verified, the app should keep me on a **verify wall** instead of the main app experience.
+- As a user, I want to **verify my email** using the **code** flow; until verified, the **shared hub auth app** should keep me on a **verify wall** (not product SPAs like recipes), so behavior is consistent no matter which product I signed up from.
 - As a user, I want to **reset my password** via email when I forget it.
 - As a user, I want to **log out** so my session ends (browser logout flow).
 - As a developer, I want **hub and recipes** to rely on **Kratos only**, not the hub identity service, for this stack.
@@ -65,7 +65,7 @@ All implemented under **`hub/clients/auth/`**, consumed by recipes (first) and h
 
 1. **Registration** — Kratos registration flow; on success, session active; **redirect to recipes app** (per `return_to` / app routing rules).
 2. **Login** — Kratos login flow; redirect into recipes when appropriate.
-3. **Verification** — Code-based verification flow; if session exists but email not verified, **show verify wall** (existing or new page) instead of sending users into the main app—encourage verification first.
+3. **Verification** — Code-based verification flow; if session exists but email not verified, **show verify wall** in the **hub auth SPA** (shared across products) before sending users to recipes or other apps.
 4. **Recovery** — Request + complete recovery; `?flow=` / email return handling.
 5. **Logout** — `createBrowserLogoutFlow` → navigate to `logout_url`.
 
@@ -77,7 +77,7 @@ Work **one flow at a time** (vertical slices), recipes + hub auth client:
 
 1. **Registration** — Including “logged in after register” and redirect to **recipes**, plus **logout** in the same milestone so testers can reset session before **login** and later flows (no separate milestone for logout).
 2. **Login** — Redirect into recipes when ready.
-3. **Verification** — Code flow + **verify wall** gating (do not send unverified users straight into the app).
+3. **Verification** — Code flow + **verify wall** in **`hub/clients/auth`** (shared; not implemented inside individual product apps like recipes).
 4. **Recovery** — Forgot password → email → complete reset.
 
 **Decommission hub identity** for hub/recipes can proceed in parallel once flows are exercised, or as a final integration step—must complete before calling the project “done” for this scope.
