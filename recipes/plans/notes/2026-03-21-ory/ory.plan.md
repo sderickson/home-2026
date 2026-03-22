@@ -51,12 +51,16 @@
 4. **Verify**: `docker compose up`, then in browser console on any `*.docker.localhost` page:
    ```js
    fetch("http://kratos.docker.localhost/self-service/registration/browser", {
-     credentials: "include", redirect: "follow"
-   }).then(r => r.json()).then(console.log)
+     credentials: "include",
+     redirect: "follow",
+   })
+     .then((r) => r.json())
+     .then(console.log);
    ```
    Should return a registration flow JSON object.
 
 ### Risks / Notes
+
 - Kratos CORS must allow credentials from `*.docker.localhost` origins. If Kratos's built-in CORS wildcard doesn't match subdomains correctly, Caddy can handle CORS instead (it already has a `cors` snippet).
 - The `--dev` flag disables some security checks (like requiring HTTPS) which is appropriate for local dev.
 - The courier HTTP delivery config needs to match whatever endpoint we build in milestone 4. For now it can point to a non-existent endpoint; courier will retry.
@@ -98,6 +102,7 @@
    - Log back in with the same credentials.
 
 ### Risks / Notes
+
 - Kratos browser flows involve a `?flow=<uuid>` query parameter. When Kratos redirects back to the UI URL, the page needs to check for this parameter on mount and fetch the flow data. Alternatively, using the SDK's AJAX-style methods (`updateLoginFlow` etc.) avoids full-page redirects — this is the recommended approach for the test page.
 - `@ory/client` is a plain REST SDK with no framework dependency — works fine with Vue.
 - Kratos manages its own CSRF for self-service flows via hidden form fields in the UI nodes. This is separate from the API CSRF concern handled in milestone 4.
@@ -130,6 +135,7 @@
    - Log out via the test page, refresh recipes app, status should show "Not logged in".
 
 ### Risks / Notes
+
 - The Kratos session cookie (domain `.docker.localhost`) must be sent by the browser to `app.recipes.docker.localhost`. This should work since both are subdomains of `docker.localhost`, but is the key thing this milestone validates.
 - The `toSession()` call from the recipes app goes to `http://kratos.docker.localhost/sessions/whoami`. CORS must allow the `http://app.recipes.docker.localhost` origin with credentials.
 
@@ -173,6 +179,7 @@ Update `recipes/dev/caddy-config/common.Caddyfile`:
 #### 4b. Express: Make `Auth` type fields optional
 
 Update `saflib/node/src/types.ts`:
+
 ```typescript
 interface Auth {
   userId: string;
@@ -200,12 +207,15 @@ Update `saflib/express/src/middleware/context.ts` to handle both code paths:
    - Populate `Auth` with all resolved fields
 
 The middleware becomes async for the Kratos path. Pattern:
+
 ```typescript
 const contextMiddleware: Handler = (req, res, next) => {
-  resolveAuth(req).then((auth) => {
-    // ... create context with auth, run in AsyncLocalStorage ...
-    next();
-  }).catch(next);
+  resolveAuth(req)
+    .then((auth) => {
+      // ... create context with auth, run in AsyncLocalStorage ...
+      next();
+    })
+    .catch(next);
 };
 ```
 
@@ -214,6 +224,7 @@ Where `resolveAuth` is a helper that handles both paths, sync for identity-serve
 #### 4d. Express: Add CSRF middleware
 
 Add CSRF checking to `saflib/express/src/middleware/auth.ts` (or a new file):
+
 - For non-GET/HEAD/OPTIONS requests, require a custom header (e.g. `X-Requested-With` or a CSRF token).
 - Skip for routes tagged `no-auth` (same as auth middleware).
 - This replaces the CSRF check that was previously in the identity server's verify endpoint.
@@ -222,6 +233,7 @@ Add CSRF checking to `saflib/express/src/middleware/auth.ts` (or a new file):
 #### 4e. Express: Add Kratos courier email endpoint
 
 Add an endpoint to the monolith (or to the email router):
+
 - `POST /email/kratos-courier` — receives email data from Kratos HTTP courier.
 - Parses the Kratos courier payload (recipient, template type, template data including verification/recovery URLs).
 - Formats into an email and sends via `emailClient.sendEmail()`.
@@ -238,8 +250,8 @@ Add an endpoint to the monolith (or to the email router):
 - Test email: register a new user, confirm verification email appears in `GET /email/sent`.
 
 ### Risks / Notes
+
 - **Per-request Kratos call**: The Kratos admin API call in context middleware adds latency to every authenticated request. Acceptable for now; will be replaced with a product-level lookup (e.g. user table in the product DB) later. Could also add a simple in-memory cache (identity UUID → email/admin, TTL 60s) to reduce calls.
-- **Kratos admin API access**: The monolith needs network access to `kratos:4434`. In docker-compose they're on the same network, so `kratos:4434` should resolve. Add a `KRATOS_ADMIN_URL` env var (e.g. `http://kratos:4434`) to `recipes/dev/env.dev`.
 - **CSRF approach**: The simplest option is requiring a custom header like `X-Requested-With: XMLHttpRequest` on mutations. The existing SDK fetch calls can set this. More robust than nothing, less complex than double-submit cookies.
 - **`Auth` type optionality ripple**: Making `userEmail`, `userScopes`, `emailVerified` optional may cause TypeScript errors in downstream code that assumes they're present. `getSafContextWithAuth()` returns `SafContextWithAuth` — callers may need to handle the optional fields or use a stricter helper that guarantees all fields (for identity-server setups).
 - **Kratos courier HTTP payload**: The exact format depends on Kratos version. Need to verify against the version we use. The Express endpoint should log the raw payload initially for debugging.
@@ -248,18 +260,18 @@ Add an endpoint to the monolith (or to the email router):
 
 ## Summary of Key Architecture Decisions
 
-| Concern | Decision | Rationale |
-|---|---|---|
-| Kratos API access | Expose via `kratos.docker.localhost` through Caddy | Browser needs direct access for self-service flows |
-| Session sharing | Cookie domain `.docker.localhost`, SameSite=Lax | Same as current approach, matches subdomain structure |
-| API auth (forward_auth) | New `kratos-api-proxy` Caddy snippet using whoami | Copies only `X-Kratos-Authenticated-Identity-Id`; Express resolves the rest |
-| Identity server compat | Keep existing `api-proxy`, `identity` Caddy snippets | Other products depend on them; share common.Caddyfile across products |
-| Admin determination | Express reads `IDENTITY_SERVICE_ADMIN_EMAILS`, checks email from Kratos API | Moved from identity verify to product layer; temporary until product-level check |
-| CSRF | Express middleware for both identity-server and Kratos setups | Moved from identity verify; single responsibility |
-| Email delivery | Kratos HTTP courier → Express endpoint → existing nodemailer/EmailClient | Keeps existing test infrastructure (sentEmails array, /email/sent, Playwright fixtures) |
-| Database | SQLite for both dev and prod (Kratos and product) | Consistent with existing product DB approach |
-| Frontend SDK | `@ory/client` + tanstack query for session | `useKratosSession()` as a cached query; flow submissions as plain async |
-| Existing auth pages | Keep alongside Kratos test page | Migrate incrementally after core integration is proven |
+| Concern                 | Decision                                                                    | Rationale                                                                               |
+| ----------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Kratos API access       | Expose via `kratos.docker.localhost` through Caddy                          | Browser needs direct access for self-service flows                                      |
+| Session sharing         | Cookie domain `.docker.localhost`, SameSite=Lax                             | Same as current approach, matches subdomain structure                                   |
+| API auth (forward_auth) | New `kratos-api-proxy` Caddy snippet using whoami                           | Copies only `X-Kratos-Authenticated-Identity-Id`; Express resolves the rest             |
+| Identity server compat  | Keep existing `api-proxy`, `identity` Caddy snippets                        | Other products depend on them; share common.Caddyfile across products                   |
+| Admin determination     | Express reads `IDENTITY_SERVICE_ADMIN_EMAILS`, checks email from Kratos API | Moved from identity verify to product layer; temporary until product-level check        |
+| CSRF                    | Express middleware for both identity-server and Kratos setups               | Moved from identity verify; single responsibility                                       |
+| Email delivery          | Kratos HTTP courier → Express endpoint → existing nodemailer/EmailClient    | Keeps existing test infrastructure (sentEmails array, /email/sent, Playwright fixtures) |
+| Database                | SQLite for both dev and prod (Kratos and product)                           | Consistent with existing product DB approach                                            |
+| Frontend SDK            | `@ory/client` + tanstack query for session                                  | `useKratosSession()` as a cached query; flow submissions as plain async                 |
+| Existing auth pages     | Keep alongside Kratos test page                                             | Migrate incrementally after core integration is proven                                  |
 
 ## Post-Integration Follow-up Tasks
 
