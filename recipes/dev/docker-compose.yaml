@@ -47,6 +47,28 @@ services:
       - ./.env
       - ./env.dev
 
+  kratos-migrate:
+    image: oryd/kratos:v1.3.1
+    command: migrate sql -e --yes
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      # Persists SQLite (identities, sessions, flows) across container restarts
+      - ./kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+
+  kratos:
+    image: oryd/kratos:v1.3.1
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - ./kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     hostname: azurite

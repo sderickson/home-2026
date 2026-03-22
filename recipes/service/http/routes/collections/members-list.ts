@@ -15,13 +15,17 @@ export const membersListCollectionsHandler = createHandler(async (req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
   const id = req.params.id as string;
+  const userEmail = auth.userEmail;
+  if (!userEmail) {
+    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+  }
   const emailValidated =
     (auth as { emailVerified?: boolean }).emailVerified !== false;
 
   const { result: member, error: memberError } =
     await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
       recipesDbKey,
-      { collectionId: id, email: auth.userEmail },
+      { collectionId: id, email: userEmail },
     );
 
   if (memberError) {

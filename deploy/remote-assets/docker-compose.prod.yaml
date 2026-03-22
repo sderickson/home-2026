@@ -56,6 +56,30 @@ services:
   # BEGIN WORKFLOW AREA monolith FOR product/init
   # END WORKFLOW AREA
 
+  kratos-migrate:
+    image: oryd/kratos:v1.3.1
+    command: migrate sql -e --yes
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - /opt/kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+
+  kratos:
+    image: oryd/kratos:v1.3.1
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    env_file:
+      - ./.env.kratos.secrets
+    volumes:
+      - /opt/kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+    restart: unless-stopped
+
   prometheus:
     image: prom/prometheus:v3.10.0
     volumes:
@@ -92,7 +116,7 @@ services:
     image: containrrr/watchtower:latest
     command:
       # Poll every 5 seconds so local "push new :latest" tests are fast.
-      - "--interval=5"
+      - "--interval=60"
       # Only update containers explicitly opted-in via the enable label.
       - "--label-enable"
       - "--cleanup"

@@ -15,11 +15,15 @@ export const membersRemoveCollectionsHandler = createHandler(async (req, res) =>
 
   const id = req.params.id as string;
   const memberId = req.params.memberId as string;
+  const userEmail = auth.userEmail;
+  if (!userEmail) {
+    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+  }
 
   const { result: callerMember, error: memberError } =
     await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
       recipesDbKey,
-      { collectionId: id, email: auth.userEmail },
+      { collectionId: id, email: userEmail },
     );
 
   if (memberError) {

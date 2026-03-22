@@ -44,13 +44,20 @@ http://admin.docker.localhost {
 
 http://api.recipes.docker.localhost {
 	import cors recipes.docker.localhost
-	import api-proxy monolith:3000 monolith:3002
+	import kratos-api-proxy monolith:3002
 }
 
 # Identity service
 
 http://identity.docker.localhost {
 	import identity docker.localhost monolith:3000
+}
+
+# Kratos public API
+
+http://kratos.docker.localhost {
+	import cors docker.localhost
+	reverse_proxy kratos:4433
 }
 
 # Azurite

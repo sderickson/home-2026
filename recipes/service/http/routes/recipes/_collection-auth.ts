@@ -34,6 +34,10 @@ export async function requireCollectionMembership(
   if (!auth) {
     throw createError(401, "Unauthorized", { code: "UNAUTHORIZED" });
   }
+  const userEmail = auth.userEmail;
+  if (!userEmail) {
+    throw createError(403, "Forbidden", { code: "FORBIDDEN" });
+  }
 
   const { error: collectionError } = await collectionQueries.getByIdCollection(
     recipesDbKey,
@@ -53,7 +57,7 @@ export async function requireCollectionMembership(
   const { result: member, error: memberError } =
     await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
       recipesDbKey,
-      { collectionId, email: auth.userEmail },
+      { collectionId, email: userEmail },
     );
 
   if (memberError) {

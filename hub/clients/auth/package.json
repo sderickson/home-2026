@@ -19,6 +19,7 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@sderickson/recipes-sdk": "*",
     "@saflib/auth": "*",
     "@saflib/auth-links": "*",
     "@saflib/links": "*",
