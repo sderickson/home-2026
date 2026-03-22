@@ -116,7 +116,7 @@ services:
     image: containrrr/watchtower:latest
     command:
       # Poll every 5 seconds so local "push new :latest" tests are fast.
-      - "--interval=5"
+      - "--interval=60"
       # Only update containers explicitly opted-in via the enable label.
       - "--label-enable"
       - "--cleanup"
