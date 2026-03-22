@@ -31,7 +31,7 @@
     "sortablejs": "^1.15.2"
   },
   "devDependencies": {
-    "@types/marked": "^5.0.2",
+    "@types/marked": "^6.0.0",
     "@types/sortablejs": "^1.15.8"
   }
 }
