@@ -1,41 +1,73 @@
 # Kratos auth flows — Implementation plan
 
-This plan breaks [kratos-auth.spec.md](./kratos-auth.spec.md) into milestones. Run workflows from **recipes/plans**.
+This plan follows [kratos-auth.spec.md](./kratos-auth.spec.md). Run workflows from **recipes/plans**.
+
+**Principles:** Kratos pages live in **`hub/clients/auth/`** only (no `saflib/identity/auth` for this project). **Recipes** is the first app to integrate (shared hub auth client). **Remove hub identity** from hub + recipes monoliths as part of scope. **Do not change** `kratos-courier`. Add **recovery** to **all three** `kratos.yml` files (`recipes/dev`, `deploy/kratos-prod-local`, `deploy/remote-assets`).
 
 ---
 
-## Milestone 1 — SDK + Kratos config
+## Milestone 0 — SDK + Kratos config groundwork
 
-**Packages:** `recipes/service/sdk` (Kratos helpers), `recipes/dev/kratos` (and deploy Kratos config copies if present).
+**Packages:** `recipes/service/sdk`, the three `kratos.yml` files above.
 
-**Goal:** Helpers for recovery and verification flows (create/get/update) alongside existing login/registration/session helpers. Enable **recovery** in `kratos.yml` with `ui_url` aligned to the SPA route you will implement; verify dev email links for recovery and verification point at that host/path.
+**Goal:** SDK helpers for flows you will need next (at minimum registration + session). Enable **recovery** blocks + `ui_url` in all three configs; confirm **verification** `ui_url` and `use: code` match `hub/clients/auth` routes.
 
-**Stopping point:** From code or a thin script, you can create and update recovery and verification flows against dev Kratos; config matches routes.
-
----
-
-## Milestone 2 — Shared Kratos UI components / pages
-
-**Packages:** `saflib/identity/auth` (or a clearly named submodule for Kratos-only pages).
-
-**Goal:** Production-quality Vue pages for login, registration, recovery (request + complete), and verification, using flow lifecycle (`ui.nodes`, error flow extraction, `update*Flow`). Shared composables: session query + invalidation, optional `?flow=` bootstrap for email return. Logout via `logout_url` redirect.
-
-**Stopping point:** Pages work when mounted in a dev app (e.g. temporarily routed from hub auth client).
+**Stopping point:** Dev Kratos reflects config; SDK can create/update registration flow from the app.
 
 ---
 
-## Milestone 3 — Product wiring
+## Milestone 1 — Registration (first vertical slice)
 
-**Packages:** `hub/clients/auth`, `recipes/clients/...` (as chosen), router (`createAuthRouter` or parallel routes).
+**Packages:** `hub/clients/auth`, `recipes/clients/...`, SDK as needed.
 
-**Goal:** Wire `authLinks` paths to Kratos pages; remove or gate the prototype-only test page if redundant; ensure redirects and `return_to` behavior match product expectations.
+**Goal:** Single Kratos **registration** flow end-to-end: user registers, ends **logged in**, redirects to **recipes app**. Wire routes only for this slice (no full auth matrix yet).
 
-**Stopping point:** End-to-end manual path: register → verify → log out → log in → forgot password → reset → log in, on target domain(s).
+**Stopping point:** Manual test on dev: register → lands in recipes with session.
 
 ---
 
-## Milestone 4 — Tests and polish
+## Milestone 2 — Login
 
-**Goal:** Playwright or integration coverage for critical paths where the repo already tests email (mock courier); i18n strings where other auth pages use them; accessibility pass on dynamic nodes.
+**Packages:** `hub/clients/auth`, recipes wiring.
+
+**Goal:** **Login** flow; successful login redirects into recipes per product rules.
+
+**Stopping point:** Register (existing) + login both work; session shared as expected.
+
+---
+
+## Milestone 3 — Verification + verify wall
+
+**Packages:** `hub/clients/auth`, recipes (gating).
+
+**Goal:** **Verification** (code method). If the user is logged in but email is not verified, show **verify wall** (reuse or add page) instead of the main app—do not redirect straight into the app until policy is satisfied.
+
+**Stopping point:** Unverified user sees wall; after verification, can use recipes normally.
+
+---
+
+## Milestone 4 — Recovery
+
+**Packages:** `hub/clients/auth`, SDK (recovery helpers if not already), all three `kratos.yml` recovery entries verified against routes.
+
+**Goal:** Forgot password → email → complete reset → can log in again.
+
+**Stopping point:** Full recovery path works in dev.
+
+---
+
+## Milestone 5 — Remove hub identity from hub + recipes
+
+**Packages:** `hub/service/monolith`, `recipes/service/monolith`, `package.json` deps, deploy env / Caddy / docker as needed.
+
+**Goal:** No `startHubIdentityService()` (and no `@sderickson/hub-identity` dependency) on these monoliths; env vars and proxies no longer assume identity gRPC service for this stack.
+
+**Stopping point:** Hub and recipes monoliths start without identity service; auth works via Kratos only.
+
+---
+
+## Milestone 6 — Tests and polish
+
+**Goal:** Playwright or integration tests where the repo mocks email; remove or retire prototype-only pages (e.g. Kratos test page) if redundant; i18n/accessibility as needed.
 
 **Stopping point:** CI green; spec acceptance criteria met.

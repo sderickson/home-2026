@@ -1,105 +1,96 @@
-# Kratos browser auth flows — product SPA
+# Kratos browser auth flows — hub + recipes
 
 ## Overview
 
-Ship **production-style** authentication UX for products that use [Ory Kratos](https://www.ory.sh/kratos/), replacing ad-hoc testing UIs with real **register**, **login**, **account recovery**, and **email verification** flows.
+Ship **production-style** authentication for **hub and recipes** using [Ory Kratos](https://www.ory.sh/kratos/) only: **register**, **login**, **account recovery**, and **email verification**, implemented as Vue pages under **`hub/clients/auth/`** (not `saflib/identity/auth`). A later migration of these patterns into `saflib` is possible but **out of scope** for this project.
 
-The [prototype integration](../2026-03-21-ory/ory.spec.md) already validated infrastructure: Kratos public API behind Caddy, cookie sessions on a shared parent domain, `forward_auth` + `X-Kratos-Authenticated-Identity-Id`, Express context middleware resolving traits via the admin API, HTTP courier for email, and CSRF on the monolith for state-changing **product** requests.
+**Decommission the hub identity server** for these apps: stop running shared identity from the hub and recipes monoliths (e.g. remove `startHubIdentityService()` from `hub/service/monolith/run.ts` and `recipes/service/monolith/run.ts`), and clean up related dependencies, env, and deploy wiring so nothing in the hub/recipes path depends on the gRPC/OpenAPI identity service. Other products (e.g. notebook) may still use `@sderickson/hub-identity` until separately migrated.
 
-This project focuses on the **browser self-service layer**: the SPA talks to Kratos’s **[Frontend API](https://www.ory.com/docs/kratos/reference/api#tag/frontend)** (`@ory/client` / `FrontendApi`) using the **flow** model (create or fetch flow → render `ui` → `update*Flow`), not to custom `POST /auth/*` routes on the monolith.
+The [prototype integration](../2026-03-21-ory/ory.spec.md) already validated infrastructure: Kratos public API, cookies, `forward_auth`, Express context + admin API, HTTP courier. This project adds **product UX** and **removes the parallel identity stack** for hub/recipes.
 
-**Non-goals for this spec**: social/OIDC login, MFA (TOTP/WebAuthn), replacing `@saflib/identity` for other products, or new product REST APIs for credentials (Kratos remains the authority).
+The SPA uses Kratos’s **[Frontend API](https://www.ory.com/docs/kratos/reference/api#tag/frontend)** (`@ory/client` / `FrontendApi`): create or fetch flow → render `ui` → `update*Flow`. No custom monolith `POST /auth/*` for credentials.
+
+**Explicitly out of scope for code changes**: **`POST /email/kratos-courier`** and courier formatting (leave as-is unless a bug appears).
+
+**Non-goals**: OIDC/social login, MFA (TOTP/WebAuthn), migrating unrelated products to Kratos.
 
 ## User Stories
 
-- As a user, I want to **register** with email and password so I can create an account.
-- As a user, I want to **log in** with email and password so I can access the app.
-- As a user, I want to **log out** so my session ends (browser logout flow with redirect).
-- As a user, I want to **reset my password** via email so I can recover access if I forget it.
-- As a user, I want to **verify my email** (link or code per Kratos config) so my account is confirmed.
-- As a user, I want clear **inline errors** when credentials or validation fail, consistent with Kratos flow messages.
+- As a user, I want to **register** with email and password and land **logged in**, then be sent to the **recipes** app.
+- As a user, I want to **log in** with email and password to access the app.
+- As a user, I want to **verify my email** using the **code** flow; until verified, the app should keep me on a **verify wall** instead of the main app experience.
+- As a user, I want to **reset my password** via email when I forget it.
+- As a user, I want to **log out** so my session ends (browser logout flow).
+- As a developer, I want **hub and recipes** to rely on **Kratos only**, not the hub identity service, for this stack.
 
 ## Packages to Modify
 
-- **`@sderickson/recipes-sdk` (or equivalent shared SDK path)** — Extend existing Kratos helpers (`kratos-client`, `kratos-flows`, `kratos-session`) with **recovery** and **verification** flow helpers (create browser flow, get flow by id, typed wrappers). Keep a single `FrontendApi` configuration used by apps.
-- **`saflib/identity/auth`** — Introduce **Kratos-native** pages or composables (register, login, recovery, verification) that follow the same **routing** patterns as `createAuthRouter` (`auth-router.ts`) but implement **flow lifecycle** instead of `useLogin` / `useRegister` against the identity OpenAPI client. Options: new Vue components alongside existing ones, or a dedicated subfolder (e.g. `pages/kratos/`) consumed by product apps. Reuse shared styling/i18n patterns where practical.
-- **Product clients (e.g. `hub/clients/auth`, `recipes/clients/...`)** — Wire routes for `/login`, `/registration`, `/verification`, recovery routes, and optional `?flow=` handling for **return from email links**. Swap or feature-flag from legacy `@saflib/auth` pages to Kratos pages where this project applies.
-- **`recipes/dev/kratos/kratos.yml` (and production/deploy Kratos config mirrors)** — Ensure **recovery** is enabled with `ui_url` pointing at the SPA route that hosts the recovery flow (parity with existing `login` / `registration` / `verification` `ui_url` entries). Align paths with the router so email links land on the correct host and path.
-- **Documentation** — Short cross-link from `ory.spec.md` or plan notes: prototype test page vs product flows (optional, only if it reduces confusion).
+- **`hub/clients/auth/`** — All Kratos-native pages, composables, and routing for login, registration, verification, recovery, logout; shared session helpers (`useKratosSession`, etc.). Both **hub** and **recipes** use this client—implement and validate **recipes first** (there is not yet a logged-in hub experience; a future milestone may add hub-specific post-login UX).
+- **`@sderickson/recipes-sdk`** — Kratos helpers (`kratos-client`, `kratos-flows`, `kratos-session`): extend with recovery and verification as needed; single `FrontendApi` config for apps using this SDK.
+- **`recipes/clients/...`** — Wire the hub auth SPA into recipes (entry, redirects after auth). Primary integration target before hub-specific shell work.
+- **`hub/service/monolith/run.ts`** (and **`recipes/service/monolith/run.ts`**) — Remove `startHubIdentityService()` and dependency on `@sderickson/hub-identity` where no longer required; align env with Kratos-only auth.
+- **Deploy / Docker / Caddy / env** — Remove or repoint `IDENTITY_SERVICE_*` (and similar) for hub and recipes where identity server is dropped; ensure `forward_auth` + Kratos paths remain correct. (Exact files emerge during implementation.)
+- **Kratos config — all three files** — Add **recovery** (`enabled`, `ui_url`) and keep **verification** aligned with routes, in:
+  - `recipes/dev/kratos/kratos.yml`
+  - `deploy/kratos-prod-local/kratos.yml`
+  - `deploy/remote-assets/kratos/kratos.yml`
 
-No changes to Express **auth** routes for login/register are required for this feature; session continues to be established by Kratos cookies and observed via `toSession()` / whoami.
+**`ui_url` and email links**: Kratos uses `selfservice.flows.*.ui_url` for **browser redirects** when starting or resuming a flow, and the **HTTP courier** includes template fields such as `verification_url` / `recovery_url` built from that configuration so emails point users at the right SPA route (often with flow or token query parameters). Exact construction is version-specific; no need to duplicate URLs manually in the monolith for this spec.
+
+**Verification (`use: code`)**: Kratos runs the **code** method: the user completes verification by entering the code in the UI (nodes from `updateVerificationFlow`). Emails may **also** include a **link** that opens the verification flow in the browser; that does not switch the project to “link-only” mode—the link is a convenience to land on the right page with an active flow, while **code entry** remains the configured method. If the link preloads state, still render whatever `ui.nodes` Kratos returns.
+
+No new **product REST** endpoints for register/login/recovery/verification; session remains Kratos cookies + `toSession()` / whoami.
 
 ## Database Schema Updates
 
-None. Identities and flows are stored by Kratos.
+None in product DBs. Kratos stores identities and flows.
 
 ## Business Objects
 
-No new **product** REST resources for this feature. The contract between the SPA and the server for self-service is **Kratos flow JSON** (`LoginFlow`, `RegistrationFlow`, `RecoveryFlow`, `VerificationFlow`, `Session`, etc. from `@ory/client`), not new SAF OpenAPI schemas.
+None new for product OpenAPI. Self-service contracts are **Kratos flow JSON** from `@ory/client`.
 
 ## API Endpoints
 
-### Product (Express) APIs
+### Product (Express)
 
-**No new endpoints** for register, login, recovery, or verification. Those operations use Kratos public API only.
-
-Existing related endpoint (unchanged responsibility):
-
-- **`POST /email/kratos-courier`** — Kratos HTTP courier delivery; already builds verification/recovery emails. Ensure templates remain aligned with `template_type` and link/code fields Kratos sends (see `post-kratos-courier.ts`).
-
-When specifying **future** product-only helpers (e.g. “resend verification” purely in-app), follow `/saflib/openapi/docs/02-api-design.md` — but that is **out of scope** unless Kratos cannot satisfy the UX without a thin proxy (prefer native Kratos flows first).
+**No new endpoints** for auth flows. **`POST /email/kratos-courier`** — no changes in this project’s scope.
 
 ### Kratos Frontend API (reference)
 
-Implementation must use the documented operations under the **Frontend** tag, for example:
+Use **Frontend** operations: session check; login / registration / logout flows; recovery and verification create/get/update; method names per pinned `@ory/client`.
 
-- Session: `toSession` / session check used for “who am I” after navigation.
-- Login: `createBrowserLoginFlow`, `getLoginFlow`, `updateLoginFlow`.
-- Registration: `createBrowserRegistrationFlow`, `getRegistrationFlow`, `updateRegistrationFlow`.
-- Logout: `createBrowserLogoutFlow` then browser navigation to `logout_url`.
-- Recovery: `createBrowserRecoveryFlow`, `getRecoveryFlow`, `updateRecoveryFlow` (and handle link-initiated flows by id).
-- Verification: `createBrowserVerificationFlow`, `getVerificationFlow`, `updateVerificationFlow` (per enabled method: code vs link).
+## Frontend Pages (hub auth client)
 
-Exact method names follow `@ory/client` for the pinned Kratos version.
+All implemented under **`hub/clients/auth/`**, consumed by recipes (first) and hub shell as applicable.
 
-## Frontend Pages
+1. **Registration** — Kratos registration flow; on success, session active; **redirect to recipes app** (per `return_to` / app routing rules).
+2. **Login** — Kratos login flow; redirect into recipes when appropriate.
+3. **Verification** — Code-based verification flow; if session exists but email not verified, **show verify wall** (existing or new page) instead of sending users into the main app—encourage verification first.
+4. **Recovery** — Request + complete recovery; `?flow=` / email return handling.
+5. **Logout** — `createBrowserLogoutFlow` → navigate to `logout_url`.
 
-1. **Login**
-   - **Purpose**: Password (and future method) login via Kratos login flow.
-   - **Behavior**: Load or create browser login flow; render `ui.nodes` (or equivalent mapped fields) including `csrf_token`; submit `updateLoginFlow`; on validation errors, replace flow from error payload; on success, refresh session (invalidate `toSession` query) and redirect per `redirectTo` / product rules.
+**Cross-cutting**: `useKratosSession`; invalidate session after login/register/logout; map `ui.nodes` and error responses that carry updated flows.
 
-2. **Registration**
-   - **Purpose**: Email + password sign-up aligned with `identity.schema.json` traits.
-   - **Behavior**: Same pattern as login with `updateRegistrationFlow` and `traits` (e.g. email); surface `ui.messages` for policy errors.
+## Implementation order (UX)
 
-3. **Account recovery (forgot password)**
-   - **Purpose**: Request recovery and complete password reset after email link.
-   - **Behavior**: Start `createBrowserRecoveryFlow`; collect identifier email; follow Kratos steps until completion; support **direct** opens with `flow` id from query (email link). Submit via `updateRecoveryFlow`; handle multi-step state via returned flow.
+Work **one flow at a time** (vertical slices), recipes + hub auth client:
 
-4. **Email verification**
-   - **Purpose**: Complete verification per Kratos config (code and/or link).
-   - **Behavior**: `createBrowserVerificationFlow` or `getVerificationFlow` when returning from email; submit `updateVerificationFlow`; show success/failure from flow messages.
+1. **Registration** — Including “logged in after register” and redirect to **recipes**.
+2. **Login** — Redirect into recipes when ready.
+3. **Verification** — Code flow + **verify wall** gating (do not send unverified users straight into the app).
+4. **Recovery** — Forgot password → email → complete reset.
 
-5. **Logout**
-   - **Purpose**: End session using browser logout flow.
-   - **Behavior**: `createBrowserLogoutFlow`, then `window.location` to `logout_url` (full navigation); optional post-logout redirect via Kratos `return_to` where supported.
-
-**Cross-cutting**
-
-- **Session query**: Central `useKratosSession` (or equivalent) wrapping `toSession()` with TanStack Query; invalidate after login/register/logout.
-- **Routing**: Reuse `authLinks`-style paths where possible; ensure Kratos `selfservice.flows.*.ui_url` values match deployed routes.
-- **Accessibility & UX**: Map Kratos `ui.nodes` to accessible labels; preserve loading/disabled states during `update*Flow` calls.
+**Decommission hub identity** for hub/recipes can proceed in parallel once flows are exercised, or as a final integration step—must complete before calling the project “done” for this scope.
 
 ## Future Enhancements / Out of Scope
 
-- OIDC/social login, MFA, WebAuthn.
-- Replacing legacy `@saflib/identity` for all products.
-- Ory Elements embedded UI (could replace hand-rendered nodes later).
-- Product-specific “invite-only registration” gates (client or API) — not required here.
-- Caching identity resolution beyond current context middleware behavior.
+- Logged-in **hub** home or shell (recipes is the first authenticated destination).
+- Migrating **notebook** (or other products) off hub-identity.
+- Moving Kratos page implementations from `hub/clients/auth` into `saflib`.
+- OIDC/social, MFA, Ory Elements.
+- Changes to **kratos-courier** handler behavior or templates.
 
 ## Questions and Clarifications
 
-- **Recovery in `kratos.yml`**: Confirm **recovery** `enabled` + `ui_url` are added wherever dev/prod configs are duplicated so email links match the SPA.
-- **Verification method**: Dev config uses `verification.use: code`; product UX must match (show code input vs link-only) per environment.
-- **Which app ships first**: Hub vs recipes — spec applies to both patterns; implementation may start with one client and extract shared components.
+- **Notebook monolith** still calls `startHubIdentityService()` today—out of scope unless we explicitly extend this project to notebook.
+- **Recovery URLs**: Add `recovery` to **all three** `kratos.yml` files so dev, prod-local, and remote deploy behave consistently.
