@@ -75,7 +75,7 @@ All implemented under **`hub/clients/auth/`**, consumed by recipes (first) and h
 
 Work **one flow at a time** (vertical slices), recipes + hub auth client:
 
-1. **Registration** — Including “logged in after register” and redirect to **recipes**.
+1. **Registration** — Including “logged in after register” and redirect to **recipes**, plus **logout** in the same milestone so testers can reset session before **login** and later flows (no separate milestone for logout).
 2. **Login** — Redirect into recipes when ready.
 3. **Verification** — Code flow + **verify wall** gating (do not send unverified users straight into the app).
 4. **Recovery** — Forgot password → email → complete reset.

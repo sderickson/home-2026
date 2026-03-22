@@ -16,13 +16,13 @@ This plan follows [kratos-auth.spec.md](./kratos-auth.spec.md). Run workflows fr
 
 ---
 
-## Milestone 1 — Registration (first vertical slice)
+## Milestone 1 — Registration + logout (first vertical slice)
 
 **Packages:** `hub/clients/auth`, `recipes/clients/...`, SDK as needed.
 
-**Goal:** Single Kratos **registration** flow end-to-end: user registers, ends **logged in**, redirects to **recipes app**. Wire routes only for this slice (no full auth matrix yet).
+**Goal:** Kratos **registration** end-to-end: user registers, ends **logged in**, redirects to **recipes app**. Include **logout** in the same milestone (`createBrowserLogoutFlow` → `logout_url`) so you can clear the session while exercising later milestones (login, verification, recovery) without juggling stale sessions. Wire routes only for this slice (no login page yet beyond what’s needed for navigation if any).
 
-**Stopping point:** Manual test on dev: register → lands in recipes with session.
+**Stopping point:** Manual test on dev: register → lands in recipes with session → **logout** → session cleared (whoami / `toSession` shows logged out).
 
 ---
 
