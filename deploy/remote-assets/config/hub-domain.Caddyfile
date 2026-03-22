@@ -88,8 +88,8 @@
 # API subdomains (forward_auth to identity, then proxy to product service)
 
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
-	import cors recipes.docker.localhost
-	import api-proxy-identity {$RECIPES_SERVICE_HTTP_HOST}
+	import cors recipes.{$DOMAIN}
+	import kratos-api-proxy {$RECIPES_SERVICE_HTTP_HOST}
 }
 
 {$PROTOCOL}://api.notebook.{$DOMAIN} {
@@ -98,6 +98,13 @@
 
 {$PROTOCOL}://hub.{$DOMAIN} {
 	import api-proxy-identity {$HUB_SERVICE_HTTP_HOST}
+}
+
+# Kratos public API
+
+{$PROTOCOL}://kratos.{$DOMAIN} {
+	import cors {$DOMAIN}
+	reverse_proxy kratos:4433
 }
 
 # Identity service
