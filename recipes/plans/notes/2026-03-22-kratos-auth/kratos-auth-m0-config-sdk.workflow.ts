@@ -40,22 +40,22 @@ export const KratosAuthM0ConfigSdkWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: "../.." })),
+    //     step(CdStepMachine, () => ({ path: "../.." })),
 
-    step(PromptStepMachine, ({ context }) => ({
-      prompt: `Read **${context.docFiles!.spec}** and **${context.docFiles!.plan}** (Milestone 0 — config only).
+    //     step(PromptStepMachine, ({ context }) => ({
+    //       prompt: `Read **${context.docFiles!.spec}** and **${context.docFiles!.plan}** (Milestone 0 — config only).
 
-CWD is the **repo root** (from \`recipes/plans\` via \`cd ../..\`). Edit **three** Kratos configs:
-- \`recipes/dev/kratos/kratos.yml\`
-- \`deploy/kratos-prod-local/kratos.yml\`
-- \`deploy/remote-assets/kratos/kratos.yml\`
+    // CWD is the **repo root** (from \`recipes/plans\` via \`cd ../..\`). Edit **three** Kratos configs:
+    // - \`recipes/dev/kratos/kratos.yml\`
+    // - \`deploy/kratos-prod-local/kratos.yml\`
+    // - \`deploy/remote-assets/kratos/kratos.yml\`
 
-Add \`selfservice.flows.recovery\` with \`enabled: true\` and \`ui_url\` for the hub auth recovery route. Keep **verification** \`ui_url\` and \`use: code\` aligned with planned routes.
+    // Add \`selfservice.flows.recovery\` with \`enabled: true\` and \`ui_url\` for the hub auth recovery route. Keep **verification** \`ui_url\` and \`use: code\` aligned with planned routes.
 
-Do not change SDK or Vue in this step. Do not change \`post-kratos-courier\`.`,
-    })),
+    // Do not change SDK or Vue in this step. Do not change \`post-kratos-courier\`.`,
+    //     })),
 
-    step(CdStepMachine, () => ({ path: "recipes/service/sdk" })),
+    step(CdStepMachine, () => ({ path: "../service/sdk" })),
 
     step(PromptStepMachine, ({ context }) => ({
       prompt: `Read **${context.docFiles!.plan}** (SDK inventory — M0).
