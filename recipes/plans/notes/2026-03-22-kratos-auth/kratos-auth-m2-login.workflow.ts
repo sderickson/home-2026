@@ -1,6 +1,6 @@
 /**
  * Milestone 2 — Login: JIT TanStack hooks for login, then login page.
- * Packages: recipes/service/sdk, hub/clients/auth.
+ * **Start cwd:** `recipes/plans`. `../service/sdk` → SDK; `../../../hub/clients/auth` from SDK → hub auth SPA.
  */
 import {
   defineWorkflow,

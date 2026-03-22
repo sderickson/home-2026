@@ -1,5 +1,6 @@
 /**
  * Milestone 5 — Remove hub identity service from hub + recipes monoliths.
+ * **Start cwd:** `recipes/plans`. Use `cd ../..` for repo root (do not `cd` into `recipes/`).
  */
 import {
   defineWorkflow,
@@ -32,12 +33,12 @@ export const KratosAuthM5RemoveHubIdentityWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: ".." })),
+    step(CdStepMachine, () => ({ path: "../.." })),
 
     step(PromptStepMachine, ({ context }) => ({
       prompt: `Read ${context.docFiles!.spec} and ${context.docFiles!.plan} (Milestone 5).
 
-CWD is \`recipes/\`. Decommission **hub identity** for the hub + recipes stack only:
+CWD is the **repo root** (from \`recipes/plans\` via \`cd ../..\`). Decommission **hub identity** for the hub + recipes stack only:
 
 1. **hub/service/monolith/run.ts** — Remove \`startHubIdentityService()\` and import from \`@sderickson/hub-identity\`. Remove package dependency from \`hub/service/monolith/package.json\` if unused.
 

@@ -1,6 +1,6 @@
 /**
  * Milestone 4 — Account recovery: SDK first, then recovery page in hub auth.
- * Packages: recipes/service/sdk, hub/clients/auth.
+ * **Start cwd:** `recipes/plans`. `../service/sdk` → SDK; `../../../hub/clients/auth` from SDK → hub auth SPA.
  */
 import {
   defineWorkflow,

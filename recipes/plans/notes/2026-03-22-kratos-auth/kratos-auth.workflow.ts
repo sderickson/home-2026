@@ -1,6 +1,6 @@
 /**
  * Orchestrator: runs kratos-auth milestone workflows in order.
- * Run from **recipes/plans** so Cd paths (e.g. ../service/sdk, ../../hub/clients/auth) resolve.
+ * Run from **recipes/plans**. Cd targets must be packages or repo root (`../..`); never `cd` into `recipes/` alone.
  */
 import { defineWorkflow, step, makeWorkflowMachine } from "@saflib/workflows";
 import { GetFeedbackStep } from "@saflib/processes/workflows";

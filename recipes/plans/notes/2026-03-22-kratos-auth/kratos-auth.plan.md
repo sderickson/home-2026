@@ -10,7 +10,17 @@ This plan follows [kratos-auth.spec.md](./kratos-auth.spec.md). Run workflows fr
 
 Work is broken into **one workflow file per milestone** (same idea as [menus-m2-menus-frontend.workflow.ts](../2026-03-13-menus/menus-m2-menus-frontend.workflow.ts): composed of `CdStepMachine`, `makeWorkflowMachine(...)`, `CommandStepMachine`, and focused prompts). The **orchestrator** is [kratos-auth.workflow.ts](./kratos-auth.workflow.ts).
 
-**Working directory:** Run `npm exec saf-workflow` from **`recipes/plans`** so relative `Cd` paths resolve (`../service/sdk` → `recipes/service/sdk`, `../../../hub/clients/auth` → hub auth SPA from the SDK directory).
+**Working directory:** Run `npm exec saf-workflow` from **`recipes/plans`**. Every **`Cd`** is relative to that starting directory (and then relative to the cwd left by the previous step).
+
+**Valid `cd` targets (must be a package with `package.json`, or repo root for file edits):**
+
+| Goal | From `recipes/plans` | After prior `cd` |
+|------|----------------------|------------------|
+| Repo root | `../..` | — |
+| `recipes/service/sdk` | `../service/sdk` | From root: `recipes/service/sdk` |
+| `hub/clients/auth` | `../../hub/clients/auth` | From `recipes/service/sdk`: `../../../hub/clients/auth` |
+
+**Do not** `cd` into `recipes/` alone — it is not a package and workflows error (`Package.json not found`).
 
 ### TanStack hooks: `sdk/add-query` / `sdk/add-mutation` vs Kratos
 

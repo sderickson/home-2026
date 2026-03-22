@@ -1,5 +1,6 @@
 /**
  * Milestone 6 — E2E tests, remove prototype pages, polish.
+ * **Start cwd:** `recipes/plans`. `../../hub/clients/auth` → hub auth SPA package (do not `cd` into `recipes/`).
  */
 import {
   defineWorkflow,

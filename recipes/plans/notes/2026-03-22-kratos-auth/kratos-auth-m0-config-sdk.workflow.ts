@@ -1,6 +1,7 @@
 /**
  * Milestone 0 — Kratos config (all three yml) + recipes SDK: TanStack hooks for Kratos.
- * Run from recipes/plans so paths resolve.
+ * **Start cwd:** `recipes/plans` (where `saf-workflow` runs). **Cd** is relative to that cwd only.
+ * **Do not** `cd` into `recipes/` — it is not a package. Use `../..` for repo root, `../service/sdk` for `@sderickson/recipes-sdk`.
  *
  * Note: `sdk/add-query` and `sdk/add-mutation` generate `getClient()` OpenAPI calls. Kratos uses
  * `@ory/client` `FrontendApi`, not the product OpenAPI spec — so we do **not** invoke those
@@ -39,22 +40,22 @@ export const KratosAuthM0ConfigSdkWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: ".." })),
+    step(CdStepMachine, () => ({ path: "../.." })),
 
     step(PromptStepMachine, ({ context }) => ({
       prompt: `Read **${context.docFiles!.spec}** and **${context.docFiles!.plan}** (Milestone 0 — config only).
 
-CWD is \`recipes/\`. Edit **three** Kratos configs in place:
-- \`dev/kratos/kratos.yml\`
-- \`../deploy/kratos-prod-local/kratos.yml\`
-- \`../deploy/remote-assets/kratos/kratos.yml\`
+CWD is the **repo root** (from \`recipes/plans\` via \`cd ../..\`). Edit **three** Kratos configs:
+- \`recipes/dev/kratos/kratos.yml\`
+- \`deploy/kratos-prod-local/kratos.yml\`
+- \`deploy/remote-assets/kratos/kratos.yml\`
 
 Add \`selfservice.flows.recovery\` with \`enabled: true\` and \`ui_url\` for the hub auth recovery route. Keep **verification** \`ui_url\` and \`use: code\` aligned with planned routes.
 
 Do not change SDK or Vue in this step. Do not change \`post-kratos-courier\`.`,
     })),
 
-    step(CdStepMachine, () => ({ path: "service/sdk" })),
+    step(CdStepMachine, () => ({ path: "recipes/service/sdk" })),
 
     step(PromptStepMachine, ({ context }) => ({
       prompt: `Read **${context.docFiles!.plan}** (SDK inventory — M0).

@@ -1,6 +1,6 @@
 /**
  * Milestone 1 — Registration + logout + recipes redirect + JIT TanStack hooks for registration.
- * Packages: hub/clients/auth, recipes/service/sdk, recipes client wiring.
+ * **Start cwd:** `recipes/plans`. Use `../service/sdk` for recipes SDK; from SDK use `../../../hub/clients/auth` for hub auth SPA (packages only — never `cd` into `recipes/`).
  */
 import {
   defineWorkflow,

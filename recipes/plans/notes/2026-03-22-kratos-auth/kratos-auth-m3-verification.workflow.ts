@@ -1,6 +1,6 @@
 /**
  * Milestone 3 — Verification (code) + verify wall in the shared auth SPA only.
- * Packages: hub/clients/auth, recipes/service/sdk (JIT).
+ * **Start cwd:** `recipes/plans`. `../service/sdk` → SDK; `../../../hub/clients/auth` from SDK → hub auth SPA.
  */
 import {
   defineWorkflow,
