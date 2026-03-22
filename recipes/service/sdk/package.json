@@ -31,7 +31,7 @@
     "@saflib/vite": "*",
     "@saflib/vue": "*",
     "@sderickson/recipes-spec": "*",
-    "marked": "^15.0.12",
+    "marked": "^17.0.0",
     "msw": "^2.11.3"
   },
   "msw": {

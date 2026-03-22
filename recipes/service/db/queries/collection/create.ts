@@ -21,8 +21,8 @@ export const createCollection = queryWrapper(
     const collectionId = params.id ?? generateShortId();
     const now = new Date();
 
-    const [inserted] = await db.transaction(async (tx) => {
-      const [coll] = await tx
+    const [inserted] = db.transaction((tx) => {
+      const [coll] = tx
         .insert(collection)
         .values({
           id: collectionId,
@@ -31,15 +31,18 @@ export const createCollection = queryWrapper(
           createdAt: now,
           updatedAt: now,
         })
-        .returning();
+        .returning()
+        .all();
 
-      await tx.insert(collectionMember).values({
-        collectionId: coll.id,
-        email: params.creatorEmail,
-        role: "owner",
-        isCreator: true,
-        createdAt: now,
-      });
+      tx.insert(collectionMember)
+        .values({
+          collectionId: coll.id,
+          email: params.creatorEmail,
+          role: "owner",
+          isCreator: true,
+          createdAt: now,
+        })
+        .run();
 
       return [coll];
     });
