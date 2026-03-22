@@ -55,6 +55,15 @@ courier:
       headers:
         Content-Type: application/json
 
+# Required for sessions to survive Kratos restarts: without explicit secrets, each
+# process start uses new random keys, so existing session cookies cannot be decrypted
+# (identities in SQLite still look fine). These are dev-only placeholders, not for prod.
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
 log:
   level: warning
   format: text
