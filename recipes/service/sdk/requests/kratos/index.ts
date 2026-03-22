@@ -1,7 +1,4 @@
-export {
-  KRATOS_PUBLIC_BASE_URL,
-  getKratosFrontendApi,
-} from "./kratos-client.ts";
+export { getKratosFrontendApi } from "./kratos-client.ts";
 export {
   kratosSessionQueryKey,
   kratosSessionQueryOptions,
