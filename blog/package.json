@@ -1,5 +1,5 @@
 {
-  "name": "blog-client",
+  "name": "@sderickson/blog-client",
   "version": "1.0.0",
   "description": "Generates blog site",
   "main": "index.js",
