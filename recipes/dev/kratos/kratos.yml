@@ -65,5 +65,5 @@ secrets:
     - 32-LONG-SECRET-NOT-SECURE-AT-ALL
 
 log:
-  level: info
+  level: warning
   format: text
