@@ -56,5 +56,5 @@ courier:
         Content-Type: application/json
 
 log:
-  level: info
+  level: warning
   format: text
