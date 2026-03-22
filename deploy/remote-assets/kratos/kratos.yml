@@ -55,13 +55,6 @@ courier:
       headers:
         Content-Type: application/json
 
-# TODO: replace with real secrets before deploying to production
-secrets:
-  cookie:
-    - CHANGE-ME-TO-A-REAL-SECRET-KEY1
-  cipher:
-    - CHANGE-ME-32-CHARS-LONG-SECRET!
-
 log:
   level: info
   format: text

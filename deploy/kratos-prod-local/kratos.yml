@@ -55,12 +55,6 @@ courier:
       headers:
         Content-Type: application/json
 
-secrets:
-  cookie:
-    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
-  cipher:
-    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
-
 log:
   level: warning
   format: text

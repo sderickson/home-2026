@@ -52,6 +52,8 @@ services:
       file: remote-assets/docker-compose.prod.yaml
       service: kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    env_file: !override
+      - ./env.kratos.prod-local
     volumes: !override
       - ./kratos-prod-local/data:/var/lib/sqlite
       - ./kratos-prod-local:/etc/config/kratos

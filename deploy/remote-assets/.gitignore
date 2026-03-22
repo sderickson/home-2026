@@ -1,4 +1,5 @@
 .env.monolith.secrets
+.env.kratos.secrets
 # BEGIN WORKFLOW AREA env-secrets FOR product/init
 .env.recipes.secrets
 .env.notebook.secrets
