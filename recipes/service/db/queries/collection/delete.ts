@@ -12,7 +12,9 @@ export const deleteCollection = queryWrapper(
   async (
     dbKey: DbKey,
     id: string,
-  ): Promise<ReturnsError<typeof collection.$inferSelect, DeleteCollectionError>> => {
+  ): Promise<
+    ReturnsError<typeof collection.$inferSelect, DeleteCollectionError>
+  > => {
     const db = recipesDbManager.get(dbKey)!;
 
     const rows = await db
@@ -22,17 +24,19 @@ export const deleteCollection = queryWrapper(
       .limit(1);
     if (rows.length === 0) {
       return {
-        error: new CollectionNotFoundError(`Collection with id '${id}' not found`),
+        error: new CollectionNotFoundError(
+          `Collection with id '${id}' not found`,
+        ),
       };
     }
 
     const toReturn = rows[0];
 
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(collectionMember)
-        .where(eq(collectionMember.collectionId, id));
-      await tx.delete(collection).where(eq(collection.id, id));
+    await db.transaction((tx) => {
+      tx.delete(collectionMember)
+        .where(eq(collectionMember.collectionId, id))
+        .run();
+      tx.delete(collection).where(eq(collection.id, id)).run();
     });
 
     return { result: toReturn };

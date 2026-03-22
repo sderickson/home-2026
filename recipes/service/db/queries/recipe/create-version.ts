@@ -41,13 +41,13 @@ export const createVersionRecipe = queryWrapper(
 
     const now = new Date();
 
-    const [inserted] = await db.transaction(async (tx) => {
-      await tx
-        .update(recipeVersion)
+    const [inserted] = db.transaction((tx) => {
+      tx.update(recipeVersion)
         .set({ isLatest: false })
-        .where(eq(recipeVersion.recipeId, params.recipeId));
+        .where(eq(recipeVersion.recipeId, params.recipeId))
+        .run();
 
-      return await tx
+      return tx
         .insert(recipeVersion)
         .values({
           recipeId: params.recipeId,
@@ -56,7 +56,8 @@ export const createVersionRecipe = queryWrapper(
           createdBy: params.createdBy,
           createdAt: now,
         })
-        .returning();
+        .returning()
+        .all();
     });
 
     return { result: inserted };
