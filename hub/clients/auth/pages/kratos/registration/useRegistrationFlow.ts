@@ -47,10 +47,20 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
     submitting.value = true;
     submitError.value = null;
     try {
-      await updateRegistration.mutateAsync({
-        flow: current.id,
-        updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
-      });
+      try {
+        await updateRegistration.mutateAsync({
+          flow: current.id,
+          updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
+        });
+      } catch (e) {
+        const next = extractRegistrationFlowFromError(e);
+        if (next) {
+          queryClient.setQueryData(registrationFlowQueryKey(toValue(flowId)), next);
+        } else {
+          submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
+        }
+        return;
+      }
 
       const destination = postRegistrationNavigationUrl(current);
       const email = traitsEmailFromFormData(fd);
@@ -79,13 +89,6 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
         window.location.assign(destination);
       } else {
         navigateToLink(authLinks.home);
-      }
-    } catch (e) {
-      const next = extractRegistrationFlowFromError(e);
-      if (next) {
-        queryClient.setQueryData(registrationFlowQueryKey(toValue(flowId)), next);
-      } else {
-        submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
       }
     } finally {
       submitting.value = false;
