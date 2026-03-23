@@ -7,6 +7,7 @@ export {
 } from "./kratos-session.ts";
 export {
   fetchBrowserLoginFlow,
+  fetchBrowserLogoutFlow,
   fetchBrowserRegistrationFlow,
   fetchLoginFlowById,
   fetchRegistrationFlowById,

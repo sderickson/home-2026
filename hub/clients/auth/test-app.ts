@@ -5,6 +5,7 @@ import { createMemoryHistory, type Router } from "vue-router";
 import { createAuthRouter } from "./router.ts";
 import { auth_strings } from "./strings.ts";
 import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
+import { kratosFakeHandlers } from "@sderickson/recipes-sdk/fakes";
 
 export const createTestRouter = () =>
   createAuthRouter({ history: createMemoryHistory() });
@@ -22,5 +23,7 @@ export const mountTestApp = <C extends Component>(
   });
 };
 
-// TODO: import and add here any other mock handlers from sdk packages this SPA depends on
-export const testAppHandlers = [...identityServiceFakeHandlers];
+export const testAppHandlers = [
+  ...identityServiceFakeHandlers,
+  ...kratosFakeHandlers,
+];
