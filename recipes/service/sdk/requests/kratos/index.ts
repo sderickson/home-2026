@@ -12,6 +12,11 @@ export {
   fetchRegistrationFlowById,
 } from "./kratos-flows.ts";
 export {
+  registrationFlowQueryKey,
+  registrationFlowQueryOptions,
+  useRegistrationFlowQuery,
+} from "./registration-flow-query.ts";
+export {
   extractRegistrationFlowFromError,
   useUpdateRegistrationFlowMutation,
 } from "./use-update-registration-flow.ts";
