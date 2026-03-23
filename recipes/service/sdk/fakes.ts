@@ -1,4 +1,6 @@
 import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
+import { kratosFakeHandlers } from "./requests/kratos/kratos.fake.ts";
+import { resetKratosFlowMocks } from "./requests/kratos/kratos-mocks.ts";
 
 // BEGIN SORTED WORKFLOW AREA fake-group-imports FOR sdk/add-query sdk/add-mutation
 import { collectionsFakeHandlers } from "./requests/collections/index.fakes.ts";
@@ -26,6 +28,7 @@ export * from "./requests/unsplash-photos/mocks.ts";
 
 export const recipesServiceFakeHandlers = [
   ...identityServiceFakeHandlers,
+  ...kratosFakeHandlers,
   // BEGIN SORTED WORKFLOW AREA fake-group-handlers FOR sdk/add-query sdk/add-mutation
   ...collectionsFakeHandlers,
   ...menusFakeHandlers,
@@ -34,7 +37,15 @@ export const recipesServiceFakeHandlers = [
   // END WORKFLOW AREA
 ];
 
+export { kratosFakeHandlers } from "./requests/kratos/kratos.fake.ts";
+export {
+  getMockRegistrationPostResult,
+  resetKratosFlowMocks,
+  setMockRegistrationPostResult,
+} from "./requests/kratos/kratos-mocks.ts";
+
 export const resetMocks = () => {
+  resetKratosFlowMocks();
   // BEGIN SORTED WORKFLOW AREA export-mocks FOR sdk/add-query sdk/add-mutation
   collectionsResetMocks();
   menusResetMocks();

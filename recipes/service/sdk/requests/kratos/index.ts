@@ -7,7 +7,21 @@ export {
 } from "./kratos-session.ts";
 export {
   fetchBrowserLoginFlow,
+  fetchBrowserLogoutFlow,
   fetchBrowserRegistrationFlow,
   fetchLoginFlowById,
   fetchRegistrationFlowById,
 } from "./kratos-flows.ts";
+export {
+  registrationFlowQueryKey,
+  registrationFlowQueryOptions,
+  useRegistrationFlowQuery,
+} from "./registration-flow-query.ts";
+export {
+  extractRegistrationFlowFromError,
+  useUpdateRegistrationFlowMutation,
+} from "./use-update-registration-flow.ts";
+export {
+  extractLoginFlowFromError,
+  useUpdateLoginFlowMutation,
+} from "./use-update-login-flow.ts";

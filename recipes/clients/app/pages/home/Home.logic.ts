@@ -1,5 +1,6 @@
 import { linkToProps, linkToHref, getHost } from "@saflib/links";
 import { authLinks } from "@saflib/auth-links";
+import { authLinks as hubAuthLinks } from "@sderickson/hub-links";
 import { appLinks } from "@sderickson/recipes-links";
 import { setDemoMode } from "@sderickson/recipes-clients-common";
 
@@ -38,6 +39,17 @@ export function getLoginLinkProps() {
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
   return linkToProps(authLinks.login, { params: { redirect } });
+}
+
+/**
+ * Kratos registration on the hub auth SPA; `redirect` is stored as Kratos `return_to` on the flow.
+ */
+export function getRegisterLinkProps() {
+  const redirect =
+    typeof window !== "undefined"
+      ? linkToHref(appLinks.home, { domain: getHost() })
+      : "";
+  return linkToProps(hubAuthLinks.kratosRegistration, { params: { redirect } });
 }
 
 /**

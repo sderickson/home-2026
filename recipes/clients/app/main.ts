@@ -27,6 +27,7 @@ async function startDemoWorker() {
 }
 
 export const main = async () => {
+  // Landing URL for `?redirect=` when opening hub auth from this app (Kratos `return_to` on the flow).
   setClientName("app.recipes");
   const router = createAppRouter();
   if (isDemoMode()) {

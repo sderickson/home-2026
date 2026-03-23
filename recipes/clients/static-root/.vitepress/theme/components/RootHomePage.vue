@@ -182,7 +182,8 @@
 <script setup lang="ts">
 import { linkToHrefWithHost } from "@saflib/links";
 import { useResolvedHref } from "@saflib/vue/useResolvedHref";
-import { appLinks, authLinks } from "@sderickson/recipes-links";
+import { appLinks } from "@sderickson/recipes-links";
+import { authLinks } from "@sderickson/hub-links";
 
 import seedKitchenUrl from "./seed-kitchen.png";
 import recipeUrl from "./recipe.png";
@@ -196,7 +197,7 @@ const sourceHref = "https://github.com/sderickson/home-2026/tree/main/recipes";
 
 const demoHref = useResolvedHref(appLinks.home);
 const registerHref = useResolvedHref(() =>
-  linkToHrefWithHost(authLinks.register, {
+  linkToHrefWithHost(authLinks.kratosRegistration, {
     params: { redirect: linkToHrefWithHost(appLinks.home) },
   }),
 );
