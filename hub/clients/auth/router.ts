@@ -1,4 +1,4 @@
-import type { RouterHistory, RouteRecordRaw } from "vue-router";
+import type { RouterHistory } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { PageNotFound } from "@saflib/vue/components";
 import { authLinks } from "@sderickson/hub-links";
@@ -9,25 +9,24 @@ import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsy
 // END WORKFLOW AREA
 
 export const createAuthRouter = (options?: { history?: RouterHistory }) => {
-  const routes: RouteRecordRaw[] = [
-    {
-      path: "/",
-      redirect: (to) => ({
-        path: authLinks.kratosRegistration.path,
-        query: to.query,
-      }),
-    },
-    // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
-    { path: "/kratos-test", component: KratosTest },
-    {
-      path: authLinks.kratosRegistration.path,
-      component: KratosRegistrationAsync,
-    },
-    // END WORKFLOW AREA
-    { path: "/:pathMatch(.*)*", component: PageNotFound },
-  ];
   return createRouter({
     history: options?.history ?? createWebHistory(),
-    routes,
+    routes: [
+      {
+        path: "/",
+        redirect: (to) => ({
+          path: authLinks.kratosRegistration.path,
+          query: to.query,
+        }),
+      },
+      // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
+      { path: "/kratos-test", component: KratosTest },
+      {
+        path: authLinks.kratosRegistration.path,
+        component: KratosRegistrationAsync,
+      },
+      // END WORKFLOW AREA
+      { path: "/:pathMatch(.*)*", component: PageNotFound },
+    ],
   });
 };
