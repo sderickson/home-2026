@@ -1,7 +1,11 @@
 <template>
   <v-container class="py-8" max-width="720">
     <LoginIntro />
-    <LoginFlowForm v-if="flowIdForForm" :flow-id="flowIdForForm" />
+    <LoginFlowForm
+      v-if="flowIdForForm"
+      :flow-id="flowIdForForm"
+      :browser-return-to="browserReturnTo"
+    />
   </v-container>
 </template>
 
@@ -14,6 +18,7 @@ import { appLinks } from "@sderickson/recipes-links";
 import { loginFlowQueryKey } from "@sderickson/recipes-sdk";
 import {
   loginFlowQueryEnabledForSession,
+  useLoginBrowserReturnTo,
   useLoginLoader,
 } from "./Login.loader.ts";
 import LoginFlowForm from "./LoginFlowForm.vue";
@@ -24,6 +29,7 @@ const router = useRouter();
 const queryClient = useQueryClient();
 
 const { sessionQuery, loginFlowQuery } = useLoginLoader();
+const browserReturnTo = useLoginBrowserReturnTo();
 
 const loginFlowEnabled = computed(() => loginFlowQueryEnabledForSession(sessionQuery));
 

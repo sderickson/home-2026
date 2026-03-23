@@ -29,11 +29,16 @@ import { kratos_login_flow as strings } from "./LoginFlowForm.strings.ts";
 import KratosLoginUi from "./KratosLoginUi.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
 
-const props = defineProps<{ flowId: string }>();
+const props = defineProps<{
+  flowId: string;
+  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
+  browserReturnTo: string;
+}>();
 
 const { t } = useReverseT();
 
 const { flow, submitting, submitError, clearSubmitError, submitLoginForm } = useLoginFlow(
   toRef(props, "flowId"),
+  toRef(props, "browserReturnTo"),
 );
 </script>

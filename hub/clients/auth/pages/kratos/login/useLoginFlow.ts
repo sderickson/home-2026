@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
-import { useRoute } from "vue-router";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
@@ -16,22 +15,24 @@ import {
 import {
   credentialsFromLoginForm,
   destinationAfterLogin,
-  resolveLoginBrowserReturnTo,
 } from "./Login.logic.ts";
 import { kratos_login_flow as flowStrings } from "./LoginFlowForm.strings.ts";
 
 /**
  * Submit login for an existing login flow. Flow creation and `?flow=` URL sync live on the page
  * (`Login.vue` + loader).
+ *
+ * @param browserReturnTo — Full URL passed to `createBrowserLoginFlow` / query key (from route in
+ *   the page; resolved with {@link resolveLoginBrowserReturnTo} in the loader).
  */
-export function useLoginFlow(flowId: MaybeRefOrGetter<string>) {
+export function useLoginFlow(
+  flowId: MaybeRefOrGetter<string>,
+  browserReturnTo: MaybeRefOrGetter<string>,
+) {
   const queryClient = useQueryClient();
-  const route = useRoute();
   const updateLogin = useUpdateLoginFlowMutation();
 
-  const returnTo = computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, linkToHrefWithHost(appLinks.home)),
-  );
+  const returnTo = computed(() => toValue(browserReturnTo));
 
   const loginFlowQuery = useQuery(
     computed(() => loginFlowQueryOptions(toValue(flowId), returnTo.value)),
