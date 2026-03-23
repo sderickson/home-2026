@@ -9,13 +9,19 @@ import {
   useUpdateRegistrationFlowMutation,
 } from "@sderickson/recipes-sdk";
 import { navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
-import { buildRegistrationPasswordBody, registrationSubmitErrorMessage } from "./Registration.logic.ts";
+import { authLinks } from "@sderickson/hub-links";
+import {
+  buildRegistrationPasswordBody,
+  postRegistrationNavigationUrl,
+  registrationSubmitErrorMessage,
+} from "./Registration.logic.ts";
 import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.strings.ts";
 
 export interface UseRegistrationFlowOptions {
   /** Override flow id (e.g. unit tests); defaults to `route.query.flow`. */
   flowId?: MaybeRefOrGetter<string | undefined>;
+  /** Override `?redirect=` (Kratos `return_to`); defaults to `route.query.redirect`. */
+  redirectTo?: MaybeRefOrGetter<string | undefined>;
 }
 
 export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
@@ -32,8 +38,16 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
         : undefined,
   );
 
+  const redirectParam = computed(() =>
+    options?.redirectTo !== undefined
+      ? toValue(options.redirectTo)
+      : typeof route.query.redirect === "string"
+        ? route.query.redirect
+        : undefined,
+  );
+
   const registrationFlowQuery = useQuery(
-    computed(() => registrationFlowQueryOptions(flowId.value)),
+    computed(() => registrationFlowQueryOptions(flowId.value, redirectParam.value)),
   );
 
   const submitting = ref(false);
@@ -55,11 +69,19 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
         updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
       });
       await invalidateSession();
-      navigateToLink(appLinks.home);
+      const next = postRegistrationNavigationUrl(current);
+      if (next) {
+        window.location.assign(next);
+      } else {
+        navigateToLink(authLinks.home);
+      }
     } catch (e) {
       const next = extractRegistrationFlowFromError(e);
       if (next) {
-        queryClient.setQueryData(registrationFlowQueryKey(flowId.value), next);
+        queryClient.setQueryData(
+          registrationFlowQueryKey(flowId.value, redirectParam.value),
+          next,
+        );
       } else {
         submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
       }

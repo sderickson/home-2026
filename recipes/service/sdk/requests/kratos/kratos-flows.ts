@@ -6,8 +6,13 @@ export async function fetchBrowserLoginFlow(): Promise<LoginFlow> {
   return res.data;
 }
 
-export async function fetchBrowserRegistrationFlow(): Promise<RegistrationFlow> {
-  const res = await getKratosFrontendApi().createBrowserRegistrationFlow({});
+/** `returnTo` is sent to Kratos as `return_to` and echoed on {@link RegistrationFlow.return_to}. */
+export async function fetchBrowserRegistrationFlow(
+  returnTo?: string,
+): Promise<RegistrationFlow> {
+  const res = await getKratosFrontendApi().createBrowserRegistrationFlow(
+    returnTo ? { returnTo } : {},
+  );
   return res.data;
 }
 

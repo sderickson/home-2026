@@ -8,6 +8,7 @@ import {
 } from "@sderickson/recipes-sdk/fakes";
 import * as linkUtils from "@saflib/links";
 import { setClientName } from "@saflib/links";
+import { authLinks } from "@sderickson/hub-links";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
 
 function registrationTestForm() {
@@ -37,7 +38,7 @@ describe("useRegistrationFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("navigates to the recipes app after successful registration", async () => {
+  it("falls back to auth home when the flow has no return_to", async () => {
     setMockRegistrationPostResult("success");
     const navSpy = vi.spyOn(linkUtils, "navigateToLink").mockImplementation(() => {});
 
@@ -50,7 +51,9 @@ describe("useRegistrationFlow", () => {
 
     await submitRegistrationForm(registrationTestForm());
 
-    await vi.waitFor(() => expect(navSpy).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() =>
+      expect(navSpy).toHaveBeenCalledWith(authLinks.home),
+    );
     app.unmount();
   });
 

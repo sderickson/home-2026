@@ -23,6 +23,7 @@
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/recipes-clients-common": "*",
+    "@sderickson/hub-links": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
     "marked": "^17.0.0",

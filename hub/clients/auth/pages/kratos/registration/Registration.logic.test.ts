@@ -1,12 +1,33 @@
 import { describe, it, expect } from "vitest";
 import { AxiosError } from "axios";
+import type { RegistrationFlow } from "@ory/client";
 import {
   buildRegistrationPasswordBody,
   isKratosInputNode,
+  postRegistrationNavigationUrl,
   registrationSubmitErrorMessage,
   traitsEmailFromFormData,
 } from "./Registration.logic.ts";
 import type { UiNode } from "@ory/client";
+
+describe("postRegistrationNavigationUrl", () => {
+  it("returns trimmed return_to when set", () => {
+    expect(
+      postRegistrationNavigationUrl({
+        return_to: "  https://app.example/  ",
+      } as RegistrationFlow),
+    ).toBe("https://app.example/");
+  });
+
+  it("returns undefined when missing or blank", () => {
+    expect(postRegistrationNavigationUrl({} as RegistrationFlow)).toBe(undefined);
+    expect(
+      postRegistrationNavigationUrl({
+        return_to: "  ",
+      } as RegistrationFlow),
+    ).toBe(undefined);
+  });
+});
 
 describe("Registration.logic", () => {
   describe("traitsEmailFromFormData", () => {

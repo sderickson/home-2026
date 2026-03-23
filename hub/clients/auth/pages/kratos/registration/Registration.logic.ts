@@ -1,4 +1,4 @@
-import type { UiNode, UpdateRegistrationFlowBody } from "@ory/client";
+import type { RegistrationFlow, UiNode, UpdateRegistrationFlowBody } from "@ory/client";
 import { isAxiosError } from "axios";
 
 export function isKratosInputNode(
@@ -26,6 +26,12 @@ export function buildRegistrationPasswordBody(fd: FormData): UpdateRegistrationF
     password: String(fd.get("password") ?? ""),
     traits: { email: traitsEmailFromFormData(fd) },
   };
+}
+
+/** Kratos echoes `return_to` from the browser registration request on the flow. */
+export function postRegistrationNavigationUrl(flow: RegistrationFlow): string | undefined {
+  const u = flow.return_to?.trim();
+  return u || undefined;
 }
 
 export function registrationSubmitErrorMessage(error: unknown, fallback: string): string {

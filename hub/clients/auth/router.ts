@@ -12,7 +12,13 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
   return createRouter({
     history: options?.history ?? createWebHistory(),
     routes: [
-      { path: "/", redirect: authLinks.kratosRegistration.path },
+      {
+        path: "/",
+        redirect: (to) => ({
+          path: authLinks.kratosRegistration.path,
+          query: to.query,
+        }),
+      },
       // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
       { path: "/kratos-test", component: KratosTest },
       {

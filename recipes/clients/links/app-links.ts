@@ -5,7 +5,6 @@ const subdomain = "app.recipes";
 export const appLinks: LinkMap = {
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
 
-  /** Recipes app home; post-registration / post-login landing from hub auth (`app.recipes.<domain>` in dev). */
   home: {
     subdomain,
     path: "/",

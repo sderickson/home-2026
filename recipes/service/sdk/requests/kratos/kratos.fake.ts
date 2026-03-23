@@ -10,7 +10,13 @@ export const kratosToSessionHandler = http.get("*/sessions/whoami", () =>
 
 export const kratosRegistrationBrowserHandler = http.get(
   "*/self-service/registration/browser",
-  () => HttpResponse.json(mockRegistrationFlow),
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockRegistrationFlow,
+      return_to: returnTo ?? mockRegistrationFlow.return_to,
+    });
+  },
 );
 
 export const kratosRegistrationFlowByIdHandler = http.get(
