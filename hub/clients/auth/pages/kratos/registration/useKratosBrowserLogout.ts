@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { fetchBrowserLogoutFlow } from "@sderickson/recipes-sdk";
 import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/hub-links";
+import { appLinks } from "@sderickson/recipes-links";
 
 /**
  * Starts Kratos browser logout and navigates to `logout_url` (full browser navigation).

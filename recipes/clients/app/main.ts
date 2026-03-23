@@ -27,6 +27,8 @@ async function startDemoWorker() {
 }
 
 export const main = async () => {
+  // Hub auth SPA redirects here after Kratos registration (see hub auth useRegistrationFlow).
+  // Dev: `http://app.recipes.docker.localhost/` (vite subdomain proxy; shared cookie domain with Kratos).
   setClientName("app.recipes");
   const router = createAppRouter();
   if (isDemoMode()) {

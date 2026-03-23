@@ -9,7 +9,7 @@ import {
   useUpdateRegistrationFlowMutation,
 } from "@sderickson/recipes-sdk";
 import { navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/hub-links";
+import { appLinks } from "@sderickson/recipes-links";
 import { buildRegistrationPasswordBody, registrationSubmitErrorMessage } from "./Registration.logic.ts";
 import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.strings.ts";
 
