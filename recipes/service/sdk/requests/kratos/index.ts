@@ -9,8 +9,10 @@ export {
   fetchBrowserLoginFlow,
   fetchBrowserLogoutFlow,
   fetchBrowserRegistrationFlow,
+  fetchBrowserVerificationFlow,
   fetchLoginFlowById,
   fetchRegistrationFlowById,
+  fetchVerificationFlowById,
 } from "./kratos-flows.ts";
 export {
   loginFlowQueryKey,
@@ -30,3 +32,12 @@ export {
   extractLoginFlowFromError,
   useUpdateLoginFlowMutation,
 } from "./use-update-login-flow.ts";
+export {
+  verificationFlowQueryKey,
+  verificationFlowQueryOptions,
+  useVerificationFlowQuery,
+} from "./verification-flow-query.ts";
+export {
+  extractVerificationFlowFromError,
+  useUpdateVerificationFlowMutation,
+} from "./use-update-verification-flow.ts";
