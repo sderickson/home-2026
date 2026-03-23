@@ -9,24 +9,25 @@ import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsy
 // END WORKFLOW AREA
 
 export const createAuthRouter = (options?: { history?: RouterHistory }) => {
+  const routes = [
+    {
+      path: "/",
+      redirect: (to) => ({
+        path: authLinks.kratosRegistration.path,
+        query: to.query,
+      }),
+    },
+    // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
+    { path: "/kratos-test", component: KratosTest },
+    {
+      path: authLinks.kratosRegistration.path,
+      component: KratosRegistrationAsync,
+    },
+    // END WORKFLOW AREA
+    { path: "/:pathMatch(.*)*", component: PageNotFound },
+  ];
   return createRouter({
     history: options?.history ?? createWebHistory(),
-    routes: [
-      {
-        path: "/",
-        redirect: (to) => ({
-          path: authLinks.kratosRegistration.path,
-          query: to.query,
-        }),
-      },
-      // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
-      { path: "/kratos-test", component: KratosTest },
-      {
-        path: authLinks.kratosRegistration.path,
-        component: KratosRegistrationAsync,
-      },
-      // END WORKFLOW AREA
-      { path: "/:pathMatch(.*)*", component: PageNotFound },
-    ],
+    routes,
   });
 };
