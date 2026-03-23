@@ -80,6 +80,18 @@ export const kratosLoginBrowserHandler = http.get(
   },
 );
 
+export const kratosLoginFlowByIdHandler = http.get(
+  "*/self-service/login/flows",
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
+    if (id && id === mockLoginFlow.id) {
+      return HttpResponse.json(mockLoginFlow);
+    }
+    return new HttpResponse(null, { status: 404 });
+  },
+);
+
 export const kratosUpdateLoginHandler = http.post("*/self-service/login", () =>
   HttpResponse.json({
     session: { id: "mock-session-after-login", active: true },
@@ -97,6 +109,7 @@ export const kratosFakeHandlers = [
   kratosRegistrationFlowByIdHandler,
   kratosUpdateRegistrationHandler,
   kratosLoginBrowserHandler,
+  kratosLoginFlowByIdHandler,
   kratosUpdateLoginHandler,
   kratosBrowserLogoutHandler,
 ];
