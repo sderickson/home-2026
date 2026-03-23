@@ -40,6 +40,7 @@ export const recipesServiceFakeHandlers = [
 export { kratosFakeHandlers } from "./requests/kratos/kratos.fake.ts";
 export {
   getMockRegistrationPostResult,
+  mockLoginFlow,
   resetKratosFlowMocks,
   setMockRegistrationPostResult,
 } from "./requests/kratos/kratos-mocks.ts";
