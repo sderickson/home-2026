@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { AxiosError } from "axios";
-import type { RegistrationFlow } from "@ory/client";
+import type { LoginFlow, RegistrationFlow } from "@ory/client";
 import {
+  buildLoginPasswordBody,
   buildRegistrationPasswordBody,
+  csrfTokenFromUiFlow,
   isKratosInputNode,
   postRegistrationNavigationUrl,
   registrationSubmitErrorMessage,
@@ -26,6 +28,41 @@ describe("postRegistrationNavigationUrl", () => {
         return_to: "  ",
       } as RegistrationFlow),
     ).toBe(undefined);
+  });
+});
+
+describe("buildLoginPasswordBody", () => {
+  it("uses CSRF from the login flow and password method", () => {
+    const loginFlow = {
+      ui: {
+        nodes: [
+          {
+            type: "input",
+            attributes: {
+              node_type: "input",
+              name: "csrf_token",
+              value: "csrf-xyz",
+            },
+          },
+        ],
+      },
+    } as LoginFlow;
+    expect(buildLoginPasswordBody(loginFlow, "u@example.com", "secret")).toEqual({
+      method: "password",
+      csrf_token: "csrf-xyz",
+      identifier: "u@example.com",
+      password: "secret",
+    });
+  });
+});
+
+describe("csrfTokenFromUiFlow", () => {
+  it("returns empty when no csrf node", () => {
+    expect(
+      csrfTokenFromUiFlow({
+        ui: { nodes: [] },
+      } as LoginFlow),
+    ).toBe("");
   });
 });
 

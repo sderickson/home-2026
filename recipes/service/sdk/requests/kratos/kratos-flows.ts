@@ -1,8 +1,11 @@
 import type { LoginFlow, LogoutFlow, RegistrationFlow } from "@ory/client";
 import { getKratosFrontendApi } from "./kratos-client.ts";
 
-export async function fetchBrowserLoginFlow(): Promise<LoginFlow> {
-  const res = await getKratosFrontendApi().createBrowserLoginFlow({});
+/** `returnTo` is sent to Kratos as `return_to` and echoed on {@link LoginFlow.return_to}. */
+export async function fetchBrowserLoginFlow(returnTo?: string): Promise<LoginFlow> {
+  const res = await getKratosFrontendApi().createBrowserLoginFlow(
+    returnTo ? { returnTo } : {},
+  );
   return res.data;
 }
 

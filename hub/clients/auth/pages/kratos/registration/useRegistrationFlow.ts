@@ -2,7 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { useRoute } from "vue-router";
 import {
+  extractLoginFlowFromError,
   extractRegistrationFlowFromError,
+  fetchBrowserLoginFlow,
+  getKratosFrontendApi,
   registrationFlowQueryKey,
   registrationFlowQueryOptions,
   useInvalidateKratosSession,
@@ -11,9 +14,11 @@ import {
 import { navigateToLink } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import {
+  buildLoginPasswordBody,
   buildRegistrationPasswordBody,
   postRegistrationNavigationUrl,
   registrationSubmitErrorMessage,
+  traitsEmailFromFormData,
 } from "./Registration.logic.ts";
 import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.strings.ts";
 
@@ -68,10 +73,33 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
         flow: current.id,
         updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
       });
+
+      const destination = postRegistrationNavigationUrl(current);
+      const email = traitsEmailFromFormData(fd);
+      const password = String(fd.get("password") ?? "");
+
+      try {
+        const loginFlow = await fetchBrowserLoginFlow(destination);
+        await getKratosFrontendApi().updateLoginFlow({
+          flow: loginFlow.id,
+          updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),
+        });
+      } catch (e) {
+        const loginNext = extractLoginFlowFromError(e);
+        if (loginNext) {
+          submitError.value = flowStrings.post_reg_login_failed;
+        } else {
+          submitError.value = registrationSubmitErrorMessage(
+            e,
+            flowStrings.post_reg_login_failed,
+          );
+        }
+        return;
+      }
+
       await invalidateSession();
-      const next = postRegistrationNavigationUrl(current);
-      if (next) {
-        window.location.assign(next);
+      if (destination) {
+        window.location.assign(destination);
       } else {
         navigateToLink(authLinks.home);
       }

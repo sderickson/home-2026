@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import {
   getMockRegistrationPostResult,
+  mockLoginFlow,
   mockRegistrationFlow,
 } from "./kratos-mocks.ts";
 
@@ -67,10 +68,34 @@ export const kratosBrowserLogoutHandler = http.get(
     }),
 );
 
+export const kratosLoginBrowserHandler = http.get(
+  "*/self-service/login/browser",
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockLoginFlow,
+      return_to: returnTo ?? mockLoginFlow.return_to,
+    });
+  },
+);
+
+export const kratosUpdateLoginHandler = http.post("*/self-service/login", () =>
+  HttpResponse.json({
+    session: { id: "mock-session-after-login", active: true },
+    identity: {
+      id: "mock-identity",
+      schema_id: "default",
+      traits: { email: "register@test.dev" },
+    },
+  }),
+);
+
 export const kratosFakeHandlers = [
   kratosToSessionHandler,
   kratosRegistrationBrowserHandler,
   kratosRegistrationFlowByIdHandler,
   kratosUpdateRegistrationHandler,
+  kratosLoginBrowserHandler,
+  kratosUpdateLoginHandler,
   kratosBrowserLogoutHandler,
 ];

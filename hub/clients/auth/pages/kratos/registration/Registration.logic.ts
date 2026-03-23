@@ -1,4 +1,10 @@
-import type { RegistrationFlow, UiNode, UpdateRegistrationFlowBody } from "@ory/client";
+import type {
+  LoginFlow,
+  RegistrationFlow,
+  UiNode,
+  UpdateLoginFlowBody,
+  UpdateRegistrationFlowBody,
+} from "@ory/client";
 import { isAxiosError } from "axios";
 
 export function isKratosInputNode(
@@ -25,6 +31,30 @@ export function buildRegistrationPasswordBody(fd: FormData): UpdateRegistrationF
     csrf_token: String(fd.get("csrf_token") ?? ""),
     password: String(fd.get("password") ?? ""),
     traits: { email: traitsEmailFromFormData(fd) },
+  };
+}
+
+export function csrfTokenFromUiFlow(flow: LoginFlow | RegistrationFlow): string {
+  for (const node of flow.ui.nodes) {
+    if (node.type !== "input") continue;
+    const attrs = node.attributes as { node_type?: string; name?: string; value?: string };
+    if (attrs.node_type === "input" && attrs.name === "csrf_token") {
+      return String(attrs.value ?? "");
+    }
+  }
+  return "";
+}
+
+export function buildLoginPasswordBody(
+  loginFlow: LoginFlow,
+  email: string,
+  password: string,
+): UpdateLoginFlowBody {
+  return {
+    method: "password",
+    csrf_token: csrfTokenFromUiFlow(loginFlow),
+    identifier: email,
+    password,
   };
 }
 
