@@ -4,6 +4,9 @@ import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks, rootLinks } from "@sderickson/hub-links";
 import KratosTest from "./pages/KratosTest.vue";
 
+// BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+// END WORKFLOW AREA
+
 export const createAuthRouter = (options?: { history?: RouterHistory }) => {
   const routes = [
     // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
