@@ -1,32 +1,37 @@
 <template>
-  <v-container>
-    <h1>{{ t(strings.title) }}</h1>
-    <v-text-field v-bind="t(strings.example_input)"></v-text-field>
-    <i18n-t
-      v-if="profile.id"
-      scope="global"
-      :keypath="lookupTKey(strings.logged_in_with_email)"
-    >
-      <template #email>{{ profile.email }}</template>
-    </i18n-t>
-    <div v-else>{{ t(strings.not_logged_in) }}</div>
+  <v-container class="py-8" max-width="720">
+    <RegistrationIntro />
+    <RegistrationSessionPanel
+      v-if="session"
+      :identity-email="identityEmail"
+    />
+    <RegistrationFlowForm v-else />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { kratos_registration as strings } from "./Registration.strings.ts";
+import { computed } from "vue";
 import { useRegistrationLoader } from "./Registration.loader.ts";
-import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
+import RegistrationFlowForm from "./RegistrationFlowForm.vue";
+import RegistrationIntro from "./RegistrationIntro.vue";
+import RegistrationSessionPanel from "./RegistrationSessionPanel.vue";
 
-const { t, lookupTKey } = useReverseT();
+const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
 
-const { profileQuery } = useRegistrationLoader();
-
-// the Async component will not render if the data is not loaded
-// check to make sure the data is loaded before rendering
-if (!profileQuery.data.value) {
-  throw new Error("Failed to load profile");
+if (sessionQuery.status.value !== "success") {
+  throw new Error("Failed to load session");
+}
+if (
+  registrationFlowQuery.status.value !== "success" ||
+  !registrationFlowQuery.data.value
+) {
+  throw new Error("Failed to load registration flow");
 }
 
-const profile = profileQuery.data.value;
+const session = computed(() => sessionQuery.data.value);
+const identityEmail = computed(() => {
+  const s = session.value;
+  const traits = s?.identity?.traits as { email?: string } | undefined;
+  return traits?.email ?? "";
+});
 </script>

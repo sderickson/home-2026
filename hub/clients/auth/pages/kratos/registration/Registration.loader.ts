@@ -1,10 +1,21 @@
-// TODO: replace with actual queries this page will need on load
-import { getProfile } from "@saflib/auth";
 import { useQuery } from "@tanstack/vue-query";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import {
+  registrationFlowQueryOptions,
+  useKratosSession,
+} from "@sderickson/recipes-sdk";
 
 export function useRegistrationLoader() {
-  // TODO: Add tanstack query calls here and return each query result in the array
+  const route = useRoute();
+  const flowId = computed(() =>
+    typeof route.query.flow === "string" ? route.query.flow : undefined,
+  );
+
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useKratosSession(),
+    registrationFlowQuery: useQuery(
+      computed(() => registrationFlowQueryOptions(flowId.value)),
+    ),
   };
 }

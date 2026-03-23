@@ -5,9 +5,9 @@ import {
   mountTestApp,
   createTestRouter,
   testAppHandlers,
-  resetMocks,
 } from "@sderickson/hub-auth-spa/test-app";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
+import { resetKratosFlowMocks } from "@sderickson/recipes-sdk/fakes";
 
 // Renders the page to capture baseline coverage.
 // Uncovered lines after this indicate logic worth extracting to .logic.ts or composables.
@@ -15,17 +15,17 @@ import { setupMockServer } from "@saflib/sdk/testing/mock";
 describe("KratosRegistration", () => {
   stubGlobals();
   setupMockServer(testAppHandlers);
-  afterEach(resetMocks);
+  afterEach(resetKratosFlowMocks);
 
   it("should render", async () => {
     const router = createTestRouter();
-    // TODO: replace any route params (e.g. :id) with actual test values
     await router.push("/registration");
     await router.isReady();
 
     const wrapper = mountTestApp(KratosRegistrationAsync, {}, { router });
-    // TODO: replace "TODO" with a visible string from the rendered page
-    await vi.waitFor(() => expect(wrapper.text()).toContain("Hello"));
+    await vi.waitFor(() =>
+      expect(wrapper.text()).toContain("Create your account"),
+    );
     wrapper.unmount();
   });
 });
