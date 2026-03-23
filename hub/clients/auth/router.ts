@@ -8,6 +8,7 @@ import KratosTest from "./pages/KratosTest.vue";
 import KratosLoginAsync from "./pages/kratos/login/LoginAsync.vue";
 import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsync.vue";
 import KratosVerificationAsync from "./pages/kratos/verification/VerificationAsync.vue";
+import KratosVerifyWallAsync from "./pages/kratos/verify-wall/VerifyWallAsync.vue";
 // END WORKFLOW AREA
 
 export const createAuthRouter = (options?: { history?: RouterHistory }) => {
@@ -38,6 +39,10 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
     {
       path: authLinks.kratosVerification.path,
       component: KratosVerificationAsync,
+    },
+    {
+      path: authLinks.kratosVerifyWall.path,
+      component: KratosVerifyWallAsync,
     },
       // END WORKFLOW AREA
       { path: "/:pathMatch(.*)*", component: PageNotFound },

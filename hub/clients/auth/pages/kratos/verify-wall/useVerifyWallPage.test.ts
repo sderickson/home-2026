@@ -1,0 +1,110 @@
+import { createApp } from "vue";
+import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query";
+import { createMemoryHistory, createRouter } from "vue-router";
+import { http, HttpResponse } from "msw";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { setClientName } from "@saflib/links";
+import { useKratosSession } from "@sderickson/recipes-sdk";
+import { setupMockServer } from "@saflib/sdk/testing/mock";
+import { kratosFakeHandlers, resetKratosFlowMocks } from "@sderickson/recipes-sdk/fakes";
+import { useVerifyWallPage } from "./useVerifyWallPage.ts";
+
+const unverifiedSession = {
+  id: "sess-1",
+  active: true,
+  identity: {
+    id: "id-1",
+    schema_id: "default",
+    schema_url: "",
+    traits: { email: "user@test.dev" },
+    verifiable_addresses: [
+      {
+        id: "va-1",
+        value: "user@test.dev",
+        verified: false,
+        status: "pending",
+        via: "email",
+      },
+    ],
+  },
+};
+
+const verifiedSession = {
+  ...unverifiedSession,
+  identity: {
+    ...unverifiedSession.identity,
+    verifiable_addresses: [
+      {
+        ...unverifiedSession.identity.verifiable_addresses[0],
+        verified: true,
+        status: "completed",
+      },
+    ],
+  },
+};
+
+async function mountVerifyWallPage(path: string) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: "/verify-wall", component: { template: "<div/>" } }],
+  });
+  await router.push(path);
+  await router.isReady();
+
+  let sessionQuery!: ReturnType<typeof useKratosSession>;
+  let page!: ReturnType<typeof useVerifyWallPage>;
+
+  const app = createApp({
+    setup() {
+      sessionQuery = useKratosSession();
+      page = useVerifyWallPage(sessionQuery);
+      return () => {};
+    },
+  });
+  app.use(VueQueryPlugin, { queryClient });
+  app.use(router);
+  app.mount(document.createElement("div"));
+
+  await vi.waitFor(() => expect(sessionQuery.status.value).toBe("success"));
+  return { page, app, sessionQuery, queryClient };
+}
+
+describe("useVerifyWallPage", () => {
+  const server = setupMockServer(kratosFakeHandlers);
+
+  beforeEach(() => {
+    setClientName("auth");
+  });
+
+  afterEach(() => {
+    resetKratosFlowMocks();
+    vi.restoreAllMocks();
+  });
+
+  it("sets showWall when the session has an unverified email address", async () => {
+    server.use(http.get("*/sessions/whoami", () => HttpResponse.json(unverifiedSession)));
+
+    const { page, app } = await mountVerifyWallPage("/verify-wall");
+    expect(page.showWall.value).toBe(true);
+    expect(page.identityEmail.value).toContain("user@test");
+    app.unmount();
+  });
+
+  it("redirects verified sessions to redirect or home via window.location.assign", async () => {
+    server.use(http.get("*/sessions/whoami", () => HttpResponse.json(verifiedSession)));
+
+    const assignMock = vi.fn();
+    vi.stubGlobal("location", { href: "http://localhost/", assign: assignMock });
+
+    try {
+      const { app } = await mountVerifyWallPage("/verify-wall?redirect=https://recipes.example/ok");
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith("https://recipes.example/ok"));
+      app.unmount();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});

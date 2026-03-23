@@ -39,5 +39,14 @@ export const authLinks: LinkMap = {
     path: "/verification",
     params: ["redirect", "flow", "token"],
   },
+  /**
+   * Shared gate when the user is signed in but email is not verified. Use `params.redirect` (full
+   * URL) for where to send them after verification (e.g. recipes home).
+   */
+  kratosVerifyWall: {
+    subdomain,
+    path: "/verify-wall",
+    params: ["redirect"],
+  },
   // END WORKFLOW AREA
 };
