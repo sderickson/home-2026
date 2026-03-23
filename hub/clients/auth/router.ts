@@ -5,6 +5,7 @@ import { authLinks } from "@sderickson/hub-links";
 import KratosTest from "./pages/KratosTest.vue";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+import KratosLoginAsync from "./pages/kratos/login/LoginAsync.vue";
 import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsync.vue";
 // END WORKFLOW AREA
 
@@ -12,10 +13,14 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
   return createRouter({
     history: options?.history ?? createWebHistory(),
     routes: [
+      /**
+       * Auth SPA home: send users to login (returning sessions redirect to recipes from the page).
+       * Registration remains at `/registration`. Preserves `redirect` / `flow` query when present.
+       */
       {
         path: "/",
         redirect: (to) => ({
-          path: authLinks.kratosRegistration.path,
+          path: authLinks.kratosLogin.path,
           query: to.query,
         }),
       },
@@ -24,6 +29,10 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
       {
         path: authLinks.kratosRegistration.path,
         component: KratosRegistrationAsync,
+      },
+      {
+        path: authLinks.kratosLogin.path,
+        component: KratosLoginAsync,
       },
       // END WORKFLOW AREA
       { path: "/:pathMatch(.*)*", component: PageNotFound },
