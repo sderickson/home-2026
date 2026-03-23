@@ -1,6 +1,6 @@
 /**
  * Milestone 4 — Account recovery: SDK first, then recovery page in hub auth.
- * **Start cwd:** `recipes/plans`. `../service/sdk` → SDK; `../../../hub/clients/auth` from SDK → hub auth SPA.
+ * **Start cwd:** `recipes/plans`. Each `CdStepMachine` path is relative to that cwd only (not chained). `../service/sdk` → SDK; `../../hub/clients/auth` → hub auth SPA.
  */
 import {
   defineWorkflow,
@@ -61,7 +61,7 @@ Export from \`requests/kratos/index.ts\`.`,
       description: "Typecheck recipes SDK after recovery hooks.",
     })),
 
-    step(CdStepMachine, () => ({ path: "../../../hub/clients/auth" })),
+    step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
 
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/kratos/recovery",

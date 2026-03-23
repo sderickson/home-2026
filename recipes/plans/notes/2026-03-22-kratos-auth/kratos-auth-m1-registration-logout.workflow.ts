@@ -1,6 +1,6 @@
 /**
  * Milestone 1 — Registration + logout + recipes redirect + JIT TanStack hooks for registration.
- * **Start cwd:** `recipes/plans`. Use `../service/sdk` for recipes SDK; from SDK use `../../../hub/clients/auth` for hub auth SPA (packages only — never `cd` into `recipes/`).
+ * **Start cwd:** `recipes/plans`. Each `CdStepMachine` path is relative to that cwd only (not chained). `../service/sdk` → recipes SDK; `../../hub/clients/auth` → hub auth SPA (packages only — never `cd` into `recipes/`).
  */
 import {
   defineWorkflow,

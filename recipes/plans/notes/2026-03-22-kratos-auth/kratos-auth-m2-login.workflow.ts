@@ -1,6 +1,6 @@
 /**
  * Milestone 2 — Login: JIT TanStack hooks for login, then login page.
- * **Start cwd:** `recipes/plans`. `../service/sdk` → SDK; `../../../hub/clients/auth` from SDK → hub auth SPA.
+ * **Start cwd:** `recipes/plans`. Each `CdStepMachine` path is relative to that cwd only (not chained). `../service/sdk` → SDK; `../../hub/clients/auth` → hub auth SPA.
  */
 import {
   defineWorkflow,
