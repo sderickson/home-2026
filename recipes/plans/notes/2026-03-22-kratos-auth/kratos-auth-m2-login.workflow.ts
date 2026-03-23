@@ -22,7 +22,8 @@ export const KratosAuthM2LoginWorkflowDefinition = defineWorkflow<
   Context
 >({
   id: "plans/kratos-auth-m2-login",
-  description: "Kratos M2: JIT SDK login mutation/query + login view + router; redirect to recipes.",
+  description:
+    "Kratos M2: JIT SDK login mutation/query + login view + router; redirect to recipes.",
   input,
   context: ({ input }) => ({
     agentConfig: { ...input.agentConfig, resetTimeoutEachStep: true },
@@ -61,7 +62,7 @@ Export new hooks from \`requests/kratos/index.ts\`.`,
       description: "Typecheck recipes SDK after login JIT hooks.",
     })),
 
-    step(CdStepMachine, () => ({ path: "../../../hub/clients/auth" })),
+    step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
 
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/kratos/login",
