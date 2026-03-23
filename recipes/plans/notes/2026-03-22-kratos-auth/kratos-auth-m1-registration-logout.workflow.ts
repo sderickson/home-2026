@@ -36,37 +36,37 @@ export const KratosAuthM1RegistrationLogoutWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    step(CdStepMachine, () => ({ path: "../service/sdk" })),
+    //     step(CdStepMachine, () => ({ path: "../service/sdk" })),
 
-    step(PromptStepMachine, ({ context }) => ({
-      prompt: `Read **${context.docFiles!.plan}** (M1 — JIT SDK).
+    //     step(PromptStepMachine, ({ context }) => ({
+    //       prompt: `Read **${context.docFiles!.plan}** (M1 — JIT SDK).
 
-CWD is \`recipes/service/sdk\`. **TanStack mutation: update registration flow**
+    // CWD is \`recipes/service/sdk\`. **TanStack mutation: update registration flow**
 
-Add a dedicated module (e.g. \`requests/kratos/use-update-registration-flow.ts\` or alongside session pattern) that exports \`useUpdateRegistrationFlowMutation\` wrapping \`getKratosFrontendApi().updateRegistrationFlow\`, invalidates kratos session on success, and surfaces flow errors (Axios body may contain updated RegistrationFlow).
+    // Add a dedicated module (e.g. \`requests/kratos/use-update-registration-flow.ts\` or alongside session pattern) that exports \`useUpdateRegistrationFlowMutation\` wrapping \`getKratosFrontendApi().updateRegistrationFlow\`, invalidates kratos session on success, and surfaces flow errors (Axios body may contain updated RegistrationFlow).
 
-Structure this file like **sdk/add-mutation** output (useMutation, thin \`mutationFn\`), but call **FrontendApi**, not \`getClient()\`.`,
-    })),
+    // Structure this file like **sdk/add-mutation** output (useMutation, thin \`mutationFn\`), but call **FrontendApi**, not \`getClient()\`.`,
+    //     })),
 
-    step(PromptStepMachine, ({ context }) => ({
-      prompt: `Read **${context.docFiles!.plan}** (M1 — JIT SDK).
+    //     step(PromptStepMachine, ({ context }) => ({
+    //       prompt: `Read **${context.docFiles!.plan}** (M1 — JIT SDK).
 
-CWD is \`recipes/service/sdk\`. **TanStack query (optional): registration flow**
+    // CWD is \`recipes/service/sdk\`. **TanStack query (optional): registration flow**
 
-If the registration page needs a cached flow: add \`useRegistrationFlowQuery\` (or equivalent) using \`queryOptions\` + \`fetchBrowserRegistrationFlow\` / \`fetchRegistrationFlowById\` from \`kratos-flows.ts\`, with a stable \`queryKey\` including flow id when present.
+    // If the registration page needs a cached flow: add \`useRegistrationFlowQuery\` (or equivalent) using \`queryOptions\` + \`fetchBrowserRegistrationFlow\` / \`fetchRegistrationFlowById\` from \`kratos-flows.ts\`, with a stable \`queryKey\` including flow id when present.
 
-Structure like **sdk/add-query** output, but call **kratos-flows** / FrontendApi — not OpenAPI \`getClient()\`.
+    // Structure like **sdk/add-query** output, but call **kratos-flows** / FrontendApi — not OpenAPI \`getClient()\`.
 
-Export from \`requests/kratos/index.ts\`.`,
-    })),
+    // Export from \`requests/kratos/index.ts\`.`,
+    //     })),
 
-    step(CommandStepMachine, () => ({
-      command: "npm",
-      args: ["run", "typecheck"],
-      description: "Typecheck recipes SDK after registration JIT hooks.",
-    })),
+    //     step(CommandStepMachine, () => ({
+    //       command: "npm",
+    //       args: ["run", "typecheck"],
+    //       description: "Typecheck recipes SDK after registration JIT hooks.",
+    //     })),
 
-    step(CdStepMachine, () => ({ path: "../../../hub/clients/auth" })),
+    step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
 
     step(makeWorkflowMachine(AddSpaViewWorkflowDefinition), ({ context }) => ({
       path: "./pages/kratos/registration",
