@@ -36,31 +36,31 @@ export const KratosAuthM2LoginWorkflowDefinition = defineWorkflow<
   },
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
-    //     step(CdStepMachine, () => ({ path: "../service/sdk" })),
+    step(CdStepMachine, () => ({ path: "../service/sdk" })),
 
-    //     step(PromptStepMachine, ({ context }) => ({
-    //       prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
 
-    // CWD is \`recipes/service/sdk\`. **TanStack mutation: update login flow**
+    CWD is \`recipes/service/sdk\`. **TanStack mutation: update login flow**
 
-    // Add \`useUpdateLoginFlowMutation\` (or equivalent) wrapping \`getKratosFrontendApi().updateLoginFlow\`, same structural pattern as M1 registration mutation (FrontendApi, not OpenAPI \`getClient()\`).`,
-    //     })),
+    Add \`useUpdateLoginFlowMutation\` (or equivalent) wrapping \`getKratosFrontendApi().updateLoginFlow\`, same structural pattern as M1 registration mutation (FrontendApi, not OpenAPI \`getClient()\`).`,
+    })),
 
-    //     step(PromptStepMachine, ({ context }) => ({
-    //       prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
+    step(PromptStepMachine, ({ context }) => ({
+      prompt: `Read **${context.docFiles!.plan}** (M2 — JIT SDK).
 
-    // CWD is \`recipes/service/sdk\`. **TanStack query (optional): login flow**
+    CWD is \`recipes/service/sdk\`. **TanStack query (optional): login flow**
 
-    // If the login page needs a cached flow: \`useLoginFlowQuery\` via \`queryOptions\` + \`fetchBrowserLoginFlow\` / \`fetchLoginFlowById\` from \`kratos-flows.ts\`.
+    If the login page needs a cached flow: \`useLoginFlowQuery\` via \`queryOptions\` + \`fetchBrowserLoginFlow\` / \`fetchLoginFlowById\` from \`kratos-flows.ts\`.
 
-    // Export new hooks from \`requests/kratos/index.ts\`.`,
-    //     })),
+    Export new hooks from \`requests/kratos/index.ts\`.`,
+    })),
 
-    //     step(CommandStepMachine, () => ({
-    //       command: "npm",
-    //       args: ["run", "typecheck"],
-    //       description: "Typecheck recipes SDK after login JIT hooks.",
-    //     })),
+    step(CommandStepMachine, () => ({
+      command: "npm",
+      args: ["run", "typecheck"],
+      description: "Typecheck recipes SDK after login JIT hooks.",
+    })),
 
     step(CdStepMachine, () => ({ path: "../../hub/clients/auth" })),
 
