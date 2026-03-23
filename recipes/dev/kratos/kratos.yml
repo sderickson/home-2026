@@ -13,6 +13,12 @@ serve:
 selfservice:
   default_browser_return_url: http://auth.docker.localhost/
 
+  # Permit return_to from any app on this dev domain (e.g. app.recipes.docker.localhost).
+  # Root host is listed separately; *.docker.localhost does not match the apex.
+  allowed_return_urls:
+    - http://docker.localhost/
+    - http://*.docker.localhost/
+
   flows:
     registration:
       enabled: true

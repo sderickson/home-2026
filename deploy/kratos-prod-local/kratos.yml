@@ -13,6 +13,11 @@ serve:
 selfservice:
   default_browser_return_url: http://auth.docker.localhost/
 
+  # Same as recipes/dev: any HTTP origin on docker.localhost for local prod-like stacks.
+  allowed_return_urls:
+    - http://docker.localhost/
+    - http://*.docker.localhost/
+
   flows:
     registration:
       enabled: true

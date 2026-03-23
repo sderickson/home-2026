@@ -13,6 +13,11 @@ serve:
 selfservice:
   default_browser_return_url: https://auth.scotterickson.info/
 
+  # Permit return_to from any HTTPS app on this domain (wildcard does not match apex).
+  allowed_return_urls:
+    - https://scotterickson.info/
+    - https://*.scotterickson.info/
+
   flows:
     registration:
       enabled: true
