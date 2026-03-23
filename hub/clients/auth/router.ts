@@ -1,4 +1,4 @@
-import type { RouterHistory } from "vue-router";
+import type { RouterHistory, RouteRecordRaw } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { PageNotFound } from "@saflib/vue/components";
 import { authLinks } from "@sderickson/hub-links";
@@ -9,7 +9,7 @@ import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsy
 // END WORKFLOW AREA
 
 export const createAuthRouter = (options?: { history?: RouterHistory }) => {
-  const routes = [
+  const routes: RouteRecordRaw[] = [
     {
       path: "/",
       redirect: (to) => ({
