@@ -5,6 +5,7 @@ export {
   useInvalidateKratosSession,
   useKratosSession,
 } from "./kratos-session.ts";
+export { identityNeedsEmailVerification } from "./kratos-identity.ts";
 export {
   fetchBrowserLoginFlow,
   fetchBrowserLogoutFlow,

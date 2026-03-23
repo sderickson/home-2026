@@ -1,16 +1,19 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
+import { authLinks } from "@sderickson/hub-links";
 import {
   extractLoginFlowFromError,
   extractRegistrationFlowFromError,
   fetchBrowserLoginFlow,
+  identityNeedsEmailVerification,
+  kratosSessionQueryKey,
+  kratosSessionQueryOptions,
   registrationFlowQueryKey,
   registrationFlowQueryOptions,
   useUpdateLoginFlowMutation,
   useUpdateRegistrationFlowMutation,
 } from "@sderickson/recipes-sdk";
-import { navigateToLink } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
 import {
   buildLoginPasswordBody,
   buildRegistrationPasswordBody,
@@ -85,7 +88,15 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
         return;
       }
 
-      if (destination) {
+      await queryClient.invalidateQueries({ queryKey: kratosSessionQueryKey });
+      const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
+      const postVerifyTarget = destination ?? linkToHrefWithHost(authLinks.home);
+
+      if (session && identityNeedsEmailVerification(session.identity)) {
+        window.location.assign(
+          linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: postVerifyTarget } }),
+        );
+      } else if (destination) {
         window.location.assign(destination);
       } else {
         navigateToLink(authLinks.home);

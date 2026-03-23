@@ -10,7 +10,10 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { registrationFlowQueryKey } from "@sderickson/recipes-sdk";
+import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
+import { appLinks } from "@sderickson/recipes-links";
+import { authLinks } from "@sderickson/hub-links";
+import { identityNeedsEmailVerification, registrationFlowQueryKey } from "@sderickson/recipes-sdk";
 import {
   registrationFlowQueryEnabledForSession,
   useRegistrationLoader,
@@ -51,6 +54,19 @@ watch(
 );
 
 const session = computed(() => sessionQuery.data.value);
+
+watch(
+  () => session.value,
+  (s) => {
+    if (!s) return;
+    if (identityNeedsEmailVerification(s.identity)) {
+      navigateToLink(authLinks.kratosVerifyWall, {
+        params: { redirect: linkToHrefWithHost(appLinks.home) },
+      });
+    }
+  },
+  { immediate: true },
+);
 
 const flowIdForForm = computed(() => {
   if (typeof route.query.flow === "string") return route.query.flow;
