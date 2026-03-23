@@ -10,13 +10,14 @@ export const authLinks: LinkMap = {
   },
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
   /**
-   * Kratos registration UI. Use `params.redirect` (full URL) so Kratos stores `return_to`
-   * on the flow and the auth SPA can send the user back after success.
+   * Kratos registration UI. Use `params.redirect` (full URL) for `return_to`, or resume with
+   * `params.flow` (Kratos flow id). After a browser flow is created, the page replaces the URL
+   * with `?flow=` so refresh keeps the same flow.
    */
   kratosRegistration: {
     subdomain,
     path: "/registration",
-    params: ["redirect"],
+    params: ["redirect", "flow"],
   },
   // END WORKFLOW AREA
 };

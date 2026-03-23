@@ -1,14 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
-import { useRoute } from "vue-router";
 import {
   extractLoginFlowFromError,
   extractRegistrationFlowFromError,
   fetchBrowserLoginFlow,
-  getKratosFrontendApi,
   registrationFlowQueryKey,
   registrationFlowQueryOptions,
-  useInvalidateKratosSession,
+  useUpdateLoginFlowMutation,
   useUpdateRegistrationFlowMutation,
 } from "@sderickson/recipes-sdk";
 import { navigateToLink } from "@saflib/links";
@@ -22,37 +20,17 @@ import {
 } from "./Registration.logic.ts";
 import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.strings.ts";
 
-export interface UseRegistrationFlowOptions {
-  /** Override flow id (e.g. unit tests); defaults to `route.query.flow`. */
-  flowId?: MaybeRefOrGetter<string | undefined>;
-  /** Override `?redirect=` (Kratos `return_to`); defaults to `route.query.redirect`. */
-  redirectTo?: MaybeRefOrGetter<string | undefined>;
-}
-
-export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
-  const route = useRoute();
+/**
+ * Submit and post-login navigation for an existing registration flow.
+ * Flow creation and `?flow=` URL sync live on the page (`Registration.vue` + loader).
+ */
+export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
   const queryClient = useQueryClient();
-  const invalidateSession = useInvalidateKratosSession();
   const updateRegistration = useUpdateRegistrationFlowMutation();
-
-  const flowId = computed(() =>
-    options?.flowId !== undefined
-      ? toValue(options.flowId)
-      : typeof route.query.flow === "string"
-        ? route.query.flow
-        : undefined,
-  );
-
-  const redirectParam = computed(() =>
-    options?.redirectTo !== undefined
-      ? toValue(options.redirectTo)
-      : typeof route.query.redirect === "string"
-        ? route.query.redirect
-        : undefined,
-  );
+  const updateLogin = useUpdateLoginFlowMutation();
 
   const registrationFlowQuery = useQuery(
-    computed(() => registrationFlowQueryOptions(flowId.value, redirectParam.value)),
+    computed(() => registrationFlowQueryOptions(toValue(flowId))),
   );
 
   const submitting = ref(false);
@@ -80,7 +58,7 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
 
       try {
         const loginFlow = await fetchBrowserLoginFlow(destination);
-        await getKratosFrontendApi().updateLoginFlow({
+        await updateLogin.mutateAsync({
           flow: loginFlow.id,
           updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),
         });
@@ -97,7 +75,6 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
         return;
       }
 
-      await invalidateSession();
       if (destination) {
         window.location.assign(destination);
       } else {
@@ -106,10 +83,7 @@ export function useRegistrationFlow(options?: UseRegistrationFlowOptions) {
     } catch (e) {
       const next = extractRegistrationFlowFromError(e);
       if (next) {
-        queryClient.setQueryData(
-          registrationFlowQueryKey(flowId.value, redirectParam.value),
-          next,
-        );
+        queryClient.setQueryData(registrationFlowQueryKey(toValue(flowId)), next);
       } else {
         submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
       }

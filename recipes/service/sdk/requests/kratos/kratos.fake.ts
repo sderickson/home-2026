@@ -23,7 +23,8 @@ export const kratosRegistrationBrowserHandler = http.get(
 export const kratosRegistrationFlowByIdHandler = http.get(
   "*/self-service/registration/flows",
   ({ request }) => {
-    const id = new URL(request.url).searchParams.get("flow");
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
     if (id && id === mockRegistrationFlow.id) {
       return HttpResponse.json(mockRegistrationFlow);
     }

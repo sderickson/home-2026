@@ -21,4 +21,7 @@ export {
   extractRegistrationFlowFromError,
   useUpdateRegistrationFlowMutation,
 } from "./use-update-registration-flow.ts";
-export { extractLoginFlowFromError } from "./use-update-login-flow.ts";
+export {
+  extractLoginFlowFromError,
+  useUpdateLoginFlowMutation,
+} from "./use-update-login-flow.ts";

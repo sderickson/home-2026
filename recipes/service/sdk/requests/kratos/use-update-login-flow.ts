@@ -1,5 +1,8 @@
 import { isAxiosError } from "axios";
-import type { LoginFlow } from "@ory/client";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import type { FrontendApiUpdateLoginFlowRequest, LoginFlow } from "@ory/client";
+import { getKratosFrontendApi } from "./kratos-client.ts";
+import { kratosSessionQueryKey } from "./kratos-session.ts";
 
 /** Kratos may return an updated login flow (validation errors) in the Axios response body (e.g. HTTP 400). */
 export function extractLoginFlowFromError(e: unknown): LoginFlow | undefined {
@@ -10,3 +13,16 @@ export function extractLoginFlowFromError(e: unknown): LoginFlow | undefined {
   }
   return undefined;
 }
+
+export const useUpdateLoginFlowMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: FrontendApiUpdateLoginFlowRequest) => {
+      const res = await getKratosFrontendApi().updateLoginFlow(vars);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: kratosSessionQueryKey });
+    },
+  });
+};

@@ -54,10 +54,13 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import { kratos_registration_flow as strings } from "./RegistrationFlowForm.strings.ts";
 import { isKratosInputNode } from "./Registration.logic.ts";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
+
+const props = defineProps<{ flowId: string }>();
 
 const { t } = useReverseT();
 
@@ -67,7 +70,7 @@ const {
   submitError,
   clearSubmitError,
   submitRegistrationForm,
-} = useRegistrationFlow();
+} = useRegistrationFlow(toRef(props, "flowId"));
 
 function handleSubmit(ev: Event) {
   const el = ev.currentTarget;

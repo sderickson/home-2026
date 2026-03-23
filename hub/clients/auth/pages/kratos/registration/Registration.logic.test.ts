@@ -22,7 +22,9 @@ describe("postRegistrationNavigationUrl", () => {
   });
 
   it("returns undefined when missing or blank", () => {
-    expect(postRegistrationNavigationUrl({} as RegistrationFlow)).toBe(undefined);
+    expect(postRegistrationNavigationUrl({} as RegistrationFlow)).toBe(
+      undefined,
+    );
     expect(
       postRegistrationNavigationUrl({
         return_to: "  ",
@@ -47,7 +49,9 @@ describe("buildLoginPasswordBody", () => {
         ],
       },
     } as LoginFlow;
-    expect(buildLoginPasswordBody(loginFlow, "u@example.com", "secret")).toEqual({
+    expect(
+      buildLoginPasswordBody(loginFlow, "u@example.com", "secret"),
+    ).toEqual({
       method: "password",
       csrf_token: "csrf-xyz",
       identifier: "u@example.com",
@@ -60,8 +64,8 @@ describe("csrfTokenFromUiFlow", () => {
   it("returns empty when no csrf node", () => {
     expect(
       csrfTokenFromUiFlow({
-        ui: { nodes: [] },
-      } as LoginFlow),
+        ui: { nodes: [], action: "https://example.com", method: "POST" },
+      } as unknown as LoginFlow),
     ).toBe("");
   });
 });
@@ -111,7 +115,10 @@ describe("Registration.logic", () => {
     });
 
     it("rejects non-input nodes", () => {
-      const node = { type: "text", attributes: { text: { text: "hi" } } } as UiNode;
+      const node = {
+        type: "text",
+        attributes: { text: { text: "hi" } },
+      } as UiNode;
       expect(isKratosInputNode(node)).toBe(false);
     });
   });
@@ -123,7 +130,9 @@ describe("Registration.logic", () => {
         status: 500,
         data: { foo: 1 },
       } as AxiosError["response"];
-      expect(registrationSubmitErrorMessage(err, "fallback")).toBe("Request failed");
+      expect(registrationSubmitErrorMessage(err, "fallback")).toBe(
+        "Request failed",
+      );
     });
 
     it("stringifies primitive axios response data", () => {

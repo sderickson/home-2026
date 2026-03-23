@@ -11,6 +11,8 @@ import { setClientName } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
 
+const mockRegistrationFlowId = "mock-registration-flow";
+
 function registrationTestForm() {
   const form = document.createElement("form");
   for (const [name, value] of [
@@ -43,7 +45,7 @@ describe("useRegistrationFlow", () => {
     const navSpy = vi.spyOn(linkUtils, "navigateToLink").mockImplementation(() => {});
 
     const [{ registrationFlowQuery, submitRegistrationForm, flow }, app] = withVueQuery(() =>
-      useRegistrationFlow({ flowId: () => undefined }),
+      useRegistrationFlow(() => mockRegistrationFlowId),
     );
 
     await registrationFlowQuery.refetch();
@@ -61,7 +63,7 @@ describe("useRegistrationFlow", () => {
     setMockRegistrationPostResult("validation_error");
 
     const [{ registrationFlowQuery, submitRegistrationForm, flow }, app] = withVueQuery(() =>
-      useRegistrationFlow({ flowId: () => undefined }),
+      useRegistrationFlow(() => mockRegistrationFlowId),
     );
 
     await registrationFlowQuery.refetch();

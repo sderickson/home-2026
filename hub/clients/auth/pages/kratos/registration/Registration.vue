@@ -5,30 +5,66 @@
       v-if="session"
       :identity-email="identityEmail"
     />
-    <RegistrationFlowForm v-else />
+    <RegistrationFlowForm
+      v-else-if="flowIdForForm"
+      :flow-id="flowIdForForm"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { useQueryClient } from "@tanstack/vue-query";
+import { computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { registrationFlowQueryKey } from "@sderickson/recipes-sdk";
 import { useRegistrationLoader } from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
 import RegistrationSessionPanel from "./RegistrationSessionPanel.vue";
 
+const route = useRoute();
+const router = useRouter();
+const queryClient = useQueryClient();
 const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
 
 if (sessionQuery.status.value !== "success") {
   throw new Error("Failed to load session");
 }
-if (
-  registrationFlowQuery.status.value !== "success" ||
-  !registrationFlowQuery.data.value
-) {
-  throw new Error("Failed to load registration flow");
-}
+
+watch(
+  () => ({
+    status: registrationFlowQuery.status.value,
+    data: registrationFlowQuery.data.value,
+    flowParam: route.query.flow,
+  }),
+  ({ status, data, flowParam }) => {
+    if (status !== "success" || !data?.id) return;
+    if (typeof flowParam === "string") return;
+    queryClient.setQueryData(registrationFlowQueryKey(data.id), data);
+    router.replace({
+      path: route.path,
+      query: { ...route.query, flow: data.id },
+    });
+  },
+  { immediate: true },
+);
 
 const session = computed(() => sessionQuery.data.value);
+
+const flowIdForForm = computed(() => {
+  if (typeof route.query.flow === "string") return route.query.flow;
+  return registrationFlowQuery.data.value?.id ?? "";
+});
+
+if (!session.value) {
+  if (
+    registrationFlowQuery.status.value !== "success" ||
+    !registrationFlowQuery.data.value?.id
+  ) {
+    throw new Error("Failed to load registration flow");
+  }
+}
+
 const identityEmail = computed(() => {
   const s = session.value;
   const traits = s?.identity?.traits as { email?: string } | undefined;
