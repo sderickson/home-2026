@@ -11,7 +11,10 @@ import { useQueryClient } from "@tanstack/vue-query";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { registrationFlowQueryKey } from "@sderickson/recipes-sdk";
-import { useRegistrationLoader } from "./Registration.loader.ts";
+import {
+  registrationFlowQueryEnabledForSession,
+  useRegistrationLoader,
+} from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
 import RegistrationSessionPanel from "./RegistrationSessionPanel.vue";
@@ -20,6 +23,10 @@ const route = useRoute();
 const router = useRouter();
 const queryClient = useQueryClient();
 const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
+
+const registrationFlowEnabled = computed(() =>
+  registrationFlowQueryEnabledForSession(sessionQuery),
+);
 
 if (sessionQuery.status.value !== "success") {
   throw new Error("Failed to load session");
@@ -35,7 +42,6 @@ watch(
     if (status !== "success" || !data?.id) return;
     if (typeof flowParam === "string") return;
     queryClient.setQueryData(registrationFlowQueryKey(data.id), data);
-    console.log("setting query data", data.id);
     router.replace({
       path: route.path,
       query: { flow: data.id },
@@ -51,13 +57,13 @@ const flowIdForForm = computed(() => {
   return registrationFlowQuery.data.value?.id ?? "";
 });
 
-if (!session.value) {
-  if (
-    registrationFlowQuery.status.value !== "success" ||
-    !registrationFlowQuery.data.value?.id
-  ) {
-    throw new Error("Failed to load registration flow");
-  }
+if (
+  !session.value &&
+  registrationFlowEnabled.value &&
+  (registrationFlowQuery.status.value !== "success" ||
+    !registrationFlowQuery.data.value?.id)
+) {
+  throw new Error("Failed to load registration flow");
 }
 
 const identityEmail = computed(() => {
