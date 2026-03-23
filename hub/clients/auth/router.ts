@@ -10,6 +10,10 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
     registerRedirect: linkToHrefWithHost(appLinks.home),
     logoutRedirect: linkToHrefWithHost(rootLinks.home),
     history: options?.history,
-    additionalRoutes: [{ path: "/kratos-test", component: KratosTest }],
+    additionalRoutes: [
+      // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
+      { path: "/kratos-test", component: KratosTest },
+      // END WORKFLOW AREA
+    ],
   });
 };
