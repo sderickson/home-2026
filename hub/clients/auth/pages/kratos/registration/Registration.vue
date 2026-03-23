@@ -1,14 +1,8 @@
 <template>
   <v-container class="py-8" max-width="720">
     <RegistrationIntro />
-    <RegistrationSessionPanel
-      v-if="session"
-      :identity-email="identityEmail"
-    />
-    <RegistrationFlowForm
-      v-else-if="flowIdForForm"
-      :flow-id="flowIdForForm"
-    />
+    <RegistrationSessionPanel v-if="session" :identity-email="identityEmail" />
+    <RegistrationFlowForm v-else-if="flowIdForForm" :flow-id="flowIdForForm" />
   </v-container>
 </template>
 
@@ -41,9 +35,10 @@ watch(
     if (status !== "success" || !data?.id) return;
     if (typeof flowParam === "string") return;
     queryClient.setQueryData(registrationFlowQueryKey(data.id), data);
+    console.log("setting query data", data.id);
     router.replace({
       path: route.path,
-      query: { ...route.query, flow: data.id },
+      query: { flow: data.id },
     });
   },
   { immediate: true },
