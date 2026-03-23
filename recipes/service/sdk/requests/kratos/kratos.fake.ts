@@ -3,6 +3,7 @@ import {
   getMockRegistrationPostResult,
   mockLoginFlow,
   mockRegistrationFlow,
+  mockVerificationFlow,
 } from "./kratos-mocks.ts";
 
 export const kratosToSessionHandler = http.get("*/sessions/whoami", () =>
@@ -103,6 +104,38 @@ export const kratosUpdateLoginHandler = http.post("*/self-service/login", () =>
   }),
 );
 
+export const kratosVerificationBrowserHandler = http.get(
+  "*/self-service/verification/browser",
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockVerificationFlow,
+      return_to: returnTo ?? mockVerificationFlow.return_to,
+    });
+  },
+);
+
+export const kratosVerificationFlowByIdHandler = http.get(
+  "*/self-service/verification/flows",
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
+    if (id && id === mockVerificationFlow.id) {
+      return HttpResponse.json(mockVerificationFlow);
+    }
+    return new HttpResponse(null, { status: 404 });
+  },
+);
+
+export const kratosUpdateVerificationHandler = http.post(
+  "*/self-service/verification",
+  () =>
+    HttpResponse.json({
+      ...mockVerificationFlow,
+      state: "passed_challenge",
+    }),
+);
+
 export const kratosFakeHandlers = [
   kratosToSessionHandler,
   kratosRegistrationBrowserHandler,
@@ -111,5 +144,8 @@ export const kratosFakeHandlers = [
   kratosLoginBrowserHandler,
   kratosLoginFlowByIdHandler,
   kratosUpdateLoginHandler,
+  kratosVerificationBrowserHandler,
+  kratosVerificationFlowByIdHandler,
+  kratosUpdateVerificationHandler,
   kratosBrowserLogoutHandler,
 ];
