@@ -31,7 +31,9 @@ const queryClient = useQueryClient();
 const { sessionQuery, loginFlowQuery } = useLoginLoader();
 const browserReturnTo = useLoginBrowserReturnTo();
 
-const loginFlowEnabled = computed(() => loginFlowQueryEnabledForSession(sessionQuery));
+const loginFlowEnabled = computed(() =>
+  loginFlowQueryEnabledForSession(sessionQuery),
+);
 
 if (sessionQuery.status.value !== "success") {
   throw new Error("Failed to load session");
@@ -59,7 +61,7 @@ watch(
     queryClient.setQueryData(loginFlowQueryKey(data.id), data);
     router.replace({
       path: route.path,
-      query: { ...route.query, flow: data.id },
+      query: { flow: data.id },
     });
   },
   { immediate: true },
