@@ -93,18 +93,39 @@ export function buildRecoveryUpdateBodyFromFormData(fd: FormData): UpdateRecover
 }
 
 /**
+ * Kratos sometimes returns path-only URLs (e.g. `/settings?flow=…`); resolve against the current origin.
+ */
+export function resolveRecoveryBrowserRedirectUrl(href: string): string {
+  const t = href.trim();
+  if (!t) return t;
+  if (t.startsWith("/")) {
+    return `${typeof window !== "undefined" ? window.location.origin : ""}${t}`;
+  }
+  return t;
+}
+
+/**
  * If Kratos indicates a next step via `continue_with`, return that URL. Does not use `return_to`
  * (that value is present for the whole browser flow, not only when finished).
+ *
+ * When `show_settings_ui` omits `flow.url`, pass `resolveSettingsUiUrl` with the hub settings link
+ * including `flow` query param.
  */
-export function recoveryFlowContinueWithUrl(flow: RecoveryFlow): string | null {
+export function recoveryFlowContinueWithUrl(
+  flow: RecoveryFlow,
+  resolveSettingsUiUrl?: (settingsFlowId: string) => string,
+): string | null {
   for (const c of flow.continue_with ?? []) {
     if (c.action === "redirect_browser_to") {
-      const u = (c as ContinueWithRedirectBrowserTo).redirect_browser_to?.trim();
-      if (u) return u;
+      const raw = (c as ContinueWithRedirectBrowserTo).redirect_browser_to?.trim();
+      if (raw) return resolveRecoveryBrowserRedirectUrl(raw);
     }
     if (c.action === "show_settings_ui") {
-      const u = (c as ContinueWithSettingsUi).flow?.url?.trim();
-      if (u) return u;
+      const cw = c as ContinueWithSettingsUi;
+      const fromApi = cw.flow?.url?.trim();
+      if (fromApi) return resolveRecoveryBrowserRedirectUrl(fromApi);
+      const id = cw.flow?.id;
+      if (id && resolveSettingsUiUrl) return resolveSettingsUiUrl(id);
     }
   }
   return null;

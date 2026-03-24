@@ -60,6 +60,7 @@ export {
   useVerificationFlowQuery,
 } from "./verification-flow-query.ts";
 export {
+  extractBrowserLocationChangeRequiredFromError,
   extractRecoveryFlowFromError,
   useUpdateRecoveryFlowMutation,
 } from "./use-update-recovery-flow.ts";

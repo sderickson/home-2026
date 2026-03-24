@@ -40,6 +40,85 @@ describe("useRecoveryFlow", () => {
     vi.restoreAllMocks();
   });
 
+  it("assigns window.location for 422 ErrorBrowserLocationChangeRequired (redirect only, no flow ui)", async () => {
+    const assignMock = vi.fn();
+    vi.stubGlobal("location", {
+      href: "http://localhost/",
+      assign: assignMock,
+    });
+    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const nextUrl = "https://settings.example/after-recovery";
+
+    server.use(
+      http.post("*/self-service/recovery", () =>
+        HttpResponse.json({ redirect_browser_to: nextUrl }, { status: 422 }),
+      ),
+    );
+
+    try {
+      const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
+        useRecoveryFlow(
+          () => mockRecoveryFlowId,
+          () => recipesHome,
+          () => undefined,
+        ),
+      );
+
+      await recoveryFlowQuery.refetch();
+      await submitRecoveryForm(recoveryLinkMethodForm());
+
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(nextUrl));
+      app.unmount();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("assigns window.location when 422 body is a full recovery flow with continue_with", async () => {
+    const assignMock = vi.fn();
+    vi.stubGlobal("location", {
+      href: "http://localhost/",
+      assign: assignMock,
+    });
+    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const nextUrl = "https://settings.example/complete";
+
+    server.use(
+      http.post("*/self-service/recovery", () =>
+        HttpResponse.json(
+          {
+            ...mockRecoveryFlow,
+            continue_with: [
+              {
+                action: "redirect_browser_to",
+                redirect_browser_to: nextUrl,
+              },
+            ],
+          },
+          { status: 422 },
+        ),
+      ),
+    );
+
+    try {
+      const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
+        useRecoveryFlow(
+          () => mockRecoveryFlowId,
+          () => recipesHome,
+          () => undefined,
+        ),
+      );
+
+      await recoveryFlowQuery.refetch();
+      await submitRecoveryForm(recoveryLinkMethodForm());
+
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(nextUrl));
+      app.unmount();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("assigns window.location when the update response includes redirect_browser_to", async () => {
     const assignMock = vi.fn();
     vi.stubGlobal("location", {

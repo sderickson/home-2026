@@ -1,11 +1,12 @@
 import type { RecoveryFlow, Session } from "@ory/client";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildRecoveryUpdateBodyFromFormData,
   destinationAfterRecovery,
   formDataFromKratosRecoveryForm,
   recoveryFlowContinueWithUrl,
   recoveryFlowShouldFetch,
+  resolveRecoveryBrowserRedirectUrl,
 } from "./Recovery.logic.ts";
 
 describe("recoveryFlowShouldFetch", () => {
@@ -105,6 +106,19 @@ describe("buildRecoveryUpdateBodyFromFormData", () => {
   });
 });
 
+describe("resolveRecoveryBrowserRedirectUrl", () => {
+  it("prefixes path-only URLs with window.location.origin", () => {
+    vi.stubGlobal("location", { origin: "http://auth.docker.localhost" });
+    try {
+      expect(resolveRecoveryBrowserRedirectUrl("/settings?flow=abc")).toBe(
+        "http://auth.docker.localhost/settings?flow=abc",
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
 describe("recoveryFlowContinueWithUrl", () => {
   it("returns redirect_browser_to when present", () => {
     const flow = {
@@ -118,6 +132,25 @@ describe("recoveryFlowContinueWithUrl", () => {
     expect(recoveryFlowContinueWithUrl(flow)).toBe("https://next.example/after");
   });
 
+  it("resolves path-only redirect_browser_to against the current origin", () => {
+    vi.stubGlobal("location", { origin: "http://auth.docker.localhost" });
+    try {
+      const flow = {
+        continue_with: [
+          {
+            action: "redirect_browser_to",
+            redirect_browser_to: "/settings?flow=sf-1",
+          },
+        ],
+      } as RecoveryFlow;
+      expect(recoveryFlowContinueWithUrl(flow)).toBe(
+        "http://auth.docker.localhost/settings?flow=sf-1",
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("returns show_settings_ui flow url when present", () => {
     const flow = {
       continue_with: [
@@ -128,6 +161,20 @@ describe("recoveryFlowContinueWithUrl", () => {
       ],
     } as RecoveryFlow;
     expect(recoveryFlowContinueWithUrl(flow)).toBe("https://auth.example/settings");
+  });
+
+  it("builds settings URL from flow id when Kratos omits flow.url", () => {
+    const flow = {
+      continue_with: [
+        {
+          action: "show_settings_ui",
+          flow: { id: "settings-flow-99" },
+        },
+      ],
+    } as RecoveryFlow;
+    expect(
+      recoveryFlowContinueWithUrl(flow, (id) => `https://auth.test/settings?flow=${id}`),
+    ).toBe("https://auth.test/settings?flow=settings-flow-99");
   });
 
   it("returns null when there is no navigable continue_with entry", () => {
