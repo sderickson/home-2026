@@ -29,7 +29,7 @@
     <KratosVerificationUi
       v-if="flow"
       :flow="flow"
-      :submitting="submitting"
+      :submitting="submitting || resending"
       @submit="submitVerificationForm"
     />
   </div>

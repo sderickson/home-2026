@@ -13,7 +13,10 @@
         <p v-if="node.type === 'text'" class="text-body-2 mb-2">
           {{ (node.attributes as { text?: { text: string } }).text?.text }}
         </p>
-        <div v-else-if="isKratosInputNode(node)" class="mb-3">
+        <div
+          v-else-if="isKratosInputNode(node) && !isKratosVerificationResendSubmitNode(node)"
+          class="mb-3"
+        >
           <label
             v-if="node.meta?.label?.text && node.attributes.type !== 'submit'"
             class="text-caption d-block mb-1"
@@ -21,10 +24,22 @@
           >
             {{ node.meta.label.text }}
           </label>
+          <!-- Kratos uses value for form semantics (e.g. method=code); label text lives in meta.label. -->
+          <button
+            v-if="node.attributes.type === 'submit'"
+            :id="prefix + '-' + idx"
+            type="submit"
+            class="kratos-input kratos-input--submit"
+            :name="node.attributes.name"
+            :value="node.attributes.value ?? undefined"
+            :disabled="submitting"
+          >
+            {{ kratosSubmitButtonLabel(node) }}
+          </button>
           <input
+            v-else
             :id="prefix + '-' + idx"
             class="kratos-input"
-            :class="{ 'kratos-input--submit': node.attributes.type === 'submit' }"
             :name="node.attributes.name"
             :type="node.attributes.type"
             :value="node.attributes.value ?? undefined"
@@ -39,9 +54,23 @@
 </template>
 
 <script setup lang="ts">
-import type { VerificationFlow } from "@ory/client";
+import type { UiNode, VerificationFlow } from "@ory/client";
 import { computed } from "vue";
 import { isKratosInputNode } from "../registration/Registration.logic.ts";
+
+/** In-form resend (`name=email` submit); we resend outside this card (VerificationFlowForm). */
+function isKratosVerificationResendSubmitNode(node: UiNode): boolean {
+  if (!isKratosInputNode(node)) return false;
+  return node.attributes.type === "submit" && node.attributes.name === "email";
+}
+
+/** Submit inputs only show `value` as the caption; Kratos puts human copy in meta.label. */
+function kratosSubmitButtonLabel(node: UiNode): string {
+  const t = node.meta?.label?.text?.trim();
+  if (t) return t;
+  const v = (node.attributes as { value?: string }).value;
+  return v != null ? String(v) : "";
+}
 
 const props = withDefaults(
   defineProps<{
