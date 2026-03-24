@@ -30,6 +30,9 @@ selfservice:
       enabled: true
       ui_url: https://auth.scotterickson.info/recovery
 
+    settings:
+      ui_url: https://auth.scotterickson.info/settings
+
     logout:
       after:
         default_browser_return_url: https://auth.scotterickson.info/

@@ -48,6 +48,25 @@ export const authLinks: LinkMap = {
     path: "/verify-wall",
     params: ["redirect"],
   },
+  /**
+   * Kratos account recovery. Use `params.redirect` (full URL) for `return_to`, resume with
+   * `params.flow` (Kratos flow id from email links), optional `params.token` when the courier
+   * includes it. After a browser flow is created, the page replaces the URL with `?flow=`.
+   */
+  kratosRecovery: {
+    subdomain,
+    path: "/recovery",
+    params: ["redirect", "flow", "token"],
+  },
+  /**
+   * Kratos account settings (profile, password, …). Requires a session. Resume with `params.flow`
+   * from Kratos redirects (e.g. after recovery). Use `params.redirect` for `return_to`.
+   */
+  kratosSettings: {
+    subdomain,
+    path: "/settings",
+    params: ["redirect", "flow"],
+  },
   // END WORKFLOW AREA
   /** Nav — same paths as Kratos flows. */
   login: {

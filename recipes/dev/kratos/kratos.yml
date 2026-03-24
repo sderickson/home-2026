@@ -31,6 +31,9 @@ selfservice:
       enabled: true
       ui_url: http://auth.docker.localhost/recovery
 
+    settings:
+      ui_url: http://auth.docker.localhost/settings
+
     logout:
       after:
         default_browser_return_url: http://auth.docker.localhost/
