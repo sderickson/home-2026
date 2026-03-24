@@ -8,10 +8,10 @@
   "dependencies": {
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
+    "@saflib/ory-kratos": "*",
     "@saflib/sentry": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
-    "@sderickson/hub-identity": "*",
     "@sderickson/recipes-service": "*",
     "@sderickson/recipes-service-common": "*"
   }

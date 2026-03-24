@@ -58,7 +58,7 @@ courier:
   delivery_strategy: http
   http:
     request_config:
-      url: http://monolith:3000/email/kratos-courier
+      url: http://${KRATOS_COURIER_HTTP_HOST}/email/kratos-courier
       method: POST
       body: file:///etc/config/kratos/courier-body.jsonnet
       headers:
