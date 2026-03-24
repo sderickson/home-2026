@@ -15,11 +15,14 @@ export { identityNeedsEmailVerification } from "./kratos-identity.ts";
 export {
   fetchBrowserLoginFlow,
   fetchBrowserLogoutFlow,
+  fetchBrowserRecoveryFlow,
   fetchBrowserRegistrationFlow,
   fetchBrowserVerificationFlow,
   fetchLoginFlowById,
+  fetchRecoveryFlowById,
   fetchRegistrationFlowById,
   fetchVerificationFlowById,
+  getRecoveryFlow,
 } from "./kratos-flows.ts";
 export {
   loginFlowQueryKey,
@@ -40,10 +43,19 @@ export {
   useUpdateLoginFlowMutation,
 } from "./use-update-login-flow.ts";
 export {
+  recoveryFlowQueryKey,
+  recoveryFlowQueryOptions,
+  useRecoveryFlowQuery,
+} from "./recovery-flow-query.ts";
+export {
   verificationFlowQueryKey,
   verificationFlowQueryOptions,
   useVerificationFlowQuery,
 } from "./verification-flow-query.ts";
+export {
+  extractRecoveryFlowFromError,
+  useUpdateRecoveryFlowMutation,
+} from "./use-update-recovery-flow.ts";
 export {
   extractVerificationFlowFromError,
   useUpdateVerificationFlowMutation,
