@@ -53,6 +53,7 @@ services:
       service: kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     env_file: !override
+      - ./env.kratos.config.prod-local
       - ./env.kratos.prod-local
     volumes: !override
       - ./kratos-prod-local/data:/var/lib/sqlite

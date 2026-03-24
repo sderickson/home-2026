@@ -73,8 +73,8 @@ services:
     command: serve -c /etc/config/kratos/kratos.yml --watch-courier
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
-      - KRATOS_COURIER_HTTP_HOST=${KRATOS_COURIER_HTTP_HOST:-monolith:3000}
     env_file:
+      - ./env.kratos.config
       - ./.env.kratos.secrets
     volumes:
       - /opt/kratos/data:/var/lib/sqlite
