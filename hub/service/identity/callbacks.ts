@@ -1,42 +1,41 @@
 import { mockingOn } from "@saflib/email";
 import { getSafReporters } from "@saflib/node";
 import type {
-  IdentityServiceCallbacks,
-  VerificationTokenCreatedPayload,
-  PasswordResetPayload,
-  PasswordUpdatedPayload,
+  KratosCourierCallbacks,
+  RecoveryCodeValidPayload,
+  RecoveryValidPayload,
+  VerificationCodeValidPayload,
 } from "@saflib/ory-kratos";
-async function onVerificationTokenCreated(
-  payload: VerificationTokenCreatedPayload,
-) {
+
+async function onVerificationCodeValid(payload: VerificationCodeValidPayload) {
   const { log } = getSafReporters();
   const { user, verificationUrl } = payload;
-  // TODO: Implement verification email sending
-  log.info(`Verification email should be sent to ${user.id}`);
-  if (mockingOn) {
+  log.info(`Verification code email for ${user.id}`);
+  if (mockingOn && verificationUrl) {
     log.info(`Link: ${verificationUrl}`);
   }
 }
 
-async function onPasswordReset(payload: PasswordResetPayload) {
+async function onRecoveryCodeValid(payload: RecoveryCodeValidPayload) {
   const { log } = getSafReporters();
-  const { user, resetUrl } = payload;
-  // TODO: Implement password reset email sending
-  log.info(`Password reset email should be sent to ${user.id}`);
+  const { user, recoveryCode } = payload;
+  log.info(`Recovery code email for ${user.id}`);
   if (mockingOn) {
-    log.info(`Link: ${resetUrl}`);
+    log.info(`Code: ${recoveryCode}`);
   }
 }
 
-async function onPasswordUpdated(payload: PasswordUpdatedPayload) {
+async function onRecoveryValid(payload: RecoveryValidPayload) {
   const { log } = getSafReporters();
-  const { user } = payload;
-  // TODO: Implement password update confirmation email sending
-  log.info(`Password update confirmation email should be sent to ${user.id}`);
+  const { user, recoveryUrl } = payload;
+  log.info(`Recovery link email for ${user.id}`);
+  if (mockingOn) {
+    log.info(`Link: ${recoveryUrl}`);
+  }
 }
 
-export const callbacks: IdentityServiceCallbacks = {
-  onVerificationTokenCreated,
-  onPasswordReset,
-  onPasswordUpdated,
+export const callbacks: KratosCourierCallbacks = {
+  onVerificationCodeValid,
+  onRecoveryCodeValid,
+  onRecoveryValid,
 };

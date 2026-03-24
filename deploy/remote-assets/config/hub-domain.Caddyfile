@@ -1,4 +1,4 @@
-# Hub domain model: single DOMAIN, single identity, all products (Phase 6)
+# Hub domain model: single DOMAIN, Kratos + product APIs (Phase 6)
 # Curried snippets
 
 (hub-spa) {
@@ -15,10 +15,6 @@
 
 (api-proxy-kratos) {
 	import kratos-api-proxy {args[0]}
-}
-
-(admin-proxy-kratos) {
-	import kratos-admin-proxy {args[0]}
 }
 
 # Blog client subdomains
@@ -107,14 +103,12 @@
 	reverse_proxy kratos:4433
 }
 
-# Admin-only services
+# Grafana (admin login via GF_SECURITY_ADMIN_* in compose, not Kratos)
 
 {$PROTOCOL}://grafana.{$DOMAIN} {
-	import admin-proxy-kratos grafana:3000
-}
-
-{$PROTOCOL}://prometheus.{$DOMAIN} {
-	import admin-proxy-kratos prometheus:9090
+	reverse_proxy grafana:3000 {
+		import reverse_proxy_common
+	}
 }
 
 # Domain redirects (optional)
