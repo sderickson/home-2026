@@ -129,11 +129,32 @@ export const kratosVerificationFlowByIdHandler = http.get(
 
 export const kratosUpdateVerificationHandler = http.post(
   "*/self-service/verification",
-  () =>
-    HttpResponse.json({
+  async ({ request }) => {
+    let body: Record<string, unknown> = {};
+    try {
+      body = (await request.json()) as Record<string, unknown>;
+    } catch {
+      /* non-JSON body */
+    }
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    if (email && !code) {
+      return HttpResponse.json({
+        ...mockVerificationFlow,
+        state: "sent_email",
+        ui: {
+          ...mockVerificationFlow.ui,
+          messages: [
+            { type: "info" as const, text: "A new verification code was sent." },
+          ],
+        },
+      });
+    }
+    return HttpResponse.json({
       ...mockVerificationFlow,
       state: "passed_challenge",
-    }),
+    });
+  },
 );
 
 export const kratosFakeHandlers = [

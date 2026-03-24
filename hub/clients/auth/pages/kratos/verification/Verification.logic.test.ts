@@ -2,7 +2,9 @@ import type { Session } from "@ory/client";
 import { describe, expect, it } from "vitest";
 import {
   buildVerificationCodeBody,
+  buildVerificationResendCodeBody,
   destinationAfterVerification,
+  emailForVerificationResend,
   verificationFlowShouldFetch,
 } from "./Verification.logic.ts";
 
@@ -47,6 +49,64 @@ describe("buildVerificationCodeBody", () => {
       method: "code",
       csrf_token: "csrf",
       code: "123456",
+    });
+  });
+});
+
+describe("emailForVerificationResend", () => {
+  it("prefers session identity traits email", () => {
+    expect(
+      emailForVerificationResend(
+        { identity: { traits: { email: "  s@x.com  " } } } as never,
+        null,
+      ),
+    ).toBe("s@x.com");
+  });
+
+  it("falls back to an email field on the flow when there is no session email", () => {
+    expect(
+      emailForVerificationResend(null, {
+        ui: {
+          nodes: [
+            {
+              type: "input",
+              attributes: {
+                node_type: "input",
+                name: "email",
+                value: "flow@example.com",
+              },
+            },
+          ],
+        },
+      } as never),
+    ).toBe("flow@example.com");
+  });
+});
+
+describe("buildVerificationResendCodeBody", () => {
+  it("sends method code with csrf and email only", () => {
+    expect(
+      buildVerificationResendCodeBody(
+        {
+          ui: {
+            nodes: [
+              {
+                type: "input",
+                attributes: {
+                  node_type: "input",
+                  name: "csrf_token",
+                  value: "tok",
+                },
+              },
+            ],
+          },
+        } as never,
+        " user@x.com ",
+      ),
+    ).toEqual({
+      method: "code",
+      csrf_token: "tok",
+      email: "user@x.com",
     });
   });
 });
