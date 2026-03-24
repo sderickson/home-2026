@@ -1,15 +1,17 @@
+import type { Session } from "@ory/client";
+
 /**
  * Asserts that all data required for the menu detail page is loaded.
  */
 export function assertMenuDetailLoaded(
-  profile: unknown,
+  session: unknown,
   collectionData: unknown,
   membersData: unknown,
   menuData: unknown,
   recipesData: unknown,
 ): void {
-  if (!profile) {
-    throw new Error("Failed to load profile");
+  if (!session || !(session as Session).identity) {
+    throw new Error("Failed to load session");
   }
   if (!collectionData || typeof collectionData !== "object") {
     throw new Error("Failed to load collection");

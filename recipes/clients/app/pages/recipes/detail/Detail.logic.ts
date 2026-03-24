@@ -30,16 +30,16 @@ export {
  * Whether the current user can see the version history section (admin only).
  * @deprecated Use role-based checks for collection-scoped pages.
  */
-export function canShowVersionHistory(profile: { isAdmin?: boolean }): boolean {
-  return profile.isAdmin === true;
+export function canShowVersionHistory(_profile?: { isAdmin?: boolean }): boolean {
+  return false;
 }
 
 /**
  * Whether the current user can add, edit, or delete notes (admin only).
  * @deprecated Use canEditInCollection for collection-scoped pages.
  */
-export function canShowNotesEdit(profile: { isAdmin?: boolean }): boolean {
-  return profile.isAdmin === true;
+export function canShowNotesEdit(_profile?: { isAdmin?: boolean }): boolean {
+  return false;
 }
 
 /**

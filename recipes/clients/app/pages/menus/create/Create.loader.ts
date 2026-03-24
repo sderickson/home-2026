@@ -1,6 +1,6 @@
-import { getProfile } from "@saflib/auth";
 import {
   getCollectionsQuery,
+  kratosSessionRequiredQueryOptions,
   listRecipesQuery,
   membersListCollectionsQuery,
 } from "@sderickson/recipes-sdk";
@@ -12,7 +12,7 @@ export function useCreateLoader() {
   const collectionId = route.params.collectionId as string;
 
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipesQuery: useQuery(listRecipesQuery(collectionId)),

@@ -39,6 +39,7 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
+import { kratosIdentityEmail } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import {
@@ -61,7 +62,7 @@ const loaderResult = useMenuRecipeDetailLoader();
 const { menuQuery, ...queries } = loaderResult;
 
 assertRecipeLoaded(queries.recipeQuery.data.value);
-assertProfileLoaded(queries.profileQuery.data.value);
+assertProfileLoaded(queries.sessionQuery.data.value);
 assertVersionsLoaded(queries.versionsQuery.data.value);
 assertNotesLoaded(queries.notesQuery.data.value);
 assertFilesLoaded(queries.filesQuery.data.value);
@@ -82,7 +83,7 @@ const collection = computed(
 );
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => queries.membersQuery.data.value?.members ?? []);
-const userEmail = computed(() => queries.profileQuery.data.value?.email ?? "");
+const userEmail = computed(() => kratosIdentityEmail(queries.sessionQuery.data.value) ?? "");
 const versions = computed(() => queries.versionsQuery.data.value ?? []);
 const notes = computed(() => queries.notesQuery.data.value ?? []);
 const files = computed(() => queries.filesQuery.data.value ?? []);

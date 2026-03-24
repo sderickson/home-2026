@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@ory/client": "^1.22.28",
-    "@saflib/auth": "*",
     "@saflib/monorepo": "*",
     "@saflib/sdk": "*",
     "@saflib/utils": "*",

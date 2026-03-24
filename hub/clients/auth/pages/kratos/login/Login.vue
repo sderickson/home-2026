@@ -13,8 +13,10 @@
 import { computed, watch } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useRoute, useRouter } from "vue-router";
-import { navigateToLink } from "@saflib/links";
+import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
+import { authLinks } from "@sderickson/hub-links";
+import { identityNeedsEmailVerification } from "@sderickson/recipes-sdk";
 import { loginFlowQueryKey } from "@sderickson/recipes-sdk";
 import {
   loginFlowQueryEnabledForSession,
@@ -42,7 +44,12 @@ if (sessionQuery.status.value !== "success") {
 watch(
   () => sessionQuery.data.value,
   (session) => {
-    if (session) {
+    if (!session) return;
+    if (identityNeedsEmailVerification(session.identity)) {
+      navigateToLink(authLinks.kratosVerifyWall, {
+        params: { redirect: linkToHrefWithHost(appLinks.home) },
+      });
+    } else {
       navigateToLink(appLinks.home);
     }
   },

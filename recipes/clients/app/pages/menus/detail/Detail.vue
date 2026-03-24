@@ -130,6 +130,7 @@ import {
   canEditMenuForRole,
   type MenuEditFormModel,
 } from "./Detail.logic.ts";
+import { kratosIdentityEmail } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MenuGroupingsDisplay from "./MenuGroupingsDisplay.vue";
 import MenuEditForm from "./MenuEditForm.vue";
@@ -140,7 +141,7 @@ const route = useRoute();
 const collectionId = route.params.collectionId as string;
 const menuId = route.params.id as string;
 const {
-  profileQuery,
+  sessionQuery,
   collectionQuery,
   membersQuery,
   menuQuery,
@@ -148,7 +149,7 @@ const {
 } = useDetailLoader();
 
 assertMenuDetailLoaded(
-  profileQuery.data.value,
+  sessionQuery.data.value,
   collectionQuery.data.value,
   membersQuery.data.value,
   menuQuery.data.value,
@@ -158,7 +159,7 @@ assertMenuDetailLoaded(
 const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
-const userEmail = computed(() => profileQuery.data.value?.email ?? "");
+const userEmail = computed(() => kratosIdentityEmail(sessionQuery.data.value) ?? "");
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),
 );

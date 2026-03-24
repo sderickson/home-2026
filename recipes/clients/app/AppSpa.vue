@@ -6,15 +6,12 @@ import {
   isDemoMode,
 } from "@sderickson/recipes-clients-common";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
-import { useProfile } from "@saflib/auth";
 import { useKratosSession } from "@sderickson/recipes-sdk";
 
 const queryClient = useQueryClient();
-const profileQuery = useProfile();
-const loggedIn = computed(() => !!profileQuery.data?.value?.id);
-const isAdmin = computed(() => profileQuery.data?.value?.isAdmin ?? false);
-
 const kratosSessionQuery = useKratosSession();
+const loggedIn = computed(() => !!kratosSessionQuery.data.value?.identity);
+const isAdmin = computed(() => false);
 const kratosSessionStatus = computed(() => {
   if (kratosSessionQuery.isPending.value) {
     return "Checking Kratos session…";

@@ -4,7 +4,6 @@ import type { Component } from "vue";
 import { createMemoryHistory, type Router } from "vue-router";
 import { createAuthRouter } from "./router.ts";
 import { auth_strings } from "./strings.ts";
-import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
 import { kratosFakeHandlers } from "@sderickson/recipes-sdk/fakes";
 
 export const createTestRouter = () =>
@@ -23,7 +22,4 @@ export const mountTestApp = <C extends Component>(
   });
 };
 
-export const testAppHandlers = [
-  ...identityServiceFakeHandlers,
-  ...kratosFakeHandlers,
-];
+export const testAppHandlers = [...kratosFakeHandlers];

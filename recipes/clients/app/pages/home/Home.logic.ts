@@ -1,18 +1,6 @@
 import { linkToProps, linkToHref, getHost } from "@saflib/links";
-import { authLinks } from "@saflib/auth-links";
-import { authLinks as hubAuthLinks } from "@sderickson/hub-links";
-import { appLinks } from "@sderickson/recipes-links";
+import { appLinks, authLinks } from "@sderickson/recipes-links";
 import { setDemoMode } from "@sderickson/recipes-clients-common";
-
-/**
- * Asserts that profile data is loaded. The AsyncPage only renders the page when
- * loader queries are ready, so this is a guard for type narrowing and consistency.
- */
-export function assertProfileLoaded(profile: unknown): asserts profile {
-  if (!profile) {
-    throw new Error("Failed to load profile");
-  }
-}
 
 /**
  * Asserts that collections list data is loaded.
@@ -38,18 +26,18 @@ export function getLoginLinkProps() {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.login, { params: { redirect } });
+  return linkToProps(authLinks.kratosLogin, { params: { redirect } });
 }
 
 /**
- * Kratos registration on the hub auth SPA; `redirect` is stored as Kratos `return_to` on the flow.
+ * Kratos registration on the auth SPA; `redirect` is stored as Kratos `return_to` on the flow.
  */
 export function getRegisterLinkProps() {
   const redirect =
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(hubAuthLinks.kratosRegistration, { params: { redirect } });
+  return linkToProps(authLinks.kratosRegistration, { params: { redirect } });
 }
 
 /**

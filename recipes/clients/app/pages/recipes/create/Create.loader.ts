@@ -1,5 +1,7 @@
-import { getProfile } from "@saflib/auth";
-import { getCollectionsQuery } from "@sderickson/recipes-sdk";
+import {
+  getCollectionsQuery,
+  kratosSessionRequiredQueryOptions,
+} from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
@@ -8,7 +10,7 @@ export function useCreateLoader() {
   const collectionId = route.params.collectionId as string;
 
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
   };
 }

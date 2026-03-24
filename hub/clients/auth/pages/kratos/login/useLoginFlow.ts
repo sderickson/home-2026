@@ -2,8 +2,12 @@ import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
+import { authLinks } from "@sderickson/hub-links";
 import {
   extractLoginFlowFromError,
+  identityNeedsEmailVerification,
+  invalidateKratosSessionQueries,
+  kratosSessionQueryOptions,
   loginFlowQueryKey,
   loginFlowQueryOptions,
   useUpdateLoginFlowMutation,
@@ -68,8 +72,16 @@ export function useLoginFlow(
         return;
       }
 
+      await invalidateKratosSessionQueries(queryClient);
+      const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
       const destination = destinationAfterLogin(current.return_to, linkToHrefWithHost(appLinks.home));
-      window.location.assign(destination);
+      if (session && identityNeedsEmailVerification(session.identity)) {
+        window.location.assign(
+          linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: destination } }),
+        );
+      } else {
+        window.location.assign(destination);
+      }
     } finally {
       submitting.value = false;
     }

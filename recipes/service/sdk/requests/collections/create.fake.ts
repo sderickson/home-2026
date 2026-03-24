@@ -1,9 +1,9 @@
-import { identityServiceFakeConstants } from "@saflib/auth/fakes";
 import { recipesHandler } from "../../typed-fake.ts";
+import { mockDefaultUser } from "../identity-mock-constants.ts";
 import { nextDeterministicId } from "../deterministic-id.ts";
 import { mockCollections, mockCollectionMembers } from "./mocks.ts";
 
-const defaultUser = identityServiceFakeConstants.defaultUser;
+const defaultUser = mockDefaultUser;
 
 export const createCollectionsHandler = recipesHandler({
   verb: "post",

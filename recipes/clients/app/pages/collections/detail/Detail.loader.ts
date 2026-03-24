@@ -1,6 +1,6 @@
-import { getProfile } from "@saflib/auth";
 import {
   getCollectionsQuery,
+  kratosSessionRequiredQueryOptions,
   listMenusQuery,
   listRecipesQuery,
   membersListCollectionsQuery,
@@ -13,7 +13,7 @@ export function useDetailLoader() {
   const collectionId = route.params.collectionId as string;
 
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     menusQuery: useQuery(listMenusQuery(collectionId)),

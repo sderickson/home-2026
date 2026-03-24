@@ -3,10 +3,27 @@ import {
   getMockRegistrationPostResult,
   mockLoginFlow,
   mockRegistrationFlow,
+  mockVerificationFlow,
 } from "./kratos-mocks.ts";
 
 export const kratosToSessionHandler = http.get("*/sessions/whoami", () =>
   HttpResponse.json(null, { status: 401 }),
+);
+
+/** Override in tests so session-required loaders succeed (same URL as {@link kratosToSessionHandler}). */
+export const kratosSessionLoggedInHandler = http.get(
+  "*/sessions/whoami",
+  () =>
+    HttpResponse.json({
+      id: "test-session",
+      active: true,
+      identity: {
+        id: "1",
+        schema_id: "default",
+        schema_url: "",
+        traits: { email: "john.doe@example.com" },
+      },
+    }),
 );
 
 export const kratosRegistrationBrowserHandler = http.get(
@@ -103,6 +120,59 @@ export const kratosUpdateLoginHandler = http.post("*/self-service/login", () =>
   }),
 );
 
+export const kratosVerificationBrowserHandler = http.get(
+  "*/self-service/verification/browser",
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockVerificationFlow,
+      return_to: returnTo ?? mockVerificationFlow.return_to,
+    });
+  },
+);
+
+export const kratosVerificationFlowByIdHandler = http.get(
+  "*/self-service/verification/flows",
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
+    if (id && id === mockVerificationFlow.id) {
+      return HttpResponse.json(mockVerificationFlow);
+    }
+    return new HttpResponse(null, { status: 404 });
+  },
+);
+
+export const kratosUpdateVerificationHandler = http.post(
+  "*/self-service/verification",
+  async ({ request }) => {
+    let body: Record<string, unknown> = {};
+    try {
+      body = (await request.json()) as Record<string, unknown>;
+    } catch {
+      /* non-JSON body */
+    }
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    if (email && !code) {
+      return HttpResponse.json({
+        ...mockVerificationFlow,
+        state: "sent_email",
+        ui: {
+          ...mockVerificationFlow.ui,
+          messages: [
+            { type: "info" as const, text: "A new verification code was sent." },
+          ],
+        },
+      });
+    }
+    return HttpResponse.json({
+      ...mockVerificationFlow,
+      state: "passed_challenge",
+    });
+  },
+);
+
 export const kratosFakeHandlers = [
   kratosToSessionHandler,
   kratosRegistrationBrowserHandler,
@@ -111,5 +181,8 @@ export const kratosFakeHandlers = [
   kratosLoginBrowserHandler,
   kratosLoginFlowByIdHandler,
   kratosUpdateLoginHandler,
+  kratosVerificationBrowserHandler,
+  kratosVerificationFlowByIdHandler,
+  kratosUpdateVerificationHandler,
   kratosBrowserLogoutHandler,
 ];

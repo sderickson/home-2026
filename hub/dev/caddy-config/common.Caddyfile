@@ -95,6 +95,21 @@ http://caddy:2020 {
 	}
 }
 
+# Recipes API (and similar): forward_auth to Kratos whoami.
+# args[0]: target service host (e.g. monolith:3002)
+(kratos-api-proxy) {
+	handle {
+		forward_auth kratos:4433 {
+			uri /sessions/whoami
+			header_up X-Request-ID {http.request.uuid}
+			copy_headers X-Kratos-Authenticated-Identity-Id
+		}
+		reverse_proxy {args[0]} {
+			import reverse_proxy_common
+		}
+	}
+}
+
 # Used for standalone services which provide their own UI, only accessible to admins,
 # such as Grafana and Prometheus.
 (admin-proxy) {

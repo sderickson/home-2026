@@ -38,6 +38,8 @@ services:
       file: remote-assets/docker-compose.prod.yaml
       service: grafana
     volumes: !override []
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
 
   kratos-migrate:
     extends:
@@ -53,6 +55,7 @@ services:
       service: kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     env_file: !override
+      - ./env.kratos.config.prod-local
       - ./env.kratos.prod-local
     volumes: !override
       - ./kratos-prod-local/data:/var/lib/sqlite

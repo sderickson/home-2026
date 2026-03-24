@@ -19,13 +19,13 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@saflib/auth": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",
     "@sderickson/hub-sdk": "*",
     "@sderickson/recipes-links": "*",
+    "@sderickson/recipes-sdk": "*",
     "vue-router": "*"
   }
 }

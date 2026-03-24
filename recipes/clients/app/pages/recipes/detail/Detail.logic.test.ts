@@ -35,18 +35,24 @@ describe("assertRecipeLoaded", () => {
 });
 
 describe("assertProfileLoaded", () => {
-  it("throws when profile is undefined", () => {
+  it("throws when session is undefined", () => {
     expect(() => assertProfileLoaded(undefined)).toThrow(
-      "Failed to load profile",
+      "Failed to load session",
     );
   });
 
-  it("throws when profile is null", () => {
-    expect(() => assertProfileLoaded(null)).toThrow("Failed to load profile");
+  it("throws when session is null", () => {
+    expect(() => assertProfileLoaded(null)).toThrow("Failed to load session");
   });
 
-  it("does not throw when profile is truthy", () => {
-    expect(() => assertProfileLoaded({ isAdmin: false })).not.toThrow();
+  it("throws when session has no identity", () => {
+    expect(() => assertProfileLoaded({})).toThrow("Failed to load session");
+  });
+
+  it("does not throw when session has identity", () => {
+    expect(() =>
+      assertProfileLoaded({ identity: { id: "x", traits: {} } }),
+    ).not.toThrow();
   });
 });
 
@@ -121,29 +127,17 @@ describe("assertNoteFilesByRecipeLoaded", () => {
 });
 
 describe("canShowVersionHistory", () => {
-  it("returns true when profile.isAdmin is true", () => {
-    expect(canShowVersionHistory({ isAdmin: true })).toBe(true);
-  });
-
-  it("returns false when profile.isAdmin is false", () => {
+  it("returns false (no admin signal from Kratos session in this app)", () => {
+    expect(canShowVersionHistory({ isAdmin: true })).toBe(false);
     expect(canShowVersionHistory({ isAdmin: false })).toBe(false);
-  });
-
-  it("returns false when profile.isAdmin is undefined", () => {
     expect(canShowVersionHistory({})).toBe(false);
   });
 });
 
 describe("canShowNotesEdit", () => {
-  it("returns true when profile.isAdmin is true", () => {
-    expect(canShowNotesEdit({ isAdmin: true })).toBe(true);
-  });
-
-  it("returns false when profile.isAdmin is false", () => {
+  it("returns false (no admin signal from Kratos session in this app)", () => {
+    expect(canShowNotesEdit({ isAdmin: true })).toBe(false);
     expect(canShowNotesEdit({ isAdmin: false })).toBe(false);
-  });
-
-  it("returns false when profile.isAdmin is undefined", () => {
     expect(canShowNotesEdit({})).toBe(false);
   });
 });

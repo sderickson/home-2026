@@ -7,9 +7,9 @@
 // Export resetMocks() so tests that mutate this array can restore initial state (e.g. in afterEach).
 
 import type { Collection, CollectionMember } from "@sderickson/recipes-spec";
-import { identityServiceFakeConstants } from "@saflib/auth/fakes";
+import { mockDefaultUser } from "../identity-mock-constants.ts";
 
-const defaultUser = identityServiceFakeConstants.defaultUser;
+const defaultUser = mockDefaultUser;
 
 export const mockCollections: Collection[] = [
   {

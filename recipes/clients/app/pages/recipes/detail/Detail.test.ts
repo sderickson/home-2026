@@ -1,4 +1,4 @@
-import { afterEach, describe, it, expect, vi } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import { stubGlobals, mountWithPlugins } from "@saflib/vue/testing";
 import RecipesDetailAsync from "./DetailAsync.vue";
 import { createTestRouter } from "../../../test-app.ts";
@@ -8,6 +8,7 @@ import {
   recipesServiceFakeHandlers,
   mockRecipes,
   resetMocks,
+  kratosSessionLoggedInHandler,
 } from "@sderickson/recipes-sdk/fakes";
 
 // Renders the page to capture baseline coverage.
@@ -15,7 +16,10 @@ import {
 
 describe("RecipesDetail", () => {
   stubGlobals();
-  setupMockServer(recipesServiceFakeHandlers);
+  const server = setupMockServer(recipesServiceFakeHandlers);
+  beforeEach(() => {
+    server.use(kratosSessionLoggedInHandler);
+  });
   afterEach(resetMocks);
 
   it("should render", async () => {

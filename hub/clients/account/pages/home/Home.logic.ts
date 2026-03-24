@@ -1,13 +1,13 @@
+import type { Session } from "@ory/client";
 import { linkToProps } from "@saflib/links";
 import { accountLinks } from "@sderickson/hub-links";
 
 /**
- * Asserts that profile data is loaded. The Async component only renders the page
- * when loader queries are ready, so this is a guard for type narrowing and consistency.
+ * Asserts Kratos session with identity is present (required-session loader).
  */
-export function assertProfileLoaded(profile: unknown): asserts profile {
-  if (!profile) {
-    throw new Error("Failed to load profile");
+export function assertProfileLoaded(session: unknown): asserts session is Session {
+  if (!session || !(session as Session).identity) {
+    throw new Error("Failed to load session");
   }
 }
 

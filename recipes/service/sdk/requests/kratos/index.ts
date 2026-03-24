@@ -1,16 +1,25 @@
 export { getKratosFrontendApi } from "./kratos-client.ts";
 export {
+  assertKratosSessionIdentityLoaded,
+  fetchKratosSession,
+  invalidateKratosSessionQueries,
+  kratosIdentityEmail,
   kratosSessionQueryKey,
   kratosSessionQueryOptions,
+  kratosSessionRequiredQueryKey,
+  kratosSessionRequiredQueryOptions,
   useInvalidateKratosSession,
   useKratosSession,
 } from "./kratos-session.ts";
+export { identityNeedsEmailVerification } from "./kratos-identity.ts";
 export {
   fetchBrowserLoginFlow,
   fetchBrowserLogoutFlow,
   fetchBrowserRegistrationFlow,
+  fetchBrowserVerificationFlow,
   fetchLoginFlowById,
   fetchRegistrationFlowById,
+  fetchVerificationFlowById,
 } from "./kratos-flows.ts";
 export {
   loginFlowQueryKey,
@@ -30,3 +39,12 @@ export {
   extractLoginFlowFromError,
   useUpdateLoginFlowMutation,
 } from "./use-update-login-flow.ts";
+export {
+  verificationFlowQueryKey,
+  verificationFlowQueryOptions,
+  useVerificationFlowQuery,
+} from "./verification-flow-query.ts";
+export {
+  extractVerificationFlowFromError,
+  useUpdateVerificationFlowMutation,
+} from "./use-update-verification-flow.ts";

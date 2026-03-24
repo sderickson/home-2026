@@ -1,10 +1,12 @@
-import { getProfile } from "@saflib/auth";
-import { listCollectionsQuery } from "@sderickson/recipes-sdk";
+import {
+  kratosSessionRequiredQueryOptions,
+  listCollectionsQuery,
+} from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 
 export function useHomeLoader() {
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionsQuery: useQuery(listCollectionsQuery()),
   };
 }

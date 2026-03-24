@@ -1,11 +1,13 @@
+import type { Session } from "@ory/client";
+
 /**
  * Assertions and list helpers for collection detail (and re-exports for pages that need them).
  * Inlined from former recipes/list and menus/list logic.
  */
 
-export function assertProfileLoaded(profile: unknown): asserts profile {
-  if (!profile) {
-    throw new Error("Failed to load profile");
+export function assertProfileLoaded(session: unknown): asserts session is Session {
+  if (!session || !(session as Session).identity) {
+    throw new Error("Failed to load session");
   }
 }
 

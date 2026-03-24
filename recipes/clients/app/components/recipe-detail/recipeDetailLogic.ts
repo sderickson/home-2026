@@ -2,6 +2,7 @@ import type {
   RecipeNote,
   RecipeNoteFileInfo,
 } from "@sderickson/recipes-spec";
+import type { Session } from "@ory/client";
 
 /**
  * Asserts that recipe detail data is loaded. Used by both standalone recipe detail
@@ -13,9 +14,9 @@ export function assertRecipeLoaded(data: unknown): asserts data {
   }
 }
 
-export function assertProfileLoaded(profile: unknown): asserts profile {
-  if (!profile) {
-    throw new Error("Failed to load profile");
+export function assertProfileLoaded(session: unknown): asserts session is Session {
+  if (!session || !(session as Session).identity) {
+    throw new Error("Failed to load session");
   }
 }
 

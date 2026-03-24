@@ -1,6 +1,5 @@
 import { linkToProps, linkToHref, getHost } from "@saflib/links";
-import { authLinks } from "@saflib/auth-links";
-import { appLinks } from "@sderickson/hub-links";
+import { appLinks, authLinks } from "@sderickson/hub-links";
 
 /**
  * Returns props suitable for binding to the register CTA (e.g. v-btn).
@@ -12,5 +11,5 @@ export function getRegisterLinkProps() {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.register, { params: { redirect } });
+  return linkToProps(authLinks.kratosRegistration, { params: { redirect } });
 }

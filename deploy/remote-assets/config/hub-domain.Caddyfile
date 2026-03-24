@@ -1,4 +1,4 @@
-# Hub domain model: single DOMAIN, single identity, all products (Phase 6)
+# Hub domain model: single DOMAIN, Kratos + product APIs (Phase 6)
 # Curried snippets
 
 (hub-spa) {
@@ -13,12 +13,8 @@
 	import spa /notebook-clients {args[0]}
 }
 
-(api-proxy-identity) {
-	import api-proxy {$IDENTITY_SERVICE_HTTP_HOST} {args[0]}
-}
-
-(admin-proxy-identity) {
-	import admin-proxy {$IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+(api-proxy-kratos) {
+	import kratos-api-proxy {args[0]}
 }
 
 # Blog client subdomains
@@ -85,7 +81,7 @@
 	import notebook-spa /account.notebook/index.html
 }
 
-# API subdomains (forward_auth to identity, then proxy to product service)
+# API subdomains (forward_auth to Kratos whoami, then proxy to product service)
 
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
 	import cors recipes.{$DOMAIN}
@@ -93,11 +89,11 @@
 }
 
 {$PROTOCOL}://api.notebook.{$DOMAIN} {
-	import api-proxy-identity {$NOTEBOOK_SERVICE_HTTP_HOST}
+	import api-proxy-kratos {$NOTEBOOK_SERVICE_HTTP_HOST}
 }
 
 {$PROTOCOL}://hub.{$DOMAIN} {
-	import api-proxy-identity {$HUB_SERVICE_HTTP_HOST}
+	import api-proxy-kratos {$HUB_SERVICE_HTTP_HOST}
 }
 
 # Kratos public API
@@ -107,20 +103,12 @@
 	reverse_proxy kratos:4433
 }
 
-# Identity service
-
-{$PROTOCOL}://identity.{$DOMAIN} {
-	import identity {$DOMAIN} {$IDENTITY_SERVICE_HTTP_HOST}
-}
-
-# Admin-only services
+# Grafana (admin login via GF_SECURITY_ADMIN_* in compose, not Kratos)
 
 {$PROTOCOL}://grafana.{$DOMAIN} {
-	import admin-proxy-identity grafana:3000
-}
-
-{$PROTOCOL}://prometheus.{$DOMAIN} {
-	import admin-proxy-identity prometheus:9090
+	reverse_proxy grafana:3000 {
+		import reverse_proxy_common
+	}
 }
 
 # Domain redirects (optional)

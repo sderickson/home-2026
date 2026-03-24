@@ -1,7 +1,7 @@
-import { getProfile } from "@saflib/auth";
 import {
   getCollectionsQuery,
   getMenuQuery,
+  kratosSessionRequiredQueryOptions,
   listRecipesQuery,
   membersListCollectionsQuery,
 } from "@sderickson/recipes-sdk";
@@ -14,7 +14,7 @@ export function useDetailLoader() {
   const id = route.params.id as string;
 
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     menuQuery: useQuery(getMenuQuery(id, collectionId)),

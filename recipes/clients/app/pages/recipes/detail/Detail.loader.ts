@@ -2,12 +2,12 @@ import {
   filesListRecipesQuery,
   getCollectionsQuery,
   getRecipeQuery,
+  kratosSessionRequiredQueryOptions,
   listRecipeVersionsQuery,
   membersListCollectionsQuery,
   notesListRecipesQuery,
   recipeNoteFilesGetByNoteIdQuery,
 } from "@sderickson/recipes-sdk";
-import { getProfile } from "@saflib/auth";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 
@@ -23,7 +23,7 @@ export function useDetailLoader(params?: RecipeDetailLoaderParams) {
   const collectionId = params?.collectionId ?? (route.params.collectionId as string);
 
   return {
-    profileQuery: useQuery(getProfile()),
+    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipeQuery: useQuery(getRecipeQuery(recipeId)),

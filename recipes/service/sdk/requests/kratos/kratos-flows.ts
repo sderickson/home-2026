@@ -1,4 +1,4 @@
-import type { LoginFlow, LogoutFlow, RegistrationFlow } from "@ory/client";
+import type { LoginFlow, LogoutFlow, RegistrationFlow, VerificationFlow } from "@ory/client";
 import { getKratosFrontendApi } from "./kratos-client.ts";
 
 /** `returnTo` is sent to Kratos as `return_to` and echoed on {@link LoginFlow.return_to}. */
@@ -31,5 +31,20 @@ export async function fetchRegistrationFlowById(flowId: string): Promise<Registr
 
 export async function fetchBrowserLogoutFlow(returnTo?: string): Promise<LogoutFlow> {
   const res = await getKratosFrontendApi().createBrowserLogoutFlow({ returnTo });
+  return res.data;
+}
+
+/** `returnTo` is sent to Kratos as `return_to` and echoed on {@link VerificationFlow.return_to}. */
+export async function fetchBrowserVerificationFlow(
+  returnTo?: string,
+): Promise<VerificationFlow> {
+  const res = await getKratosFrontendApi().createBrowserVerificationFlow(
+    returnTo ? { returnTo } : {},
+  );
+  return res.data;
+}
+
+export async function fetchVerificationFlowById(flowId: string): Promise<VerificationFlow> {
+  const res = await getKratosFrontendApi().getVerificationFlow({ id: flowId });
   return res.data;
 }

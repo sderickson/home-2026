@@ -1,7 +1,8 @@
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
-import { getProfile } from "@saflib/auth";
 import {
+  kratosIdentityEmail,
+  kratosSessionQueryOptions,
   membersListCollectionsQuery,
   useMembersAddCollectionsMutation,
   useMembersRemoveCollectionsMutation,
@@ -21,7 +22,7 @@ export function useMembersManagementFlow(
   const newMemberRole = ref<"owner" | "editor" | "viewer">("editor");
   const addingMember = ref(false);
 
-  const profileQuery = useQuery(getProfile());
+  const sessionQuery = useQuery(kratosSessionQueryOptions());
   const membersQuery = useQuery(
     computed(() => ({
       ...membersListCollectionsQuery(collectionId.value),
@@ -30,9 +31,9 @@ export function useMembersManagementFlow(
   );
 
   const members = computed(() => membersQuery.data.value?.members ?? []);
-  const profile = computed(() => profileQuery.data.value);
+  const profile = computed(() => sessionQuery.data.value);
   const isOwner = computed(() => {
-    const email = profile.value?.email;
+    const email = kratosIdentityEmail(profile.value);
     if (!email) return false;
     return members.value.some((m) => m.email === email && m.role === "owner");
   });

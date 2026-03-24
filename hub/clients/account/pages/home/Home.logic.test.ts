@@ -17,21 +17,30 @@ beforeEach(() => {
   setClientName("account");
 });
 
+const sessionWithIdentity = {
+  identity: {
+    id: "1",
+    traits: { email: "user@example.com" },
+  },
+};
+
 describe("assertProfileLoaded", () => {
-  it("throws when profile is null", () => {
-    expect(() => assertProfileLoaded(null)).toThrow("Failed to load profile");
+  it("throws when session is null", () => {
+    expect(() => assertProfileLoaded(null)).toThrow("Failed to load session");
   });
 
-  it("throws when profile is undefined", () => {
+  it("throws when session is undefined", () => {
     expect(() => assertProfileLoaded(undefined)).toThrow(
-      "Failed to load profile",
+      "Failed to load session",
     );
   });
 
-  it("does not throw when profile is truthy", () => {
-    expect(() =>
-      assertProfileLoaded({ email: "user@example.com" }),
-    ).not.toThrow();
+  it("throws when session has no identity", () => {
+    expect(() => assertProfileLoaded({})).toThrow("Failed to load session");
+  });
+
+  it("does not throw when session has identity", () => {
+    expect(() => assertProfileLoaded(sessionWithIdentity)).not.toThrow();
   });
 });
 
