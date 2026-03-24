@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { HubLayout } from "@sderickson/hub-clients-common";
-import { useProfile } from "@saflib/auth";
+import { useKratosSession } from "@sderickson/recipes-sdk";
 
-const profileQuery = useProfile();
-const loggedIn = computed(() => !!profileQuery.data?.value);
-const isAdmin = computed(() => profileQuery.data?.value?.isAdmin ?? false);
+const sessionQuery = useKratosSession();
+const loggedIn = computed(() => !!sessionQuery.data.value?.identity);
+const isAdmin = computed(() => false);
 </script>
 
 <template>

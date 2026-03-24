@@ -2,7 +2,7 @@ import { isAxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import type { FrontendApiUpdateVerificationFlowRequest, VerificationFlow } from "@ory/client";
 import { getKratosFrontendApi } from "./kratos-client.ts";
-import { kratosSessionQueryKey } from "./kratos-session.ts";
+import { invalidateKratosSessionQueries } from "./kratos-session.ts";
 
 /** Kratos may return an updated verification flow (validation errors) in the Axios response body (e.g. HTTP 400). */
 export function extractVerificationFlowFromError(e: unknown): VerificationFlow | undefined {
@@ -22,7 +22,7 @@ export const useUpdateVerificationFlowMutation = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: kratosSessionQueryKey });
+      void invalidateKratosSessionQueries(queryClient);
     },
   });
 };

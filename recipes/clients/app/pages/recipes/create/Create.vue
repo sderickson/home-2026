@@ -36,9 +36,9 @@ const { t } = useReverseT();
 const route = useRoute();
 const router = useRouter();
 const collectionId = route.params.collectionId as string;
-const { profileQuery, collectionQuery } = useCreateLoader();
+const { sessionQuery, collectionQuery } = useCreateLoader();
 
-assertCreateDataLoaded(profileQuery.data.value);
+assertCreateDataLoaded(sessionQuery.data.value);
 
 const collection = computed(() => collectionQuery.data.value?.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);

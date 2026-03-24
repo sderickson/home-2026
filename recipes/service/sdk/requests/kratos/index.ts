@@ -1,7 +1,13 @@
 export { getKratosFrontendApi } from "./kratos-client.ts";
 export {
+  assertKratosSessionIdentityLoaded,
+  fetchKratosSession,
+  invalidateKratosSessionQueries,
+  kratosIdentityEmail,
   kratosSessionQueryKey,
   kratosSessionQueryOptions,
+  kratosSessionRequiredQueryKey,
+  kratosSessionRequiredQueryOptions,
   useInvalidateKratosSession,
   useKratosSession,
 } from "./kratos-session.ts";

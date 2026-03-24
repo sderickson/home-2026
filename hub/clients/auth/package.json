@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./main.ts",
+    "./router": "./router.ts",
     "./fixtures": "./fixtures.ts",
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
@@ -20,8 +21,6 @@
   },
   "dependencies": {
     "@sderickson/recipes-sdk": "*",
-    "@saflib/auth": "*",
-    "@saflib/auth-links": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",

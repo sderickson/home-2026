@@ -22,9 +22,9 @@ import {
 } from "./Home.logic.ts";
 
 const { t } = useReverseT();
-const { profileQuery } = useHomeLoader();
+const { sessionQuery } = useHomeLoader();
 
-assertProfileLoaded(profileQuery.data.value);
+assertProfileLoaded(sessionQuery.data.value);
 
 const profileLinkProps = getProfileLinkProps();
 const passwordLinkProps = getPasswordLinkProps();

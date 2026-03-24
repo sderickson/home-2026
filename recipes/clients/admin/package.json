@@ -20,8 +20,6 @@
   },
   "dependencies": {
     "@saflib/admin": "*",
-    "@saflib/auth": "*",
-    "@saflib/auth-links": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/recipes-clients-common": "*",

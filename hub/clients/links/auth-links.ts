@@ -49,4 +49,21 @@ export const authLinks: LinkMap = {
     params: ["redirect"],
   },
   // END WORKFLOW AREA
+  /** Nav — same paths as Kratos flows. */
+  login: {
+    subdomain,
+    path: "/login",
+    params: ["redirect", "flow"],
+  },
+  register: {
+    subdomain,
+    path: "/registration",
+    params: ["redirect", "flow"],
+  },
+  /** Kratos browser logout via `LogoutAsync` route. */
+  logout: {
+    subdomain,
+    path: "/logout",
+    params: ["redirect"],
+  },
 };

@@ -8,7 +8,6 @@ import {
   recipesServiceFakeHandlers,
   resetMocks,
 } from "@sderickson/recipes-sdk/fakes";
-import { identityServiceFakeHandlers } from "@saflib/auth/fakes";
 
 export const createTestRouter = () =>
   createAppRouter({ history: createMemoryHistory() });
@@ -26,8 +25,5 @@ export const mountTestApp = <C extends Component>(
   });
 };
 
-export const testAppHandlers = [
-  ...recipesServiceFakeHandlers,
-  ...identityServiceFakeHandlers,
-];
+export const testAppHandlers = [...recipesServiceFakeHandlers];
 export { resetMocks };

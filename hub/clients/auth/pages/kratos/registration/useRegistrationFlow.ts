@@ -7,7 +7,7 @@ import {
   extractRegistrationFlowFromError,
   fetchBrowserLoginFlow,
   identityNeedsEmailVerification,
-  kratosSessionQueryKey,
+  invalidateKratosSessionQueries,
   kratosSessionQueryOptions,
   registrationFlowQueryKey,
   registrationFlowQueryOptions,
@@ -88,7 +88,7 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
         return;
       }
 
-      await queryClient.invalidateQueries({ queryKey: kratosSessionQueryKey });
+      await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
       const postVerifyTarget = destination ?? linkToHrefWithHost(authLinks.home);
 

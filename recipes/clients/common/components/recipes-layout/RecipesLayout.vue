@@ -57,12 +57,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
-import { authLinks } from "@saflib/auth-links";
 import { type Link, linkToHrefWithHost, type LinkOptions } from "@saflib/links";
 import {
   accountLinks,
   adminLinks,
   appLinks,
+  authLinks,
   rootLinks,
 } from "@sderickson/recipes-links";
 
@@ -100,7 +100,7 @@ const links = computed<LinkWithName[]>(() => {
   return [
     { ...rootLinks.home, name: "Home" },
     {
-      ...authLinks.login,
+      ...authLinks.kratosLogin,
       name: "Login",
       options: { params: { redirect: linkToHrefWithHost(appLinks.home) } },
     },

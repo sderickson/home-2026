@@ -1,4 +1,3 @@
-import { authAppStrings } from "@saflib/auth/strings";
 import { hub_common_strings } from "../common/strings.ts";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
@@ -17,7 +16,6 @@ import { verification_intro } from "./pages/kratos/verification/VerificationIntr
 
 export const auth_strings = {
   ...hub_common_strings,
-  ...authAppStrings,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   kratos_login_flow,
   kratos_registration_flow,

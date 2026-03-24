@@ -19,10 +19,10 @@ import { linkToProps } from "@saflib/links";
 import { accountLinks } from "@sderickson/recipes-links";
 
 const { t } = useReverseT();
-const { profileQuery } = useHomeLoader();
+const { sessionQuery } = useHomeLoader();
 
-if (!profileQuery.data.value) {
-  throw new Error("Failed to load profile");
+if (!sessionQuery.data.value?.identity) {
+  throw new Error("Failed to load session");
 }
 
 const profileLinkProps = linkToProps(accountLinks.profile);

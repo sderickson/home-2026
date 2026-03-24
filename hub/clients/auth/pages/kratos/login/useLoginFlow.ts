@@ -6,7 +6,7 @@ import { authLinks } from "@sderickson/hub-links";
 import {
   extractLoginFlowFromError,
   identityNeedsEmailVerification,
-  kratosSessionQueryKey,
+  invalidateKratosSessionQueries,
   kratosSessionQueryOptions,
   loginFlowQueryKey,
   loginFlowQueryOptions,
@@ -72,7 +72,7 @@ export function useLoginFlow(
         return;
       }
 
-      await queryClient.invalidateQueries({ queryKey: kratosSessionQueryKey });
+      await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
       const destination = destinationAfterLogin(current.return_to, linkToHrefWithHost(appLinks.home));
       if (session && identityNeedsEmailVerification(session.identity)) {

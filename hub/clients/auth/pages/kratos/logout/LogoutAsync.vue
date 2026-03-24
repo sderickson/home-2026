@@ -1,0 +1,22 @@
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { linkToHrefWithHost } from "@saflib/links";
+import { fetchBrowserLogoutFlow } from "@sderickson/recipes-sdk";
+import { authLinks } from "@sderickson/hub-links";
+
+const route = useRoute();
+
+onMounted(async () => {
+  const q = route.query.redirect;
+  const redirect =
+    typeof q === "string" && q.trim() ? q.trim() : undefined;
+  const returnTo = redirect ?? linkToHrefWithHost(authLinks.home);
+  const { logout_url } = await fetchBrowserLogoutFlow(returnTo);
+  window.location.assign(logout_url);
+});
+</script>
+
+<template>
+  <div class="d-flex justify-center my-8">Signing out…</div>
+</template>
