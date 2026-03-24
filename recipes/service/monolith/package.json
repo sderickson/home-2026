@@ -10,6 +10,7 @@
     "@saflib/monorepo": "*",
     "@saflib/ory-kratos": "*",
     "@saflib/sentry": "*",
+    "@sderickson/hub-kratos-courier": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
     "@sderickson/recipes-service": "*",

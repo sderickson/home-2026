@@ -1,0 +1,16 @@
+{
+  "name": "@sderickson/hub-kratos-courier",
+  "description": "Shared Kratos HTTP courier callbacks for hub and recipes monoliths",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@saflib/email": "*",
+    "@saflib/node": "*",
+    "@saflib/ory-kratos": "*"
+  },
+  "devDependencies": {
+    "@saflib/monorepo": "*"
+  }
+}

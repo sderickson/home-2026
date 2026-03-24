@@ -1,5 +1,5 @@
 import { startOryKratosService } from "@saflib/ory-kratos";
-import { callbacks } from "./callbacks.ts";
+import { callbacks } from "@sderickson/hub-kratos-courier";
 
 export { callbacks };
 

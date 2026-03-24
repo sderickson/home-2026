@@ -5,7 +5,7 @@ import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/sentry";
 import { startOryKratosService } from "@saflib/ory-kratos";
-import { callbacks } from "../identity/callbacks.ts";
+import { callbacks } from "@sderickson/hub-kratos-courier";
 import { startRecipesService } from "@sderickson/recipes-service";
 import { startNotebookService } from "@sderickson/notebook-service";
 

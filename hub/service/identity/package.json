@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@saflib/links": "*",
-    "@saflib/ory-kratos": "*"
+    "@saflib/ory-kratos": "*",
+    "@sderickson/hub-kratos-courier": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*",
