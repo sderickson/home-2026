@@ -7,6 +7,7 @@ import KratosTest from "./pages/KratosTest.vue";
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import KratosLoginAsync from "./pages/kratos/login/LoginAsync.vue";
 import KratosRecoveryAsync from "./pages/kratos/recovery/RecoveryAsync.vue";
+import KratosSettingsAsync from "./pages/kratos/settings/SettingsAsync.vue";
 import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsync.vue";
 import KratosVerificationAsync from "./pages/kratos/verification/VerificationAsync.vue";
 import KratosVerifyWallAsync from "./pages/kratos/verify-wall/VerifyWallAsync.vue";
@@ -54,6 +55,10 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
       path: authLinks.kratosRecovery.path,
       component: KratosRecoveryAsync,
     },
+      {
+        path: authLinks.kratosSettings.path,
+        component: KratosSettingsAsync,
+      },
       // END WORKFLOW AREA
       { path: "/:pathMatch(.*)*", component: PageNotFound },
     ],

@@ -1,4 +1,4 @@
-import type { LoginFlow, RecoveryFlow, RegistrationFlow, VerificationFlow } from "@ory/client";
+import type { LoginFlow, RecoveryFlow, RegistrationFlow, SettingsFlow, VerificationFlow } from "@ory/client";
 import {
   LoginFlowState,
   RecoveryFlowState,
@@ -18,6 +18,9 @@ export let mockVerificationFlow: VerificationFlow = createDefaultMockVerificatio
 /** Mutable recovery flow for MSW. */
 export let mockRecoveryFlow: RecoveryFlow = createDefaultMockRecoveryFlow();
 
+/** Mutable settings flow for MSW. */
+export let mockSettingsFlow: SettingsFlow = createDefaultMockSettingsFlow();
+
 export type KratosRegistrationPostResult = "success" | "validation_error";
 
 /** How `POST /self-service/registration` responds in fake handlers. */
@@ -36,6 +39,7 @@ export function resetKratosFlowMocks() {
   mockLoginFlow = createDefaultMockLoginFlow();
   mockVerificationFlow = createDefaultMockVerificationFlow();
   mockRecoveryFlow = createDefaultMockRecoveryFlow();
+  mockSettingsFlow = createDefaultMockSettingsFlow();
   mockRegistrationPostResult = "success";
 }
 
@@ -159,6 +163,95 @@ export function createDefaultMockRecoveryFlow(): RecoveryFlow {
       messages: [],
     },
   } as unknown as RecoveryFlow;
+}
+
+export function createDefaultMockSettingsFlow(): SettingsFlow {
+  return {
+    id: "mock-settings-flow",
+    type: "browser",
+    state: "show_form",
+    expires_at: new Date(Date.now() + 3_600_000).toISOString(),
+    issued_at: new Date().toISOString(),
+    request_url: "http://auth.localhost/settings",
+    identity: {
+      id: "mock-identity",
+      schema_id: "default",
+      schema_url: "",
+      traits: { email: "user@example.com" },
+    },
+    ui: {
+      action: "http://kratos.localhost/self-service/settings?flow=mock-settings-flow",
+      method: "POST",
+      nodes: [
+        {
+          type: "input",
+          group: "default",
+          attributes: {
+            node_type: "input",
+            name: "csrf_token",
+            type: "hidden",
+            value: "mock-settings-csrf",
+          },
+          meta: {},
+          messages: [],
+        },
+        {
+          type: "input",
+          group: "profile",
+          attributes: {
+            node_type: "input",
+            name: "traits.email",
+            type: "email",
+            value: "user@example.com",
+            required: true,
+          },
+          meta: {
+            label: { type: "text", text: "Email", id: 1 },
+          },
+          messages: [],
+        },
+        {
+          type: "input",
+          group: "profile",
+          attributes: {
+            node_type: "input",
+            name: "method",
+            type: "submit",
+            value: "profile",
+          },
+          meta: { label: { type: "text", text: "Save profile", id: 2 } },
+          messages: [],
+        },
+        {
+          type: "input",
+          group: "password",
+          attributes: {
+            node_type: "input",
+            name: "password",
+            type: "password",
+            required: true,
+          },
+          meta: {
+            label: { type: "text", text: "New password", id: 3 },
+          },
+          messages: [],
+        },
+        {
+          type: "input",
+          group: "password",
+          attributes: {
+            node_type: "input",
+            name: "method",
+            type: "submit",
+            value: "password",
+          },
+          meta: { label: { type: "text", text: "Save password", id: 4 } },
+          messages: [],
+        },
+      ],
+      messages: [],
+    },
+  } as unknown as SettingsFlow;
 }
 
 export function createDefaultMockVerificationFlow(): VerificationFlow {

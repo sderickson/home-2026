@@ -17,10 +17,12 @@ export {
   fetchBrowserLogoutFlow,
   fetchBrowserRecoveryFlow,
   fetchBrowserRegistrationFlow,
+  fetchBrowserSettingsFlow,
   fetchBrowserVerificationFlow,
   fetchLoginFlowById,
   fetchRecoveryFlowById,
   fetchRegistrationFlowById,
+  fetchSettingsFlowById,
   fetchVerificationFlowById,
   getRecoveryFlow,
 } from "./kratos-flows.ts";
@@ -48,6 +50,11 @@ export {
   useRecoveryFlowQuery,
 } from "./recovery-flow-query.ts";
 export {
+  settingsFlowQueryKey,
+  settingsFlowQueryOptions,
+  useSettingsFlowQuery,
+} from "./settings-flow-query.ts";
+export {
   verificationFlowQueryKey,
   verificationFlowQueryOptions,
   useVerificationFlowQuery,
@@ -56,6 +63,10 @@ export {
   extractRecoveryFlowFromError,
   useUpdateRecoveryFlowMutation,
 } from "./use-update-recovery-flow.ts";
+export {
+  extractSettingsFlowFromError,
+  useUpdateSettingsFlowMutation,
+} from "./use-update-settings-flow.ts";
 export {
   extractVerificationFlowFromError,
   useUpdateVerificationFlowMutation,

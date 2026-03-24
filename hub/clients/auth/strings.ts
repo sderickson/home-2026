@@ -4,6 +4,12 @@ import { hub_common_strings } from "../common/strings.ts";
 import { kratos_login_flow } from "./pages/kratos/login/LoginFlowForm.strings.ts";
 import { kratos_recovery_flow } from "./pages/kratos/recovery/RecoveryFlowForm.strings.ts";
 import { recovery_intro } from "./pages/kratos/recovery/RecoveryIntro.strings.ts";
+import {
+  settings_group_empty,
+  settings_page,
+  settings_tabs,
+} from "./pages/kratos/settings/Settings.strings.ts";
+import { settings_intro } from "./pages/kratos/settings/SettingsIntro.strings.ts";
 import { kratos_registration_flow } from "./pages/kratos/registration/RegistrationFlowForm.strings.ts";
 import { kratos_verification } from "./pages/kratos/verification/Verification.strings.ts";
 import { kratos_verification_flow } from "./pages/kratos/verification/VerificationFlowForm.strings.ts";
@@ -22,6 +28,10 @@ export const auth_strings = {
   kratos_login_flow,
   kratos_recovery_flow,
   recovery_intro,
+  settings_group_empty,
+  settings_intro,
+  settings_page,
+  settings_tabs,
   kratos_registration_flow,
   kratos_verification,
   kratos_verification_flow,

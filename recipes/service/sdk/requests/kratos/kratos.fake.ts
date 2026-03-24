@@ -5,6 +5,7 @@ import {
   mockLoginFlow,
   mockRecoveryFlow,
   mockRegistrationFlow,
+  mockSettingsFlow,
   mockVerificationFlow,
 } from "./kratos-mocks.ts";
 
@@ -179,6 +180,39 @@ export const kratosUpdateRecoveryHandler = http.post("*/self-service/recovery", 
   }),
 );
 
+export const kratosSettingsBrowserHandler = http.get(
+  "*/self-service/settings/browser",
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockSettingsFlow,
+      return_to: returnTo ?? mockSettingsFlow.return_to,
+    });
+  },
+);
+
+export const kratosSettingsFlowByIdHandler = http.get(
+  "*/self-service/settings/flows",
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
+    if (id && id === mockSettingsFlow.id) {
+      return HttpResponse.json(mockSettingsFlow);
+    }
+    return new HttpResponse(null, { status: 404 });
+  },
+);
+
+export const kratosUpdateSettingsHandler = http.post("*/self-service/settings", async () =>
+  HttpResponse.json({
+    ...mockSettingsFlow,
+    ui: {
+      ...mockSettingsFlow.ui,
+      messages: [{ type: "info" as const, text: "Settings updated (fake)." }],
+    },
+  }),
+);
+
 export const kratosUpdateVerificationHandler = http.post(
   "*/self-service/verification",
   async ({ request }) => {
@@ -223,5 +257,8 @@ export const kratosFakeHandlers = [
   kratosRecoveryBrowserHandler,
   kratosRecoveryFlowByIdHandler,
   kratosUpdateRecoveryHandler,
+  kratosSettingsBrowserHandler,
+  kratosSettingsFlowByIdHandler,
+  kratosUpdateSettingsHandler,
   kratosBrowserLogoutHandler,
 ];

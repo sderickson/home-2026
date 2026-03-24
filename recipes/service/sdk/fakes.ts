@@ -43,6 +43,7 @@ export {
   getMockRegistrationPostResult,
   mockLoginFlow,
   mockRecoveryFlow,
+  mockSettingsFlow,
   mockVerificationFlow,
   resetKratosFlowMocks,
   setMockRegistrationPostResult,

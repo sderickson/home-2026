@@ -58,6 +58,15 @@ export const authLinks: LinkMap = {
     path: "/recovery",
     params: ["redirect", "flow", "token"],
   },
+  /**
+   * Kratos account settings (profile, password, …). Requires a session. Resume with `params.flow`
+   * from Kratos redirects (e.g. after recovery). Use `params.redirect` for `return_to`.
+   */
+  kratosSettings: {
+    subdomain,
+    path: "/settings",
+    params: ["redirect", "flow"],
+  },
   // END WORKFLOW AREA
   /** Nav — same paths as Kratos flows. */
   login: {
