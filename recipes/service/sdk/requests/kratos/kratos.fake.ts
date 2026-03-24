@@ -1,7 +1,9 @@
+import { RecoveryFlowState } from "@ory/client";
 import { http, HttpResponse } from "msw";
 import {
   getMockRegistrationPostResult,
   mockLoginFlow,
+  mockRecoveryFlow,
   mockRegistrationFlow,
   mockVerificationFlow,
 } from "./kratos-mocks.ts";
@@ -143,6 +145,40 @@ export const kratosVerificationFlowByIdHandler = http.get(
   },
 );
 
+export const kratosRecoveryBrowserHandler = http.get(
+  "*/self-service/recovery/browser",
+  ({ request }) => {
+    const returnTo = new URL(request.url).searchParams.get("return_to") ?? undefined;
+    return HttpResponse.json({
+      ...mockRecoveryFlow,
+      return_to: returnTo ?? mockRecoveryFlow.return_to,
+    });
+  },
+);
+
+export const kratosRecoveryFlowByIdHandler = http.get(
+  "*/self-service/recovery/flows",
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? url.searchParams.get("flow");
+    if (id && id === mockRecoveryFlow.id) {
+      return HttpResponse.json(mockRecoveryFlow);
+    }
+    return new HttpResponse(null, { status: 404 });
+  },
+);
+
+export const kratosUpdateRecoveryHandler = http.post("*/self-service/recovery", async () =>
+  HttpResponse.json({
+    ...mockRecoveryFlow,
+    state: RecoveryFlowState.SentEmail,
+    ui: {
+      ...mockRecoveryFlow.ui,
+      messages: [{ type: "info" as const, text: "Recovery email sent (fake)." }],
+    },
+  }),
+);
+
 export const kratosUpdateVerificationHandler = http.post(
   "*/self-service/verification",
   async ({ request }) => {
@@ -184,5 +220,8 @@ export const kratosFakeHandlers = [
   kratosVerificationBrowserHandler,
   kratosVerificationFlowByIdHandler,
   kratosUpdateVerificationHandler,
+  kratosRecoveryBrowserHandler,
+  kratosRecoveryFlowByIdHandler,
+  kratosUpdateRecoveryHandler,
   kratosBrowserLogoutHandler,
 ];

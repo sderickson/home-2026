@@ -1,5 +1,10 @@
-import type { LoginFlow, RegistrationFlow, VerificationFlow } from "@ory/client";
-import { LoginFlowState, RegistrationFlowState, VerificationFlowState } from "@ory/client";
+import type { LoginFlow, RecoveryFlow, RegistrationFlow, VerificationFlow } from "@ory/client";
+import {
+  LoginFlowState,
+  RecoveryFlowState,
+  RegistrationFlowState,
+  VerificationFlowState,
+} from "@ory/client";
 
 /** Mutable registration flow returned by browser / get-by-id handlers. */
 export let mockRegistrationFlow: RegistrationFlow = createDefaultMockRegistrationFlow();
@@ -9,6 +14,9 @@ export let mockLoginFlow: LoginFlow = createDefaultMockLoginFlow();
 
 /** Mutable verification flow for MSW. */
 export let mockVerificationFlow: VerificationFlow = createDefaultMockVerificationFlow();
+
+/** Mutable recovery flow for MSW. */
+export let mockRecoveryFlow: RecoveryFlow = createDefaultMockRecoveryFlow();
 
 export type KratosRegistrationPostResult = "success" | "validation_error";
 
@@ -27,6 +35,7 @@ export function resetKratosFlowMocks() {
   mockRegistrationFlow = createDefaultMockRegistrationFlow();
   mockLoginFlow = createDefaultMockLoginFlow();
   mockVerificationFlow = createDefaultMockVerificationFlow();
+  mockRecoveryFlow = createDefaultMockRecoveryFlow();
   mockRegistrationPostResult = "success";
 }
 
@@ -94,6 +103,62 @@ export function createDefaultMockLoginFlow(): LoginFlow {
       messages: [],
     },
   } as unknown as LoginFlow;
+}
+
+export function createDefaultMockRecoveryFlow(): RecoveryFlow {
+  return {
+    id: "mock-recovery-flow",
+    type: "browser",
+    state: RecoveryFlowState.ChooseMethod,
+    expires_at: new Date(Date.now() + 3_600_000).toISOString(),
+    issued_at: new Date().toISOString(),
+    request_url: "http://auth.localhost/recovery",
+    return_to: "http://app.recipes.localhost:3000/",
+    ui: {
+      action: "http://kratos.localhost/self-service/recovery?flow=mock-recovery-flow",
+      method: "POST",
+      nodes: [
+        {
+          type: "input",
+          group: "default",
+          attributes: {
+            node_type: "input",
+            name: "csrf_token",
+            type: "hidden",
+            value: "mock-recovery-csrf",
+          },
+          meta: {},
+        },
+        {
+          type: "input",
+          group: "link",
+          attributes: {
+            node_type: "input",
+            name: "email",
+            type: "email",
+            required: true,
+          },
+          meta: {
+            label: { type: "text", text: "Email", id: 1 },
+          },
+        },
+        {
+          type: "input",
+          group: "link",
+          attributes: {
+            node_type: "input",
+            name: "method",
+            type: "submit",
+            value: "link",
+          },
+          meta: {
+            label: { type: "text", text: "Continue", id: 2 },
+          },
+        },
+      ],
+      messages: [],
+    },
+  } as unknown as RecoveryFlow;
 }
 
 export function createDefaultMockVerificationFlow(): VerificationFlow {
