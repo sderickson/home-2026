@@ -19,7 +19,6 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@saflib/account-sdk": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",

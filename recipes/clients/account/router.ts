@@ -1,7 +1,8 @@
-import {
-  AccountPasswordPageAsync,
-  AccountProfilePageAsync,
-} from "@saflib/account-sdk/pages";
+// TODO: create new versions of these for kratos
+// import {
+//   AccountPasswordPageAsync,
+//   AccountProfilePageAsync,
+// } from "@saflib/account-sdk/pages";
 import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { accountLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
@@ -18,14 +19,14 @@ export const createAccountRouter = (options?: { history?: RouterHistory }) => {
       path: accountLinks.home.path,
       component: HomeAsync,
     },
-    {
-      path: accountLinks.password.path,
-      component: AccountPasswordPageAsync,
-    },
-    {
-      path: accountLinks.profile.path,
-      component: AccountProfilePageAsync,
-    },
+    // {
+    //   path: accountLinks.password.path,
+    //   component: AccountPasswordPageAsync,
+    // },
+    // {
+    //   path: accountLinks.profile.path,
+    //   component: AccountProfilePageAsync,
+    // },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
   ];
