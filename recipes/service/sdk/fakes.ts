@@ -35,7 +35,10 @@ export const recipesServiceFakeHandlers = [
   // END WORKFLOW AREA
 ];
 
-export { kratosFakeHandlers } from "./requests/kratos/kratos.fake.ts";
+export {
+  kratosFakeHandlers,
+  kratosSessionLoggedInHandler,
+} from "./requests/kratos/kratos.fake.ts";
 export {
   getMockRegistrationPostResult,
   mockLoginFlow,

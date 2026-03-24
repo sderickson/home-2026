@@ -10,6 +10,22 @@ export const kratosToSessionHandler = http.get("*/sessions/whoami", () =>
   HttpResponse.json(null, { status: 401 }),
 );
 
+/** Override in tests so session-required loaders succeed (same URL as {@link kratosToSessionHandler}). */
+export const kratosSessionLoggedInHandler = http.get(
+  "*/sessions/whoami",
+  () =>
+    HttpResponse.json({
+      id: "test-session",
+      active: true,
+      identity: {
+        id: "1",
+        schema_id: "default",
+        schema_url: "",
+        traits: { email: "john.doe@example.com" },
+      },
+    }),
+);
+
 export const kratosRegistrationBrowserHandler = http.get(
   "*/self-service/registration/browser",
   ({ request }) => {

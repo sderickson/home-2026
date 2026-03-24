@@ -6,7 +6,9 @@ import {
 } from "./Create.logic.ts";
 
 describe("assertCreateDataLoaded", () => {
-  const validProfile = { email: "u@example.com" };
+  const validSession = {
+    identity: { id: "1", traits: { email: "u@example.com" } },
+  };
   const validCollection = { collection: { id: "c1", name: "Kitchen" } };
   const validMembers = { members: [] };
   const validRecipes = [] as unknown[];
@@ -14,7 +16,7 @@ describe("assertCreateDataLoaded", () => {
   it("does not throw when all data is valid", () => {
     expect(() =>
       assertCreateDataLoaded(
-        validProfile,
+        validSession,
         validCollection,
         validMembers,
         validRecipes,
@@ -22,7 +24,7 @@ describe("assertCreateDataLoaded", () => {
     ).not.toThrow();
   });
 
-  it("throws when profile is null", () => {
+  it("throws when session is null", () => {
     expect(() =>
       assertCreateDataLoaded(
         null,
@@ -30,13 +32,13 @@ describe("assertCreateDataLoaded", () => {
         validMembers,
         validRecipes,
       ),
-    ).toThrow("Failed to load profile");
+    ).toThrow("Failed to load session");
   });
 
   it("throws when collection data has no collection property", () => {
     expect(() =>
       assertCreateDataLoaded(
-        validProfile,
+        validSession,
         {},
         validMembers,
         validRecipes,
@@ -47,7 +49,7 @@ describe("assertCreateDataLoaded", () => {
   it("throws when members data is undefined", () => {
     expect(() =>
       assertCreateDataLoaded(
-        validProfile,
+        validSession,
         validCollection,
         undefined,
         validRecipes,
@@ -58,7 +60,7 @@ describe("assertCreateDataLoaded", () => {
   it("throws when recipes data is null", () => {
     expect(() =>
       assertCreateDataLoaded(
-        validProfile,
+        validSession,
         validCollection,
         validMembers,
         null,

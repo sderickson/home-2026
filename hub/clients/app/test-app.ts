@@ -1,8 +1,8 @@
 import { mountWithPlugins } from "@saflib/vue/testing";
 import type { ComponentMountingOptions } from "@vue/test-utils";
-import type { HttpHandler } from "msw";
 import type { Component } from "vue";
 import { createMemoryHistory, type Router } from "vue-router";
+import { kratosFakeHandlers } from "@sderickson/recipes-sdk/fakes";
 import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
 export const createTestRouter = () =>
@@ -21,4 +21,5 @@ export const mountTestApp = <C extends Component>(
   });
 };
 
-export const testAppHandlers: HttpHandler[] = [];
+/** Kratos handlers so `useKratosSession` / `toSession` is not an unhandled request in tests. */
+export const testAppHandlers = [...kratosFakeHandlers];

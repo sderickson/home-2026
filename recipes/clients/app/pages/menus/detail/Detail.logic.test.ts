@@ -8,7 +8,9 @@ import {
 } from "./Detail.logic.ts";
 
 describe("assertMenuDetailLoaded", () => {
-  const validProfile = { email: "u@example.com" };
+  const validSession = {
+    identity: { id: "1", traits: { email: "u@example.com" } },
+  };
   const validCollection = { collection: { id: "c1", name: "Kitchen" } };
   const validMembers = { members: [] };
   const validMenuData = { menu: { id: "m1", name: "Dinner" }, recipes: [] };
@@ -17,7 +19,7 @@ describe("assertMenuDetailLoaded", () => {
   it("does not throw when all data is valid", () => {
     expect(() =>
       assertMenuDetailLoaded(
-        validProfile,
+        validSession,
         validCollection,
         validMembers,
         validMenuData,
@@ -26,7 +28,7 @@ describe("assertMenuDetailLoaded", () => {
     ).not.toThrow();
   });
 
-  it("throws when profile is null", () => {
+  it("throws when session is null", () => {
     expect(() =>
       assertMenuDetailLoaded(
         null,
@@ -35,13 +37,13 @@ describe("assertMenuDetailLoaded", () => {
         validMenuData,
         validRecipes,
       ),
-    ).toThrow("Failed to load profile");
+    ).toThrow("Failed to load session");
   });
 
   it("throws when menu data has no menu property", () => {
     expect(() =>
       assertMenuDetailLoaded(
-        validProfile,
+        validSession,
         validCollection,
         validMembers,
         {},
@@ -53,7 +55,7 @@ describe("assertMenuDetailLoaded", () => {
   it("throws when recipes data is null", () => {
     expect(() =>
       assertMenuDetailLoaded(
-        validProfile,
+        validSession,
         validCollection,
         validMembers,
         validMenuData,
