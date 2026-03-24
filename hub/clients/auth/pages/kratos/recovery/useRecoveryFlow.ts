@@ -14,6 +14,7 @@ import { registrationSubmitErrorMessage } from "../registration/Registration.log
 import {
   buildRecoveryUpdateBodyFromFormData,
   destinationAfterRecovery,
+  formDataFromKratosRecoveryForm,
   recoveryFlowContinueWithUrl,
 } from "./Recovery.logic.ts";
 import { kratos_recovery_flow as flowStrings } from "./RecoveryFlowForm.strings.ts";
@@ -42,10 +43,10 @@ export function useRecoveryFlow(
     submitError.value = null;
   }
 
-  async function submitRecoveryForm(form: HTMLFormElement) {
+  async function submitRecoveryForm(form: HTMLFormElement, submitter?: HTMLElement | null) {
     const current = recoveryFlowQuery.data.value;
     if (!current || submitting.value) return;
-    const fd = new FormData(form);
+    const fd = formDataFromKratosRecoveryForm(form, submitter);
     submitting.value = true;
     submitError.value = null;
     try {

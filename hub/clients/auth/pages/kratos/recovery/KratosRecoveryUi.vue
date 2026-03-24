@@ -82,12 +82,14 @@ const props = withDefaults(
 const prefix = computed(() => props.idPrefix);
 
 const emit = defineEmits<{
-  submit: [form: HTMLFormElement];
+  submit: [form: HTMLFormElement, submitter: HTMLElement | null];
 }>();
 
 function onSubmit(ev: Event) {
   const el = ev.currentTarget;
-  if (el instanceof HTMLFormElement) emit("submit", el);
+  if (el instanceof HTMLFormElement) {
+    emit("submit", el, (ev as SubmitEvent).submitter);
+  }
 }
 </script>
 

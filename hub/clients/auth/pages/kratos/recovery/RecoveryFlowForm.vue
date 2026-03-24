@@ -17,7 +17,7 @@
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
-      @submit="submitRecoveryForm"
+      @submit="(form, submitter) => submitRecoveryForm(form, submitter)"
     />
   </div>
 </template>

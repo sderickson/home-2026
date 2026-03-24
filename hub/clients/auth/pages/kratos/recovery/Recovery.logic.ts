@@ -27,6 +27,32 @@ export function destinationAfterRecovery(
 }
 
 /**
+ * Builds {@link FormData} for a Kratos recovery submit. Plain `new FormData(form)` **omits** the
+ * activated submit control, but Kratos encodes the strategy as `name="method"` on that control
+ * (`link` / `code`). Pass the submit event's {@link SubmitEvent.submitter}, or we fall back to
+ * the first `[type="submit"][name="method"]` in the form.
+ */
+export function formDataFromKratosRecoveryForm(
+  form: HTMLFormElement,
+  submitter: HTMLElement | null | undefined,
+): FormData {
+  const btn =
+    submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+      ? submitter
+      : undefined;
+  const fd = new FormData(form, btn);
+  if (!String(fd.get("method") ?? "").trim()) {
+    const methodControl = form.querySelector<HTMLInputElement | HTMLButtonElement>(
+      'button[type="submit"][name="method"], input[type="submit"][name="method"]',
+    );
+    if (methodControl?.name) {
+      fd.set(methodControl.name, methodControl.value ?? "");
+    }
+  }
+  return fd;
+}
+
+/**
  * Builds an update body from the Kratos-rendered recovery form. Supports `link` and `code` strategies.
  */
 export function buildRecoveryUpdateBodyFromFormData(fd: FormData): UpdateRecoveryFlowBody {

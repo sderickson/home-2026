@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildRecoveryUpdateBodyFromFormData,
   destinationAfterRecovery,
+  formDataFromKratosRecoveryForm,
   recoveryFlowContinueWithUrl,
   recoveryFlowShouldFetch,
 } from "./Recovery.logic.ts";
@@ -36,6 +37,35 @@ describe("destinationAfterRecovery", () => {
   it("uses the fallback when return_to is empty", () => {
     expect(destinationAfterRecovery("  ", "https://fallback")).toBe("https://fallback");
     expect(destinationAfterRecovery(undefined, "https://fallback")).toBe("https://fallback");
+  });
+});
+
+describe("formDataFromKratosRecoveryForm", () => {
+  it("includes method from the submit control (plain FormData omits it)", () => {
+    const form = document.createElement("form");
+    const email = document.createElement("input");
+    email.name = "email";
+    email.value = "a@b.com";
+    form.appendChild(email);
+    const btn = document.createElement("button");
+    btn.type = "submit";
+    btn.name = "method";
+    btn.value = "link";
+    form.appendChild(btn);
+
+    expect(new FormData(form).get("method")).toBeNull();
+    expect(formDataFromKratosRecoveryForm(form, btn).get("method")).toBe("link");
+  });
+
+  it("fills method from the first named submit when submitter is missing", () => {
+    const form = document.createElement("form");
+    const btn = document.createElement("button");
+    btn.type = "submit";
+    btn.name = "method";
+    btn.value = "code";
+    form.appendChild(btn);
+
+    expect(formDataFromKratosRecoveryForm(form, null).get("method")).toBe("code");
   });
 });
 
