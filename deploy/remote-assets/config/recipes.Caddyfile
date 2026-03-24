@@ -6,11 +6,11 @@
 
 (recipes-api-proxy) {
 	import cors {$RECIPES_DOMAIN}
-	import api-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-api-proxy {args[0]}
 }
 
 (recipes-admin-proxy) {
-	import admin-proxy {$RECIPES_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-admin-proxy {args[0]}
 }
 
 # Subdomains
@@ -45,10 +45,6 @@
 
 {$RECIPES_PROTOCOL}://prometheus.{$RECIPES_DOMAIN} {
 	import recipes-admin-proxy prometheus:9090
-}
-
-{$RECIPES_PROTOCOL}://identity.{$RECIPES_DOMAIN} {
-	import identity {$RECIPES_DOMAIN} {$RECIPES_IDENTITY_SERVICE_HTTP_HOST}
 }
 
 {$RECIPES_DOMAIN_REDIRECTS} {

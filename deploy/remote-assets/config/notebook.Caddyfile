@@ -6,11 +6,11 @@
 
 (notebook-api-proxy) {
 	import cors {$NOTEBOOK_DOMAIN}
-	import api-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-api-proxy {args[0]}
 }
 
 (notebook-admin-proxy) {
-	import admin-proxy {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-admin-proxy {args[0]}
 }
 
 # Subdomains
@@ -45,10 +45,6 @@
 
 {$NOTEBOOK_PROTOCOL}://prometheus.{$NOTEBOOK_DOMAIN} {
 	import notebook-admin-proxy prometheus:9090
-}
-
-{$NOTEBOOK_PROTOCOL}://identity.{$NOTEBOOK_DOMAIN} {
-	import identity {$NOTEBOOK_DOMAIN} {$NOTEBOOK_IDENTITY_SERVICE_HTTP_HOST}
 }
 
 {$NOTEBOOK_DOMAIN_REDIRECTS} {

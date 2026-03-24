@@ -47,12 +47,6 @@ http://api.recipes.docker.localhost {
 	import kratos-api-proxy monolith:3002
 }
 
-# Identity service
-
-http://identity.docker.localhost {
-	import identity docker.localhost monolith:3000
-}
-
 # Kratos public API
 
 http://kratos.docker.localhost {

@@ -62,23 +62,17 @@ http://account.notebook.docker.localhost {
 
 http://api.recipes.docker.localhost {
 	import cors recipes.docker.localhost
-	import api-proxy monolith:3000 monolith:3002
+	import kratos-api-proxy monolith:3002
 }
 
 http://api.notebook.docker.localhost {
 	import cors notebook.docker.localhost
-	import api-proxy monolith:3000 monolith:3003
+	import kratos-api-proxy monolith:3003
 }
 
 http://hub.docker.localhost {
 	import cors docker.localhost
-	import api-proxy monolith:3000 monolith:3001
-}
-
-# Identity service
-
-http://identity.docker.localhost {
-	import identity docker.localhost monolith:3000
+	import kratos-api-proxy monolith:3001
 }
 
 # Azurite

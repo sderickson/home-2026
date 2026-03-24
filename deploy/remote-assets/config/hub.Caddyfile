@@ -6,11 +6,11 @@
 
 (hub-api-proxy) {
 	import cors {$HUB_DOMAIN}
-	import api-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-api-proxy {args[0]}
 }
 
 (hub-admin-proxy) {
-	import admin-proxy {$HUB_IDENTITY_SERVICE_HTTP_HOST} {args[0]}
+	import kratos-admin-proxy {args[0]}
 }
 
 # Subdomains
@@ -45,10 +45,6 @@
 
 {$HUB_PROTOCOL}://prometheus.{$HUB_DOMAIN} {
 	import hub-admin-proxy prometheus:9090
-}
-
-{$HUB_PROTOCOL}://identity.{$HUB_DOMAIN} {
-	import identity {$HUB_DOMAIN} {$HUB_IDENTITY_SERVICE_HTTP_HOST}
 }
 
 {$HUB_DOMAIN_REDIRECTS} {

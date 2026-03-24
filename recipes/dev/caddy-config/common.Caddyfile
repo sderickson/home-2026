@@ -118,6 +118,22 @@ http://caddy:2020 {
 	}
 }
 
+# Admin UIs (Grafana, etc.): forward_auth via Kratos whoami (not legacy identity /auth/verify).
+# args[0]: target service host (e.g. grafana:3000)
+(kratos-admin-proxy) {
+	forward_auth kratos:4433 {
+		uri /sessions/whoami
+		header_up X-Request-ID {http.request.uuid}
+		copy_headers X-Kratos-Authenticated-Identity-Id
+		header_up X-Csrf-Skip true
+		header_up X-Require-Admin {$BLOCK_ADMIN_PAGES}
+	}
+
+	reverse_proxy {args[0]} {
+		import reverse_proxy_common
+	}
+}
+
 # Used for standalone services which provide their own UI, only accessible to admins,
 # such as Grafana and Prometheus.
 (admin-proxy) {

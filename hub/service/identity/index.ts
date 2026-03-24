@@ -1,10 +1,9 @@
-import { startIdentityService } from "@saflib/identity";
+import { startOryKratosService } from "@saflib/ory-kratos";
 import { callbacks } from "./callbacks.ts";
-import path from "node:path";
 
+export { callbacks };
+
+/** @deprecated Prefer importing {@link startOryKratosService} from `@saflib/ory-kratos` directly. */
 export const startHubIdentityService = () => {
-  startIdentityService({
-    dbPath: path.join(import.meta.dirname, "data", "identity.sqlite"),
-    callbacks,
-  });
+  startOryKratosService({ callbacks });
 };

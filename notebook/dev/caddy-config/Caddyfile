@@ -44,13 +44,7 @@ http://admin.docker.localhost {
 
 http://api.notebook.docker.localhost {
 	import cors notebook.docker.localhost
-	import api-proxy monolith:3000 monolith:3003
-}
-
-# Identity service
-
-http://identity.docker.localhost {
-	import identity docker.localhost monolith:3000
+	import kratos-api-proxy monolith:3003
 }
 
 # Azurite

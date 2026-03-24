@@ -11,8 +11,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@saflib/identity": "*",
-    "@saflib/links": "*"
+    "@saflib/links": "*",
+    "@saflib/ory-kratos": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*",
