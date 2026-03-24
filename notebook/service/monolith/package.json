@@ -11,7 +11,8 @@
     "@saflib/sentry": "*",
     "@sderickson/notebook-db": "*",
     "@sderickson/notebook-http": "*",
-    "@sderickson/hub-identity": "*",
+    "@saflib/ory-kratos": "*",
+    "@sderickson/hub-kratos-courier": "*",
     "@sderickson/notebook-service": "*",
     "@sderickson/notebook-service-common": "*"
   }

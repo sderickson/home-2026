@@ -4,7 +4,8 @@ import { setServiceName } from "@saflib/node";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/sentry";
-import { startHubIdentityService } from "@sderickson/hub-identity";
+import { startOryKratosService } from "@saflib/ory-kratos";
+import { callbacks } from "@sderickson/hub-kratos-courier";
 
 validateEnv(process.env, envSchema);
 setServiceName("notebook");
@@ -12,5 +13,5 @@ addLokiTransport();
 initSentry();
 collectSystemMetrics();
 
-startHubIdentityService();
+startOryKratosService({ callbacks });
 startNotebookService();
