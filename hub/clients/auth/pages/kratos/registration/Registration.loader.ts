@@ -1,8 +1,9 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { Session } from "@ory/client";
+import type { RegistrationFlow, Session } from "@ory/client";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import type { TanstackError } from "@saflib/sdk";
 import {
   registrationFlowQueryOptions,
   useKratosSession,
@@ -40,6 +41,6 @@ export function useRegistrationLoader() {
         ...registrationFlowQueryOptions(flowId.value, redirectTo.value),
         enabled: registrationFlowEnabled.value,
       })),
-    ),
+    ) as UseQueryReturnType<RegistrationFlow, TanstackError>,
   };
 }

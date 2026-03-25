@@ -1,8 +1,9 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { Session } from "@ory/client";
+import type { LoginFlow, Session } from "@ory/client";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import type { TanstackError } from "@saflib/sdk";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
@@ -57,6 +58,6 @@ export function useLoginLoader() {
         ...loginFlowQueryOptions(flowId.value, browserReturnTo.value),
         enabled: loginFlowEnabled.value,
       })),
-    ),
+    ) as UseQueryReturnType<LoginFlow, TanstackError>,
   };
 }

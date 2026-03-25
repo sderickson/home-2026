@@ -23,7 +23,7 @@
     "@testing-library/vue": "^8.1.0"
   },
   "dependencies": {
-    "@ory/client": "^1.22.28",
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/monorepo": "*",
     "@saflib/sdk": "*",
     "@saflib/utils": "*",

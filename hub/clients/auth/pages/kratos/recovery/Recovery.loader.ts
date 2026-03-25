@@ -1,6 +1,9 @@
+import type { UseQueryReturnType } from "@tanstack/vue-query";
+import type { RecoveryFlow } from "@ory/client";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import type { TanstackError } from "@saflib/sdk";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
@@ -50,6 +53,6 @@ export function useRecoveryLoader() {
         ...recoveryFlowQueryOptions(flowId.value, browserReturnTo.value),
         enabled: recoveryFlowEnabled.value,
       })),
-    ),
+    ) as UseQueryReturnType<RecoveryFlow, TanstackError>,
   };
 }

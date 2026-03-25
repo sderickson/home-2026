@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@sderickson/recipes-sdk": "*",
+    "@saflib/sdk": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
