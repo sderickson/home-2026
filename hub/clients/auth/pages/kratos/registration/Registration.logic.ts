@@ -5,6 +5,7 @@ import type {
   UpdateLoginFlowBody,
   UpdateRegistrationFlowBody,
 } from "@ory/client";
+import { getTanstackErrorMessage, TanstackError } from "@saflib/sdk";
 import { isAxiosError } from "axios";
 
 export function isKratosInputNode(
@@ -65,6 +66,9 @@ export function postRegistrationNavigationUrl(flow: RegistrationFlow): string | 
 }
 
 export function registrationSubmitErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof TanstackError) {
+    return getTanstackErrorMessage(error);
+  }
   if (isAxiosError(error)) {
     const d = error.response?.data;
     if (d !== undefined && typeof d !== "object") {

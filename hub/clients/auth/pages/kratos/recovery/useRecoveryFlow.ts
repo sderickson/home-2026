@@ -9,11 +9,11 @@ import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  extractBrowserLocationChangeRequiredFromError,
   extractRecoveryFlowFromError,
   invalidateKratosSessionQueries,
   recoveryFlowQueryKey,
   recoveryFlowQueryOptions,
+  TanstackErrorBrowserLocationChangeRequired,
   useUpdateRecoveryFlowMutation,
 } from "@sderickson/recipes-sdk";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
@@ -117,9 +117,8 @@ export function useRecoveryFlow(
         });
         await applyRecoveryFlow(updated);
       } catch (e) {
-        const locationChange = extractBrowserLocationChangeRequiredFromError(e);
-        if (locationChange) {
-          await applyBrowserLocationChangeRequired(locationChange);
+        if (e instanceof TanstackErrorBrowserLocationChangeRequired) {
+          await applyBrowserLocationChangeRequired(e.payload);
           return;
         }
         const nextFlow = extractRecoveryFlowFromError(e);

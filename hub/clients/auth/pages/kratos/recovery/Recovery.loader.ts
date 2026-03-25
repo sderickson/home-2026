@@ -48,6 +48,7 @@ export function useRecoveryLoader() {
 
   return {
     sessionQuery,
+    /** Runtime errors are {@link TanstackError} from recovery fetches; assertion is required because TanStack `queryOptions` data tags do not compose with `computed(...)` + `enabled`. */
     recoveryFlowQuery: useQuery(
       computed(() => ({
         ...recoveryFlowQueryOptions(flowId.value, browserReturnTo.value),
