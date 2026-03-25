@@ -78,7 +78,10 @@ export function useRecoveryFlow(
       updated,
     );
 
-    const continueUrl = recoveryFlowContinueWithUrl(updated, settingsFlowHrefFromId);
+    const continueUrl = recoveryFlowContinueWithUrl(
+      updated,
+      settingsFlowHrefFromId,
+    );
     if (continueUrl) {
       await invalidateKratosSessionQueries(queryClient);
       window.location.assign(continueUrl);
