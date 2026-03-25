@@ -51,16 +51,29 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
     submitError.value = null;
     try {
       try {
-        await updateRegistration.mutateAsync({
+        const updated = await updateRegistration.mutateAsync({
           flow: current.id,
           updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
         });
+        if (updated.response_type === "registration_flow") {
+          queryClient.setQueryData(
+            registrationFlowQueryKey(toValue(flowId)),
+            updated.registration_flow,
+          );
+          return;
+        }
       } catch (e) {
         const next = extractRegistrationFlowFromError(e);
         if (next) {
-          queryClient.setQueryData(registrationFlowQueryKey(toValue(flowId)), next);
+          queryClient.setQueryData(
+            registrationFlowQueryKey(toValue(flowId)),
+            next,
+          );
         } else {
-          submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
+          submitError.value = registrationSubmitErrorMessage(
+            e,
+            flowStrings.registration_failed,
+          );
         }
         return;
       }
@@ -73,7 +86,11 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
         const loginFlow = await fetchBrowserLoginFlow(destination);
         await updateLogin.mutateAsync({
           flow: loginFlow.id,
-          updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),
+          updateLoginFlowBody: buildLoginPasswordBody(
+            loginFlow,
+            email,
+            password,
+          ),
         });
       } catch (e) {
         const loginNext = extractLoginFlowFromError(e);
@@ -90,11 +107,14 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
 
       await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const postVerifyTarget = destination ?? linkToHrefWithHost(authLinks.home);
+      const postVerifyTarget =
+        destination ?? linkToHrefWithHost(authLinks.home);
 
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
-          linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: postVerifyTarget } }),
+          linkToHrefWithHost(authLinks.kratosVerifyWall, {
+            params: { redirect: postVerifyTarget },
+          }),
         );
       } else if (destination) {
         window.location.assign(destination);

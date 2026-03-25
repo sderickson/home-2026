@@ -40,7 +40,12 @@ export function useRecoveryFlow(
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const recoveryFlowQuery = useQuery(
-    computed(() => recoveryFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() =>
+      recoveryFlowQueryOptions({
+        flowId: toValue(flowId),
+        returnTo: returnTo.value,
+      }),
+    ),
   );
 
   const submitting = ref(false);
