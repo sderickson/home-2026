@@ -1,6 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import type { RecoveryFlow } from "@ory/client";
 import { fetchBrowserRecoveryFlow, fetchRecoveryFlowById } from "./kratos-flows.ts";
+import { kratosFlowQueryRetry } from "./kratos-query-retry.ts";
 
 /**
  * Stable key: flow id when resuming `?flow=`; otherwise browser init keyed by `returnTo`
@@ -28,6 +29,7 @@ export function recoveryFlowQueryOptions(flowId?: string, returnTo?: string) {
     queryFn: async (): Promise<RecoveryFlow> =>
       flowId ? fetchRecoveryFlowById(flowId) : fetchBrowserRecoveryFlow(returnTo),
     staleTime: 30_000,
+    retry: kratosFlowQueryRetry,
   });
 }
 

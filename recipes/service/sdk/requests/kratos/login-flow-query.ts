@@ -1,6 +1,7 @@
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import type { LoginFlow } from "@ory/client";
 import { fetchBrowserLoginFlow, fetchLoginFlowById } from "./kratos-flows.ts";
+import { kratosFlowQueryRetry } from "./kratos-query-retry.ts";
 
 /**
  * Stable key: flow id when resuming `?flow=`; otherwise browser init keyed by `returnTo`
@@ -24,6 +25,7 @@ export function loginFlowQueryOptions(flowId?: string, returnTo?: string) {
     queryFn: async (): Promise<LoginFlow> =>
       flowId ? fetchLoginFlowById(flowId) : fetchBrowserLoginFlow(returnTo),
     staleTime: 30_000,
+    retry: kratosFlowQueryRetry,
   });
 }
 

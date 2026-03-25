@@ -4,6 +4,7 @@ import {
   fetchBrowserVerificationFlow,
   fetchVerificationFlowById,
 } from "./kratos-flows.ts";
+import { kratosFlowQueryRetry } from "./kratos-query-retry.ts";
 
 /**
  * Stable key: flow id when resuming `?flow=`; otherwise browser init keyed by `returnTo`
@@ -31,6 +32,7 @@ export function verificationFlowQueryOptions(flowId?: string, returnTo?: string)
     queryFn: async (): Promise<VerificationFlow> =>
       flowId ? fetchVerificationFlowById(flowId) : fetchBrowserVerificationFlow(returnTo),
     staleTime: 30_000,
+    retry: kratosFlowQueryRetry,
   });
 }
 
