@@ -6,6 +6,7 @@ import {
   buildRegistrationPasswordBody,
   csrfTokenFromUiFlow,
   isKratosInputNode,
+  kratosEffectiveInputType,
   postRegistrationNavigationUrl,
   registrationSubmitErrorMessage,
   traitsEmailFromFormData,
@@ -145,5 +146,17 @@ describe("Registration.logic", () => {
       expect(registrationSubmitErrorMessage(new Error("e"), "f")).toBe("e");
       expect(registrationSubmitErrorMessage(null, "f")).toBe("f");
     });
+  });
+});
+
+describe("kratosEffectiveInputType", () => {
+  it("masks password fields when Kratos sends type text", () => {
+    expect(kratosEffectiveInputType({ name: "password", type: "text" })).toBe("password");
+    expect(kratosEffectiveInputType({ name: "traits.password", type: "text" })).toBe("password");
+  });
+
+  it("preserves submit and hidden", () => {
+    expect(kratosEffectiveInputType({ name: "x", type: "submit" })).toBe("submit");
+    expect(kratosEffectiveInputType({ name: "csrf_token", type: "hidden" })).toBe("hidden");
   });
 });

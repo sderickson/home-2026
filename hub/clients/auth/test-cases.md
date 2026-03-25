@@ -82,6 +82,18 @@ Use this doc for manual QA, Playwright scenarios, and aligning behavior when som
 
 ---
 
+## UI & accessibility
+
+17. **As a user stepping through a multi-step Kratos flow** (e.g. registration: email then password), when the flow UI updates after a successful step, **keyboard focus moves to the first newly shown field** so focus is not left on a stale control.
+
+18. **As a user entering a password**, the field is **masked** (treated as `type="password"`) even when Kratos returns `type="text"` for a field named `password` (or `traits.password`).
+
+19. **As a user submitting a flow update**, the form is **non-interactive while the request runs**: controls are disabled, the primary action shows a **loading state** (spinner on the submit control), and the form is marked **busy** for assistive tech.
+
+20. **As a user choosing how to sign in**, **Login**, **Registration**, and **Recovery** pages expose **cross-links** to each other (with the same `?redirect=` preserved when present): register ↔ login, and login → recovery.
+
+---
+
 ## Notes for automation
 
 - Prefer asserting **final `window.location` or navigation** for flows that assign location after Kratos success.
