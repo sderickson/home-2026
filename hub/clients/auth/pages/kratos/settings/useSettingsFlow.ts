@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import {
-  extractSettingsFlowFromError,
   settingsFlowQueryKey,
   settingsFlowQueryOptions,
   useUpdateSettingsFlowMutation,
@@ -43,26 +42,20 @@ export function useSettingsFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let updated;
       try {
-        const updated = await updateSettings.mutateAsync({
+        updated = await updateSettings.mutateAsync({
           flow: current.id,
           updateSettingsFlowBody: buildSettingsUpdateBodyFromFormData(fd),
         });
-        queryClient.setQueryData(
-          settingsFlowQueryKey(toValue(flowId), returnTo.value),
-          updated,
-        );
       } catch (e) {
-        const next = extractSettingsFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(
-            settingsFlowQueryKey(toValue(flowId), returnTo.value),
-            next,
-          );
-        } else {
-          submitError.value = registrationSubmitErrorMessage(e, pageStrings.settings_failed);
-        }
+        submitError.value = registrationSubmitErrorMessage(e, pageStrings.settings_failed);
+        return;
       }
+      queryClient.setQueryData(
+        settingsFlowQueryKey(toValue(flowId), returnTo.value),
+        updated,
+      );
     } finally {
       submitting.value = false;
     }

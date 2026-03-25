@@ -4,10 +4,10 @@ import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  extractLoginFlowFromError,
   identityNeedsEmailVerification,
   invalidateKratosSessionQueries,
   kratosSessionQueryOptions,
+  LoginFlowUpdated,
   loginFlowQueryKey,
   loginFlowQueryOptions,
   useUpdateLoginFlowMutation,
@@ -57,18 +57,19 @@ export function useLoginFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let result;
       try {
-        await updateLogin.mutateAsync({
+        result = await updateLogin.mutateAsync({
           flow: current.id,
           updateLoginFlowBody: buildLoginPasswordBody(current, identifier, password),
         });
       } catch (e) {
-        const next = extractLoginFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(loginFlowQueryKey(toValue(flowId), returnTo.value), next);
-        } else {
-          submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);
-        }
+        submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);
+        return;
+      }
+
+      if (result instanceof LoginFlowUpdated) {
+        queryClient.setQueryData(loginFlowQueryKey(toValue(flowId), returnTo.value), result.flow);
         return;
       }
 

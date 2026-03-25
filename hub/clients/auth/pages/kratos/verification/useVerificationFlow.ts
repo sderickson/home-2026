@@ -3,7 +3,6 @@ import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
-  extractVerificationFlowFromError,
   useKratosSession,
   useUpdateVerificationFlowMutation,
   verificationFlowQueryKey,
@@ -59,31 +58,25 @@ export function useVerificationFlow(
     resending.value = true;
     submitError.value = null;
     try {
+      let updated;
       try {
         const token = toValue(verificationToken);
-        const updated = await updateVerification.mutateAsync({
+        updated = await updateVerification.mutateAsync({
           flow: current.id,
           updateVerificationFlowBody: buildVerificationResendCodeBody(current, email),
           ...(token ? { token } : {}),
         });
-        queryClient.setQueryData(
-          verificationFlowQueryKey(toValue(flowId), returnTo.value),
-          updated,
-        );
       } catch (e) {
-        const next = extractVerificationFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(
-            verificationFlowQueryKey(toValue(flowId), returnTo.value),
-            next,
-          );
-        } else {
-          submitError.value = registrationSubmitErrorMessage(
-            e,
-            flowStrings.verification_failed,
-          );
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.verification_failed,
+        );
+        return;
       }
+      queryClient.setQueryData(
+        verificationFlowQueryKey(toValue(flowId), returnTo.value),
+        updated,
+      );
     } finally {
       resending.value = false;
     }
@@ -96,28 +89,26 @@ export function useVerificationFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let updated;
       try {
         const token = toValue(verificationToken);
-        await updateVerification.mutateAsync({
+        updated = await updateVerification.mutateAsync({
           flow: current.id,
           updateVerificationFlowBody: buildVerificationCodeBody(fd),
           ...(token ? { token } : {}),
         });
       } catch (e) {
-        const next = extractVerificationFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(
-            verificationFlowQueryKey(toValue(flowId), returnTo.value),
-            next,
-          );
-        } else {
-          submitError.value = registrationSubmitErrorMessage(
-            e,
-            flowStrings.verification_failed,
-          );
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.verification_failed,
+        );
         return;
       }
+
+      queryClient.setQueryData(
+        verificationFlowQueryKey(toValue(flowId), returnTo.value),
+        updated,
+      );
 
       const destination = destinationAfterVerification(
         current.return_to,

@@ -9,11 +9,10 @@ import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  extractRecoveryFlowFromError,
+  BrowserRedirectRequired,
   invalidateKratosSessionQueries,
   recoveryFlowQueryKey,
   recoveryFlowQueryOptions,
-  TanstackErrorBrowserLocationChangeRequired,
   useUpdateRecoveryFlowMutation,
 } from "@sderickson/recipes-sdk";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
@@ -61,9 +60,6 @@ export function useRecoveryFlow(
     });
   }
 
-  /**
-   * HTTP 422 `ErrorBrowserLocationChangeRequired`: navigate to Kratos-provided URL (no flow cache update).
-   */
   async function applyBrowserLocationChangeRequired(
     body: ErrorBrowserLocationChangeRequired,
   ) {
@@ -74,9 +70,6 @@ export function useRecoveryFlow(
     window.location.assign(url);
   }
 
-  /**
-   * Normal 2xx response or validation error body: cache the flow and honor `continue_with` / passed state.
-   */
   async function applyRecoveryFlow(updated: RecoveryFlow) {
     queryClient.setQueryData(
       recoveryFlowQueryKey(toValue(flowId), returnTo.value),
@@ -113,29 +106,28 @@ export function useRecoveryFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let result;
       try {
         const token = toValue(recoveryToken);
-        const updated = await updateRecovery.mutateAsync({
+        result = await updateRecovery.mutateAsync({
           flow: current.id,
           updateRecoveryFlowBody: buildRecoveryUpdateBodyFromFormData(fd),
           ...(token ? { token } : {}),
         });
-        await applyRecoveryFlow(updated);
       } catch (e) {
-        if (e instanceof TanstackErrorBrowserLocationChangeRequired) {
-          await applyBrowserLocationChangeRequired(e.payload);
-          return;
-        }
-        const nextFlow = extractRecoveryFlowFromError(e);
-        if (nextFlow) {
-          await applyRecoveryFlow(nextFlow);
-        } else {
-          submitError.value = registrationSubmitErrorMessage(
-            e,
-            flowStrings.recovery_failed,
-          );
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.recovery_failed,
+        );
+        return;
       }
+
+      if (result instanceof BrowserRedirectRequired) {
+        await applyBrowserLocationChangeRequired(result.payload);
+        return;
+      }
+
+      await applyRecoveryFlow(result);
     } finally {
       submitting.value = false;
     }
