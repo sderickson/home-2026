@@ -1,15 +1,26 @@
 import { linkToProps, linkToHref, getHost } from "@saflib/links";
 import { appLinks, authLinks } from "@sderickson/hub-links";
 
+function postAuthRedirectHref() {
+  return typeof window !== "undefined"
+    ? linkToHref(appLinks.home, { domain: getHost() })
+    : "";
+}
+
 /**
- * Returns props suitable for binding to the register CTA (e.g. v-btn).
- * Uses the auth register link so the button navigates to the auth app's register page.
- * Redirect after auth goes to the app SPA home (logged-in).
+ * Props for the register CTA: auth registration with `return_to` = hub app home.
  */
 export function getRegisterLinkProps() {
-  const redirect =
-    typeof window !== "undefined"
-      ? linkToHref(appLinks.home, { domain: getHost() })
-      : "";
-  return linkToProps(authLinks.kratosRegistration, { params: { redirect } });
+  return linkToProps(authLinks.kratosRegistration, {
+    params: { redirect: postAuthRedirectHref() },
+  });
+}
+
+/**
+ * Props for the login CTA: auth login with `return_to` = hub app home.
+ */
+export function getLoginLinkProps() {
+  return linkToProps(authLinks.kratosLogin, {
+    params: { redirect: postAuthRedirectHref() },
+  });
 }
