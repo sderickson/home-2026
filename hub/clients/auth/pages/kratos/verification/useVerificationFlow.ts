@@ -1,13 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
-import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import {
   useKratosSession,
   useUpdateVerificationFlowMutation,
   verificationFlowQueryKey,
   verificationFlowQueryOptions,
 } from "@sderickson/recipes-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
   buildVerificationCodeBody,
   buildVerificationResendCodeBody,
@@ -28,6 +27,7 @@ export function useVerificationFlow(
   browserReturnTo: MaybeRefOrGetter<string>,
   verificationToken: MaybeRefOrGetter<string | undefined>,
 ) {
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateVerification = useUpdateVerificationFlowMutation();
 
@@ -112,7 +112,7 @@ export function useVerificationFlow(
 
       const destination = destinationAfterVerification(
         current.return_to,
-        linkToHrefWithHost(appLinks.home),
+        postAuthFallbackHref.value,
       );
       window.location.assign(destination);
     } finally {

@@ -3,8 +3,8 @@ import type { Session } from "@ory/client";
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { identityNeedsEmailVerification } from "@sderickson/recipes-sdk";
 import {
   resolveVerifyWallRedirectDestination,
@@ -13,15 +13,16 @@ import {
 
 /**
  * Route side effects and derived state for the verify wall: redirect unauthenticated users to
- * login, send verified users to `redirect` (or recipes home), and expose the verification CTA.
+ * login, send verified users to `redirect` (or injected hub app fallback), and expose the verification CTA.
  */
 export function useVerifyWallPage(
   sessionQuery: UseQueryReturnType<Session | null, Error>,
 ) {
   const route = useRoute();
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
   const redirectAfter = computed(() =>
-    resolveVerifyWallRedirectDestination(route.query.redirect, linkToHrefWithHost(appLinks.home)),
+    resolveVerifyWallRedirectDestination(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const verifyWallReturnHref = computed(() => {

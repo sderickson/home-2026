@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
@@ -39,19 +39,19 @@ describe("useVerificationFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("assigns window.location after successful verification using recipes home when flow has no return_to", async () => {
+  it("assigns window.location after successful verification using hub app home when flow has no return_to", async () => {
     const assignMock = vi.fn();
     vi.stubGlobal("location", {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
 
     try {
       const [{ verificationFlowQuery, submitVerificationForm, flow }, app] = withVueQuery(() =>
         useVerificationFlow(
           () => mockVerificationFlowId,
-          () => recipesHome,
+          () => hubAppHome,
           () => undefined,
         ),
       );
@@ -61,7 +61,7 @@ describe("useVerificationFlow", () => {
 
       await submitVerificationForm(verificationTestForm());
 
-      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(recipesHome));
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(hubAppHome));
       app.unmount();
     } finally {
       vi.unstubAllGlobals();
@@ -87,11 +87,11 @@ describe("useVerificationFlow", () => {
       ),
     );
 
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const [{ verificationFlowQuery, submitVerificationForm, flow }, app] = withVueQuery(() =>
       useVerificationFlow(
         () => mockVerificationFlowId,
-        () => recipesHome,
+        () => hubAppHome,
         () => undefined,
       ),
     );

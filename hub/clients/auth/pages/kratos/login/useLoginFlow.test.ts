@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
@@ -40,17 +40,17 @@ describe("useLoginFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("assigns window.location to recipes home after successful login when flow has no return_to", async () => {
+  it("assigns window.location to hub app home after successful login when flow has no return_to", async () => {
     const assignMock = vi.fn();
     vi.stubGlobal("location", {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
 
     try {
       const [{ loginFlowQuery, submitLoginForm, flow }, app] = withVueQuery(() =>
-        useLoginFlow(() => mockLoginFlowId, () => recipesHome),
+        useLoginFlow(() => mockLoginFlowId, () => hubAppHome),
       );
 
       await loginFlowQuery.refetch();
@@ -58,7 +58,7 @@ describe("useLoginFlow", () => {
 
       await submitLoginForm(loginTestForm());
 
-      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(recipesHome));
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(hubAppHome));
       app.unmount();
     } finally {
       vi.unstubAllGlobals();
@@ -84,9 +84,9 @@ describe("useLoginFlow", () => {
       ),
     );
 
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const [{ loginFlowQuery, submitLoginForm, flow }, app] = withVueQuery(() =>
-      useLoginFlow(() => mockLoginFlowId, () => recipesHome),
+      useLoginFlow(() => mockLoginFlowId, () => hubAppHome),
     );
 
     await loginFlowQuery.refetch();

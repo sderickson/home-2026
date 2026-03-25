@@ -11,7 +11,7 @@ export function verificationFlowShouldFetch(
   return session != null;
 }
 
-/** Where to send the browser after successful verification: Kratos `return_to` or the recipes app home. */
+/** Where to send the browser after successful verification: Kratos `return_to` or the injected hub app fallback URL. */
 export function destinationAfterVerification(
   flowReturnTo: string | null | undefined,
   fallbackRecipesHomeHref: string,

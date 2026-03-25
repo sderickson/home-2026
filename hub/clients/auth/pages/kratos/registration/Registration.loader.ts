@@ -2,12 +2,11 @@ import type { UseQueryReturnType } from "@tanstack/vue-query";
 import type { Session } from "@ory/client";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import {
   useKratosSession,
   useRegistrationFlowQuery,
 } from "@sderickson/recipes-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 
 /** Used by `enabled` on the registration flow query and by `Registration.vue` guards (AsyncPage only accepts queries in the loader return object). */
@@ -24,12 +23,10 @@ export function useRegistrationLoader() {
   const flowId = computed(() =>
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   /** Resolved `return_to` for the registration browser flow (matches login). */
   const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const sessionQuery = useKratosSession();
@@ -48,13 +45,11 @@ export function useRegistrationLoader() {
   };
 }
 
-/** Same resolution as login: `?redirect=` or recipes app home URL. */
+/** Same resolution as login: `?redirect=` or injected hub app fallback. */
 export function useRegistrationBrowserReturnTo() {
   const route = useRoute();
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   return computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 }

@@ -1,6 +1,6 @@
 import type { Session } from "@ory/client";
 
-/** Post-verification destination: `?redirect=` when set, otherwise the recipes home URL. */
+/** Post-verification destination: `?redirect=` when set, otherwise the injected hub app fallback URL. */
 export function resolveVerifyWallRedirectDestination(
   redirectQueryParam: unknown,
   fallbackRecipesHomeHref: string,

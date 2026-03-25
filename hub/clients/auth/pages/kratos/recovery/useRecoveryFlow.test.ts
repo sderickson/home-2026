@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
@@ -46,7 +46,7 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/after-recovery";
 
     server.use(
@@ -59,7 +59,7 @@ describe("useRecoveryFlow", () => {
       const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
           () => mockRecoveryFlowId,
-          () => recipesHome,
+          () => hubAppHome,
           () => undefined,
         ),
       );
@@ -80,7 +80,7 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/complete";
 
     server.use(
@@ -104,7 +104,7 @@ describe("useRecoveryFlow", () => {
       const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
           () => mockRecoveryFlowId,
-          () => recipesHome,
+          () => hubAppHome,
           () => undefined,
         ),
       );
@@ -125,7 +125,7 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/complete";
 
     server.use(
@@ -146,7 +146,7 @@ describe("useRecoveryFlow", () => {
       const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
           () => mockRecoveryFlowId,
-          () => recipesHome,
+          () => hubAppHome,
           () => undefined,
         ),
       );
@@ -180,11 +180,11 @@ describe("useRecoveryFlow", () => {
       ),
     );
 
-    const recipesHome = linkToHrefWithHost(appLinks.home);
+    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const [{ recoveryFlowQuery, submitRecoveryForm, flow }, app] = withVueQuery(() =>
       useRecoveryFlow(
         () => mockRecoveryFlowId,
-        () => recipesHome,
+        () => hubAppHome,
         () => undefined,
       ),
     );

@@ -26,8 +26,6 @@
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",
-    "@sderickson/recipes-links": "*",
-    "@sderickson/hub-sdk": "*",
     "vue-router": "*"
   }
 }

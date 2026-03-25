@@ -17,7 +17,7 @@ export function recoveryFlowShouldFetch(
   return session == null;
 }
 
-/** Where to send the browser when the flow has no `continue_with` redirect: Kratos `return_to` or recipes home. */
+/** Where to send the browser when the flow has no `continue_with` redirect: Kratos `return_to` or injected hub app fallback. */
 export function destinationAfterRecovery(
   flowReturnTo: string | null | undefined,
   fallbackRecipesHomeHref: string,

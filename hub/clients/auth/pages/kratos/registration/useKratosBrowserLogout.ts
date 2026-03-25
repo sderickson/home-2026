@@ -1,17 +1,17 @@
 import { ref, toValue, type MaybeRefOrGetter } from "vue";
 import { useRoute } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
 import { fetchBrowserLogoutFlow } from "@sderickson/recipes-sdk";
+import { useAuthLoggedOutRootFallbackHref } from "../../../authFallbackInject.ts";
 
 export function useKratosBrowserLogout(options?: {
   /**
    * Kratos `return_to` after logout. When omitted, uses `?redirect=` from the current route if set,
-   * otherwise the auth SPA home (legacy behavior for verify wall and similar).
+   * otherwise the injected hub root home (logged-out landing).
    */
   afterLogoutReturnTo?: MaybeRefOrGetter<string>;
 }) {
   const route = useRoute();
+  const rootHomeFallbackHref = useAuthLoggedOutRootFallbackHref();
   const pending = ref(false);
 
   function resolveReturnTo(): string {
@@ -19,7 +19,7 @@ export function useKratosBrowserLogout(options?: {
       return toValue(options.afterLogoutReturnTo);
     }
     const q = route.query.redirect;
-    return typeof q === "string" && q.trim() ? q.trim() : linkToHrefWithHost(authLinks.home);
+    return typeof q === "string" && q.trim() ? q.trim() : rootHomeFallbackHref.value;
   }
 
   async function startBrowserLogout() {

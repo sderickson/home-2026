@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
   identityNeedsEmailVerification,
   invalidateKratosSessionQueries,
@@ -33,6 +33,7 @@ export function useLoginFlow(
   flowId: MaybeRefOrGetter<string>,
   browserReturnTo: MaybeRefOrGetter<string>,
 ) {
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateLogin = useUpdateLoginFlowMutation();
 
@@ -75,7 +76,7 @@ export function useLoginFlow(
 
       await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const destination = destinationAfterLogin(current.return_to, linkToHrefWithHost(appLinks.home));
+      const destination = destinationAfterLogin(current.return_to, postAuthFallbackHref.value);
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
           linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: destination } }),

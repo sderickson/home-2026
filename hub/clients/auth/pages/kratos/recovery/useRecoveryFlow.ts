@@ -6,8 +6,8 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
   BrowserRedirectRequired,
   invalidateKratosSessionQueries,
@@ -33,6 +33,7 @@ export function useRecoveryFlow(
   browserReturnTo: MaybeRefOrGetter<string>,
   recoveryToken: MaybeRefOrGetter<string | undefined>,
 ) {
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateRecovery = useUpdateRecoveryFlowMutation();
 
@@ -89,7 +90,7 @@ export function useRecoveryFlow(
     if (updated.state === RecoveryFlowState.PassedChallenge) {
       const fallback = destinationAfterRecovery(
         updated.return_to,
-        linkToHrefWithHost(appLinks.home),
+        postAuthFallbackHref.value,
       );
       await invalidateKratosSessionQueries(queryClient);
       window.location.assign(fallback);
