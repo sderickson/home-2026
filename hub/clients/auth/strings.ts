@@ -15,7 +15,7 @@ import { kratos_verification } from "./pages/kratos/verification/Verification.st
 import { kratos_verification_flow } from "./pages/kratos/verification/VerificationFlowForm.strings.ts";
 import { login_intro } from "./pages/kratos/login/LoginIntro.strings.ts";
 import { registration_intro } from "./pages/kratos/registration/RegistrationIntro.strings.ts";
-import { registration_session_panel } from "./pages/kratos/registration/RegistrationSessionPanel.strings.ts";
+import { auth_session_decision } from "./pages/kratos/common/AuthSessionDecisionPanel.strings.ts";
 import { verification_intro } from "./pages/kratos/verification/VerificationIntro.strings.ts";
 import { verify_wall_actions } from "./pages/kratos/verify-wall/VerifyWallActions.strings.ts";
 import { verify_wall_blocked_body } from "./pages/kratos/verify-wall/VerifyWallBlockedBody.strings.ts";
@@ -37,7 +37,7 @@ export const auth_strings = {
   kratos_verification_flow,
   login_intro,
   registration_intro,
-  registration_session_panel,
+  auth_session_decision,
   verification_intro,
   verify_wall_actions,
   verify_wall_blocked_body,

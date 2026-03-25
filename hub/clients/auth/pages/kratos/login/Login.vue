@@ -1,8 +1,14 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <LoginIntro />
+    <LoginIntro v-if="!session" />
+    <AuthSessionDecisionPanel
+      v-if="session"
+      :identity-email="identityEmail"
+      :continue-href="continueHref"
+      variant="login"
+    />
     <LoginFlowForm
-      v-if="flowIdForForm"
+      v-else-if="flowIdForForm"
       :flow-id="flowIdForForm"
       :browser-return-to="browserReturnTo"
     />
@@ -13,11 +19,12 @@
 import { computed, watch } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useRoute, useRouter } from "vue-router";
-import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { identityNeedsEmailVerification } from "@sderickson/recipes-sdk";
 import { loginFlowQueryKey } from "@sderickson/recipes-sdk";
+import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
+import { sessionDisplayEmail } from "../verify-wall/VerifyWall.logic.ts";
 import {
   loginFlowQueryEnabledForSession,
   useLoginBrowserReturnTo,
@@ -41,20 +48,23 @@ if (sessionQuery.status.value !== "success") {
   throw new Error("Failed to load session");
 }
 
-watch(
-  () => sessionQuery.data.value,
-  (session) => {
-    if (!session) return;
-    if (identityNeedsEmailVerification(session.identity)) {
-      navigateToLink(authLinks.kratosVerifyWall, {
-        params: { redirect: linkToHrefWithHost(appLinks.home) },
-      });
-    } else {
-      navigateToLink(appLinks.home);
-    }
-  },
-  { immediate: true },
-);
+const session = computed(() => sessionQuery.data.value);
+
+const identityEmail = computed(() => {
+  const s = session.value;
+  return s ? sessionDisplayEmail(s) : "";
+});
+
+const continueHref = computed(() => {
+  const s = session.value;
+  if (!s) return "";
+  if (identityNeedsEmailVerification(s.identity)) {
+    return linkToHrefWithHost(authLinks.kratosVerifyWall, {
+      params: { redirect: browserReturnTo.value },
+    });
+  }
+  return browserReturnTo.value;
+});
 
 watch(
   () => ({
