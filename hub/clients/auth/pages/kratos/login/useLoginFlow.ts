@@ -39,7 +39,7 @@ export function useLoginFlow(
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const loginFlowQuery = useQuery(
-    computed(() => loginFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() => loginFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
   );
 
   const submitting = ref(false);

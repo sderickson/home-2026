@@ -1,12 +1,10 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { RegistrationFlow, Session } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
+import type { Session } from "@ory/client";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import type { TanstackError } from "@saflib/sdk";
 import {
-  registrationFlowQueryOptions,
   useKratosSession,
+  useRegistrationFlowQuery,
 } from "@sderickson/recipes-sdk";
 
 /** Used by `enabled` on the registration flow query and by `Registration.vue` guards (AsyncPage only accepts queries in the loader return object). */
@@ -36,11 +34,10 @@ export function useRegistrationLoader() {
 
   return {
     sessionQuery,
-    registrationFlowQuery: useQuery(
-      computed(() => ({
-        ...registrationFlowQueryOptions(flowId.value, redirectTo.value),
-        enabled: registrationFlowEnabled.value,
-      })),
-    ) as UseQueryReturnType<RegistrationFlow, TanstackError>,
+    registrationFlowQuery: useRegistrationFlowQuery({
+      flowId: flowId.value,
+      returnTo: redirectTo.value,
+      enabled: registrationFlowEnabled,
+    }),
   };
 }

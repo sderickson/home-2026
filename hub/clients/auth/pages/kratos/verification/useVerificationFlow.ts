@@ -34,7 +34,7 @@ export function useVerificationFlow(
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const verificationFlowQuery = useQuery(
-    computed(() => verificationFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() => verificationFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
   );
 
   const sessionQuery = useKratosSession();

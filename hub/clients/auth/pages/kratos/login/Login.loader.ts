@@ -1,14 +1,12 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { LoginFlow, Session } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
+import type { Session } from "@ory/client";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import type { TanstackError } from "@saflib/sdk";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
-  loginFlowQueryOptions,
   useKratosSession,
+  useLoginFlowQuery,
 } from "@sderickson/recipes-sdk";
 import { resolveLoginBrowserReturnTo } from "./Login.logic.ts";
 
@@ -53,11 +51,10 @@ export function useLoginLoader() {
 
   return {
     sessionQuery,
-    loginFlowQuery: useQuery(
-      computed(() => ({
-        ...loginFlowQueryOptions(flowId.value, browserReturnTo.value),
-        enabled: loginFlowEnabled.value,
-      })),
-    ) as UseQueryReturnType<LoginFlow, TanstackError>,
+    loginFlowQuery: useLoginFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: loginFlowEnabled,
+    }),
   };
 }

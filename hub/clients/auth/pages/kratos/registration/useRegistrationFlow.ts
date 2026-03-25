@@ -33,7 +33,7 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
   const updateLogin = useUpdateLoginFlowMutation();
 
   const registrationFlowQuery = useQuery(
-    computed(() => registrationFlowQueryOptions(toValue(flowId))),
+    computed(() => registrationFlowQueryOptions({ flowId: toValue(flowId) })),
   );
 
   const submitting = ref(false);

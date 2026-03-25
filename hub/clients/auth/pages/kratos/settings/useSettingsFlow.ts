@@ -25,7 +25,7 @@ export function useSettingsFlow(
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const settingsFlowQuery = useQuery(
-    computed(() => settingsFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() => settingsFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
   );
 
   const submitting = ref(false);

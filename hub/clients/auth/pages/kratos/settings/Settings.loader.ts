@@ -1,14 +1,10 @@
-import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { SettingsFlow } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import type { TanstackError } from "@saflib/sdk";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
-  settingsFlowQueryOptions,
   useKratosSession,
+  useSettingsFlowQuery,
 } from "@sderickson/recipes-sdk";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { settingsFlowShouldFetch } from "./Settings.logic.ts";
@@ -44,11 +40,10 @@ export function useSettingsLoader() {
 
   return {
     sessionQuery,
-    settingsFlowQuery: useQuery(
-      computed(() => ({
-        ...settingsFlowQueryOptions(flowId.value, browserReturnTo.value),
-        enabled: settingsFlowEnabled.value,
-      })),
-    ) as UseQueryReturnType<SettingsFlow, TanstackError>,
+    settingsFlowQuery: useSettingsFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: settingsFlowEnabled,
+    }),
   };
 }

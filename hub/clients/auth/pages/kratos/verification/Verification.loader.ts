@@ -1,14 +1,10 @@
-import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { VerificationFlow } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import type { TanstackError } from "@saflib/sdk";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
-  verificationFlowQueryOptions,
   useKratosSession,
+  useVerificationFlowQuery,
 } from "@sderickson/recipes-sdk";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { verificationFlowShouldFetch } from "./Verification.logic.ts";
@@ -48,11 +44,10 @@ export function useVerificationLoader() {
 
   return {
     sessionQuery,
-    verificationFlowQuery: useQuery(
-      computed(() => ({
-        ...verificationFlowQueryOptions(flowId.value, browserReturnTo.value),
-        enabled: verificationFlowEnabled.value,
-      })),
-    ) as UseQueryReturnType<VerificationFlow, TanstackError>,
+    verificationFlowQuery: useVerificationFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: verificationFlowEnabled,
+    }),
   };
 }

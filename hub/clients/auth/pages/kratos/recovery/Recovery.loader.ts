@@ -1,11 +1,10 @@
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks } from "@sderickson/recipes-links";
 import {
-  recoveryFlowQueryOptions,
   useKratosSession,
+  useRecoveryFlowQuery,
 } from "@sderickson/recipes-sdk";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { recoveryFlowShouldFetch } from "./Recovery.logic.ts";
@@ -45,12 +44,10 @@ export function useRecoveryLoader() {
 
   return {
     sessionQuery,
-    recoveryFlowQuery: useQuery(
-      recoveryFlowQueryOptions({
-        flowId: flowId.value,
-        returnTo: browserReturnTo.value,
-        enabled: recoveryFlowEnabled,
-      }),
-    ),
+    recoveryFlowQuery: useRecoveryFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: recoveryFlowEnabled,
+    }),
   };
 }
