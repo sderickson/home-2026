@@ -24,9 +24,10 @@ export function useLoginBrowserReturnTo() {
 /** Used by `enabled` on the login flow query and by `Login.vue` guards (AsyncPage only accepts queries in the loader return object). */
 export function loginFlowQueryEnabledForSession(
   sessionQuery: UseQueryReturnType<Session | null, Error>,
+  refresh?: boolean,
 ) {
   if (sessionQuery.isPending.value) return false;
-  if (sessionQuery.data.value != null) return false;
+  if (sessionQuery.data.value != null && !refresh) return false;
   return true;
 }
 
@@ -49,7 +50,7 @@ export function useLoginLoader() {
   const sessionQuery = useKratosSession();
 
   const loginFlowEnabled = computed(() =>
-    loginFlowQueryEnabledForSession(sessionQuery),
+    loginFlowQueryEnabledForSession(sessionQuery, loginRefresh.value),
   );
 
   return {

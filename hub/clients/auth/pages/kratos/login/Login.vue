@@ -1,8 +1,8 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <LoginIntro v-if="!session" />
+    <LoginIntro v-if="!effectiveSession" />
     <AuthSessionDecisionPanel
-      v-if="session"
+      v-if="effectiveSession"
       :identity-email="identityEmail"
       :continue-href="continueHref"
       variant="login"
@@ -39,9 +39,12 @@ const queryClient = useQueryClient();
 
 const { sessionQuery, loginFlowQuery } = useLoginLoader();
 const browserReturnTo = useLoginBrowserReturnTo();
+const loginRefresh = computed(
+  () => route.query.refresh === "true" || route.query.refresh === "1",
+);
 
 const loginFlowEnabled = computed(() =>
-  loginFlowQueryEnabledForSession(sessionQuery),
+  loginFlowQueryEnabledForSession(sessionQuery, loginRefresh.value),
 );
 
 if (sessionQuery.status.value !== "success") {
@@ -49,15 +52,16 @@ if (sessionQuery.status.value !== "success") {
 }
 
 const session = computed(() => sessionQuery.data.value);
+const effectiveSession = computed(() => (loginRefresh.value ? null : session.value));
 
 const identityEmail = computed(() => {
-  const s = session.value;
+  const s = effectiveSession.value;
   return s ? sessionDisplayEmail(s) : "";
 });
 
 /** Continue target when a session already exists: verified users skip the verify wall and use `?redirect=` / fallback only. */
 const continueHref = computed(() => {
-  const s = session.value;
+  const s = effectiveSession.value;
   if (!s) return "";
   if (!identityNeedsEmailVerification(s.identity)) {
     return browserReturnTo.value;
@@ -91,7 +95,7 @@ const flowIdForForm = computed(() => {
 });
 
 if (
-  !sessionQuery.data.value &&
+  !effectiveSession.value &&
   loginFlowEnabled.value &&
   (loginFlowQuery.status.value !== "success" || !loginFlowQuery.data.value?.id)
 ) {

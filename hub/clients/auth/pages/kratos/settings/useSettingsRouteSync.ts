@@ -26,6 +26,15 @@ export function useSettingsRouteSync() {
       sessionQuery.data.value,
     ),
   );
+  const settingsFlowAalReauthRedirect = computed(() => {
+    const d = settingsFlowQuery.data.value;
+    if (!d || typeof d !== "object") return undefined;
+    if ("ui" in d) return undefined;
+    if ("redirect_browser_to" in d && typeof d.redirect_browser_to === "string") {
+      return d.redirect_browser_to;
+    }
+    return undefined;
+  });
   const settingsFlowExpired = computed(() =>
     isKratosFlowGoneError(settingsFlowQuery.error.value),
   );
@@ -92,8 +101,28 @@ export function useSettingsRouteSync() {
     { immediate: true },
   );
 
+  watch(
+    () => settingsFlowAalReauthRedirect.value,
+    (redirectBrowserTo) => {
+      if (!redirectBrowserTo) return;
+      const loginUrl = new URL(linkToHrefWithHost(authLinks.kratosLogin), window.location.origin);
+      try {
+        const kratosRedirect = new URL(redirectBrowserTo);
+        const refresh = kratosRedirect.searchParams.get("refresh");
+        const returnTo = kratosRedirect.searchParams.get("return_to");
+        if (refresh) loginUrl.searchParams.set("refresh", refresh);
+        if (returnTo) loginUrl.searchParams.set("return_to", returnTo);
+      } catch {
+        // Fallback to plain login link when redirect payload is malformed.
+      }
+      window.location.assign(loginUrl.toString());
+    },
+    { immediate: true },
+  );
+
   if (
     shouldFetchSettingsFlow.value &&
+    !settingsFlowAalReauthRedirect.value &&
     !settingsFlowExpired.value &&
     (settingsFlowQuery.status.value !== "success" ||
       !settingsFlowQuery.data.value?.id)

@@ -18,9 +18,10 @@ onMounted(() => {
   if (typeof route.query.redirect === "string") {
     nextQuery.redirect = route.query.redirect;
   }
-  void router.replace({
+  const target = router.resolve({
     path: route.path,
     query: nextQuery,
   });
+  window.location.replace(target.href);
 });
 </script>
