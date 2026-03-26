@@ -24,13 +24,12 @@
 import { toRef } from "vue";
 import KratosLoginUi from "./KratosLoginUi.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
+import type { LoginFlow } from "@ory/client";
 
 const props = defineProps<{
-  flowId: string;
-  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
-  browserReturnTo: string;
+  flow: LoginFlow;
 }>();
 
-const { flow, submitting, submitError, clearSubmitError, submitLoginForm } =
-  useLoginFlow(toRef(props, "flowId"), toRef(props, "browserReturnTo"));
+const { submitting, submitError, clearSubmitError, submitLoginForm } =
+  useLoginFlow(toRef(props, "flow"));
 </script>

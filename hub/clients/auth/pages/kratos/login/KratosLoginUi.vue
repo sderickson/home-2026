@@ -1,5 +1,10 @@
 <template>
-  <v-card v-if="flow" variant="outlined" class="pa-4" :class="{ 'opacity-60': submitting }">
+  <v-card
+    v-if="flow"
+    variant="outlined"
+    class="pa-4"
+    :class="{ 'opacity-60': submitting }"
+  >
     <form
       ref="formRef"
       class="kratos-flow-form"
@@ -39,7 +44,9 @@
               variant="tonal"
               class="mb-8 mt-1"
               :name="node.attributes.name"
-              :value="(node.attributes as { value?: string }).value ?? undefined"
+              :value="
+                (node.attributes as { value?: string }).value ?? undefined
+              "
               :loading="submitting"
               :disabled="submitting"
             >
@@ -69,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LoginFlow, RegistrationFlow, UiNode } from "@ory/client";
+import type { LoginFlow, UiNode } from "@ory/client";
 import { ref, toRef } from "vue";
 import { kratosPrependInnerIconForFieldName } from "../common/kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForFlowNodes } from "../common/useKratosFieldModelsForNodes.ts";
@@ -80,7 +87,7 @@ import {
 } from "../registration/Registration.logic.ts";
 
 const props = defineProps<{
-  flow: LoginFlow | RegistrationFlow | null | undefined;
+  flow: LoginFlow;
   submitting: boolean;
 }>();
 
@@ -88,7 +95,8 @@ const flowRef = toRef(props, "flow");
 const formRef = ref<HTMLFormElement | null>(null);
 useKratosFlowFocusAfterUiChange(flowRef, formRef);
 
-const { fieldModels, passwordVisible } = useKratosFieldModelsForFlowNodes(flowRef);
+const { fieldModels, passwordVisible } =
+  useKratosFieldModelsForFlowNodes(flowRef);
 
 const emit = defineEmits<{
   submit: [form: HTMLFormElement, submitter: HTMLElement | null];
@@ -116,14 +124,18 @@ function effectiveInputType(node: UiNode, idx: number): string {
 
 function appendPasswordIcon(node: UiNode, idx: number): string | undefined {
   if (!isKratosInputNode(node)) return undefined;
-  if (kratosEffectiveInputType(node.attributes) !== "password") return undefined;
+  if (kratosEffectiveInputType(node.attributes) !== "password")
+    return undefined;
   return passwordVisible.value[idx] ? "mdi-eye-off" : "mdi-eye";
 }
 
 function togglePasswordVisibility(idx: number, node: UiNode) {
   if (!isKratosInputNode(node)) return;
   if (kratosEffectiveInputType(node.attributes) !== "password") return;
-  passwordVisible.value = { ...passwordVisible.value, [idx]: !passwordVisible.value[idx] };
+  passwordVisible.value = {
+    ...passwordVisible.value,
+    [idx]: !passwordVisible.value[idx],
+  };
 }
 
 function onSubmit(ev: Event) {

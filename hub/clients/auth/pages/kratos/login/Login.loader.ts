@@ -1,35 +1,11 @@
-import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { Session } from "@ory/client";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
+  useGetLoginFlowQuery,
+  useCreateLoginFlowQuery,
   useKratosSession,
-  useLoginFlowQuery,
-} from "@sderickson/recipes-sdk";
+} from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
-import { resolveLoginBrowserReturnTo } from "./Login.logic.ts";
-
-/** Kratos `return_to` for the browser login flow (`?redirect=` or injected hub app fallback). Not part of `useLoginLoader` — loaders may only return TanStack queries for `AsyncPage`. */
-export function useLoginBrowserReturnTo() {
-  const route = useRoute();
-  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  return computed(() => {
-    if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
-      return route.query.return_to;
-    }
-    return resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value);
-  });
-}
-
-/** Used by `enabled` on the login flow query and by `Login.vue` guards (AsyncPage only accepts queries in the loader return object). */
-export function loginFlowQueryEnabledForSession(
-  sessionQuery: UseQueryReturnType<Session | null, Error>,
-  refresh?: boolean,
-) {
-  if (sessionQuery.isPending.value) return false;
-  if (sessionQuery.data.value != null && !refresh) return false;
-  return true;
-}
 
 export function useLoginLoader() {
   const route = useRoute();
@@ -37,29 +13,33 @@ export function useLoginLoader() {
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const loginRefresh = computed(
-    () => route.query.refresh === "true" || route.query.refresh === "1",
-  );
-  /** Same resolution as {@link useLoginBrowserReturnTo} — duplicated here so `AsyncPage` loaders only return queries. */
-  const browserReturnTo = computed(() =>
+  const returnTo = computed(() =>
     typeof route.query.return_to === "string" && route.query.return_to.trim()
       ? route.query.return_to
-      : resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+      : postAuthFallbackHref.value,
+  );
+
+  const loginRefresh = computed(
+    () => route.query.refresh === "true" || route.query.refresh === "1",
   );
 
   const sessionQuery = useKratosSession();
 
-  const loginFlowEnabled = computed(() =>
-    loginFlowQueryEnabledForSession(sessionQuery, loginRefresh.value),
-  );
+  const loginFlowEnabled = computed(() => {
+    if (sessionQuery.isPending.value) return false;
+    if (sessionQuery.data.value != null && !loginRefresh.value) return false;
+    return true;
+  });
 
   return {
     sessionQuery,
-    loginFlowQuery: useLoginFlowQuery({
+    createLoginFlowQuery: useCreateLoginFlowQuery({
+      returnTo: returnTo.value,
+      enabled: computed(() => !flowId.value && loginFlowEnabled.value),
+    }),
+    getLoginFlowQuery: useGetLoginFlowQuery({
       flowId: flowId.value,
-      returnTo: browserReturnTo.value,
-      refresh: loginRefresh.value,
-      enabled: loginFlowEnabled,
+      enabled: computed(() => !!flowId.value && loginFlowEnabled.value),
     }),
   };
 }
