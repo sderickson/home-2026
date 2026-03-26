@@ -3,7 +3,7 @@ import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
-import { settingsFlowQueryKey } from "@sderickson/recipes-sdk";
+import { isKratosFlowGoneError, settingsFlowQueryKey } from "@sderickson/recipes-sdk";
 import {
   useSettingsBrowserReturnTo,
   useSettingsLoader,
@@ -25,6 +25,9 @@ export function useSettingsRouteSync() {
       sessionQuery.isPending.value,
       sessionQuery.data.value,
     ),
+  );
+  const settingsFlowExpired = computed(() =>
+    isKratosFlowGoneError(settingsFlowQuery.error.value),
   );
 
   const flowIdForForm = computed(() => {
@@ -71,8 +74,27 @@ export function useSettingsRouteSync() {
     { immediate: true },
   );
 
+  // Settings should recover automatically from expired/used flows by creating a fresh flow.
+  watch(
+    () => [settingsFlowExpired.value, route.query.flow, route.query.redirect] as const,
+    ([expired, flowQ, redirectQ]) => {
+      if (!expired) return;
+      if (typeof flowQ !== "string") return;
+      const nextQuery: Record<string, string> = {};
+      if (typeof redirectQ === "string") {
+        nextQuery.redirect = redirectQ;
+      }
+      void router.replace({
+        path: route.path,
+        query: nextQuery,
+      });
+    },
+    { immediate: true },
+  );
+
   if (
     shouldFetchSettingsFlow.value &&
+    !settingsFlowExpired.value &&
     (settingsFlowQuery.status.value !== "success" ||
       !settingsFlowQuery.data.value?.id)
   ) {
