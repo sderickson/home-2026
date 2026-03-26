@@ -1,29 +1,38 @@
-import type { Session } from "@ory/client";
+import { VerificationFlowState } from "@ory/client";
 import { describe, expect, it } from "vitest";
 import {
   buildVerificationCodeBody,
   buildVerificationResendCodeBody,
   destinationAfterVerification,
   emailForVerificationResend,
+  verificationFlowIsComplete,
   verificationFlowShouldFetch,
 } from "./Verification.logic.ts";
 
 describe("verificationFlowShouldFetch", () => {
-  it("returns true when the route has a flow id (email link)", () => {
-    expect(verificationFlowShouldFetch(true, null, "flow-1")).toBe(true);
-    expect(verificationFlowShouldFetch(false, null, "flow-1")).toBe(true);
+  it("returns true when the route has a non-empty flow id", () => {
+    expect(verificationFlowShouldFetch("flow-1")).toBe(true);
+    expect(verificationFlowShouldFetch("  x  ")).toBe(true);
   });
 
-  it("returns false while the session query is still pending and there is no flow id", () => {
-    expect(verificationFlowShouldFetch(true, undefined, undefined)).toBe(false);
+  it("returns false when there is no flow id or it is blank", () => {
+    expect(verificationFlowShouldFetch(undefined)).toBe(false);
+    expect(verificationFlowShouldFetch("")).toBe(false);
+    expect(verificationFlowShouldFetch("   ")).toBe(false);
+  });
+});
+
+describe("verificationFlowIsComplete", () => {
+  it("returns true when state is passed_challenge", () => {
+    expect(
+      verificationFlowIsComplete({ state: VerificationFlowState.PassedChallenge } as never),
+    ).toBe(true);
   });
 
-  it("returns true when the session is loaded and the user is logged in (browser verification)", () => {
-    expect(verificationFlowShouldFetch(false, { id: "s" } as Session, undefined)).toBe(true);
-  });
-
-  it("returns false when there is no session, no flow id, and session is not pending", () => {
-    expect(verificationFlowShouldFetch(false, null, undefined)).toBe(false);
+  it("returns false for other states", () => {
+    expect(
+      verificationFlowIsComplete({ state: VerificationFlowState.SentEmail } as never),
+    ).toBe(false);
   });
 });
 

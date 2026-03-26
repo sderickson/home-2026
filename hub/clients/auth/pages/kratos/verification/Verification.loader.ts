@@ -1,8 +1,11 @@
+import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
+  fetchVerificationFlowById,
+  kratosFlowQueryRetry,
   useKratosSession,
-  useVerificationFlowQuery,
+  verificationFlowQueryKey,
 } from "@sderickson/recipes-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
@@ -31,18 +34,26 @@ export function useVerificationLoader() {
 
   const verificationFlowEnabled = computed(() =>
     verificationFlowShouldFetch(
-      sessionQuery.isPending.value,
-      sessionQuery.data.value,
       typeof route.query.flow === "string" ? route.query.flow : undefined,
     ),
   );
 
+  const verificationFlowQuery = useQuery(
+    computed(() => ({
+      queryKey: verificationFlowQueryKey(flowId.value, browserReturnTo.value) as readonly [
+        "kratos",
+        "verification",
+        string,
+      ],
+      queryFn: () => fetchVerificationFlowById(flowId.value!),
+      staleTime: 30_000,
+      retry: kratosFlowQueryRetry,
+      enabled: verificationFlowEnabled.value,
+    })),
+  );
+
   return {
     sessionQuery,
-    verificationFlowQuery: useVerificationFlowQuery({
-      flowId: flowId.value,
-      returnTo: browserReturnTo.value,
-      enabled: verificationFlowEnabled,
-    }),
+    verificationFlowQuery,
   };
 }

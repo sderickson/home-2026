@@ -12,8 +12,8 @@ import {
 } from "./VerifyWall.logic.ts";
 
 /**
- * Route side effects and derived state for the verify wall: redirect unauthenticated users to
- * login, send verified users to `redirect` (or injected hub app fallback), and expose the verification CTA.
+ * Route side effects and derived state for the verify wall: redirect unauthenticated users to login,
+ * and expose copy for unverified vs verified sessions.
  */
 export function useVerifyWallPage(
   sessionQuery: UseQueryReturnType<Session | null, Error>,
@@ -33,12 +33,6 @@ export function useVerifyWallPage(
     return linkToHrefWithHost(authLinks.kratosVerifyWall);
   });
 
-  const verificationHref = computed(() =>
-    linkToHrefWithHost(authLinks.kratosVerification, {
-      params: { redirect: redirectAfter.value },
-    }),
-  );
-
   watch(
     () => sessionQuery.data.value,
     (session) => {
@@ -52,18 +46,13 @@ export function useVerifyWallPage(
     { immediate: true },
   );
 
-  watch(
-    () => sessionQuery.data.value,
-    (session) => {
-      if (sessionQuery.status.value !== "success") return;
-      if (session && !identityNeedsEmailVerification(session.identity)) {
-        window.location.assign(redirectAfter.value);
-      }
-    },
-    { immediate: true },
-  );
+  const showVerifiedWall = computed(() => {
+    const session = sessionQuery.data.value;
+    if (!session) return false;
+    return !identityNeedsEmailVerification(session.identity);
+  });
 
-  const showWall = computed(() => {
+  const showUnverifiedWall = computed(() => {
     const session = sessionQuery.data.value;
     if (!session) return false;
     return identityNeedsEmailVerification(session.identity);
@@ -76,8 +65,9 @@ export function useVerifyWallPage(
   });
 
   return {
-    showWall,
+    showVerifiedWall,
+    showUnverifiedWall,
     identityEmail,
-    verificationHref,
+    redirectAfter,
   };
 }

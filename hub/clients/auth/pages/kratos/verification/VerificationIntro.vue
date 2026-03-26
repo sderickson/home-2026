@@ -1,14 +1,37 @@
 <template>
   <div>
-    <h1 class="text-h4 mb-2">{{ t(strings.title) }}</h1>
-    <p class="text-h6 text-medium-emphasis mb-2">{{ t(strings.subtitle) }}</p>
-    <p class="text-body-1 text-medium-emphasis mb-6">{{ t(strings.description) }}</p>
+    <h1 class="text-h4 mb-2">{{ t(active.title) }}</h1>
+    <p class="text-h6 text-medium-emphasis mb-2">{{ t(active.subtitle) }}</p>
+    <p class="text-body-1 text-medium-emphasis mb-6">{{ t(active.description) }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import { verification_intro as strings } from "./VerificationIntro.strings.ts";
 
+const props = withDefaults(
+  defineProps<{
+    /** `request` — before a flow exists (send a code first). `enter` — code entry step. */
+    variant?: "request" | "enter";
+  }>(),
+  { variant: "enter" },
+);
+
 const { t } = useReverseT();
+
+const active = computed(() =>
+  props.variant === "request"
+    ? {
+        title: strings.request_title,
+        subtitle: strings.request_subtitle,
+        description: strings.request_description,
+      }
+    : {
+        title: strings.title,
+        subtitle: strings.subtitle,
+        description: strings.description,
+      },
+);
 </script>

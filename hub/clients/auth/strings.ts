@@ -16,10 +16,15 @@ import { kratos_verification_flow } from "./pages/kratos/verification/Verificati
 import { login_intro } from "./pages/kratos/login/LoginIntro.strings.ts";
 import { registration_intro } from "./pages/kratos/registration/RegistrationIntro.strings.ts";
 import { auth_session_decision } from "./pages/kratos/common/AuthSessionDecisionPanel.strings.ts";
-import { verification_intro } from "./pages/kratos/verification/VerificationIntro.strings.ts";
+import {
+  verification_intro,
+  verification_verified,
+} from "./pages/kratos/verification/VerificationIntro.strings.ts";
 import { verify_wall_actions } from "./pages/kratos/verify-wall/VerifyWallActions.strings.ts";
 import { verify_wall_blocked_body } from "./pages/kratos/verify-wall/VerifyWallBlockedBody.strings.ts";
 import { verify_wall_intro } from "./pages/kratos/verify-wall/VerifyWallIntro.strings.ts";
+import { verify_wall_verified_actions } from "./pages/kratos/verify-wall/VerifyWallVerifiedActions.strings.ts";
+import { verify_wall_verified_intro } from "./pages/kratos/verify-wall/VerifyWallVerifiedIntro.strings.ts";
 // END WORKFLOW AREA
 
 export const auth_strings = {
@@ -39,8 +44,11 @@ export const auth_strings = {
   registration_intro,
   auth_session_decision,
   verification_intro,
+  verification_verified,
   verify_wall_actions,
   verify_wall_blocked_body,
   verify_wall_intro,
+  verify_wall_verified_actions,
+  verify_wall_verified_intro,
   // END WORKFLOW AREA
 };
