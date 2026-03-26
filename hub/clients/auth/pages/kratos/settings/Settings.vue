@@ -22,7 +22,14 @@
       {{ m.text }}
     </div>
 
-    <template v-if="flow && flowId">
+    <SettingsAalReauthRedirect
+      v-if="settingsResult instanceof BrowserRedirectRequired"
+      :redirect-browser-to="settingsResult.payload.redirect_browser_to"
+    />
+
+    <SettingsFlowAutoRestart v-else-if="settingsResult instanceof FlowGone" />
+
+    <template v-else-if="flow && flowId">
       <v-tabs v-model="tab" class="mb-4" color="primary">
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
@@ -74,46 +81,33 @@ import {
   BrowserRedirectRequired,
   SettingsFlowCreated,
   SettingsFlowFetched,
+  FlowGone,
 } from "@saflib/ory-kratos-sdk";
 import type { SettingsFlow } from "@ory/client";
+import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
+import SettingsFlowAutoRestart from "./SettingsFlowAutoRestart.vue";
 const { createSettingsFlowQuery, getSettingsFlowQuery } = useSettingsLoader();
 
 const createSettingsResult = createSettingsFlowQuery.data.value;
 const getSettingsResult = getSettingsFlowQuery.data.value;
+const settingsResult = computed(
+  () => createSettingsResult ?? getSettingsResult,
+);
 const flow = ref<SettingsFlow | null>(null);
 
-if (createSettingsResult) {
-  switch (true) {
-    case createSettingsResult instanceof SettingsFlowCreated:
-      flow.value = createSettingsResult.flow;
-      // update the url with the flow id
-      window.history.replaceState(
-        {},
-        "",
-        `${window.location.pathname}?flow=${flow.value?.id}`,
-      );
-      break;
-    case createSettingsResult instanceof BrowserRedirectRequired:
-      if (!createSettingsResult.payload.redirect_browser_to) {
-        throw new Error("Redirect browser to is required");
-      }
-      window.location.href = createSettingsResult.payload.redirect_browser_to;
-      break;
-    default:
-      throw new Error("Unexpected create settings result");
-  }
-} else if (getSettingsResult) {
-  switch (true) {
-    case getSettingsResult instanceof SettingsFlowFetched:
-      flow.value = getSettingsResult.flow;
-      break;
-    case getSettingsResult instanceof BrowserRedirectRequired:
-      break;
-    default:
-      throw new Error("Unexpected get settings result");
-  }
+switch (true) {
+  case settingsResult instanceof SettingsFlowCreated:
+    flow.value = settingsResult.flow;
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?flow=${flow.value?.id}`,
+    );
+    break;
+  case settingsResult instanceof SettingsFlowFetched:
+    flow.value = settingsResult.flow;
+    break;
 }
-
 const flowId = computed(() => flow.value?.id ?? "");
 
 const { t } = useReverseT();
