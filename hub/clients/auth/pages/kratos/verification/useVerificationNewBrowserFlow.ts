@@ -4,8 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import {
   fetchBrowserVerificationFlow,
   verificationFlowQueryKey,
-} from "@sderickson/recipes-sdk";
-import { useVerificationBrowserReturnTo } from "./Verification.loader.ts";
+} from "@saflib/ory-kratos-sdk";
 
 /**
  * Creates a browser verification flow and sets `?flow=` so the code-entry UI loads for that flow.
@@ -14,19 +13,13 @@ import { useVerificationBrowserReturnTo } from "./Verification.loader.ts";
 export function useVerificationNewBrowserFlow() {
   const route = useRoute();
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const browserReturnTo = useVerificationBrowserReturnTo();
   const pending = ref(false);
 
   async function startNewBrowserFlow() {
     if (pending.value) return;
     pending.value = true;
     try {
-      const flow = await fetchBrowserVerificationFlow(browserReturnTo.value);
-      queryClient.setQueryData(
-        verificationFlowQueryKey(flow.id, browserReturnTo.value),
-        flow,
-      );
+      const flow = await fetchBrowserVerificationFlow();
       await router.replace({
         path: route.path,
         query: { ...route.query, flow: flow.id },

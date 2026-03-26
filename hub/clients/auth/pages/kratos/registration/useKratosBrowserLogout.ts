@@ -1,6 +1,6 @@
 import { ref, toValue, type MaybeRefOrGetter } from "vue";
 import { useRoute } from "vue-router";
-import { fetchBrowserLogoutFlow } from "@sderickson/recipes-sdk";
+import { fetchBrowserLogoutFlow } from "@saflib/ory-kratos-sdk";
 import { useAuthLoggedOutRootFallbackHref } from "../../../authFallbackInject.ts";
 
 export function useKratosBrowserLogout(options?: {
@@ -19,7 +19,9 @@ export function useKratosBrowserLogout(options?: {
       return toValue(options.afterLogoutReturnTo);
     }
     const q = route.query.redirect;
-    return typeof q === "string" && q.trim() ? q.trim() : rootHomeFallbackHref.value;
+    return typeof q === "string" && q.trim()
+      ? q.trim()
+      : rootHomeFallbackHref.value;
   }
 
   async function startBrowserLogout() {

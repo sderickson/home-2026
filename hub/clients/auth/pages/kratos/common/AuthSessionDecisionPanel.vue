@@ -34,7 +34,7 @@
       >
         {{
           t(
-            variant === 'registration'
+            variant === "registration"
               ? strings.register_as_different
               : strings.sign_in_as_different,
           )
@@ -52,20 +52,28 @@ import { authLinks } from "@sderickson/hub-links";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import { auth_session_decision as strings } from "./AuthSessionDecisionPanel.strings.ts";
 import { useKratosBrowserLogout } from "../registration/useKratosBrowserLogout.ts";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 
 const props = defineProps<{
   identityEmail: string;
-  /** Full URL — `?redirect=` / fallback when verified; verify wall URL with `redirect` when email still needs verification. */
-  continueHref: string;
   variant: "login" | "registration";
 }>();
 
 const { t, lookupTKey } = useReverseT();
 const route = useRoute();
+const postAuthFallbackHref = useAuthPostAuthFallbackHref();
+
+const continueHref = computed(() => {
+  return typeof route.query.redirect === "string" && route.query.redirect.trim()
+    ? route.query.redirect.trim()
+    : postAuthFallbackHref.value;
+});
 
 const afterLogoutReturnTo = computed(() =>
   linkToHrefWithHost(
-    props.variant === "registration" ? authLinks.kratosRegistration : authLinks.kratosLogin,
+    props.variant === "registration"
+      ? authLinks.kratosRegistration
+      : authLinks.kratosLogin,
     typeof route.query.redirect === "string" && route.query.redirect.trim()
       ? { params: { redirect: route.query.redirect.trim() } }
       : undefined,

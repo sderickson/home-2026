@@ -1,22 +1,11 @@
-import type { UseQueryReturnType } from "@tanstack/vue-query";
-import type { Session } from "@ory/client";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
+  useCreateRegistrationFlowQuery,
   useKratosSession,
-  useRegistrationFlowQuery,
-} from "@sderickson/recipes-sdk";
+} from "@saflib/ory-kratos-sdk";
+import { useGetRegistrationFlowQuery } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
-import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
-
-/** Used by `enabled` on the registration flow query and by `Registration.vue` guards (AsyncPage only accepts queries in the loader return object). */
-export function registrationFlowQueryEnabledForSession(
-  sessionQuery: UseQueryReturnType<Session | null, Error>,
-) {
-  if (sessionQuery.isPending.value) return false;
-  if (sessionQuery.data.value != null) return false;
-  return true;
-}
 
 export function useRegistrationLoader() {
   const route = useRoute();
@@ -24,32 +13,29 @@ export function useRegistrationLoader() {
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  /** Resolved `return_to` for the registration browser flow (matches login). */
-  const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+  const returnTo = computed(() =>
+    typeof route.query.return_to === "string"
+      ? route.query.return_to
+      : postAuthFallbackHref.value,
   );
 
   const sessionQuery = useKratosSession();
 
-  const registrationFlowEnabled = computed(() =>
-    registrationFlowQueryEnabledForSession(sessionQuery),
-  );
+  const registrationFlowEnabled = computed(() => {
+    if (sessionQuery.isPending.value) return false;
+    if (sessionQuery.data.value != null) return false;
+    return true;
+  });
 
   return {
     sessionQuery,
-    registrationFlowQuery: useRegistrationFlowQuery({
+    createRegistrationFlowQuery: useCreateRegistrationFlowQuery({
+      returnTo: returnTo.value,
+      enabled: computed(() => !flowId.value && registrationFlowEnabled.value),
+    }),
+    getRegistrationFlowQuery: useGetRegistrationFlowQuery({
       flowId: flowId.value,
-      returnTo: browserReturnTo.value,
-      enabled: registrationFlowEnabled,
+      enabled: computed(() => !!flowId.value && registrationFlowEnabled.value),
     }),
   };
-}
-
-/** Same resolution as login: `?redirect=` or injected hub app fallback. */
-export function useRegistrationBrowserReturnTo() {
-  const route = useRoute();
-  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  return computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
-  );
 }

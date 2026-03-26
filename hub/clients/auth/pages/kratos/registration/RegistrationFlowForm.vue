@@ -24,14 +24,10 @@
 import { toRef } from "vue";
 import KratosLoginUi from "../login/KratosLoginUi.vue";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
+import type { RegistrationFlow } from "@ory/client";
 
-const props = defineProps<{ flowId: string }>();
+const props = defineProps<{ flow: RegistrationFlow }>();
 
-const {
-  flow,
-  submitting,
-  submitError,
-  clearSubmitError,
-  submitRegistrationForm,
-} = useRegistrationFlow(toRef(props, "flowId"));
+const { submitting, submitError, clearSubmitError, submitRegistrationForm } =
+  useRegistrationFlow(toRef(props, "flow"));
 </script>

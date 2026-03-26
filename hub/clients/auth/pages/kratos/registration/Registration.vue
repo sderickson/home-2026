@@ -4,91 +4,46 @@
     <AuthSessionDecisionPanel
       v-if="session"
       :identity-email="identityEmail"
-      :continue-href="continueHref"
       variant="registration"
     />
-    <RegistrationFlowForm v-else-if="flowIdForForm" :flow-id="flowIdForForm" />
+    <RegistrationFlowForm v-else-if="flow" :flow="flow" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { useQueryClient } from "@tanstack/vue-query";
-import { computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
-import { identityNeedsEmailVerification, registrationFlowQueryKey } from "@sderickson/recipes-sdk";
-import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
+import { computed, ref } from "vue";
 import {
-  registrationFlowQueryEnabledForSession,
-  useRegistrationBrowserReturnTo,
-  useRegistrationLoader,
-} from "./Registration.loader.ts";
+  kratosIdentityEmail,
+  RegistrationFlowCreated,
+  RegistrationFlowFetched,
+} from "@saflib/ory-kratos-sdk";
+import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
+import { useRegistrationLoader } from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
+import type { RegistrationFlow } from "@ory/client";
 
-const route = useRoute();
-const router = useRouter();
-const queryClient = useQueryClient();
-const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
-const browserReturnTo = useRegistrationBrowserReturnTo();
-
-const registrationFlowEnabled = computed(() =>
-  registrationFlowQueryEnabledForSession(sessionQuery),
-);
-
-if (sessionQuery.status.value !== "success") {
-  throw new Error("Failed to load session");
-}
-
-watch(
-  () => ({
-    status: registrationFlowQuery.status.value,
-    data: registrationFlowQuery.data.value,
-    flowParam: route.query.flow,
-  }),
-  ({ status, data, flowParam }) => {
-    if (status !== "success" || !data?.id) return;
-    if (typeof flowParam === "string") return;
-    queryClient.setQueryData(registrationFlowQueryKey(data.id), data);
-    router.replace({
-      path: route.path,
-      query: { flow: data.id },
-    });
-  },
-  { immediate: true },
+const { sessionQuery, createRegistrationFlowQuery, getRegistrationFlowQuery } =
+  useRegistrationLoader();
+const registrationResult = computed(
+  () =>
+    createRegistrationFlowQuery.data.value ??
+    getRegistrationFlowQuery.data.value,
 );
 
 const session = computed(() => sessionQuery.data.value);
 
 const identityEmail = computed(() => {
-  const s = session.value;
-  const traits = s?.identity?.traits as { email?: string } | undefined;
-  return traits?.email ?? "";
+  return kratosIdentityEmail(session.value) || "";
 });
+const flow = ref<RegistrationFlow | null>(null);
 
-const continueHref = computed(() => {
-  const s = session.value;
-  if (!s) return "";
-  if (identityNeedsEmailVerification(s.identity)) {
-    return linkToHrefWithHost(authLinks.kratosVerifyWall, {
-      params: { redirect: browserReturnTo.value },
-    });
-  }
-  return browserReturnTo.value;
-});
-
-const flowIdForForm = computed(() => {
-  if (typeof route.query.flow === "string") return route.query.flow;
-  return registrationFlowQuery.data.value?.id ?? "";
-});
-
-if (
-  !session.value &&
-  registrationFlowEnabled.value &&
-  (registrationFlowQuery.status.value !== "success" ||
-    !registrationFlowQuery.data.value?.id)
-) {
-  throw new Error("Failed to load registration flow");
+switch (true) {
+  case registrationResult.value instanceof RegistrationFlowCreated:
+    flow.value = registrationResult.value.flow;
+    break;
+  case registrationResult.value instanceof RegistrationFlowFetched:
+    flow.value = registrationResult.value.flow;
+    break;
 }
 </script>

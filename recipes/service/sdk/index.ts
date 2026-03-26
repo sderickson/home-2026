@@ -6,7 +6,6 @@ export * from "./ingredient.ts";
 
 // BEGIN SORTED WORKFLOW AREA query-group-exports FOR sdk/add-query sdk/add-mutation
 export * from "./requests/collections/index.ts";
-export * from "@saflib/ory-kratos-sdk";
 export * from "./requests/menus/index.ts";
 export * from "./requests/recipes/index.ts";
 export * from "./requests/unsplash-photos/index.ts";
@@ -18,7 +17,10 @@ export {
   formatKeyIngredientsDisplay,
   getCardEnrichment,
 } from "./components/recipe-list/RecipeList.logic.ts";
-export type { CardEnrichment, KeyIngredient } from "./components/recipe-list/RecipeList.logic.ts";
+export type {
+  CardEnrichment,
+  KeyIngredient,
+} from "./components/recipe-list/RecipeList.logic.ts";
 
 // BEGIN SORTED WORKFLOW AREA component-exports FOR sdk/add-component
 export { default as RecipeContentPreview } from "./components/recipe-content-preview/RecipeContentPreview.vue";

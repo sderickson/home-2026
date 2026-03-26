@@ -36,12 +36,39 @@ import VerificationFlowForm from "./VerificationFlowForm.vue";
 import VerificationIntro from "./VerificationIntro.vue";
 import { verification_intro as introStrings } from "./VerificationIntro.strings.ts";
 import VerificationVerifiedPanel from "./VerificationVerifiedPanel.vue";
-
+import { useVerificationLoader } from "./Verification.loader.ts";
+import type { VerificationFlow } from "@ory/client";
+import { ref } from "vue";
+import {
+  VerificationFlowCreated,
+  VerificationFlowFetched,
+} from "@sderickson/recipes-sdk";
 const { t } = useReverseT();
-const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
-const { browserReturnTo, flowIdForForm, verificationToken, sessionQuery } =
-  useVerificationRouteSync();
+const { createVerificationFlowQuery, getVerificationFlowQuery } =
+  useVerificationLoader();
+const verificationResult = computed(
+  () =>
+    createVerificationFlowQuery.data.value ??
+    getVerificationFlowQuery.data.value,
+);
+
+const flow = ref<VerificationFlow | null>(null);
+switch (true) {
+  case verificationResult.value instanceof VerificationFlowCreated:
+    flow.value = verificationResult.value.flow;
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?flow=${flow.value?.id}`,
+    );
+    break;
+  case verificationResult.value instanceof VerificationFlowFetched:
+    flow.value = verificationResult.value.flow;
+    break;
+}
+
+const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
 const { startNewBrowserFlow, pending: sendCodePending } =
   useVerificationNewBrowserFlow();
