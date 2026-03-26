@@ -2,7 +2,6 @@ import type { RouterHistory } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 import { PageNotFound } from "@saflib/vue/components";
 import { authLinks } from "@sderickson/hub-links";
-import KratosTest from "./pages/KratosTest.vue";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import KratosLoginAsync from "./pages/kratos/login/LoginAsync.vue";
@@ -30,7 +29,6 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
         }),
       },
       // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
-      { path: "/kratos-test", component: KratosTest },
       {
         path: authLinks.kratosRegistration.path,
         component: KratosRegistrationAsync,
@@ -39,22 +37,22 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
         path: authLinks.kratosLogin.path,
         component: KratosLoginAsync,
       },
-    {
-      path: authLinks.kratosVerification.path,
-      component: KratosVerificationAsync,
-    },
-    {
-      path: authLinks.kratosVerifyWall.path,
-      component: KratosVerifyWallAsync,
-    },
+      {
+        path: authLinks.kratosVerification.path,
+        component: KratosVerificationAsync,
+      },
+      {
+        path: authLinks.kratosVerifyWall.path,
+        component: KratosVerifyWallAsync,
+      },
       {
         path: authLinks.logout.path,
         component: LogoutAsync,
       },
-    {
-      path: authLinks.kratosRecovery.path,
-      component: KratosRecoveryAsync,
-    },
+      {
+        path: authLinks.kratosRecovery.path,
+        component: KratosRecoveryAsync,
+      },
       {
         path: authLinks.kratosSettings.path,
         component: KratosSettingsAsync,

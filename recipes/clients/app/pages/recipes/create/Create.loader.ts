@@ -1,7 +1,5 @@
-import {
-  getCollectionsQuery,
-  kratosSessionRequiredQueryOptions,
-} from "@sderickson/recipes-sdk";
+import { getCollectionsQuery } from "@sderickson/recipes-sdk";
+import { kratosSessionRequiredQueryOptions } from "@saflib/ory-kratos-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 

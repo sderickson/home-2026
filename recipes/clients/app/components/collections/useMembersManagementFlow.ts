@@ -1,14 +1,16 @@
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
 import {
-  kratosIdentityEmail,
-  kratosSessionQueryOptions,
   membersListCollectionsQuery,
   useMembersAddCollectionsMutation,
   useMembersRemoveCollectionsMutation,
   useMembersUpdateCollectionsMutation,
 } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
+import {
+  kratosSessionQueryOptions,
+  kratosIdentityEmail,
+} from "@saflib/ory-kratos-sdk";
 
 /**
  * Stateful flow for the members management dialog: list members, add/change/remove

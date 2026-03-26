@@ -6,7 +6,7 @@ import {
   isDemoMode,
 } from "@sderickson/recipes-clients-common";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
-import { useKratosSession } from "@sderickson/recipes-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 
 const queryClient = useQueryClient();
 const kratosSessionQuery = useKratosSession();
