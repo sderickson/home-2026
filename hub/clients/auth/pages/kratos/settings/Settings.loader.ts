@@ -2,20 +2,10 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
   useKratosSession,
-  useSettingsFlowQuery,
-} from "@sderickson/recipes-sdk";
+  useGetSettingsFlowQuery,
+  useCreateSettingsFlowQuery,
+} from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
-import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
-import { settingsFlowShouldFetch } from "./Settings.logic.ts";
-
-/** Kratos `return_to` for the browser settings flow (`?redirect=` or injected hub app fallback). */
-export function useSettingsBrowserReturnTo() {
-  const route = useRoute();
-  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  return computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
-  );
-}
 
 export function useSettingsLoader() {
   const route = useRoute();
@@ -23,22 +13,23 @@ export function useSettingsLoader() {
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+  const returnTo = computed(() =>
+    typeof route.query.return_to === "string"
+      ? route.query.return_to
+      : postAuthFallbackHref.value,
   );
 
   const sessionQuery = useKratosSession();
 
-  const settingsFlowEnabled = computed(() =>
-    settingsFlowShouldFetch(sessionQuery.isPending.value, sessionQuery.data.value),
-  );
-
   return {
     sessionQuery,
-    settingsFlowQuery: useSettingsFlowQuery({
+    createSettingsFlowQuery: useCreateSettingsFlowQuery({
+      returnTo: returnTo.value,
+      enabled: computed(() => !flowId.value),
+    }),
+    getSettingsFlowQuery: useGetSettingsFlowQuery({
       flowId: flowId.value,
-      returnTo: browserReturnTo.value,
-      enabled: settingsFlowEnabled,
+      enabled: computed(() => !!flowId.value),
     }),
   };
 }

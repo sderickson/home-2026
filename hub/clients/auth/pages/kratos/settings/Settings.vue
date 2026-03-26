@@ -22,7 +22,7 @@
       {{ m.text }}
     </div>
 
-    <template v-if="flow && flowIdForForm">
+    <template v-if="flow && flowId">
       <v-tabs v-model="tab" class="mb-4" color="primary">
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
@@ -69,18 +69,61 @@ import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
 import { settings_tabs as tabs } from "./Settings.strings.ts";
 import { useSettingsFlow } from "./useSettingsFlow.ts";
-import { useSettingsRouteSync } from "./useSettingsRouteSync.ts";
+import { useSettingsLoader } from "./Settings.loader.ts";
+import {
+  BrowserRedirectRequired,
+  SettingsFlowCreated,
+  SettingsFlowFetched,
+} from "@saflib/ory-kratos-sdk";
+import type { SettingsFlow } from "@ory/client";
+const { createSettingsFlowQuery, getSettingsFlowQuery } = useSettingsLoader();
+
+const createSettingsResult = createSettingsFlowQuery.data.value;
+const getSettingsResult = getSettingsFlowQuery.data.value;
+const flow = ref<SettingsFlow | null>(null);
+
+if (createSettingsResult) {
+  switch (true) {
+    case createSettingsResult instanceof SettingsFlowCreated:
+      flow.value = createSettingsResult.flow;
+      // update the url with the flow id
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?flow=${flow.value?.id}`,
+      );
+      break;
+    case createSettingsResult instanceof BrowserRedirectRequired:
+      if (!createSettingsResult.payload.redirect_browser_to) {
+        throw new Error("Redirect browser to is required");
+      }
+      window.location.href = createSettingsResult.payload.redirect_browser_to;
+      break;
+    default:
+      throw new Error("Unexpected create settings result");
+  }
+} else if (getSettingsResult) {
+  switch (true) {
+    case getSettingsResult instanceof SettingsFlowFetched:
+      flow.value = getSettingsResult.flow;
+      break;
+    case getSettingsResult instanceof BrowserRedirectRequired:
+      break;
+    default:
+      throw new Error("Unexpected get settings result");
+  }
+}
+
+const flowId = computed(() => flow.value?.id ?? "");
 
 const { t } = useReverseT();
 
 const tab = ref<"email" | "password" | "totp">("email");
 
-const { browserReturnTo, flowIdForForm } = useSettingsRouteSync();
+// const { browserReturnTo, flowIdForForm } = useSettingsRouteSync();
 
-const { flow, submitting, submitError, clearSubmitError, submitSettingsForm } = useSettingsFlow(
-  () => flowIdForForm.value,
-  () => browserReturnTo.value,
-);
+const { submitting, submitError, clearSubmitError, submitSettingsForm } =
+  useSettingsFlow(flowId);
 
 const hasTotpSettings = computed(() =>
   Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
