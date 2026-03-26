@@ -26,6 +26,7 @@
       <v-tabs v-model="tab" class="mb-4" color="primary">
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
+        <v-tab v-if="hasTotpSettings" value="totp">{{ t(tabs.totp) }}</v-tab>
       </v-tabs>
 
       <v-window v-model="tab">
@@ -47,13 +48,22 @@
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
+        <v-window-item v-if="hasTotpSettings" value="totp">
+          <KratosSettingsGroupUi
+            :flow="flow"
+            group="totp"
+            :submitting="submitting"
+            id-prefix="settings-totp"
+            @submit="(form, submitter) => submitSettingsForm(form, submitter)"
+          />
+        </v-window-item>
       </v-window>
     </template>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
@@ -63,12 +73,16 @@ import { useSettingsRouteSync } from "./useSettingsRouteSync.ts";
 
 const { t } = useReverseT();
 
-const tab = ref<"email" | "password">("email");
+const tab = ref<"email" | "password" | "totp">("email");
 
 const { browserReturnTo, flowIdForForm } = useSettingsRouteSync();
 
 const { flow, submitting, submitError, clearSubmitError, submitSettingsForm } = useSettingsFlow(
   () => flowIdForForm.value,
   () => browserReturnTo.value,
+);
+
+const hasTotpSettings = computed(() =>
+  Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
 );
 </script>

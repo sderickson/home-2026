@@ -13,13 +13,9 @@ import {
   useUpdateLoginFlowMutation,
 } from "@sderickson/recipes-sdk";
 import {
-  buildLoginPasswordBody,
   registrationSubmitErrorMessage,
 } from "../registration/Registration.logic.ts";
-import {
-  credentialsFromLoginForm,
-  destinationAfterLogin,
-} from "./Login.logic.ts";
+import { buildLoginUpdateBodyFromFormData, destinationAfterLogin } from "./Login.logic.ts";
 import { kratos_login_flow as flowStrings } from "./LoginFlowForm.strings.ts";
 
 /**
@@ -50,11 +46,14 @@ export function useLoginFlow(
     submitError.value = null;
   }
 
-  async function submitLoginForm(form: HTMLFormElement) {
+  async function submitLoginForm(form: HTMLFormElement, submitter?: HTMLElement | null) {
     const current = loginFlowQuery.data.value;
     if (!current || submitting.value) return;
-    const fd = new FormData(form);
-    const { identifier, password } = credentialsFromLoginForm(fd);
+    const btn =
+      submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+        ? submitter
+        : undefined;
+    const fd = new FormData(form, btn);
     submitting.value = true;
     submitError.value = null;
     try {
@@ -62,7 +61,7 @@ export function useLoginFlow(
       try {
         result = await updateLogin.mutateAsync({
           flow: current.id,
-          updateLoginFlowBody: buildLoginPasswordBody(current, identifier, password),
+          updateLoginFlowBody: buildLoginUpdateBodyFromFormData(fd),
         });
       } catch (e) {
         submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);

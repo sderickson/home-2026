@@ -1,3 +1,5 @@
+import type { UpdateLoginFlowBody } from "@ory/client";
+
 /**
  * Pure helpers for Kratos login (browser flow + form submit).
  */
@@ -27,4 +29,33 @@ export function credentialsFromLoginForm(fd: FormData): { identifier: string; pa
     identifier: String(fd.get("identifier") ?? "").trim(),
     password: String(fd.get("password") ?? ""),
   };
+}
+
+/**
+ * Build a login submit body for any Kratos login method available in the flow (password, totp, ...).
+ */
+export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowBody {
+  let method = String(fd.get("method") ?? "").trim();
+  if (!method) {
+    // Some browser/component submit paths omit the submit-button pair. Infer method from known fields.
+    if (String(fd.get("password") ?? "").trim() || String(fd.get("identifier") ?? "").trim()) {
+      method = "password";
+    } else if (String(fd.get("totp_code") ?? "").trim()) {
+      method = "totp";
+    }
+  }
+  if (!method) {
+    throw new Error("Missing login method in form");
+  }
+  const body = Object.fromEntries(Array.from(fd.entries()).map(([k, v]) => [k, String(v)])) as Record<
+    string,
+    string
+  >;
+  if (body.identifier) {
+    body.identifier = body.identifier.trim();
+  }
+  return {
+    ...body,
+    method,
+  } as UpdateLoginFlowBody;
 }

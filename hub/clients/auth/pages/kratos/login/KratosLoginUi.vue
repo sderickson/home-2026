@@ -38,6 +38,8 @@
               size="large"
               variant="tonal"
               class="mb-8 mt-1"
+              :name="node.attributes.name"
+              :value="(node.attributes as { value?: string }).value ?? undefined"
               :loading="submitting"
               :disabled="submitting"
             >
@@ -89,7 +91,7 @@ useKratosFlowFocusAfterUiChange(flowRef, formRef);
 const { fieldModels, passwordVisible } = useKratosFieldModelsForFlowNodes(flowRef);
 
 const emit = defineEmits<{
-  submit: [form: HTMLFormElement];
+  submit: [form: HTMLFormElement, submitter: HTMLElement | null];
 }>();
 
 function kratosSubmitLabel(node: UiNode) {
@@ -126,7 +128,9 @@ function togglePasswordVisibility(idx: number, node: UiNode) {
 
 function onSubmit(ev: Event) {
   const el = ev.currentTarget;
-  if (el instanceof HTMLFormElement) emit("submit", el);
+  if (el instanceof HTMLFormElement) {
+    emit("submit", el, (ev as SubmitEvent).submitter);
+  }
 }
 </script>
 

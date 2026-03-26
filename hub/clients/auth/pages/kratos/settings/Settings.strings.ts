@@ -1,6 +1,7 @@
 export const settings_tabs = {
   email: "Email",
   password: "Password",
+  totp: "Authenticator app (TOTP)",
 };
 
 export const settings_page = {
@@ -10,4 +11,5 @@ export const settings_page = {
 export const settings_group_empty = {
   no_profile_fields: "No profile fields are available for this account.",
   no_password_fields: "Password update is not available for this account.",
+  no_totp_fields: "Authenticator app setup is not available for this account.",
 };

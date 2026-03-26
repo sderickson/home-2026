@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildLoginUpdateBodyFromFormData,
   credentialsFromLoginForm,
   destinationAfterLogin,
   resolveLoginBrowserReturnTo,
@@ -58,6 +59,52 @@ describe("credentialsFromLoginForm", () => {
     expect(credentialsFromLoginForm(fd)).toEqual({
       identifier: "x@y.z",
       password: "",
+    });
+  });
+});
+
+describe("buildLoginUpdateBodyFromFormData", () => {
+  it("builds a password-method body", () => {
+    const fd = new FormData();
+    fd.set("method", "password");
+    fd.set("csrf_token", "tok");
+    fd.set("identifier", "  a@b.co  ");
+    fd.set("password", "secret");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toEqual({
+      method: "password",
+      csrf_token: "tok",
+      identifier: "a@b.co",
+      password: "secret",
+    });
+  });
+
+  it("builds a totp-method body", () => {
+    const fd = new FormData();
+    fd.set("method", "totp");
+    fd.set("csrf_token", "tok");
+    fd.set("totp_code", "123456");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toEqual({
+      method: "totp",
+      csrf_token: "tok",
+      totp_code: "123456",
+    });
+  });
+
+  it("throws when method is missing", () => {
+    const fd = new FormData();
+    expect(() => buildLoginUpdateBodyFromFormData(fd)).toThrow("Missing login method in form");
+  });
+
+  it("falls back to password method when password fields exist", () => {
+    const fd = new FormData();
+    fd.set("identifier", "a@b.co");
+    fd.set("password", "secret");
+    fd.set("csrf_token", "tok");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toEqual({
+      method: "password",
+      identifier: "a@b.co",
+      password: "secret",
+      csrf_token: "tok",
     });
   });
 });

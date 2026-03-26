@@ -16,6 +16,16 @@
           <p v-if="node.type === 'text'" class="text-body-2 mb-2">
             {{ (node.attributes as { text?: { text: string } }).text?.text }}
           </p>
+          <div
+            v-else-if="node.type === 'img'"
+            class="mb-4 d-flex justify-center"
+          >
+            <img
+              :src="String((node.attributes as { src?: string }).src ?? '')"
+              :alt="node.meta?.label?.text ?? 'Authenticator QR code'"
+              class="kratos-flow-form__qr"
+            />
+          </div>
           <template v-else-if="isKratosInputNode(node)">
             <input
               v-if="node.attributes.type === 'hidden'"
@@ -33,7 +43,9 @@
               variant="tonal"
               class="mb-8 mt-1"
               :name="node.attributes.name"
-              :value="(node.attributes as { value?: string }).value ?? undefined"
+              :value="
+                (node.attributes as { value?: string }).value ?? undefined
+              "
               :loading="submitting"
               :disabled="submitting"
             >
@@ -71,13 +83,16 @@ import { computed } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import { kratosPrependInnerIconForFieldName } from "../common/kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForNodes } from "../common/useKratosFieldModelsForNodes.ts";
-import { isKratosInputNode, kratosEffectiveInputType } from "../registration/Registration.logic.ts";
+import {
+  isKratosInputNode,
+  kratosEffectiveInputType,
+} from "../registration/Registration.logic.ts";
 import { settings_group_empty as strings } from "./Settings.strings.ts";
 import { settingsNodesForGroup } from "./Settings.logic.ts";
 
 const props = defineProps<{
   flow: SettingsFlow;
-  group: "profile" | "password";
+  group: "profile" | "password" | "totp";
   submitting: boolean;
   idPrefix: string;
 }>();
@@ -85,7 +100,11 @@ const props = defineProps<{
 const { t } = useReverseT();
 
 const emptyCopy = computed(() =>
-  props.group === "profile" ? strings.no_profile_fields : strings.no_password_fields,
+  props.group === "profile"
+    ? strings.no_profile_fields
+    : props.group === "password"
+      ? strings.no_password_fields
+      : strings.no_totp_fields,
 );
 
 const nodes = computed(() => settingsNodesForGroup(props.flow, props.group));
@@ -119,14 +138,18 @@ function effectiveInputType(node: UiNode, idx: number): string {
 
 function appendPasswordIcon(node: UiNode, idx: number): string | undefined {
   if (!isKratosInputNode(node)) return undefined;
-  if (kratosEffectiveInputType(node.attributes) !== "password") return undefined;
+  if (kratosEffectiveInputType(node.attributes) !== "password")
+    return undefined;
   return passwordVisible.value[idx] ? "mdi-eye-off" : "mdi-eye";
 }
 
 function togglePasswordVisibility(idx: number, node: UiNode) {
   if (!isKratosInputNode(node)) return;
   if (kratosEffectiveInputType(node.attributes) !== "password") return;
-  passwordVisible.value = { ...passwordVisible.value, [idx]: !passwordVisible.value[idx] };
+  passwordVisible.value = {
+    ...passwordVisible.value,
+    [idx]: !passwordVisible.value[idx],
+  };
 }
 
 const emit = defineEmits<{
@@ -147,5 +170,11 @@ function onSubmit(ev: Event) {
   margin: 0;
   padding: 0;
   min-width: 0;
+}
+
+.kratos-flow-form__qr {
+  width: 192px;
+  height: 192px;
+  object-fit: contain;
 }
 </style>

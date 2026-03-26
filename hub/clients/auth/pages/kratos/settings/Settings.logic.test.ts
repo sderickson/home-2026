@@ -45,12 +45,21 @@ describe("buildSettingsUpdateBodyFromFormData", () => {
     });
   });
 
-  it("throws when the method is not supported", () => {
+  it("builds a totp-method body", () => {
     const fd = new FormData();
     fd.set("method", "totp");
-    expect(() => buildSettingsUpdateBodyFromFormData(fd)).toThrow(
-      "Unsupported settings method in form",
-    );
+    fd.set("csrf_token", "tok");
+    fd.set("totp_code", "123456");
+    expect(buildSettingsUpdateBodyFromFormData(fd)).toEqual({
+      method: "totp",
+      csrf_token: "tok",
+      totp_code: "123456",
+    });
+  });
+
+  it("throws when the method is missing", () => {
+    const fd = new FormData();
+    expect(() => buildSettingsUpdateBodyFromFormData(fd)).toThrow("Unsupported settings method in form");
   });
 });
 
@@ -80,6 +89,20 @@ describe("settingsNodesForGroup", () => {
             meta: {},
             messages: [],
           },
+          {
+            type: "input",
+            group: "totp",
+            attributes: { node_type: "input", name: "totp_code", type: "text" },
+            meta: {},
+            messages: [],
+          },
+          {
+            type: "img",
+            group: "totp",
+            attributes: { id: "totp_qr", src: "data:image/png;base64,abc" },
+            meta: {},
+            messages: [],
+          },
         ],
       },
     } as unknown as SettingsFlow;
@@ -92,6 +115,12 @@ describe("settingsNodesForGroup", () => {
     expect(password.map((n) => (n.attributes as { name?: string }).name)).toEqual([
       "csrf_token",
       "password",
+    ]);
+    const totp = settingsNodesForGroup(flow, "totp");
+    expect(totp.map((n) => (n.attributes as { name?: string }).name)).toEqual([
+      "csrf_token",
+      "totp_code",
+      undefined,
     ]);
   });
 });
