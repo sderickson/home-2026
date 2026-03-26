@@ -84,24 +84,28 @@ describe("useVerifyWallPage", () => {
     vi.restoreAllMocks();
   });
 
-  it("sets showWall when the session has an unverified email address", async () => {
+  it("sets showUnverifiedWall when the session has an unverified email address", async () => {
     server.use(http.get("*/sessions/whoami", () => HttpResponse.json(unverifiedSession)));
 
     const { page, app } = await mountVerifyWallPage("/verify-wall");
-    expect(page.showWall.value).toBe(true);
+    expect(page.showUnverifiedWall.value).toBe(true);
+    expect(page.showVerifiedWall.value).toBe(false);
     expect(page.identityEmail.value).toContain("user@test");
     app.unmount();
   });
 
-  it("redirects verified sessions to redirect or home via window.location.assign", async () => {
+  it("sets showVerifiedWall when the session email is verified (no auto redirect)", async () => {
     server.use(http.get("*/sessions/whoami", () => HttpResponse.json(verifiedSession)));
 
     const assignMock = vi.fn();
     vi.stubGlobal("location", { href: "http://localhost/", assign: assignMock });
 
     try {
-      const { app } = await mountVerifyWallPage("/verify-wall?redirect=https://recipes.example/ok");
-      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith("https://recipes.example/ok"));
+      const { page, app } = await mountVerifyWallPage("/verify-wall?redirect=https://recipes.example/ok");
+      expect(page.showVerifiedWall.value).toBe(true);
+      expect(page.showUnverifiedWall.value).toBe(false);
+      expect(page.redirectAfter.value).toBe("https://recipes.example/ok");
+      expect(assignMock).not.toHaveBeenCalled();
       app.unmount();
     } finally {
       vi.unstubAllGlobals();

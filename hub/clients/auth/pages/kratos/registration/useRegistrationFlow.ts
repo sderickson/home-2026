@@ -3,14 +3,14 @@ import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  extractLoginFlowFromError,
-  extractRegistrationFlowFromError,
   fetchBrowserLoginFlow,
   identityNeedsEmailVerification,
   invalidateKratosSessionQueries,
   kratosSessionQueryOptions,
+  LoginFlowUpdated,
   registrationFlowQueryKey,
   registrationFlowQueryOptions,
+  RegistrationFlowUpdated,
   useUpdateLoginFlowMutation,
   useUpdateRegistrationFlowMutation,
 } from "@sderickson/recipes-sdk";
@@ -33,7 +33,7 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
   const updateLogin = useUpdateLoginFlowMutation();
 
   const registrationFlowQuery = useQuery(
-    computed(() => registrationFlowQueryOptions(toValue(flowId))),
+    computed(() => registrationFlowQueryOptions({ flowId: toValue(flowId) })),
   );
 
   const submitting = ref(false);
@@ -50,18 +50,25 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
     submitting.value = true;
     submitError.value = null;
     try {
+      let updated;
       try {
-        await updateRegistration.mutateAsync({
+        updated = await updateRegistration.mutateAsync({
           flow: current.id,
           updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
         });
       } catch (e) {
-        const next = extractRegistrationFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(registrationFlowQueryKey(toValue(flowId)), next);
-        } else {
-          submitError.value = registrationSubmitErrorMessage(e, flowStrings.registration_failed);
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.registration_failed,
+        );
+        return;
+      }
+
+      if (updated instanceof RegistrationFlowUpdated) {
+        queryClient.setQueryData(
+          registrationFlowQueryKey(toValue(flowId)),
+          updated.flow,
+        );
         return;
       }
 
@@ -69,32 +76,40 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
       const email = traitsEmailFromFormData(fd);
       const password = String(fd.get("password") ?? "");
 
+      let loginResult;
       try {
         const loginFlow = await fetchBrowserLoginFlow(destination);
-        await updateLogin.mutateAsync({
+        loginResult = await updateLogin.mutateAsync({
           flow: loginFlow.id,
-          updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),
+          updateLoginFlowBody: buildLoginPasswordBody(
+            loginFlow,
+            email,
+            password,
+          ),
         });
       } catch (e) {
-        const loginNext = extractLoginFlowFromError(e);
-        if (loginNext) {
-          submitError.value = flowStrings.post_reg_login_failed;
-        } else {
-          submitError.value = registrationSubmitErrorMessage(
-            e,
-            flowStrings.post_reg_login_failed,
-          );
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.post_reg_login_failed,
+        );
+        return;
+      }
+
+      if (loginResult instanceof LoginFlowUpdated) {
+        submitError.value = flowStrings.post_reg_login_failed;
         return;
       }
 
       await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const postVerifyTarget = destination ?? linkToHrefWithHost(authLinks.home);
+      const postVerifyTarget =
+        destination ?? linkToHrefWithHost(authLinks.home);
 
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
-          linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: postVerifyTarget } }),
+          linkToHrefWithHost(authLinks.kratosVerifyWall, {
+            params: { redirect: postVerifyTarget },
+          }),
         );
       } else if (destination) {
         window.location.assign(destination);

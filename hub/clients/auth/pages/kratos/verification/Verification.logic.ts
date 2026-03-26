@@ -1,17 +1,17 @@
 import type { Session, UpdateVerificationFlowBody, VerificationFlow } from "@ory/client";
+import { VerificationFlowState } from "@ory/client";
 
-/** Whether the verification flow query should run (email `?flow=` link, or logged-in browser flow). */
-export function verificationFlowShouldFetch(
-  sessionIsPending: boolean,
-  session: Session | null | undefined,
-  flowIdFromRoute: string | undefined,
-): boolean {
-  if (flowIdFromRoute) return true;
-  if (sessionIsPending) return false;
-  return session != null;
+/** Whether the verification flow query should run: only when `?flow=` is present (email link or after "Send a code"). */
+export function verificationFlowShouldFetch(flowIdFromRoute: string | undefined): boolean {
+  return typeof flowIdFromRoute === "string" && flowIdFromRoute.trim() !== "";
 }
 
-/** Where to send the browser after successful verification: Kratos `return_to` or the recipes app home. */
+/** Kratos marks a completed verification with {@link VerificationFlowState.PassedChallenge}. */
+export function verificationFlowIsComplete(flow: VerificationFlow): boolean {
+  return flow.state === VerificationFlowState.PassedChallenge;
+}
+
+/** Where to send the browser after successful verification: Kratos `return_to` or the injected hub app fallback URL. */
 export function destinationAfterVerification(
   flowReturnTo: string | null | undefined,
   fallbackRecipesHomeHref: string,

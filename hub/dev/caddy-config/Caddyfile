@@ -75,6 +75,11 @@ http://hub.docker.localhost {
 	import kratos-api-proxy monolith:3001
 }
 
+http://kratos.docker.localhost {
+	import cors docker.localhost
+	reverse_proxy kratos:4433
+}
+
 # Azurite
 
 http://azurite.docker.localhost {

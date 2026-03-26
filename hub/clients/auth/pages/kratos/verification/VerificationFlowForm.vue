@@ -1,9 +1,9 @@
 <template>
   <div>
-    <p class="text-body-1 mb-4">{{ t(strings.instructions) }}</p>
-
-    <div v-if="resendEmail" class="d-flex flex-column flex-sm-row align-sm-center ga-2 mb-4">
-      <span class="text-body-2 text-medium-emphasis">{{ t(strings.resend_help) }}</span>
+    <div class="d-flex flex-column flex-sm-row align-sm-center ga-2 mb-4">
+      <span class="text-body-2 text-medium-emphasis">{{
+        t(strings.resend_help)
+      }}</span>
       <v-btn
         variant="tonal"
         size="small"
@@ -54,7 +54,6 @@ const { t } = useReverseT();
 
 const {
   flow,
-  resendEmail,
   submitting,
   resending,
   submitError,

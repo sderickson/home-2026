@@ -6,7 +6,7 @@ export * from "./ingredient.ts";
 
 // BEGIN SORTED WORKFLOW AREA query-group-exports FOR sdk/add-query sdk/add-mutation
 export * from "./requests/collections/index.ts";
-export * from "./requests/kratos/index.ts";
+export * from "@saflib/ory-kratos-sdk";
 export * from "./requests/menus/index.ts";
 export * from "./requests/recipes/index.ts";
 export * from "./requests/unsplash-photos/index.ts";

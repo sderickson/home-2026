@@ -1,24 +1,20 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
 import type { Session } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import {
-  loginFlowQueryOptions,
   useKratosSession,
+  useLoginFlowQuery,
 } from "@sderickson/recipes-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "./Login.logic.ts";
 
-/** Kratos `return_to` for the browser login flow (`?redirect=` or recipes home). Not part of `useLoginLoader` — loaders may only return TanStack queries for `AsyncPage`. */
+/** Kratos `return_to` for the browser login flow (`?redirect=` or injected hub app fallback). Not part of `useLoginLoader` — loaders may only return TanStack queries for `AsyncPage`. */
 export function useLoginBrowserReturnTo() {
   const route = useRoute();
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   return computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 }
 
@@ -36,12 +32,10 @@ export function useLoginLoader() {
   const flowId = computed(() =>
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   /** Same resolution as {@link useLoginBrowserReturnTo} — duplicated here so `AsyncPage` loaders only return queries. */
   const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const sessionQuery = useKratosSession();
@@ -52,11 +46,10 @@ export function useLoginLoader() {
 
   return {
     sessionQuery,
-    loginFlowQuery: useQuery(
-      computed(() => ({
-        ...loginFlowQueryOptions(flowId.value, browserReturnTo.value),
-        enabled: loginFlowEnabled.value,
-      })),
-    ),
+    loginFlowQuery: useLoginFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: loginFlowEnabled,
+    }),
   };
 }

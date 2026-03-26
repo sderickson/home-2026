@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/vue-query";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { appLinks } from "@sderickson/hub-links";
 import { recoveryFlowQueryKey } from "@sderickson/recipes-sdk";
 import {
   useRecoveryBrowserReturnTo,

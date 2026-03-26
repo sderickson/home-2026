@@ -21,12 +21,11 @@
   },
   "dependencies": {
     "@sderickson/recipes-sdk": "*",
+    "@saflib/sdk": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",
-    "@sderickson/recipes-links": "*",
-    "@sderickson/hub-sdk": "*",
     "vue-router": "*"
   }
 }

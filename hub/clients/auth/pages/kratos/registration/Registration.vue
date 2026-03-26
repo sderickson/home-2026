@@ -1,7 +1,12 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <RegistrationIntro />
-    <RegistrationSessionPanel v-if="session" :identity-email="identityEmail" />
+    <RegistrationIntro v-if="!session" />
+    <AuthSessionDecisionPanel
+      v-if="session"
+      :identity-email="identityEmail"
+      :continue-href="continueHref"
+      variant="registration"
+    />
     <RegistrationFlowForm v-else-if="flowIdForForm" :flow-id="flowIdForForm" />
   </v-container>
 </template>
@@ -10,22 +15,23 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
+import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { identityNeedsEmailVerification, registrationFlowQueryKey } from "@sderickson/recipes-sdk";
+import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
 import {
   registrationFlowQueryEnabledForSession,
+  useRegistrationBrowserReturnTo,
   useRegistrationLoader,
 } from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
-import RegistrationSessionPanel from "./RegistrationSessionPanel.vue";
 
 const route = useRoute();
 const router = useRouter();
 const queryClient = useQueryClient();
 const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
+const browserReturnTo = useRegistrationBrowserReturnTo();
 
 const registrationFlowEnabled = computed(() =>
   registrationFlowQueryEnabledForSession(sessionQuery),
@@ -55,18 +61,22 @@ watch(
 
 const session = computed(() => sessionQuery.data.value);
 
-watch(
-  () => session.value,
-  (s) => {
-    if (!s) return;
-    if (identityNeedsEmailVerification(s.identity)) {
-      navigateToLink(authLinks.kratosVerifyWall, {
-        params: { redirect: linkToHrefWithHost(appLinks.home) },
-      });
-    }
-  },
-  { immediate: true },
-);
+const identityEmail = computed(() => {
+  const s = session.value;
+  const traits = s?.identity?.traits as { email?: string } | undefined;
+  return traits?.email ?? "";
+});
+
+const continueHref = computed(() => {
+  const s = session.value;
+  if (!s) return "";
+  if (identityNeedsEmailVerification(s.identity)) {
+    return linkToHrefWithHost(authLinks.kratosVerifyWall, {
+      params: { redirect: browserReturnTo.value },
+    });
+  }
+  return browserReturnTo.value;
+});
 
 const flowIdForForm = computed(() => {
   if (typeof route.query.flow === "string") return route.query.flow;
@@ -81,10 +91,4 @@ if (
 ) {
   throw new Error("Failed to load registration flow");
 }
-
-const identityEmail = computed(() => {
-  const s = session.value;
-  const traits = s?.identity?.traits as { email?: string } | undefined;
-  return traits?.email ?? "";
-});
 </script>

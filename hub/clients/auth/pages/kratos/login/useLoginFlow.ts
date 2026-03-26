@@ -1,13 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
-  extractLoginFlowFromError,
   identityNeedsEmailVerification,
   invalidateKratosSessionQueries,
   kratosSessionQueryOptions,
+  LoginFlowUpdated,
   loginFlowQueryKey,
   loginFlowQueryOptions,
   useUpdateLoginFlowMutation,
@@ -33,13 +33,14 @@ export function useLoginFlow(
   flowId: MaybeRefOrGetter<string>,
   browserReturnTo: MaybeRefOrGetter<string>,
 ) {
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateLogin = useUpdateLoginFlowMutation();
 
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const loginFlowQuery = useQuery(
-    computed(() => loginFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() => loginFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
   );
 
   const submitting = ref(false);
@@ -57,24 +58,25 @@ export function useLoginFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let result;
       try {
-        await updateLogin.mutateAsync({
+        result = await updateLogin.mutateAsync({
           flow: current.id,
           updateLoginFlowBody: buildLoginPasswordBody(current, identifier, password),
         });
       } catch (e) {
-        const next = extractLoginFlowFromError(e);
-        if (next) {
-          queryClient.setQueryData(loginFlowQueryKey(toValue(flowId), returnTo.value), next);
-        } else {
-          submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);
-        }
+        submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);
+        return;
+      }
+
+      if (result instanceof LoginFlowUpdated) {
+        queryClient.setQueryData(loginFlowQueryKey(toValue(flowId), returnTo.value), result.flow);
         return;
       }
 
       await invalidateKratosSessionQueries(queryClient);
       const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const destination = destinationAfterLogin(current.return_to, linkToHrefWithHost(appLinks.home));
+      const destination = destinationAfterLogin(current.return_to, postAuthFallbackHref.value);
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
           linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: destination } }),

@@ -1,12 +1,13 @@
 import type { UseQueryReturnType } from "@tanstack/vue-query";
 import type { Session } from "@ory/client";
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
-  registrationFlowQueryOptions,
   useKratosSession,
+  useRegistrationFlowQuery,
 } from "@sderickson/recipes-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
+import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 
 /** Used by `enabled` on the registration flow query and by `Registration.vue` guards (AsyncPage only accepts queries in the loader return object). */
 export function registrationFlowQueryEnabledForSession(
@@ -22,9 +23,10 @@ export function useRegistrationLoader() {
   const flowId = computed(() =>
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
-  /** Full URL for Kratos `return_to` (from `?redirect=`, same convention as legacy auth links). */
-  const redirectTo = computed(() =>
-    typeof route.query.redirect === "string" ? route.query.redirect : undefined,
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
+  /** Resolved `return_to` for the registration browser flow (matches login). */
+  const browserReturnTo = computed(() =>
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const sessionQuery = useKratosSession();
@@ -35,11 +37,19 @@ export function useRegistrationLoader() {
 
   return {
     sessionQuery,
-    registrationFlowQuery: useQuery(
-      computed(() => ({
-        ...registrationFlowQueryOptions(flowId.value, redirectTo.value),
-        enabled: registrationFlowEnabled.value,
-      })),
-    ),
+    registrationFlowQuery: useRegistrationFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: registrationFlowEnabled,
+    }),
   };
+}
+
+/** Same resolution as login: `?redirect=` or injected hub app fallback. */
+export function useRegistrationBrowserReturnTo() {
+  const route = useRoute();
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
+  return computed(() =>
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+  );
 }

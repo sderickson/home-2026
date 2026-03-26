@@ -1,23 +1,19 @@
-import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import {
-  recoveryFlowQueryOptions,
   useKratosSession,
+  useRecoveryFlowQuery,
 } from "@sderickson/recipes-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { recoveryFlowShouldFetch } from "./Recovery.logic.ts";
 
-/** Kratos `return_to` for the browser recovery flow (`?redirect=` or recipes home). Not part of `useRecoveryLoader` return shape — loaders may only return TanStack queries for `AsyncPage`. */
+/** Kratos `return_to` for the browser recovery flow (`?redirect=` or injected hub app fallback). Not part of `useRecoveryLoader` return shape — loaders may only return TanStack queries for `AsyncPage`. */
 export function useRecoveryBrowserReturnTo() {
   const route = useRoute();
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   return computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 }
 
@@ -26,11 +22,9 @@ export function useRecoveryLoader() {
   const flowId = computed(() =>
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(
-      route.query.redirect,
-      linkToHrefWithHost(appLinks.home),
-    ),
+    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const sessionQuery = useKratosSession();
@@ -45,11 +39,10 @@ export function useRecoveryLoader() {
 
   return {
     sessionQuery,
-    recoveryFlowQuery: useQuery(
-      computed(() => ({
-        ...recoveryFlowQueryOptions(flowId.value, browserReturnTo.value),
-        enabled: recoveryFlowEnabled.value,
-      })),
-    ),
+    recoveryFlowQuery: useRecoveryFlowQuery({
+      flowId: flowId.value,
+      returnTo: browserReturnTo.value,
+      enabled: recoveryFlowEnabled,
+    }),
   };
 }

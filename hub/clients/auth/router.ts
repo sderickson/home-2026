@@ -19,7 +19,7 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
     history: options?.history ?? createWebHistory(),
     routes: [
       /**
-       * Auth SPA home: send users to login (returning sessions redirect to recipes from the page).
+       * Auth SPA home: send users to login (returning sessions see the session panel from the page).
        * Registration remains at `/registration`. Preserves `redirect` / `flow` query when present.
        */
       {

@@ -1,5 +1,5 @@
 export const login_intro = {
   title: "Sign in",
-  subtitle: "Welcome back",
-  description: "Use your account email and password to continue to Recipes.",
+  link_register: "Create an account",
+  link_recovery: "Forgot password?",
 };

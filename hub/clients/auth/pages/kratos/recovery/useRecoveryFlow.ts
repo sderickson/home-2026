@@ -6,11 +6,10 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
-import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
-  extractBrowserLocationChangeRequiredFromError,
-  extractRecoveryFlowFromError,
+  BrowserRedirectRequired,
   invalidateKratosSessionQueries,
   recoveryFlowQueryKey,
   recoveryFlowQueryOptions,
@@ -34,13 +33,19 @@ export function useRecoveryFlow(
   browserReturnTo: MaybeRefOrGetter<string>,
   recoveryToken: MaybeRefOrGetter<string | undefined>,
 ) {
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateRecovery = useUpdateRecoveryFlowMutation();
 
   const returnTo = computed(() => toValue(browserReturnTo));
 
   const recoveryFlowQuery = useQuery(
-    computed(() => recoveryFlowQueryOptions(toValue(flowId), returnTo.value)),
+    computed(() =>
+      recoveryFlowQueryOptions({
+        flowId: toValue(flowId),
+        returnTo: returnTo.value,
+      }),
+    ),
   );
 
   const submitting = ref(false);
@@ -56,9 +61,6 @@ export function useRecoveryFlow(
     });
   }
 
-  /**
-   * HTTP 422 `ErrorBrowserLocationChangeRequired`: navigate to Kratos-provided URL (no flow cache update).
-   */
   async function applyBrowserLocationChangeRequired(
     body: ErrorBrowserLocationChangeRequired,
   ) {
@@ -69,16 +71,16 @@ export function useRecoveryFlow(
     window.location.assign(url);
   }
 
-  /**
-   * Normal 2xx response or validation error body: cache the flow and honor `continue_with` / passed state.
-   */
   async function applyRecoveryFlow(updated: RecoveryFlow) {
     queryClient.setQueryData(
       recoveryFlowQueryKey(toValue(flowId), returnTo.value),
       updated,
     );
 
-    const continueUrl = recoveryFlowContinueWithUrl(updated, settingsFlowHrefFromId);
+    const continueUrl = recoveryFlowContinueWithUrl(
+      updated,
+      settingsFlowHrefFromId,
+    );
     if (continueUrl) {
       await invalidateKratosSessionQueries(queryClient);
       window.location.assign(continueUrl);
@@ -88,7 +90,7 @@ export function useRecoveryFlow(
     if (updated.state === RecoveryFlowState.PassedChallenge) {
       const fallback = destinationAfterRecovery(
         updated.return_to,
-        linkToHrefWithHost(appLinks.home),
+        postAuthFallbackHref.value,
       );
       await invalidateKratosSessionQueries(queryClient);
       window.location.assign(fallback);
@@ -105,30 +107,28 @@ export function useRecoveryFlow(
     submitting.value = true;
     submitError.value = null;
     try {
+      let result;
       try {
         const token = toValue(recoveryToken);
-        const updated = await updateRecovery.mutateAsync({
+        result = await updateRecovery.mutateAsync({
           flow: current.id,
           updateRecoveryFlowBody: buildRecoveryUpdateBodyFromFormData(fd),
           ...(token ? { token } : {}),
         });
-        await applyRecoveryFlow(updated);
       } catch (e) {
-        const locationChange = extractBrowserLocationChangeRequiredFromError(e);
-        if (locationChange) {
-          await applyBrowserLocationChangeRequired(locationChange);
-          return;
-        }
-        const nextFlow = extractRecoveryFlowFromError(e);
-        if (nextFlow) {
-          await applyRecoveryFlow(nextFlow);
-        } else {
-          submitError.value = registrationSubmitErrorMessage(
-            e,
-            flowStrings.recovery_failed,
-          );
-        }
+        submitError.value = registrationSubmitErrorMessage(
+          e,
+          flowStrings.recovery_failed,
+        );
+        return;
       }
+
+      if (result instanceof BrowserRedirectRequired) {
+        await applyBrowserLocationChangeRequired(result.payload);
+        return;
+      }
+
+      await applyRecoveryFlow(result);
     } finally {
       submitting.value = false;
     }

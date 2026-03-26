@@ -1,55 +1,128 @@
 <template>
-  <v-card v-if="flow" variant="outlined" class="pa-4">
-    <div
-      v-for="(m, i) in flow.ui.messages ?? []"
-      :key="'lm-' + i"
-      class="text-body-2 mb-2"
-      :class="m.type === 'error' ? 'text-error' : ''"
+  <v-card v-if="flow" variant="outlined" class="pa-4" :class="{ 'opacity-60': submitting }">
+    <form
+      ref="formRef"
+      class="kratos-flow-form"
+      :aria-busy="submitting ? 'true' : undefined"
+      @submit.prevent="onSubmit"
     >
-      {{ m.text }}
-    </div>
-    <form @submit.prevent="onSubmit">
-      <template v-for="(node, idx) in flow.ui.nodes" :key="'ln-' + idx">
-        <p v-if="node.type === 'text'" class="text-body-2 mb-2">
-          {{ (node.attributes as { text?: { text: string } }).text?.text }}
-        </p>
-        <div v-else-if="isKratosInputNode(node)" class="mb-3">
-          <label
-            v-if="node.meta?.label?.text && node.attributes.type !== 'submit'"
-            class="text-caption d-block mb-1"
-            :for="'kratos-login-' + idx"
-          >
-            {{ node.meta.label.text }}
-          </label>
-          <input
-            :id="'kratos-login-' + idx"
-            class="kratos-input"
-            :class="{ 'kratos-input--submit': node.attributes.type === 'submit' }"
-            :name="node.attributes.name"
-            :type="node.attributes.type"
-            :value="node.attributes.value ?? undefined"
-            :required="node.attributes.required"
-            :disabled="submitting"
-            autocomplete="off"
-          />
-        </div>
-      </template>
+      <v-alert
+        v-for="(m, i) in flow.ui.messages ?? []"
+        :key="'lm-' + i"
+        :type="m.type === 'error' ? 'error' : 'info'"
+        variant="tonal"
+        class="mb-3"
+        density="comfortable"
+      >
+        {{ m.text }}
+      </v-alert>
+
+      <fieldset class="kratos-flow-form__fieldset">
+        <template v-for="(node, idx) in flow.ui.nodes" :key="'ln-' + idx">
+          <p v-if="node.type === 'text'" class="text-body-2 mb-2">
+            {{ (node.attributes as { text?: { text: string } }).text?.text }}
+          </p>
+          <template v-else-if="isKratosInputNode(node)">
+            <input
+              v-if="node.attributes.type === 'hidden'"
+              type="hidden"
+              :name="node.attributes.name"
+              :value="node.attributes.value ?? undefined"
+            />
+            <v-btn
+              v-else-if="node.attributes.type === 'submit'"
+              :id="'kratos-login-' + idx"
+              type="submit"
+              color="primary"
+              block
+              size="large"
+              variant="tonal"
+              class="mb-8 mt-1"
+              :loading="submitting"
+              :disabled="submitting"
+            >
+              {{ kratosSubmitLabel(node) }}
+            </v-btn>
+            <v-text-field
+              v-else
+              :id="'kratos-login-' + idx"
+              v-model="fieldModels[idx]"
+              :name="node.attributes.name"
+              :type="effectiveInputType(node, idx)"
+              :label="node.meta?.label?.text"
+              :required="node.attributes.required"
+              :prepend-inner-icon="prependIcon(node)"
+              :append-inner-icon="appendPasswordIcon(node, idx)"
+              :disabled="submitting"
+              density="comfortable"
+              class="mb-4"
+              autocomplete="off"
+              @click:append-inner="togglePasswordVisibility(idx, node)"
+            />
+          </template>
+        </template>
+      </fieldset>
     </form>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import type { LoginFlow } from "@ory/client";
-import { isKratosInputNode } from "../registration/Registration.logic.ts";
+import type { LoginFlow, RegistrationFlow, UiNode } from "@ory/client";
+import { ref, toRef } from "vue";
+import { kratosPrependInnerIconForFieldName } from "../common/kratosVuetifyFieldIcons.ts";
+import { useKratosFieldModelsForFlowNodes } from "../common/useKratosFieldModelsForNodes.ts";
+import { useKratosFlowFocusAfterUiChange } from "../common/useKratosFlowFocusAfterUiChange.ts";
+import {
+  isKratosInputNode,
+  kratosEffectiveInputType,
+} from "../registration/Registration.logic.ts";
 
-defineProps<{
-  flow: LoginFlow | null | undefined;
+const props = defineProps<{
+  flow: LoginFlow | RegistrationFlow | null | undefined;
   submitting: boolean;
 }>();
+
+const flowRef = toRef(props, "flow");
+const formRef = ref<HTMLFormElement | null>(null);
+useKratosFlowFocusAfterUiChange(flowRef, formRef);
+
+const { fieldModels, passwordVisible } = useKratosFieldModelsForFlowNodes(flowRef);
 
 const emit = defineEmits<{
   submit: [form: HTMLFormElement];
 }>();
+
+function kratosSubmitLabel(node: UiNode) {
+  if (!isKratosInputNode(node)) return "";
+  const t = node.meta?.label?.text?.trim();
+  if (t) return t;
+  const v = (node.attributes as { value?: string }).value;
+  return v != null ? String(v) : "";
+}
+
+function prependIcon(node: UiNode): string | undefined {
+  if (!isKratosInputNode(node)) return undefined;
+  return kratosPrependInnerIconForFieldName(node.attributes.name);
+}
+
+function effectiveInputType(node: UiNode, idx: number): string {
+  if (!isKratosInputNode(node)) return "text";
+  const eff = kratosEffectiveInputType(node.attributes);
+  if (eff === "password" && passwordVisible.value[idx]) return "text";
+  return eff;
+}
+
+function appendPasswordIcon(node: UiNode, idx: number): string | undefined {
+  if (!isKratosInputNode(node)) return undefined;
+  if (kratosEffectiveInputType(node.attributes) !== "password") return undefined;
+  return passwordVisible.value[idx] ? "mdi-eye-off" : "mdi-eye";
+}
+
+function togglePasswordVisibility(idx: number, node: UiNode) {
+  if (!isKratosInputNode(node)) return;
+  if (kratosEffectiveInputType(node.attributes) !== "password") return;
+  passwordVisible.value = { ...passwordVisible.value, [idx]: !passwordVisible.value[idx] };
+}
 
 function onSubmit(ev: Event) {
   const el = ev.currentTarget;
@@ -58,18 +131,10 @@ function onSubmit(ev: Event) {
 </script>
 
 <style scoped>
-.kratos-input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.26);
-  border-radius: 4px;
-  font: inherit;
-}
-.kratos-input--submit {
-  cursor: pointer;
-  background: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
+.kratos-flow-form__fieldset {
   border: none;
-  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
 }
 </style>

@@ -1,9 +1,10 @@
 <template>
-  <div class="d-flex flex-column flex-sm-row ga-3 flex-wrap">
-    <v-btn color="primary" :href="verificationHref" tag="a">
-      {{ t(strings.cta_verify) }}
+  <div class="d-flex flex-column flex-sm-row justify-center ga-3 flex-wrap">
+    <v-btn color="primary" size="large" variant="tonal" tag="a" :href="continueHref">
+      {{ t(strings.cta_continue) }}
     </v-btn>
     <v-btn
+      size="large"
       variant="text"
       :loading="pending"
       :aria-label="t(strings.logout_aria)"
@@ -20,7 +21,7 @@ import { useKratosBrowserLogout } from "../registration/useKratosBrowserLogout.t
 import { verify_wall_actions as strings } from "./VerifyWallActions.strings.ts";
 
 defineProps<{
-  verificationHref: string;
+  continueHref: string;
 }>();
 
 const { t } = useReverseT();

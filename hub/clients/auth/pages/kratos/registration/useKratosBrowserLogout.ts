@@ -1,28 +1,32 @@
-import { computed, ref } from "vue";
+import { ref, toValue, type MaybeRefOrGetter } from "vue";
 import { useRoute } from "vue-router";
 import { fetchBrowserLogoutFlow } from "@sderickson/recipes-sdk";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
+import { useAuthLoggedOutRootFallbackHref } from "../../../authFallbackInject.ts";
 
-/**
- * Starts Kratos browser logout and navigates to `logout_url` (full browser navigation).
- * Uses `?redirect=` when present (same as registration / legacy auth) for Kratos `return_to`.
- */
-export function useKratosBrowserLogout() {
+export function useKratosBrowserLogout(options?: {
+  /**
+   * Kratos `return_to` after logout. When omitted, uses `?redirect=` from the current route if set,
+   * otherwise the injected hub root home (logged-out landing).
+   */
+  afterLogoutReturnTo?: MaybeRefOrGetter<string>;
+}) {
   const route = useRoute();
+  const rootHomeFallbackHref = useAuthLoggedOutRootFallbackHref();
   const pending = ref(false);
 
-  const logoutReturnTo = computed(() => {
+  function resolveReturnTo(): string {
+    if (options?.afterLogoutReturnTo !== undefined) {
+      return toValue(options.afterLogoutReturnTo);
+    }
     const q = route.query.redirect;
-    return typeof q === "string" && q.trim() ? q.trim() : undefined;
-  });
+    return typeof q === "string" && q.trim() ? q.trim() : rootHomeFallbackHref.value;
+  }
 
   async function startBrowserLogout() {
     if (pending.value) return;
     pending.value = true;
     try {
-      const returnTo = logoutReturnTo.value ?? linkToHrefWithHost(authLinks.home);
-      const { logout_url } = await fetchBrowserLogoutFlow(returnTo);
+      const { logout_url } = await fetchBrowserLogoutFlow(resolveReturnTo());
       window.location.assign(logout_url);
     } finally {
       pending.value = false;

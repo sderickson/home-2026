@@ -1,5 +1,4 @@
-import { kratosFakeHandlers } from "./requests/kratos/kratos.fake.ts";
-import { resetKratosFlowMocks } from "./requests/kratos/kratos-mocks.ts";
+import { kratosFakeHandlers, resetKratosFlowMocks } from "@saflib/ory-kratos-sdk/fakes";
 
 // BEGIN SORTED WORKFLOW AREA fake-group-imports FOR sdk/add-query sdk/add-mutation
 import { collectionsFakeHandlers } from "./requests/collections/index.fakes.ts";
@@ -36,18 +35,16 @@ export const recipesServiceFakeHandlers = [
 ];
 
 export {
+  getMockRegistrationPostResult,
   kratosFakeHandlers,
   kratosSessionLoggedInHandler,
-} from "./requests/kratos/kratos.fake.ts";
-export {
-  getMockRegistrationPostResult,
   mockLoginFlow,
   mockRecoveryFlow,
   mockSettingsFlow,
   mockVerificationFlow,
   resetKratosFlowMocks,
   setMockRegistrationPostResult,
-} from "./requests/kratos/kratos-mocks.ts";
+} from "@saflib/ory-kratos-sdk/fakes";
 
 export const resetMocks = () => {
   resetKratosFlowMocks();

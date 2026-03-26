@@ -2,7 +2,7 @@
  * Pure helpers for Kratos login (browser flow + form submit).
  */
 
-/** Where to send the browser after a successful login: Kratos `return_to` or the recipes app home. */
+/** Where to send the browser after a successful login: Kratos `return_to` or the injected hub app fallback URL. */
 export function destinationAfterLogin(
   flowReturnTo: string | null | undefined,
   fallbackRecipesHomeHref: string,
@@ -11,7 +11,7 @@ export function destinationAfterLogin(
   return u || fallbackRecipesHomeHref;
 }
 
-/** Resolves Kratos `return_to` for `createBrowserLoginFlow`: `?redirect=` or default recipes home URL. */
+/** Resolves Kratos `return_to` for `createBrowserLoginFlow`: `?redirect=` or default post-auth fallback URL. */
 export function resolveLoginBrowserReturnTo(
   redirectQueryParam: unknown,
   fallbackRecipesHomeHref: string,
