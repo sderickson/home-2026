@@ -40,6 +40,12 @@ const flow = ref<RegistrationFlow | null>(null);
 
 switch (true) {
   case registrationResult.value instanceof RegistrationFlowCreated:
+    // update the url with the flow id
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?flow=${registrationResult.value.flow.id}`,
+    );
     flow.value = registrationResult.value.flow;
     break;
   case registrationResult.value instanceof RegistrationFlowFetched:
