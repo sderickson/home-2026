@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosRecoveryUi from "./KratosRecoveryUi.vue";
 import { useRecoveryFlow } from "./useRecoveryFlow.ts";
 
@@ -33,8 +32,6 @@ const props = defineProps<{
   /** Optional token from `?token=` when the recovery email includes it. */
   recoveryToken?: string;
 }>();
-
-const { t } = useReverseT();
 
 const { flow, submitting, submitError, clearSubmitError, submitRecoveryForm } =
   useRecoveryFlow(
