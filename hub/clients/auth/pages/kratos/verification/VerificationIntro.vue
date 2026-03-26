@@ -23,13 +23,9 @@ const active = computed(() =>
   props.variant === "request"
     ? {
         title: strings.request_title,
-        subtitle: strings.request_subtitle,
-        description: strings.request_description,
       }
     : {
         title: strings.title,
-        subtitle: strings.subtitle,
-        description: strings.description,
       },
 );
 </script>
