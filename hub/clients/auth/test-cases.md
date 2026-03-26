@@ -38,65 +38,80 @@ Use this doc for manual QA, Playwright scenarios, and aligning behavior when som
 
 ---
 
-## Email verification
+## Email verification (`/verification`)
 
-7. **As a user completing verification in the browser** (code flow), after success I land on `return_to` from the flow or the fallback when absent.
+Behavior is owned by `Verification.vue`, `useVerificationRouteSync.ts`, `useVerificationNewBrowserFlow.ts`, and `useVerificationFlow.ts` (redirect only when the flow reaches `passed_challenge`).
 
-8. **As a user who opens a verification link from email** (`?flow=` from courier), the flow loads and completion redirects consistently with the browser flow.
+7. **As a logged-out user on `/verification` without `?flow=`**, I am redirected to login, with a return path that brings me back to verification when appropriate.
+
+8. **As a logged-out user who opens a verification link from email** (`?flow=` / optional `?token=` from courier), I can complete the code flow without signing in first; the flow loads by id and behaves like the logged-in path for code entry and “send a new code” (new browser flow + URL updated).
+
+9. **As a signed-in user whose email is already verified**, I see a confirmation state (“you are verified”) and a **Continue** action to `?redirect=` or the configured post-auth fallback—not the code form.
+
+10. **As a signed-in user who still needs verification and has no `?flow=` yet**, I see an explanation and a **Send a code** action that creates a browser verification flow and updates the URL with `?flow=` so refresh keeps the same flow.
+
+11. **As a signed-in user on `/verification` with `?flow=`** (after send-a-code or from a link), I enter the code from email; I can **Send a new code**, which starts a **new** browser flow and replaces `?flow=` in the URL. Submitting the code only navigates away after Kratos reports the flow as completed (`passed_challenge`); intermediate steps (e.g. email-only) do not send me to the app early.
+
+12. **As a user who completes verification successfully** (code accepted), I land on `return_to` from the flow or the fallback when absent—same destination rules as before.
 
 ---
 
-## Verify wall (signed in, email not verified)
+## Verify wall (`/verify-wall`)
 
-9. **As a signed-in user with unverified email**, I see the verify wall and paths to finish verification; **`redirect`** is preserved for when I am allowed into the product.
+Behavior is owned by `VerifyWall.vue` and `useVerifyWallPage.ts` (no automatic full-page redirect when verified).
 
-10. **As a user who becomes verified** (e.g. after submitting the code), I am sent to `redirect` when present, or the fallback when not.
+13. **As a logged-out user who hits `/verify-wall`**, I am redirected to login, with **`redirect`** preserved on the login return URL when it was present.
+
+14. **As a signed-in user with unverified email**, I see messaging to check my email; I can **Continue to app** (same `redirect` / fallback as elsewhere—the copy warns that access may be limited until verified) or **Sign out**. There is **no** primary CTA deep-linking into the verification flow from this page (verification is handled on `/verification`).
+
+15. **As a signed-in user who is already verified**, I see a confirmation state and a **Continue** control to `?redirect=` or the fallback—I am **not** auto-redirected by a `window.location` side effect; I choose when to leave.
 
 ---
 
 ## Recovery (password reset)
 
-11. **As a user using recovery from email or the browser**, I can complete the flow and end up at `redirect` / `return_to` or the fallback.
+16. **As a user using recovery from email or the browser**, I can complete the flow and end up at `redirect` / `return_to` or the fallback.
 
 ---
 
 ## Settings (authenticated)
 
-12. **As a signed-in user on settings**, I can manage profile/password per Kratos configuration; session loss redirects me to login with a way to return to settings (`useSettingsRouteSync` / related).
+17. **As a signed-in user on settings**, I can manage profile/password per Kratos configuration; session loss redirects me to login with a way to return to settings (`useSettingsRouteSync` / related).
 
 ---
 
 ## Logout
 
-13. **As a signed-in user who hits the auth logout route**, I am sent through Kratos logout and then land on the URL in `?redirect=` when provided.
+18. **As a signed-in user who hits the auth logout route**, I am sent through Kratos logout and then land on the URL in `?redirect=` when provided.
 
-14. **As a user who logs out without a `redirect`**, I land on the **logged-out root** default (auth SPA uses hub home as `return_to` when `redirect` is missing — see `LogoutAsync.vue`).
+19. **As a user who logs out without a `redirect`**, I land on the **logged-out root** default (auth SPA uses hub home as `return_to` when `redirect` is missing — see `LogoutAsync.vue`).
 
 ---
 
 ## Deep links & resilience
 
-15. **As a user or email client that drops query params**, if `redirect` is lost mid-flow, the completed flow should still send me somewhere safe (intended: **hub**); treat mismatches here as bugs to fix.
+20. **As a user or email client that drops query params**, if `redirect` is lost mid-flow, the completed flow should still send me somewhere safe (intended: **hub**); treat mismatches here as bugs to fix.
 
-16. **As a user hitting unknown paths on the auth app**, I see the global not-found page (`/:pathMatch(.*)*`).
+21. **As a user hitting unknown paths on the auth app**, I see the global not-found page (`/:pathMatch(.*)*`).
 
 ---
 
 ## UI & accessibility
 
-17. **As a user stepping through a multi-step Kratos flow** (e.g. registration: email then password), when the flow UI updates after a successful step, **keyboard focus moves to the first newly shown field** so focus is not left on a stale control.
+22. **As a user stepping through a multi-step Kratos flow** (e.g. registration: email then password), when the flow UI updates after a successful step, **keyboard focus moves to the first newly shown field** so focus is not left on a stale control.
 
-18. **As a user entering a password**, the field is **masked** (treated as `type="password"`) even when Kratos returns `type="text"` for a field named `password` (or `traits.password`).
+23. **As a user entering a password**, the field is **masked** (treated as `type="password"`) even when Kratos returns `type="text"` for a field named `password` (or `traits.password`).
 
-19. **As a user submitting a flow update**, the form is **non-interactive while the request runs**: controls are disabled, the primary action shows a **loading state** (spinner on the submit control), and the form is marked **busy** for assistive tech.
+24. **As a user submitting a flow update**, the form is **non-interactive while the request runs**: controls are disabled, the primary action shows a **loading state** (spinner on the submit control), and the form is marked **busy** for assistive tech.
 
-20. **As a user choosing how to sign in**, **Login**, **Registration**, and **Recovery** pages expose **cross-links** to each other (with the same `?redirect=` preserved when present): register ↔ login, and login → recovery.
+25. **As a user choosing how to sign in**, **Login**, **Registration**, and **Recovery** pages expose **cross-links** to each other (with the same `?redirect=` preserved when present): register ↔ login, and login → recovery.
 
 ---
 
 ## Notes for automation
 
 - Prefer asserting **final `window.location` or navigation** for flows that assign location after Kratos success.
+- For **email verification**, only expect a full navigation to the app after the flow state is **completed** (`passed_challenge`), not after intermediate updates (e.g. resend / email step).
 - Matrix worth covering later: **hub vs recipes vs notebook** entry points × **login | register | verify | recovery | logout** × **with vs without `redirect`**.
 
 When you add or change a story, link to the route (`authLinks.*`) and any composable or loader that owns the behavior so fixes stay localized.
