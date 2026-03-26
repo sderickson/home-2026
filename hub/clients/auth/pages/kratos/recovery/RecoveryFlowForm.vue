@@ -1,7 +1,5 @@
 <template>
   <div>
-    <p class="text-body-1 mb-4">{{ t(strings.instructions) }}</p>
-
     <v-alert
       v-if="submitError"
       type="error"
@@ -26,7 +24,6 @@
 import { toRef } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosRecoveryUi from "./KratosRecoveryUi.vue";
-import { kratos_recovery_flow as strings } from "./RecoveryFlowForm.strings.ts";
 import { useRecoveryFlow } from "./useRecoveryFlow.ts";
 
 const props = defineProps<{
@@ -39,15 +36,10 @@ const props = defineProps<{
 
 const { t } = useReverseT();
 
-const {
-  flow,
-  submitting,
-  submitError,
-  clearSubmitError,
-  submitRecoveryForm,
-} = useRecoveryFlow(
-  toRef(props, "flowId"),
-  toRef(props, "browserReturnTo"),
-  toRef(props, "recoveryToken"),
-);
+const { flow, submitting, submitError, clearSubmitError, submitRecoveryForm } =
+  useRecoveryFlow(
+    toRef(props, "flowId"),
+    toRef(props, "browserReturnTo"),
+    toRef(props, "recoveryToken"),
+  );
 </script>
