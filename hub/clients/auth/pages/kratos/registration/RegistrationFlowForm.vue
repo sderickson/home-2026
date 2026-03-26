@@ -22,14 +22,10 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosLoginUi from "../login/KratosLoginUi.vue";
-import { kratos_registration_flow as strings } from "./RegistrationFlowForm.strings.ts";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
 
 const props = defineProps<{ flowId: string }>();
-
-const { t } = useReverseT();
 
 const {
   flow,

@@ -1,1 +1,3 @@
-export const kratos_login_flow = {};
+export const kratos_login_flow = {
+  login_failed: "Sign-in failed.",
+};

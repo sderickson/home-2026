@@ -5,6 +5,6 @@ export const verification_intro = {
 };
 
 export const verification_verified = {
-  title: "You are verified",
+  title: "You are already verified",
   cta_continue: "Continue",
 };
