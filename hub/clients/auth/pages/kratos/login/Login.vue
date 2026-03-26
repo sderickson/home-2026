@@ -55,15 +55,16 @@ const identityEmail = computed(() => {
   return s ? sessionDisplayEmail(s) : "";
 });
 
+/** Continue target when a session already exists: verified users skip the verify wall and use `?redirect=` / fallback only. */
 const continueHref = computed(() => {
   const s = session.value;
   if (!s) return "";
-  if (identityNeedsEmailVerification(s.identity)) {
-    return linkToHrefWithHost(authLinks.kratosVerifyWall, {
-      params: { redirect: browserReturnTo.value },
-    });
+  if (!identityNeedsEmailVerification(s.identity)) {
+    return browserReturnTo.value;
   }
-  return browserReturnTo.value;
+  return linkToHrefWithHost(authLinks.kratosVerifyWall, {
+    params: { redirect: browserReturnTo.value },
+  });
 });
 
 watch(

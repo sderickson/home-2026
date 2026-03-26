@@ -47,7 +47,7 @@ import { useKratosBrowserLogout } from "../registration/useKratosBrowserLogout.t
 
 const props = defineProps<{
   identityEmail: string;
-  /** Full URL — app home or verify wall with `redirect` when email is not verified. */
+  /** Full URL — `?redirect=` / fallback when verified; verify wall URL with `redirect` when email still needs verification. */
   continueHref: string;
   variant: "login" | "registration";
 }>();
