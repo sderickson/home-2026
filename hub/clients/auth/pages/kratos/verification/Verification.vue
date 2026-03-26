@@ -5,7 +5,11 @@
     </template>
     <template v-else-if="session && needsEmailVerification && !flowIdForForm">
       <VerificationIntro variant="request" />
-      <v-btn color="primary" :loading="sendCodePending" @click="startNewBrowserFlow">
+      <v-btn
+        color="primary"
+        :loading="sendCodePending"
+        @click="startNewBrowserFlow"
+      >
         {{ t(introStrings.cta_send_code) }}
       </v-btn>
     </template>
@@ -39,19 +43,27 @@ const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 const { browserReturnTo, flowIdForForm, verificationToken, sessionQuery } =
   useVerificationRouteSync();
 
-const { startNewBrowserFlow, pending: sendCodePending } = useVerificationNewBrowserFlow();
+const { startNewBrowserFlow, pending: sendCodePending } =
+  useVerificationNewBrowserFlow();
 
 const session = computed(() => sessionQuery.data.value);
 
 const isVerified = computed(
-  () => session.value != null && !identityNeedsEmailVerification(session.value.identity),
+  () =>
+    session.value != null &&
+    !identityNeedsEmailVerification(session.value.identity),
 );
 
 const needsEmailVerification = computed(
-  () => session.value != null && identityNeedsEmailVerification(session.value.identity),
+  () =>
+    session.value != null &&
+    identityNeedsEmailVerification(session.value.identity),
 );
 
 const continueAfterHref = computed(() =>
-  destinationAfterVerification(browserReturnTo.value, postAuthFallbackHref.value),
+  destinationAfterVerification(
+    browserReturnTo.value,
+    postAuthFallbackHref.value,
+  ),
 );
 </script>

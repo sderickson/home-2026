@@ -3,9 +3,12 @@
     <div class="text-center mb-6">
       <v-icon size="64" color="primary" class="mb-4">mdi-check-decagram</v-icon>
     </div>
-    <h1 class="text-h4 text-center font-weight-bold mb-2">{{ t(strings.title) }}</h1>
-    <p class="text-h6 text-medium-emphasis text-center mb-2">{{ t(strings.subtitle) }}</p>
-    <p class="text-body-1 text-medium-emphasis text-center mb-6">{{ t(strings.description) }}</p>
+    <h1 class="text-h4 text-center font-weight-bold mb-2">
+      {{ t(strings.title) }}
+    </h1>
+    <p class="text-body-1 text-medium-emphasis text-center mb-6">
+      {{ t(strings.description) }}
+    </p>
   </div>
 </template>
 

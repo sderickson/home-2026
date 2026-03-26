@@ -1,7 +1,5 @@
 <template>
   <div>
-    <p class="text-body-1 mb-4">{{ t(strings.not_logged_in) }}</p>
-
     <v-alert
       v-if="submitError"
       type="error"

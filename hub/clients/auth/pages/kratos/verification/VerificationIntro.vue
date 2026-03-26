@@ -1,8 +1,6 @@
 <template>
   <div>
     <h1 class="text-h4 mb-2">{{ t(active.title) }}</h1>
-    <p class="text-h6 text-medium-emphasis mb-2">{{ t(active.subtitle) }}</p>
-    <p class="text-body-1 text-medium-emphasis mb-6">{{ t(active.description) }}</p>
   </div>
 </template>
 

@@ -1,7 +1,5 @@
 export const verification_intro = {
   title: "Verify your email",
-  subtitle: "Almost there",
-  description: "Enter the code we sent you to confirm your email address before continuing.",
   request_title: "Verify your email",
   request_subtitle: "Send a code",
   request_description:
@@ -12,6 +10,7 @@ export const verification_intro = {
 export const verification_verified = {
   title: "You are verified",
   subtitle: "Your email is confirmed",
-  description: "You can continue to the app or go back to where you were headed.",
+  description:
+    "You can continue to the app or go back to where you were headed.",
   cta_continue: "Continue",
 };

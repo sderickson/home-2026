@@ -4,7 +4,6 @@
       <v-icon size="64" color="primary" class="mb-4">mdi-email-check</v-icon>
     </div>
     <h1 class="text-h4 text-center mb-2">{{ t(strings.title) }}</h1>
-    <p class="text-h6 text-medium-emphasis text-center mb-2">{{ t(strings.subtitle) }}</p>
     <i18n-t
       v-if="identityEmail"
       scope="global"
