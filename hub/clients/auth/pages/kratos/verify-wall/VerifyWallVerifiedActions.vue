@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex flex-column flex-sm-row ga-3 flex-wrap">
-    <v-btn color="primary" tag="a" :href="continueHref">
+  <div class="d-flex flex-column flex-sm-row justify-center ga-3 flex-wrap">
+    <v-btn color="primary" size="large" variant="tonal" tag="a" :href="continueHref">
       {{ t(strings.cta_continue) }}
     </v-btn>
   </div>

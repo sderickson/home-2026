@@ -1,4 +1,6 @@
+import type { VerificationFlow } from "@ory/client";
 import { useQuery } from "@tanstack/vue-query";
+import { TanstackError } from "@saflib/sdk";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import {
@@ -38,7 +40,7 @@ export function useVerificationLoader() {
     ),
   );
 
-  const verificationFlowQuery = useQuery(
+  const verificationFlowQuery = useQuery<VerificationFlow, TanstackError>(
     computed(() => ({
       queryKey: verificationFlowQueryKey(flowId.value, browserReturnTo.value) as readonly [
         "kratos",

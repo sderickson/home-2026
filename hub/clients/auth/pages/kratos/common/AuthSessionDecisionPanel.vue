@@ -9,10 +9,18 @@
       <template #email>{{ identityEmail }}</template>
     </i18n-t>
     <div class="d-flex flex-wrap ga-3">
-      <v-btn color="primary" tag="a" :href="continueHref" :aria-label="t(strings.continue_aria)">
+      <v-btn
+        color="primary"
+        size="large"
+        variant="tonal"
+        tag="a"
+        :href="continueHref"
+        :aria-label="t(strings.continue_aria)"
+      >
         {{ t(strings.continue) }}
       </v-btn>
       <v-btn
+        size="large"
         variant="outlined"
         :loading="pending"
         :aria-label="

@@ -1,12 +1,25 @@
 <template>
-  <v-container v-if="showVerifiedWall" class="py-8" max-width="720">
-    <VerifyWallVerifiedIntro />
-    <VerifyWallVerifiedActions :continue-href="redirectAfter" />
+  <v-container
+    v-if="showVerifiedWall"
+    class="d-flex flex-column align-center justify-center py-8"
+    style="min-height: 48vh"
+  >
+    <v-card class="pa-8" max-width="500" width="100%">
+      <VerifyWallVerifiedIntro />
+      <VerifyWallVerifiedActions :continue-href="redirectAfter" />
+    </v-card>
   </v-container>
-  <v-container v-else-if="showUnverifiedWall" class="py-8" max-width="720">
-    <VerifyWallIntro :identity-email="identityEmail" />
-    <VerifyWallBlockedBody />
-    <VerifyWallActions :continue-href="redirectAfter" />
+  <v-container
+    v-else-if="showUnverifiedWall"
+    class="d-flex flex-column align-center justify-center py-8"
+    style="min-height: 48vh"
+  >
+    <v-card class="pa-8" max-width="500" width="100%">
+      <VerifyWallIntro :identity-email="identityEmail" />
+      <VerifyWallBlockedBody />
+      <v-divider class="my-6" />
+      <VerifyWallActions :continue-href="redirectAfter" />
+    </v-card>
   </v-container>
 </template>
 

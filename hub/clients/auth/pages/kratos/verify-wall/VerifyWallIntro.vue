@@ -1,13 +1,16 @@
 <template>
   <div>
-    <h1 class="text-h4 mb-2">{{ t(strings.title) }}</h1>
-    <p class="text-h6 text-medium-emphasis mb-2">{{ t(strings.subtitle) }}</p>
+    <div class="text-center mb-6">
+      <v-icon size="64" color="primary" class="mb-4">mdi-email-check</v-icon>
+    </div>
+    <h1 class="text-h4 text-center mb-2">{{ t(strings.title) }}</h1>
+    <p class="text-h6 text-medium-emphasis text-center mb-2">{{ t(strings.subtitle) }}</p>
     <i18n-t
       v-if="identityEmail"
       scope="global"
       :keypath="lookupTKey(strings.email_line)"
       tag="p"
-      class="text-body-1 mb-4"
+      class="text-body-1 text-center mb-4"
     >
       <template #email>{{ identityEmail }}</template>
     </i18n-t>
