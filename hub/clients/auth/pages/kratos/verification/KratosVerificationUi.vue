@@ -1,12 +1,18 @@
 <template>
-  <v-card v-if="flow" variant="outlined" class="pa-4" :class="{ 'opacity-60': submitting }">
+  <v-card
+    v-if="flow"
+    variant="outlined"
+    class="pa-4"
+    :class="{ 'opacity-60': submitting }"
+  >
     <form
       ref="formRef"
       class="kratos-flow-form"
       :aria-busy="submitting ? 'true' : undefined"
       @submit.prevent="onSubmit"
     >
-      <v-alert
+      <!-- Disabled becaues the message is confusing... -->
+      <!-- <v-alert
         v-for="(m, i) in flow.ui.messages ?? []"
         :key="'vm-' + i"
         :type="m.type === 'error' ? 'error' : 'info'"
@@ -15,7 +21,7 @@
         density="comfortable"
       >
         {{ m.text }}
-      </v-alert>
+      </v-alert> -->
 
       <fieldset class="kratos-flow-form__fieldset">
         <template v-for="(node, idx) in flow.ui.nodes" :key="'vn-' + idx">
@@ -23,7 +29,10 @@
             {{ (node.attributes as { text?: { text: string } }).text?.text }}
           </p>
           <template
-            v-else-if="isKratosInputNode(node) && !isKratosVerificationResendSubmitNode(node)"
+            v-else-if="
+              isKratosInputNode(node) &&
+              !isKratosVerificationResendSubmitNode(node)
+            "
           >
             <input
               v-if="node.attributes.type === 'hidden'"
@@ -41,7 +50,9 @@
               variant="tonal"
               class="mb-8 mt-1"
               :name="node.attributes.name"
-              :value="(node.attributes as { value?: string }).value ?? undefined"
+              :value="
+                (node.attributes as { value?: string }).value ?? undefined
+              "
               :loading="submitting"
               :disabled="submitting"
             >
@@ -76,7 +87,10 @@ import { computed, ref, toRef } from "vue";
 import { kratosPrependInnerIconForFieldName } from "../common/kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForFlowNodes } from "../common/useKratosFieldModelsForNodes.ts";
 import { useKratosFlowFocusAfterUiChange } from "../common/useKratosFlowFocusAfterUiChange.ts";
-import { isKratosInputNode, kratosEffectiveInputType } from "../registration/Registration.logic.ts";
+import {
+  isKratosInputNode,
+  kratosEffectiveInputType,
+} from "../registration/Registration.logic.ts";
 
 /** In-form resend (`name=email` submit); we resend outside this card (VerificationFlowForm). */
 function isKratosVerificationResendSubmitNode(node: UiNode): boolean {
@@ -107,7 +121,8 @@ const flowRef = toRef(props, "flow");
 const formRef = ref<HTMLFormElement | null>(null);
 useKratosFlowFocusAfterUiChange(flowRef, formRef);
 
-const { fieldModels, passwordVisible } = useKratosFieldModelsForFlowNodes(flowRef);
+const { fieldModels, passwordVisible } =
+  useKratosFieldModelsForFlowNodes(flowRef);
 
 const emit = defineEmits<{
   submit: [form: HTMLFormElement];
@@ -127,14 +142,18 @@ function effectiveInputType(node: UiNode, idx: number): string {
 
 function appendPasswordIcon(node: UiNode, idx: number): string | undefined {
   if (!isKratosInputNode(node)) return undefined;
-  if (kratosEffectiveInputType(node.attributes) !== "password") return undefined;
+  if (kratosEffectiveInputType(node.attributes) !== "password")
+    return undefined;
   return passwordVisible.value[idx] ? "mdi-eye-off" : "mdi-eye";
 }
 
 function togglePasswordVisibility(idx: number, node: UiNode) {
   if (!isKratosInputNode(node)) return;
   if (kratosEffectiveInputType(node.attributes) !== "password") return;
-  passwordVisible.value = { ...passwordVisible.value, [idx]: !passwordVisible.value[idx] };
+  passwordVisible.value = {
+    ...passwordVisible.value,
+    [idx]: !passwordVisible.value[idx],
+  };
 }
 
 function onSubmit(ev: Event) {
