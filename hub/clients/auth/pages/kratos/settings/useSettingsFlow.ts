@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import { linkToHrefWithHost } from "@saflib/links";
+import { authLinks } from "@sderickson/hub-links";
 import {
   settingsFlowQueryKey,
   settingsFlowQueryOptions,
@@ -50,6 +52,26 @@ export function useSettingsFlow(
         });
       } catch (e) {
         submitError.value = registrationSubmitErrorMessage(e, pageStrings.settings_failed);
+        return;
+      }
+      if ("redirect_browser_to" in updated) {
+        const loginUrl = new URL(linkToHrefWithHost(authLinks.kratosLogin), window.location.origin);
+        if (updated.redirect_browser_to) {
+          try {
+            const kratosRedirect = new URL(updated.redirect_browser_to);
+            const refresh = kratosRedirect.searchParams.get("refresh");
+            const returnTo = kratosRedirect.searchParams.get("return_to");
+            if (refresh) {
+              loginUrl.searchParams.set("refresh", refresh);
+            }
+            if (returnTo) {
+              loginUrl.searchParams.set("return_to", returnTo);
+            }
+          } catch {
+            // Fallback: send user to login even if provider URL is malformed.
+          }
+        }
+        window.location.assign(loginUrl.toString());
         return;
       }
       queryClient.setQueryData(

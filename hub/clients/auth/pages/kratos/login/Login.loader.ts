@@ -13,9 +13,12 @@ import { resolveLoginBrowserReturnTo } from "./Login.logic.ts";
 export function useLoginBrowserReturnTo() {
   const route = useRoute();
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  return computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
-  );
+  return computed(() => {
+    if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
+      return route.query.return_to;
+    }
+    return resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value);
+  });
 }
 
 /** Used by `enabled` on the login flow query and by `Login.vue` guards (AsyncPage only accepts queries in the loader return object). */
@@ -33,9 +36,14 @@ export function useLoginLoader() {
     typeof route.query.flow === "string" ? route.query.flow : undefined,
   );
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
+  const loginRefresh = computed(
+    () => route.query.refresh === "true" || route.query.refresh === "1",
+  );
   /** Same resolution as {@link useLoginBrowserReturnTo} — duplicated here so `AsyncPage` loaders only return queries. */
   const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+    typeof route.query.return_to === "string" && route.query.return_to.trim()
+      ? route.query.return_to
+      : resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
   );
 
   const sessionQuery = useKratosSession();
@@ -49,6 +57,7 @@ export function useLoginLoader() {
     loginFlowQuery: useLoginFlowQuery({
       flowId: flowId.value,
       returnTo: browserReturnTo.value,
+      refresh: loginRefresh.value,
       enabled: loginFlowEnabled,
     }),
   };

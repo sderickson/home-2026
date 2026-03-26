@@ -79,7 +79,7 @@ watch(
     queryClient.setQueryData(loginFlowQueryKey(data.id), data);
     router.replace({
       path: route.path,
-      query: { flow: data.id },
+      query: { ...route.query, flow: data.id },
     });
   },
   { immediate: true },
