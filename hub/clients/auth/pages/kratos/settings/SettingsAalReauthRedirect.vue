@@ -1,11 +1,9 @@
 <template>
-  <v-container class="py-8" max-width="720">
-    <v-alert type="info" variant="tonal">
-      Re-authentication required. Redirecting to sign in...
+  <v-alert type="info" variant="tonal" class="mb-4">
+    Re-authentication required. Redirecting to sign in...
+  </v-alert>
 
-      <v-btn :href="redirectBrowserTo">Go now</v-btn>
-    </v-alert>
-  </v-container>
+  <v-btn :href="redirectBrowserTo">Go now</v-btn>
 </template>
 
 <script setup lang="ts">

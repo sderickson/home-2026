@@ -96,16 +96,16 @@ const settingsResult = computed(
 const flow = ref<SettingsFlow | null>(null);
 
 switch (true) {
-  case settingsResult instanceof SettingsFlowCreated:
-    flow.value = settingsResult.flow;
+  case settingsResult.value instanceof SettingsFlowCreated:
+    flow.value = settingsResult.value.flow;
     window.history.replaceState(
       {},
       "",
       `${window.location.pathname}?flow=${flow.value?.id}`,
     );
     break;
-  case settingsResult instanceof SettingsFlowFetched:
-    flow.value = settingsResult.flow;
+  case settingsResult.value instanceof SettingsFlowFetched:
+    flow.value = settingsResult.value.flow;
     break;
 }
 const flowId = computed(() => flow.value?.id ?? "");
@@ -113,8 +113,6 @@ const flowId = computed(() => flow.value?.id ?? "");
 const { t } = useReverseT();
 
 const tab = ref<"email" | "password" | "totp">("email");
-
-// const { browserReturnTo, flowIdForForm } = useSettingsRouteSync();
 
 const { submitting, submitError, clearSubmitError, submitSettingsForm } =
   useSettingsFlow(flowId);

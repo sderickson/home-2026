@@ -1,14 +1,13 @@
 <template>
   <v-container class="py-8" max-width="720">
     <LoginIntro v-if="!effectiveSession" />
-    <AuthSessionDecisionPanel
+    <!-- <AuthSessionDecisionPanel
       v-if="effectiveSession"
       :identity-email="identityEmail"
       :continue-href="continueHref"
       variant="login"
-    />
+    /> -->
     <LoginFlowForm
-      v-else-if="flowIdForForm"
       :flow-id="flowIdForForm"
       :browser-return-to="browserReturnTo"
     />
@@ -52,7 +51,9 @@ if (sessionQuery.status.value !== "success") {
 }
 
 const session = computed(() => sessionQuery.data.value);
-const effectiveSession = computed(() => (loginRefresh.value ? null : session.value));
+const effectiveSession = computed(() =>
+  loginRefresh.value ? null : session.value,
+);
 
 const identityEmail = computed(() => {
   const s = effectiveSession.value;
