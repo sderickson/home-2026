@@ -5,7 +5,7 @@ import { useRoute } from "vue-router";
 import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
-import { identityNeedsEmailVerification } from "@sderickson/recipes-sdk";
+import { identityNeedsEmailVerification } from "@saflib/ory-kratos-sdk";
 import {
   resolveVerifyWallRedirectDestination,
   sessionDisplayEmail,
@@ -22,13 +22,18 @@ export function useVerifyWallPage(
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
   const redirectAfter = computed(() =>
-    resolveVerifyWallRedirectDestination(route.query.redirect, postAuthFallbackHref.value),
+    resolveVerifyWallRedirectDestination(
+      route.query.redirect,
+      postAuthFallbackHref.value,
+    ),
   );
 
   const verifyWallReturnHref = computed(() => {
     const r = route.query.redirect;
     if (typeof r === "string" && r.trim()) {
-      return linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: r.trim() } });
+      return linkToHrefWithHost(authLinks.kratosVerifyWall, {
+        params: { redirect: r.trim() },
+      });
     }
     return linkToHrefWithHost(authLinks.kratosVerifyWall);
   });

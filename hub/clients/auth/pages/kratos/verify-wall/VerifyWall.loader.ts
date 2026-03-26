@@ -1,4 +1,4 @@
-import { useKratosSession } from "@sderickson/recipes-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 
 export function useVerifyWallLoader() {
   return {

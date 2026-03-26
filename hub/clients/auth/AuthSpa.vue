@@ -3,7 +3,7 @@ import { computed, provide } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { appLinks, rootLinks } from "@sderickson/hub-links";
 import { HubLayout } from "@sderickson/hub-clients-common";
-import { useKratosSession } from "@sderickson/recipes-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import {
   AUTH_POST_AUTH_FALLBACK_HREF,
   AUTH_ROOT_HOME_FALLBACK_HREF,

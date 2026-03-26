@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { HubLayout } from "@sderickson/hub-clients-common";
-import { useKratosSession } from "@sderickson/recipes-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 
 const sessionQuery = useKratosSession();
 const loggedIn = computed(() => !!sessionQuery.data.value?.identity);

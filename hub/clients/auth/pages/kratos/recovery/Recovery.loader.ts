@@ -1,9 +1,6 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import {
-  useKratosSession,
-  useRecoveryFlowQuery,
-} from "@sderickson/recipes-sdk";
+import { useKratosSession, useRecoveryFlowQuery } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { recoveryFlowShouldFetch } from "./Recovery.logic.ts";
@@ -13,7 +10,10 @@ export function useRecoveryBrowserReturnTo() {
   const route = useRoute();
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   return computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+    resolveLoginBrowserReturnTo(
+      route.query.redirect,
+      postAuthFallbackHref.value,
+    ),
   );
 }
 
@@ -24,7 +24,10 @@ export function useRecoveryLoader() {
   );
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const browserReturnTo = computed(() =>
-    resolveLoginBrowserReturnTo(route.query.redirect, postAuthFallbackHref.value),
+    resolveLoginBrowserReturnTo(
+      route.query.redirect,
+      postAuthFallbackHref.value,
+    ),
   );
 
   const sessionQuery = useKratosSession();
