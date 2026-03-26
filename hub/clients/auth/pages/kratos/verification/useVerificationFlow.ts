@@ -1,16 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import { ref, type MaybeRefOrGetter, toValue } from "vue";
 import {
   useUpdateVerificationFlowMutation,
-  verificationFlowQueryKey,
-  verificationFlowQueryOptions,
-} from "@sderickson/recipes-sdk";
-import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
-import {
-  buildVerificationCodeBody,
-  destinationAfterVerification,
-  verificationFlowIsComplete,
-} from "./Verification.logic.ts";
+  VerificationFlowUpdated,
+} from "@saflib/ory-kratos-sdk";
+import { buildVerificationCodeBody } from "./Verification.logic.ts";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
 import { kratos_verification_flow as flowStrings } from "./VerificationFlowForm.strings.ts";
 import { useVerificationNewBrowserFlow } from "./useVerificationNewBrowserFlow.ts";
@@ -20,20 +13,11 @@ import { useVerificationNewBrowserFlow } from "./useVerificationNewBrowserFlow.t
  * {@link useVerificationNewBrowserFlow}.
  */
 export function useVerificationFlow(
-  flowId: MaybeRefOrGetter<string>,
-  browserReturnTo: MaybeRefOrGetter<string>,
   verificationToken: MaybeRefOrGetter<string | undefined>,
+  flowId: MaybeRefOrGetter<string>,
 ) {
-  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const queryClient = useQueryClient();
   const updateVerification = useUpdateVerificationFlowMutation();
   const { startNewBrowserFlow } = useVerificationNewBrowserFlow();
-
-  const returnTo = computed(() => toValue(browserReturnTo));
-
-  const verificationFlowQuery = useQuery(
-    computed(() => verificationFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
-  );
 
   const submitting = ref(false);
   const resending = ref(false);
@@ -62,50 +46,28 @@ export function useVerificationFlow(
   }
 
   async function submitVerificationForm(form: HTMLFormElement) {
-    const current = verificationFlowQuery.data.value;
-    if (!current || submitting.value || resending.value) return;
     const fd = new FormData(form);
     submitting.value = true;
     submitError.value = null;
     try {
-      let updated;
-      try {
-        const token = toValue(verificationToken);
-        updated = await updateVerification.mutateAsync({
-          flow: current.id,
-          updateVerificationFlowBody: buildVerificationCodeBody(fd),
-          ...(token ? { token } : {}),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
-          e,
-          flowStrings.verification_failed,
-        );
-        return;
+      const token = toValue(verificationToken);
+      const updated = await updateVerification.mutateAsync({
+        flow: toValue(flowId),
+        updateVerificationFlowBody: buildVerificationCodeBody(fd),
+        ...(token ? { token } : {}),
+      });
+
+      if (!(updated instanceof VerificationFlowUpdated)) {
+        throw new Error("Unexpected result");
       }
 
-      queryClient.setQueryData(
-        verificationFlowQueryKey(toValue(flowId), returnTo.value),
-        updated,
-      );
-
-      if (!verificationFlowIsComplete(updated)) {
-        return;
-      }
-
-      const destination = destinationAfterVerification(
-        updated.return_to ?? current.return_to,
-        postAuthFallbackHref.value,
-      );
-      window.location.assign(destination);
+      window.location.assign(updated.flow.return_to ?? "/login");
     } finally {
       submitting.value = false;
     }
   }
 
   return {
-    verificationFlowQuery,
-    flow: computed(() => verificationFlowQuery.data.value),
     submitting,
     resending,
     submitError,

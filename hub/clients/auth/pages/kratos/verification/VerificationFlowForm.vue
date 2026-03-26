@@ -36,24 +36,21 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { toRef, toValue } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosVerificationUi from "./KratosVerificationUi.vue";
 import { kratos_verification_flow as strings } from "./VerificationFlowForm.strings.ts";
 import { useVerificationFlow } from "./useVerificationFlow.ts";
+import type { VerificationFlow } from "@ory/client";
 
 const props = defineProps<{
-  flowId: string;
-  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
-  browserReturnTo: string;
-  /** Optional token from `?token=` when the verification email includes it. */
-  verificationToken?: string;
+  flow: VerificationFlow;
+  verificationToken: string;
 }>();
 
 const { t } = useReverseT();
 
 const {
-  flow,
   submitting,
   resending,
   submitError,
@@ -61,8 +58,7 @@ const {
   submitVerificationForm,
   resendVerificationCode,
 } = useVerificationFlow(
-  toRef(props, "flowId"),
-  toRef(props, "browserReturnTo"),
   toRef(props, "verificationToken"),
+  toValue(props.flow.id),
 );
 </script>
