@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import {
   kratosIdentityEmail,
   RegistrationFlowCreated,
@@ -21,14 +21,13 @@ import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
 import { useRegistrationLoader } from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
-import type { RegistrationFlow } from "@ory/client";
 
 const { sessionQuery, createRegistrationFlowQuery, getRegistrationFlowQuery } =
   useRegistrationLoader();
 const registrationResult = computed(
   () =>
-    createRegistrationFlowQuery.data.value ??
-    getRegistrationFlowQuery.data.value,
+    getRegistrationFlowQuery.data.value ??
+    createRegistrationFlowQuery.data.value,
 );
 
 const session = computed(() => sessionQuery.data.value);
@@ -36,20 +35,14 @@ const session = computed(() => sessionQuery.data.value);
 const identityEmail = computed(() => {
   return kratosIdentityEmail(session.value) || "";
 });
-const flow = ref<RegistrationFlow | null>(null);
-
-switch (true) {
-  case registrationResult.value instanceof RegistrationFlowCreated:
-    // update the url with the flow id
-    window.history.replaceState(
-      {},
-      "",
-      `${window.location.pathname}?flow=${registrationResult.value.flow.id}`,
-    );
-    flow.value = registrationResult.value.flow;
-    break;
-  case registrationResult.value instanceof RegistrationFlowFetched:
-    flow.value = registrationResult.value.flow;
-    break;
-}
+const flow = computed(() => {
+  switch (true) {
+    case registrationResult.value instanceof RegistrationFlowCreated:
+      // update the url with the flow id
+      window.document.location.href = `${window.location.pathname}?flow=${registrationResult.value.flow.id}`;
+      break;
+    case registrationResult.value instanceof RegistrationFlowFetched:
+      return registrationResult.value.flow;
+  }
+});
 </script>
