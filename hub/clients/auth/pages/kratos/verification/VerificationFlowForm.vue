@@ -1,5 +1,6 @@
 <template>
   <div>
+    <VerificationIntro :flow-return-to="flow.return_to" />
     <div class="d-flex flex-column flex-sm-row align-sm-center ga-2 mb-4">
       <span class="text-body-2 text-medium-emphasis">{{
         t(strings.resend_help)
@@ -27,19 +28,23 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosVerificationUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
-      @submit="submitVerificationForm"
+      id-prefix="kratos-verify"
+      :hide-submit-names="['email']"
+      @submit="(form) => submitVerificationForm(form)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
-import KratosVerificationUi from "./KratosVerificationUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
+import VerificationIntro from "./VerificationIntro.vue";
 import { kratos_verification_flow as strings } from "./VerificationFlowForm.strings.ts";
 import { useVerificationFlow } from "./useVerificationFlow.ts";
 import { useNewVerificationEntryHref } from "./useNewVerificationEntryHref.ts";
@@ -47,17 +52,23 @@ import type { VerificationFlow } from "@ory/client";
 
 const props = defineProps<{
   flow: VerificationFlow;
-  verificationToken: string;
 }>();
 
 const { t } = useReverseT();
+const route = useRoute();
 
-const newVerificationHref = useNewVerificationEntryHref(() => props.flow.return_to);
+const verificationToken = computed(() =>
+  typeof route.query.token === "string" ? route.query.token : undefined,
+);
+
+const newVerificationHref = useNewVerificationEntryHref(
+  () => props.flow.return_to,
+);
 
 const {
   submitting,
   submitError,
   clearSubmitError,
   submitVerificationForm,
-} = useVerificationFlow(toRef(props, "verificationToken"), () => props.flow.id);
+} = useVerificationFlow(verificationToken, () => props.flow.id);
 </script>

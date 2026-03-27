@@ -11,10 +11,12 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosRecoveryUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
+      id-prefix="kratos-recovery"
+      :hide-submit-names="['email']"
       @submit="(form, submitter) => submitRecoveryForm(form, submitter)"
     />
   </div>
@@ -22,7 +24,7 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import KratosRecoveryUi from "./KratosRecoveryUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
 import { useRecoveryFlow } from "./useRecoveryFlow.ts";
 
 const props = defineProps<{

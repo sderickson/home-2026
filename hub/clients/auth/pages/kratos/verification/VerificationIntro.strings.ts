@@ -1,7 +1,6 @@
 export const verification_intro = {
   title: "Verify your email",
-  request_title: "Verify your email",
-  cta_send_code: "Send a code",
+  link_login: "Sign in instead",
 };
 
 export const verification_verified = {

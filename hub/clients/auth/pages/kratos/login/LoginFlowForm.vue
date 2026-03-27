@@ -12,10 +12,11 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosLoginUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
+      id-prefix="kratos-login"
       @submit="submitLoginForm"
     />
   </div>
@@ -23,7 +24,7 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import KratosLoginUi from "./KratosLoginUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
 import LoginIntro from "./LoginIntro.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
 import type { LoginFlow } from "@ory/client";

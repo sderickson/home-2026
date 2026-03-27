@@ -13,15 +13,6 @@
       {{ submitError }}
     </v-alert>
 
-    <div
-      v-for="(m, i) in flow?.ui.messages ?? []"
-      :key="'gm-' + i"
-      class="text-body-2 mb-2"
-      :class="m.type === 'error' ? 'text-error' : ''"
-    >
-      {{ m.text }}
-    </div>
-
     <SettingsAalReauthRedirect
       v-if="settingsResult instanceof BrowserRedirectRequired"
       :redirect-browser-to="settingsResult.payload.redirect_browser_to"
