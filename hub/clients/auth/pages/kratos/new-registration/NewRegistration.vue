@@ -5,7 +5,6 @@
   />
   <SessionAlreadyAvailableComponent
     v-else-if="result instanceof SessionAlreadyAvailable"
-    :result="result"
   />
 </template>
 
@@ -16,7 +15,7 @@ import {
   SessionAlreadyAvailable,
 } from "@saflib/ory-kratos-sdk";
 import RegistrationFlowCreated from "./RegistrationFlowCreated.vue";
-import SessionAlreadyAvailableComponent from "./SessionAlreadyAvailable.vue";
+import SessionAlreadyAvailableComponent from "../common/SessionAlreadyAvailable.vue";
 
 const { createRegistrationFlowQuery } = useNewRegistrationLoader();
 const result = createRegistrationFlowQuery.data;
