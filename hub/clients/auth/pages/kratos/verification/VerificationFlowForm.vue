@@ -34,6 +34,7 @@
       :submitting="submitting"
       id-prefix="kratos-verify"
       :hide-submit-names="['email']"
+      :message-filter="verificationMessageFilter"
       @submit="(form) => submitVerificationForm(form)"
     />
   </div>
@@ -70,5 +71,6 @@ const {
   submitError,
   clearSubmitError,
   submitVerificationForm,
+  verificationMessageFilter,
 } = useVerificationFlow(verificationToken, () => props.flow.id);
 </script>

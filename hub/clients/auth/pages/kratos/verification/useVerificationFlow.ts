@@ -1,3 +1,4 @@
+import type { UiText } from "@ory/client";
 import { ref, type MaybeRefOrGetter, toValue } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import {
@@ -7,6 +8,7 @@ import {
   VerificationFlowUpdated,
 } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
 import {
   buildVerificationUpdateBodyFromFormData,
   destinationAfterVerification,
@@ -32,8 +34,24 @@ export function useVerificationFlow(
     submitError.value = null;
   }
 
+  /**
+   * Hides Kratos flow-level **info** copy (e.g. “a code was sent…”) until the first submit, so email-link
+   * entry isn’t buried in a long banner before the user acts.
+   */
+  const verificationSubmitCount = ref(0);
+
+  function verificationMessageFilter(
+    msg: UiText,
+    ctx: KratosFlowUiMessageFilterContext,
+  ): boolean {
+    if (verificationSubmitCount.value > 0) return true;
+    if (ctx.kind === "flow" && msg.type === "info") return false;
+    return true;
+  }
+
   async function submitVerificationForm(form: HTMLFormElement) {
     const fd = new FormData(form);
+    verificationSubmitCount.value += 1;
     submitting.value = true;
     submitError.value = null;
     try {
@@ -72,5 +90,6 @@ export function useVerificationFlow(
     submitError,
     clearSubmitError,
     submitVerificationForm,
+    verificationMessageFilter,
   };
 }
