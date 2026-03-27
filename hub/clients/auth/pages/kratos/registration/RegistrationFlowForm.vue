@@ -1,5 +1,6 @@
 <template>
   <div>
+    <RegistrationIntro />
     <v-alert
       v-if="submitError"
       type="error"
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import { toRef } from "vue";
 import KratosLoginUi from "../login/KratosLoginUi.vue";
+import RegistrationIntro from "./RegistrationIntro.vue";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
 import type { RegistrationFlow } from "@ory/client";
 

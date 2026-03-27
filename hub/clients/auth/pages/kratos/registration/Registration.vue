@@ -1,27 +1,20 @@
 <template>
-  <v-container
-    class="py-8"
-    max-width="720"
-    v-if="queryData instanceof RegistrationFlowFetched && flow"
-  >
-    <RegistrationIntro />
-    <RegistrationFlowForm :flow="flow" />
-  </v-container>
-  <v-container
-    v-else-if="queryData instanceof FlowGone"
-    class="py-8"
-    max-width="720"
-  >
-    <FlowGonePanel restart-path="/new-registration" :result="queryData" />
-  </v-container>
-  <v-container
-    v-else-if="
-      queryData != null && !(queryData instanceof RegistrationFlowFetched)
-    "
-    class="py-8"
-    max-width="720"
-  >
-    <UnhandledResponsePanel :result="queryData" />
+  <v-container class="py-8" max-width="720">
+    <RegistrationFlowForm
+      v-if="queryData instanceof RegistrationFlowFetched && flow"
+      :flow="flow"
+    />
+    <FlowGonePanel
+      v-else-if="queryData instanceof FlowGone"
+      restart-path="/new-registration"
+      :result="queryData"
+    />
+    <UnhandledResponsePanel
+      v-else-if="
+        queryData != null && !(queryData instanceof RegistrationFlowFetched)
+      "
+      :result="queryData"
+    />
   </v-container>
 </template>
 
@@ -31,7 +24,6 @@ import { useRegistrationLoader } from "./Registration.loader.ts";
 import FlowGonePanel from "../common/FlowGonePanel.vue";
 import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
-import RegistrationIntro from "./RegistrationIntro.vue";
 import { computed, toValue } from "vue";
 
 const { getRegistrationFlowQuery } = useRegistrationLoader();
