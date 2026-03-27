@@ -7,9 +7,10 @@
       <v-btn
         variant="tonal"
         size="small"
-        :loading="resending"
+        tag="a"
+        :href="newVerificationHref"
         :disabled="submitting"
-        @click="resendVerificationCode"
+        :aria-label="t(strings.cta_resend_code)"
       >
         {{ t(strings.cta_resend_code) }}
       </v-btn>
@@ -29,18 +30,19 @@
     <KratosVerificationUi
       v-if="flow"
       :flow="flow"
-      :submitting="submitting || resending"
+      :submitting="submitting"
       @submit="submitVerificationForm"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, toValue } from "vue";
+import { toRef } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosVerificationUi from "./KratosVerificationUi.vue";
 import { kratos_verification_flow as strings } from "./VerificationFlowForm.strings.ts";
 import { useVerificationFlow } from "./useVerificationFlow.ts";
+import { useNewVerificationEntryHref } from "./useNewVerificationEntryHref.ts";
 import type { VerificationFlow } from "@ory/client";
 
 const props = defineProps<{
@@ -50,15 +52,12 @@ const props = defineProps<{
 
 const { t } = useReverseT();
 
+const newVerificationHref = useNewVerificationEntryHref();
+
 const {
   submitting,
-  resending,
   submitError,
   clearSubmitError,
   submitVerificationForm,
-  resendVerificationCode,
-} = useVerificationFlow(
-  toRef(props, "verificationToken"),
-  toValue(props.flow.id),
-);
+} = useVerificationFlow(toRef(props, "verificationToken"), () => props.flow.id);
 </script>

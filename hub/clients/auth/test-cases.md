@@ -40,7 +40,7 @@ Use this doc for manual QA, Playwright scenarios, and aligning behavior when som
 
 ## Email verification (`/verification`)
 
-Behavior is owned by `Verification.vue`, `useVerificationRouteSync.ts`, `useVerificationNewBrowserFlow.ts`, and `useVerificationFlow.ts` (redirect only when the flow reaches `passed_challenge`).
+Behavior is owned by `Verification.vue`, `useVerificationRouteSync.ts`, the `/new-verification` route, and `useVerificationFlow.ts` (redirect only when the flow reaches `passed_challenge`).
 
 7. **As a logged-out user on `/verification` without `?flow=`**, I am redirected to login, with a return path that brings me back to verification when appropriate.
 

@@ -117,6 +117,7 @@ function getNavHref(link: LinkWithName) {
   if (
     link.path === "/login" ||
     link.path === "/new-login" ||
+    link.path === "/new-verification" ||
     link.path === "/register" ||
     link.path === "/registration"
   ) {

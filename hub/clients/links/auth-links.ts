@@ -58,6 +58,15 @@ export const authLinks: LinkMap = {
     params: ["redirect", "flow", "token"],
   },
   /**
+   * Kratos new verification UI (browser flow creation). Use `params.redirect` or `return_to` for
+   * `return_to` after verification completes.
+   */
+  kratosNewVerification: {
+    subdomain,
+    path: "/new-verification",
+    params: ["redirect", "return_to"],
+  },
+  /**
    * Shared gate when the user is signed in but email is not verified. Use `params.redirect` (full
    * URL) for where to send them after verification (e.g. recipes home).
    */
