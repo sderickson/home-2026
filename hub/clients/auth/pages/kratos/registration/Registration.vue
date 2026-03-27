@@ -1,49 +1,28 @@
 <template>
-  <v-container class="py-8" max-width="720">
-    <RegistrationIntro v-if="!session" />
-    <AuthSessionDecisionPanel
-      v-if="session"
-      :identity-email="identityEmail"
-      variant="registration"
-    />
-    <RegistrationFlowForm v-else-if="flow" :flow="flow" />
+  <v-container
+    class="py-8"
+    max-width="720"
+    v-if="
+      toValue(getRegistrationFlowQuery.data) instanceof
+        RegistrationFlowFetched && flow
+    "
+  >
+    <RegistrationIntro />
+    <RegistrationFlowForm :flow="flow" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  kratosIdentityEmail,
-  RegistrationFlowCreated,
-  RegistrationFlowFetched,
-} from "@saflib/ory-kratos-sdk";
-import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
+import { RegistrationFlowFetched } from "@saflib/ory-kratos-sdk";
 import { useRegistrationLoader } from "./Registration.loader.ts";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
-
-const { sessionQuery, createRegistrationFlowQuery, getRegistrationFlowQuery } =
-  useRegistrationLoader();
-const registrationResult = computed(
-  () =>
-    getRegistrationFlowQuery.data.value ??
-    createRegistrationFlowQuery.data.value,
-);
-
-const session = computed(() => sessionQuery.data.value);
-
-const identityEmail = computed(() => {
-  return kratosIdentityEmail(session.value) || "";
-});
+import { computed, toValue } from "vue";
+const { getRegistrationFlowQuery } = useRegistrationLoader();
 const flow = computed(() => {
-  switch (true) {
-    case registrationResult.value instanceof RegistrationFlowCreated:
-      // update the url with the flow id
-      console.log("should not happen!");
-      // window.document.location.href = `${window.location.pathname}?flow=${registrationResult.value.flow.id}`;
-      break;
-    case registrationResult.value instanceof RegistrationFlowFetched:
-      return registrationResult.value.flow;
+  if (getRegistrationFlowQuery.data instanceof RegistrationFlowFetched) {
+    return getRegistrationFlowQuery.data.flow;
   }
+  return null;
 });
 </script>
