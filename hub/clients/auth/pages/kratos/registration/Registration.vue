@@ -8,6 +8,13 @@
     <RegistrationFlowForm :flow="flow" />
   </v-container>
   <v-container
+    v-else-if="queryData instanceof FlowGone"
+    class="py-8"
+    max-width="720"
+  >
+    <FlowGonePanel restart-path="/new-registration" :result="queryData" />
+  </v-container>
+  <v-container
     v-else-if="
       queryData != null && !(queryData instanceof RegistrationFlowFetched)
     "
@@ -19,8 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { RegistrationFlowFetched } from "@saflib/ory-kratos-sdk";
+import { FlowGone, RegistrationFlowFetched } from "@saflib/ory-kratos-sdk";
 import { useRegistrationLoader } from "./Registration.loader.ts";
+import FlowGonePanel from "../common/FlowGonePanel.vue";
 import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
 import RegistrationIntro from "./RegistrationIntro.vue";
