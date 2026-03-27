@@ -39,7 +39,8 @@ const flow = computed(() => {
   switch (true) {
     case registrationResult.value instanceof RegistrationFlowCreated:
       // update the url with the flow id
-      window.document.location.href = `${window.location.pathname}?flow=${registrationResult.value.flow.id}`;
+      console.log("should not happen!");
+      // window.document.location.href = `${window.location.pathname}?flow=${registrationResult.value.flow.id}`;
       break;
     case registrationResult.value instanceof RegistrationFlowFetched:
       return registrationResult.value.flow;

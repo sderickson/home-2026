@@ -20,6 +20,16 @@ export const authLinks: LinkMap = {
     params: ["redirect", "flow"],
   },
   /**
+   * Kratos new registration UI. Use `params.redirect` (full URL) for `return_to`, or resume with
+   * `params.flow` (Kratos flow id). After a browser flow is created, the page replaces the URL
+   * with `?flow=` so refresh keeps the same flow.
+   */
+  kratosNewRegistration: {
+    subdomain,
+    path: "/new-registration",
+    params: ["redirect"],
+  },
+  /**
    * Kratos login UI. Use `params.redirect` (full URL) for `return_to`, or resume with
    * `params.flow` (Kratos flow id). After a browser flow is created, the page replaces the URL
    * with `?flow=` so refresh keeps the same flow.

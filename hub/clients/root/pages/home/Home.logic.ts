@@ -11,7 +11,7 @@ function postAuthRedirectHref() {
  * Props for the register CTA: auth registration with `return_to` = hub app home.
  */
 export function getRegisterLinkProps() {
-  return linkToProps(authLinks.kratosRegistration, {
+  return linkToProps(authLinks.kratosNewRegistration, {
     params: { redirect: postAuthRedirectHref() },
   });
 }
