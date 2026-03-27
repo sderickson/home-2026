@@ -9,12 +9,7 @@
       restart-path="/new-registration"
       :result="queryData"
     />
-    <UnhandledResponsePanel
-      v-else-if="
-        queryData != null && !(queryData instanceof RegistrationFlowFetched)
-      "
-      :result="queryData"
-    />
+    <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
