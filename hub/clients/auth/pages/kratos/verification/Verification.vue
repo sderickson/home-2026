@@ -1,9 +1,6 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <template v-if="session && isVerified">
-      <VerificationVerifiedPanel />
-    </template>
-    <template v-else-if="session && !flowId && !isVerified">
+    <template v-if="!flowId">
       <VerificationIntro variant="request" />
       <v-btn
         color="primary"
@@ -15,24 +12,17 @@
       </v-btn>
     </template>
     <template
-      v-else-if="
-        session &&
-        queryData instanceof VerificationFlowFetched &&
-        flow
-      "
+      v-else-if="queryData instanceof VerificationFlowFetched && flow"
     >
       <VerificationIntro variant="enter" />
       <VerificationFlowForm :flow="flow" :verification-token="token ?? ''" />
     </template>
     <FlowGonePanel
-      v-else-if="session && !isVerified && queryData instanceof FlowGone"
+      v-else-if="queryData instanceof FlowGone"
       restart-path="/new-verification"
       :result="queryData"
     />
-    <UnhandledResponsePanel
-      v-else-if="session && !isVerified && flowId"
-      :result="queryData"
-    />
+    <UnhandledResponsePanel v-else-if="flowId" :result="queryData" />
   </v-container>
 </template>
 
@@ -40,17 +30,12 @@
 import { computed, toValue } from "vue";
 import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
-import {
-  FlowGone,
-  identityNeedsEmailVerification,
-  VerificationFlowFetched,
-} from "@saflib/ory-kratos-sdk";
+import { FlowGone, VerificationFlowFetched } from "@saflib/ory-kratos-sdk";
 import FlowGonePanel from "../common/FlowGonePanel.vue";
 import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import VerificationFlowForm from "./VerificationFlowForm.vue";
 import VerificationIntro from "./VerificationIntro.vue";
 import { verification_intro as introStrings } from "./VerificationIntro.strings.ts";
-import VerificationVerifiedPanel from "./VerificationVerifiedPanel.vue";
 import { useVerificationLoader } from "./Verification.loader.ts";
 import { useNewVerificationEntryHref } from "./useNewVerificationEntryHref.ts";
 
@@ -61,7 +46,7 @@ const flowId = computed(() =>
   typeof route.query.flow === "string" ? route.query.flow : undefined,
 );
 
-const { getVerificationFlowQuery, sessionQuery } = useVerificationLoader();
+const { getVerificationFlowQuery } = useVerificationLoader();
 
 const queryData = computed(() => toValue(getVerificationFlowQuery.data));
 
@@ -75,14 +60,6 @@ const flow = computed(() => {
 
 const token = computed(() =>
   typeof route.query.token === "string" ? route.query.token : undefined,
-);
-
-const session = computed(() => sessionQuery.data.value);
-
-const isVerified = computed(
-  () =>
-    session.value != null &&
-    !identityNeedsEmailVerification(session.value.identity),
 );
 
 const newVerificationHref = useNewVerificationEntryHref();
