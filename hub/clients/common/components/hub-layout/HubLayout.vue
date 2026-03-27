@@ -66,7 +66,12 @@ import { useRoute } from "vue-router";
 import { TopLevelContainer } from "@saflib/vue/components";
 import { hub_layout } from "./HubLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
-import { linkToHref, linkToHrefWithHost, getHost, type Link } from "@saflib/links";
+import {
+  linkToHref,
+  linkToHrefWithHost,
+  getHost,
+  type Link,
+} from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
@@ -100,7 +105,9 @@ const links = computed<LinkWithName[]>(() => {
       { ...appLinks.home, name: t(hub_layout.nav_app) },
       { ...authLinks.kratosSettings, name: t(hub_layout.nav_account) },
       { ...authLinks.logout, name: t(hub_layout.nav_logout) },
-      ...(props.isAdmin ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }] : []),
+      ...(props.isAdmin
+        ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }]
+        : []),
     ];
   }
   return [
@@ -114,19 +121,16 @@ function getNavHref(link: LinkWithName) {
     return linkToHrefWithHost(link);
   }
   let returnTo: string | undefined;
-  if (
-    link.path === "/login" ||
-    link.path === "/new-login" ||
-    link.path === "/new-verification" ||
-    link.path === "/register" ||
-    link.path === "/registration"
-  ) {
+  if (link.path === "/new-login" || link.path === "/new-verification") {
     returnTo = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
     returnTo = linkToHref(rootLinks.home, { domain: getHost() });
   } else if (link.path === "/settings") {
     returnTo = typeof window !== "undefined" ? window.location.href : undefined;
   }
-  return linkToHrefWithHost(link, returnTo != null ? { params: { return_to: returnTo } } : undefined);
+  return linkToHrefWithHost(
+    link,
+    returnTo != null ? { params: { return_to: returnTo } } : undefined,
+  );
 }
 </script>
