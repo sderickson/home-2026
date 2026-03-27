@@ -1,7 +1,7 @@
 <template>
-  <v-container class="py-8" max-width="720">
+  <div class="d-flex justify-center py-4">
     <v-progress-circular indeterminate color="primary" />
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">

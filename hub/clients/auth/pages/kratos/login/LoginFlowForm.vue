@@ -1,5 +1,6 @@
 <template>
   <div>
+    <LoginIntro />
     <v-alert
       v-if="submitError"
       type="error"
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import { toRef } from "vue";
 import KratosLoginUi from "./KratosLoginUi.vue";
+import LoginIntro from "./LoginIntro.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
 import type { LoginFlow } from "@ory/client";
 

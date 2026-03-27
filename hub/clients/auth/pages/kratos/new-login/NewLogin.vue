@@ -1,22 +1,28 @@
 <template>
-  <LoginFlowCreated
-    v-if="result instanceof LoginFlowCreatedResult"
-    :result="result"
-  />
-  <SessionAlreadyAvailableComponent
-    v-else-if="result instanceof SessionAlreadyAvailable"
-  />
+  <v-container class="py-8" max-width="720">
+    <LoginFlowCreatedView
+      v-if="queryData instanceof LoginFlowCreatedResult"
+      :result="queryData"
+    />
+    <SessionAlreadyAvailableComponent
+      v-else-if="queryData instanceof SessionAlreadyAvailable"
+    />
+    <UnhandledResponsePanel v-else :result="queryData" />
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { useNewLoginLoader } from "./NewLogin.loader.ts";
 import {
   LoginFlowCreated as LoginFlowCreatedResult,
   SessionAlreadyAvailable,
 } from "@saflib/ory-kratos-sdk";
-import LoginFlowCreated from "./LoginFlowCreated.vue";
+import { useNewLoginLoader } from "./NewLogin.loader.ts";
+import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
+import LoginFlowCreatedView from "./LoginFlowCreated.vue";
 import SessionAlreadyAvailableComponent from "../common/SessionAlreadyAvailable.vue";
+import { computed, toValue } from "vue";
 
 const { createLoginFlowQuery } = useNewLoginLoader();
-const result = createLoginFlowQuery.data;
+
+const queryData = computed(() => toValue(createLoginFlowQuery.data));
 </script>
