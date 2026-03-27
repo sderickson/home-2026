@@ -26,7 +26,7 @@ export function getLoginLinkProps() {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.kratosLogin, { params: { redirect } });
+  return linkToProps(authLinks.kratosNewLogin, { params: { redirect } });
 }
 
 /**

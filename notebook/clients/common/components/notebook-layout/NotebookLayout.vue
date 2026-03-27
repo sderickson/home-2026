@@ -115,7 +115,7 @@ function getNavHref(link: LinkWithName) {
     return linkToHrefWithHost(link);
   }
   let redirect: string | undefined;
-  if (link.path === "/login" || link.path === "/register") {
+  if (link.path === "/login" || link.path === "/new-login" || link.path === "/register") {
     redirect = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
     redirect = linkToHref(rootLinks.home, { domain: getHost() });

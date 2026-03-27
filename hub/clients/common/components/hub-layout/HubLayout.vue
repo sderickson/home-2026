@@ -116,6 +116,7 @@ function getNavHref(link: LinkWithName) {
   let redirect: string | undefined;
   if (
     link.path === "/login" ||
+    link.path === "/new-login" ||
     link.path === "/register" ||
     link.path === "/registration"
   ) {

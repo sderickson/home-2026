@@ -20,7 +20,7 @@ export function getRegisterLinkProps() {
  * Props for the login CTA: auth login with `return_to` = hub app home.
  */
 export function getLoginLinkProps() {
-  return linkToProps(authLinks.kratosLogin, {
+  return linkToProps(authLinks.kratosNewLogin, {
     params: { redirect: postAuthRedirectHref() },
   });
 }

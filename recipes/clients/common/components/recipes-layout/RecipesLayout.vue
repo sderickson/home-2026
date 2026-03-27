@@ -100,7 +100,7 @@ const links = computed<LinkWithName[]>(() => {
   return [
     { ...rootLinks.home, name: "Home" },
     {
-      ...authLinks.kratosLogin,
+      ...authLinks.kratosNewLogin,
       name: "Login",
       options: { params: { redirect: linkToHrefWithHost(appLinks.home) } },
     },

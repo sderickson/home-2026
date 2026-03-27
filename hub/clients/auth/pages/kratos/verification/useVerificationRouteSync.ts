@@ -41,7 +41,7 @@ export function useVerificationRouteSync() {
       if (status !== "success") return;
       if (session != null) return;
       if (typeof flowQ === "string") return;
-      navigateToLink(authLinks.kratosLogin, {
+      navigateToLink(authLinks.kratosNewLogin, {
         params: {
           redirect: linkToHrefWithHost(authLinks.kratosVerification),
         },

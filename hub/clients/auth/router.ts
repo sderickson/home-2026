@@ -20,13 +20,12 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
     history: options?.history ?? createWebHistory(),
     routes: [
       /**
-       * Auth SPA home: send users to login (returning sessions see the session panel from the page).
-       * Registration remains at `/registration`. Preserves `redirect` / `flow` query when present.
+       * Auth SPA home: start sign-in from `/new-login` (browser flow creation). Preserves query.
        */
       {
         path: "/",
         redirect: (to) => ({
-          path: authLinks.kratosLogin.path,
+          path: authLinks.kratosNewLogin.path,
           query: to.query,
         }),
       },

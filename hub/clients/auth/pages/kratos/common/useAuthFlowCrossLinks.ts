@@ -13,7 +13,7 @@ export function useAuthFlowCrossLinks() {
       : undefined;
   });
   const loginHref = computed(() =>
-    linkToHrefWithHost(authLinks.kratosLogin, redirectOptions.value),
+    linkToHrefWithHost(authLinks.kratosNewLogin, redirectOptions.value),
   );
   const registerHref = computed(() =>
     linkToHrefWithHost(authLinks.kratosRegistration, redirectOptions.value),

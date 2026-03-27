@@ -43,7 +43,7 @@ export function useVerifyWallPage(
     (session) => {
       if (sessionQuery.status.value !== "success") return;
       if (session == null) {
-        navigateToLink(authLinks.kratosLogin, {
+        navigateToLink(authLinks.kratosNewLogin, {
           params: { redirect: verifyWallReturnHref.value },
         });
       }

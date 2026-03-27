@@ -16,7 +16,7 @@ describe("KratosLogin", () => {
   it("should render", async () => {
     const router = createTestRouter();
     // TODO: replace any route params (e.g. :id) with actual test values
-    await router.push("/login");
+    await router.push("/login?flow=mock-login-flow");
     await router.isReady();
 
     const wrapper = mountTestApp(KratosLoginAsync, {}, { router });
