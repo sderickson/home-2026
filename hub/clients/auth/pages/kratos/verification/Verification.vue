@@ -9,13 +9,23 @@
       restart-path="/new-verification"
       :result="queryData"
     />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-verification"
+      :result="queryData"
+    />
     <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { FlowGone, VerificationFlowFetched } from "@saflib/ory-kratos-sdk";
+import {
+  FlowGone,
+  SecurityCsrfViolation,
+  VerificationFlowFetched,
+} from "@saflib/ory-kratos-sdk";
 import { useVerificationLoader } from "./Verification.loader.ts";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
 import FlowGonePanel from "../common/FlowGonePanel.vue";
 import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import VerificationFlowForm from "./VerificationFlowForm.vue";

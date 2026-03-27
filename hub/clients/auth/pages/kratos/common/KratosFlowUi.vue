@@ -168,17 +168,19 @@ const props = withDefaults(
 );
 
 const visibleFlowMessages = computed(() => {
-  const raw = props.flow?.ui.messages ?? [];
+  let raw = props.flow?.ui.messages ?? [];
   const nf = props.messageFilter;
-  if (!nf) return raw;
-  return raw.filter((m) => nf(m, { kind: "flow" }));
+  if (nf) raw = raw.filter((m) => nf(m, { kind: "flow" }));
+  if (props.submitting) raw = raw.filter((m) => m.type !== "error");
+  return raw;
 });
 
 function visibleNodeMessages(node: UiNode, idx: number): UiText[] {
-  const raw = node.messages ?? [];
+  let raw = node.messages ?? [];
   const nf = props.messageFilter;
-  if (!nf) return raw;
-  return raw.filter((m) => nf(m, { kind: "node", node, nodeIdx: idx }));
+  if (nf) raw = raw.filter((m) => nf(m, { kind: "node", node, nodeIdx: idx }));
+  if (props.submitting) raw = raw.filter((m) => m.type !== "error");
+  return raw;
 }
 
 const renderedNodes = computed(

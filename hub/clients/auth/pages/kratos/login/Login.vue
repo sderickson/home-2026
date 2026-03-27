@@ -9,13 +9,19 @@
       restart-path="/new-login"
       :result="queryData"
     />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-login"
+      :result="queryData"
+    />
     <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { FlowGone, LoginFlowFetched } from "@saflib/ory-kratos-sdk";
+import { FlowGone, LoginFlowFetched, SecurityCsrfViolation } from "@saflib/ory-kratos-sdk";
 import { useLoginLoader } from "./Login.loader.ts";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
 import FlowGonePanel from "../common/FlowGonePanel.vue";
 import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import LoginFlowForm from "./LoginFlowForm.vue";

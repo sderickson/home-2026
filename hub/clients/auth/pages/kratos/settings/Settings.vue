@@ -18,6 +18,13 @@
       :redirect-browser-to="settingsResult.payload.redirect_browser_to"
     />
 
+    <CsrfViolationPanel
+      v-else-if="settingsResult instanceof SecurityCsrfViolation"
+      restart-path="/settings"
+      :restart-query="settingsCsrfRestartQuery"
+      :result="settingsResult"
+    />
+
     <SettingsFlowAutoRestart v-else-if="settingsResult instanceof FlowGone" />
 
     <template v-else-if="flow && flowId">
@@ -73,8 +80,11 @@ import {
   SettingsFlowCreated,
   SettingsFlowFetched,
   FlowGone,
+  SecurityCsrfViolation,
 } from "@saflib/ory-kratos-sdk";
 import type { SettingsFlow } from "@ory/client";
+import { useRoute } from "vue-router";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
 import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
 import SettingsFlowAutoRestart from "./SettingsFlowAutoRestart.vue";
 const { createSettingsFlowQuery, getSettingsFlowQuery } = useSettingsLoader();
@@ -102,6 +112,16 @@ switch (true) {
 const flowId = computed(() => flow.value?.id ?? "");
 
 const { t } = useReverseT();
+const route = useRoute();
+
+/** Drop `flow` so the loader starts a fresh settings flow after CSRF failure. */
+const settingsCsrfRestartQuery = computed(() => {
+  const q: Record<string, string> = {};
+  if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
+    q.return_to = route.query.return_to.trim();
+  }
+  return q;
+});
 
 const tab = ref<"email" | "password" | "totp">("email");
 
