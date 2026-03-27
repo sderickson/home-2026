@@ -1,6 +1,6 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <RecoveryIntro />
+    <RecoveryIntro :flow-return-to="browserReturnTo" />
     <RecoveryFlowForm
       v-if="flowIdForForm"
       :flow-id="flowIdForForm"

@@ -52,7 +52,7 @@ const props = defineProps<{
 
 const { t } = useReverseT();
 
-const newVerificationHref = useNewVerificationEntryHref();
+const newVerificationHref = useNewVerificationEntryHref(() => props.flow.return_to);
 
 const {
   submitting,

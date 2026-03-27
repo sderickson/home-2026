@@ -8,9 +8,9 @@ import { authLinks } from "@sderickson/hub-links";
 const route = useRoute();
 
 onMounted(async () => {
-  const q = route.query.redirect;
-  const redirect = typeof q === "string" && q.trim() ? q.trim() : undefined;
-  const returnTo = redirect ?? linkToHrefWithHost(authLinks.home);
+  const q = route.query.return_to;
+  const fromQuery = typeof q === "string" && q.trim() ? q.trim() : undefined;
+  const returnTo = fromQuery ?? linkToHrefWithHost(authLinks.home);
   const { logout_url } = await fetchBrowserLogoutFlow(returnTo);
   window.location.assign(logout_url);
 });

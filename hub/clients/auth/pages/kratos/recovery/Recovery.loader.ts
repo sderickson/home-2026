@@ -5,13 +5,13 @@ import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { resolveLoginBrowserReturnTo } from "../login/Login.logic.ts";
 import { recoveryFlowShouldFetch } from "./Recovery.logic.ts";
 
-/** Kratos `return_to` for the browser recovery flow (`?redirect=` or injected hub app fallback). Not part of `useRecoveryLoader` return shape — loaders may only return TanStack queries for `AsyncPage`. */
+/** Kratos `return_to` for the browser recovery flow (`?return_to=` or injected hub app fallback). Not part of `useRecoveryLoader` return shape — loaders may only return TanStack queries for `AsyncPage`. */
 export function useRecoveryBrowserReturnTo() {
   const route = useRoute();
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   return computed(() =>
     resolveLoginBrowserReturnTo(
-      route.query.redirect,
+      route.query.return_to,
       postAuthFallbackHref.value,
     ),
   );
@@ -25,7 +25,7 @@ export function useRecoveryLoader() {
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const browserReturnTo = computed(() =>
     resolveLoginBrowserReturnTo(
-      route.query.redirect,
+      route.query.return_to,
       postAuthFallbackHref.value,
     ),
   );

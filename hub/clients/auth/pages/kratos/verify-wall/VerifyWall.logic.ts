@@ -1,12 +1,12 @@
 import type { Session } from "@ory/client";
 
-/** Post-verification destination: `?redirect=` when set, otherwise the injected hub app fallback URL. */
-export function resolveVerifyWallRedirectDestination(
-  redirectQueryParam: unknown,
+/** Post-verification destination: `?return_to=` when set, otherwise the injected hub app fallback URL. */
+export function resolveVerifyWallReturnToDestination(
+  returnToQueryParam: unknown,
   fallbackRecipesHomeHref: string,
 ): string {
-  if (typeof redirectQueryParam === "string" && redirectQueryParam.trim()) {
-    return redirectQueryParam.trim();
+  if (typeof returnToQueryParam === "string" && returnToQueryParam.trim()) {
+    return returnToQueryParam.trim();
   }
   return fallbackRecipesHomeHref;
 }

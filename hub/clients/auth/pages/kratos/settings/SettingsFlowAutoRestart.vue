@@ -15,8 +15,8 @@ const router = useRouter();
 
 onMounted(() => {
   const nextQuery: Record<string, string> = {};
-  if (typeof route.query.redirect === "string") {
-    nextQuery.redirect = route.query.redirect;
+  if (typeof route.query.return_to === "string") {
+    nextQuery.return_to = route.query.return_to;
   }
   const target = router.resolve({
     path: route.path,

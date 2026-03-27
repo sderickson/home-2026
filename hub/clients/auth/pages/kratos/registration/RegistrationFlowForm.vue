@@ -1,6 +1,6 @@
 <template>
   <div>
-    <RegistrationIntro />
+    <RegistrationIntro :flow-return-to="flow.return_to" />
     <v-alert
       v-if="submitError"
       type="error"

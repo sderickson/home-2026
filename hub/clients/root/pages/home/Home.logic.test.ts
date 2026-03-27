@@ -18,7 +18,8 @@ describe("getRegisterLinkProps", () => {
     const props = getRegisterLinkProps();
     // Root subdomain !== auth subdomain, so we get href for cross-subdomain navigation
     expect(props).toHaveProperty("href");
-    expect((props as { href: string }).href).toContain("/registration");
+    expect((props as { href: string }).href).toContain("/new-registration");
+    expect((props as { href: string }).href).toContain("return_to=");
   });
 
   it("returns an object suitable for v-bind (either to or href)", () => {

@@ -2,7 +2,7 @@
   <KratosFlowExpiredPanel
     :message="t(strings.message)"
     :cta="t(strings.cta_restart)"
-    :preserve-query-keys="['redirect', 'token']"
+    :preserve-query-keys="['return_to', 'token']"
   />
 </template>
 

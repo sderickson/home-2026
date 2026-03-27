@@ -5,7 +5,7 @@ import { useAuthLoggedOutRootFallbackHref } from "../../../authFallbackInject.ts
 
 export function useKratosBrowserLogout(options?: {
   /**
-   * Kratos `return_to` after logout. When omitted, uses `?redirect=` from the current route if set,
+   * Kratos `return_to` after logout. When omitted, uses `?return_to=` from the current route if set,
    * otherwise the injected hub root home (logged-out landing).
    */
   afterLogoutReturnTo?: MaybeRefOrGetter<string>;
@@ -18,7 +18,7 @@ export function useKratosBrowserLogout(options?: {
     if (options?.afterLogoutReturnTo !== undefined) {
       return toValue(options.afterLogoutReturnTo);
     }
-    const q = route.query.redirect;
+    const q = route.query.return_to;
     return typeof q === "string" && q.trim()
       ? q.trim()
       : rootHomeFallbackHref.value;

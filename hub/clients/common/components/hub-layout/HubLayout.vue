@@ -113,7 +113,7 @@ function getNavHref(link: LinkWithName) {
   if (link.subdomain !== "auth") {
     return linkToHrefWithHost(link);
   }
-  let redirect: string | undefined;
+  let returnTo: string | undefined;
   if (
     link.path === "/login" ||
     link.path === "/new-login" ||
@@ -121,12 +121,12 @@ function getNavHref(link: LinkWithName) {
     link.path === "/register" ||
     link.path === "/registration"
   ) {
-    redirect = linkToHref(appLinks.home, { domain: getHost() });
+    returnTo = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
-    redirect = linkToHref(rootLinks.home, { domain: getHost() });
+    returnTo = linkToHref(rootLinks.home, { domain: getHost() });
   } else if (link.path === "/settings") {
-    redirect = typeof window !== "undefined" ? window.location.href : undefined;
+    returnTo = typeof window !== "undefined" ? window.location.href : undefined;
   }
-  return linkToHrefWithHost(link, redirect != null ? { params: { redirect } } : undefined);
+  return linkToHrefWithHost(link, returnTo != null ? { params: { return_to: returnTo } } : undefined);
 }
 </script>

@@ -12,7 +12,7 @@ function postAuthRedirectHref() {
  */
 export function getRegisterLinkProps() {
   return linkToProps(authLinks.kratosNewRegistration, {
-    params: { redirect: postAuthRedirectHref() },
+    params: { return_to: postAuthRedirectHref() },
   });
 }
 
@@ -21,6 +21,6 @@ export function getRegisterLinkProps() {
  */
 export function getLoginLinkProps() {
   return linkToProps(authLinks.kratosNewLogin, {
-    params: { redirect: postAuthRedirectHref() },
+    params: { return_to: postAuthRedirectHref() },
   });
 }

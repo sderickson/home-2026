@@ -81,7 +81,7 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
           linkToHrefWithHost(authLinks.kratosVerifyWall, {
-            params: { redirect: destination },
+            params: { return_to: destination },
           }),
         );
       } else {

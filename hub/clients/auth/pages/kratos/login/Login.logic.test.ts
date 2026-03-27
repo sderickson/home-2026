@@ -7,17 +7,17 @@ import {
 } from "./Login.logic.ts";
 
 describe("resolveLoginBrowserReturnTo", () => {
-  it("uses redirect query when present", () => {
+  it("uses return_to query when present", () => {
     expect(resolveLoginBrowserReturnTo("https://app.example/after", "https://fallback/")).toBe(
       "https://app.example/after",
     );
   });
 
-  it("trims redirect", () => {
+  it("trims return_to", () => {
     expect(resolveLoginBrowserReturnTo("  https://x/  ", "https://fallback/")).toBe("https://x/");
   });
 
-  it("falls back when redirect is missing or blank", () => {
+  it("falls back when return_to is missing or blank", () => {
     expect(resolveLoginBrowserReturnTo(undefined, "https://recipes/")).toBe("https://recipes/");
     expect(resolveLoginBrowserReturnTo("", "https://recipes/")).toBe("https://recipes/");
     expect(resolveLoginBrowserReturnTo("   ", "https://recipes/")).toBe("https://recipes/");

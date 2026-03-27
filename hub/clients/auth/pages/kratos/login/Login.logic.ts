@@ -13,13 +13,13 @@ export function destinationAfterLogin(
   return u || fallbackRecipesHomeHref;
 }
 
-/** Resolves Kratos `return_to` for `createBrowserLoginFlow`: `?redirect=` or default post-auth fallback URL. */
+/** Resolves Kratos `return_to` for browser flows: `?return_to=` or default post-auth fallback URL. */
 export function resolveLoginBrowserReturnTo(
-  redirectQueryParam: unknown,
+  returnToQueryParam: unknown,
   fallbackRecipesHomeHref: string,
 ): string {
-  if (typeof redirectQueryParam === "string" && redirectQueryParam.trim()) {
-    return redirectQueryParam.trim();
+  if (typeof returnToQueryParam === "string" && returnToQueryParam.trim()) {
+    return returnToQueryParam.trim();
   }
   return fallbackRecipesHomeHref;
 }

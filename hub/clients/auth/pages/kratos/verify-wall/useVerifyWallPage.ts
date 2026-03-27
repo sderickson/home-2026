@@ -7,7 +7,7 @@ import { authLinks } from "@sderickson/hub-links";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import { identityNeedsEmailVerification } from "@saflib/ory-kratos-sdk";
 import {
-  resolveVerifyWallRedirectDestination,
+  resolveVerifyWallReturnToDestination,
   sessionDisplayEmail,
 } from "./VerifyWall.logic.ts";
 
@@ -22,17 +22,17 @@ export function useVerifyWallPage(
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
   const redirectAfter = computed(() =>
-    resolveVerifyWallRedirectDestination(
-      route.query.redirect,
+    resolveVerifyWallReturnToDestination(
+      route.query.return_to,
       postAuthFallbackHref.value,
     ),
   );
 
   const verifyWallReturnHref = computed(() => {
-    const r = route.query.redirect;
+    const r = route.query.return_to;
     if (typeof r === "string" && r.trim()) {
       return linkToHrefWithHost(authLinks.kratosVerifyWall, {
-        params: { redirect: r.trim() },
+        params: { return_to: r.trim() },
       });
     }
     return linkToHrefWithHost(authLinks.kratosVerifyWall);
@@ -44,7 +44,7 @@ export function useVerifyWallPage(
       if (sessionQuery.status.value !== "success") return;
       if (session == null) {
         navigateToLink(authLinks.kratosNewLogin, {
-          params: { redirect: verifyWallReturnHref.value },
+          params: { return_to: verifyWallReturnHref.value },
         });
       }
     },

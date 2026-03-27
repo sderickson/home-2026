@@ -10,9 +10,6 @@ export function useNewVerificationLoader() {
     if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
       return route.query.return_to.trim();
     }
-    if (typeof route.query.redirect === "string" && route.query.redirect.trim()) {
-      return route.query.redirect.trim();
-    }
     return postAuthFallbackHref.value;
   });
 

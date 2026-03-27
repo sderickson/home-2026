@@ -112,7 +112,7 @@ describe("useVerifyWallPage", () => {
 
     try {
       const { page, app } = await mountVerifyWallPage(
-        "/verify-wall?redirect=https://recipes.example/ok",
+        "/verify-wall?return_to=https://recipes.example/ok",
       );
       expect(page.showVerifiedWall.value).toBe(true);
       expect(page.showUnverifiedWall.value).toBe(false);

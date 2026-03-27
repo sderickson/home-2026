@@ -197,8 +197,8 @@ const sourceHref = "https://github.com/sderickson/home-2026/tree/main/recipes";
 
 const demoHref = useResolvedHref(appLinks.home);
 const registerHref = useResolvedHref(() =>
-  linkToHrefWithHost(authLinks.kratosRegistration, {
-    params: { redirect: linkToHrefWithHost(appLinks.home) },
+  linkToHrefWithHost(authLinks.kratosNewRegistration, {
+    params: { return_to: linkToHrefWithHost(appLinks.home) },
   }),
 );
 
