@@ -1,33 +1,19 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <SettingsIntro />
+    <template v-if="queryData instanceof SettingsFlowFetched && flow">
+      <SettingsIntro />
 
-    <v-alert
-      v-if="submitError"
-      type="error"
-      variant="tonal"
-      class="mb-4"
-      closable
-      @click:close="clearSubmitError"
-    >
-      {{ submitError }}
-    </v-alert>
+      <v-alert
+        v-if="submitError"
+        type="error"
+        variant="tonal"
+        class="mb-4"
+        closable
+        @click:close="clearSubmitError"
+      >
+        {{ submitError }}
+      </v-alert>
 
-    <SettingsAalReauthRedirect
-      v-if="settingsResult instanceof BrowserRedirectRequired"
-      :redirect-browser-to="settingsResult.payload.redirect_browser_to"
-    />
-
-    <CsrfViolationPanel
-      v-else-if="settingsResult instanceof SecurityCsrfViolation"
-      restart-path="/settings"
-      :restart-query="settingsCsrfRestartQuery"
-      :result="settingsResult"
-    />
-
-    <SettingsFlowAutoRestart v-else-if="settingsResult instanceof FlowGone" />
-
-    <template v-else-if="flow && flowId">
       <v-tabs v-model="tab" class="mb-4" color="primary">
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
@@ -64,71 +50,80 @@
         </v-window-item>
       </v-window>
     </template>
+
+    <SettingsAalReauthRedirect
+      v-else-if="queryData instanceof BrowserRedirectRequired"
+      :redirect-browser-to="queryData.payload.redirect_browser_to"
+    />
+
+    <FlowGonePanel
+      v-else-if="queryData instanceof FlowGone"
+      restart-path="/new-settings"
+      :restart-query="settingsRestartQuery"
+      :result="queryData"
+    />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-settings"
+      :restart-query="settingsRestartQuery"
+      :result="queryData"
+    />
+    <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, toValue } from "vue";
+import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
+import type { SettingsFlow } from "@ory/client";
+import {
+  BrowserRedirectRequired,
+  FlowGone,
+  SecurityCsrfViolation,
+  SettingsFlowFetched,
+} from "@saflib/ory-kratos-sdk";
 import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
 import { settings_tabs as tabs } from "./Settings.strings.ts";
 import { useSettingsFlow } from "./useSettingsFlow.ts";
 import { useSettingsLoader } from "./Settings.loader.ts";
-import {
-  BrowserRedirectRequired,
-  SettingsFlowCreated,
-  SettingsFlowFetched,
-  FlowGone,
-  SecurityCsrfViolation,
-} from "@saflib/ory-kratos-sdk";
-import type { SettingsFlow } from "@ory/client";
-import { useRoute } from "vue-router";
 import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
+import FlowGonePanel from "../common/FlowGonePanel.vue";
+import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
-import SettingsFlowAutoRestart from "./SettingsFlowAutoRestart.vue";
-const { createSettingsFlowQuery, getSettingsFlowQuery } = useSettingsLoader();
-
-const createSettingsResult = createSettingsFlowQuery.data.value;
-const getSettingsResult = getSettingsFlowQuery.data.value;
-const settingsResult = computed(
-  () => createSettingsResult ?? getSettingsResult,
-);
-const flow = ref<SettingsFlow | null>(null);
-
-switch (true) {
-  case settingsResult.value instanceof SettingsFlowCreated:
-    flow.value = settingsResult.value.flow;
-    window.history.replaceState(
-      {},
-      "",
-      `${window.location.pathname}?flow=${flow.value?.id}`,
-    );
-    break;
-  case settingsResult.value instanceof SettingsFlowFetched:
-    flow.value = settingsResult.value.flow;
-    break;
-}
-const flowId = computed(() => flow.value?.id ?? "");
 
 const { t } = useReverseT();
 const route = useRoute();
+const { getSettingsFlowQuery } = useSettingsLoader();
 
-/** Drop `flow` so the loader starts a fresh settings flow after CSRF failure. */
-const settingsCsrfRestartQuery = computed(() => {
+const queryData = computed(() => toValue(getSettingsFlowQuery.data));
+
+const flow = computed((): SettingsFlow | null => {
+  const d = queryData.value;
+  if (d instanceof SettingsFlowFetched) {
+    return d.flow;
+  }
+  return null;
+});
+
+const flowIdForSubmit = computed(() => flow.value?.id ?? "");
+
+const { submitting, submitError, clearSubmitError, submitSettingsForm } =
+  useSettingsFlow(flowIdForSubmit);
+
+const hasTotpSettings = computed(() =>
+  Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
+);
+
+const tab = ref<"email" | "password" | "totp">("email");
+
+/** Preserve `return_to` when restarting from CSRF or expired flow. */
+const settingsRestartQuery = computed(() => {
   const q: Record<string, string> = {};
   if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
     q.return_to = route.query.return_to.trim();
   }
   return q;
 });
-
-const tab = ref<"email" | "password" | "totp">("email");
-
-const { submitting, submitError, clearSubmitError, submitSettingsForm } =
-  useSettingsFlow(flowId);
-
-const hasTotpSettings = computed(() =>
-  Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
-);
 </script>

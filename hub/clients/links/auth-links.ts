@@ -89,13 +89,21 @@ export const authLinks: LinkMap = {
     params: ["return_to"],
   },
   /**
-   * Kratos account settings. Resume with `params.flow`, or create with `params.return_to` only — not
-   * both on the same URL.
+   * Kratos account settings. Resume with `params.flow` (and optional `return_to`). Start a browser
+   * flow via `/new-settings?return_to=` — do not mix `flow` with `return_to` on the same URL.
    */
   kratosSettings: {
     subdomain,
     path: "/settings",
     params: ["flow", "return_to"],
+  },
+  /**
+   * Kratos new settings UI (browser flow creation). Use `params.return_to` for post-settings navigation.
+   */
+  kratosNewSettings: {
+    subdomain,
+    path: "/new-settings",
+    params: ["return_to"],
   },
   // END WORKFLOW AREA
   /** Nav — same paths as Kratos flows. */

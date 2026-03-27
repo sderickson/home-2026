@@ -1,17 +1,24 @@
-import { ref, toValue, type Ref } from "vue";
-import { useUpdateSettingsFlowMutation } from "@saflib/ory-kratos-sdk";
+import { useQueryClient } from "@tanstack/vue-query";
+import { ref, toValue, type MaybeRefOrGetter } from "vue";
+import {
+  BrowserRedirectRequired,
+  getSettingsFlowQueryKey,
+  SettingsFlowFetched,
+  SettingsFlowUpdated,
+  useUpdateSettingsFlowMutation,
+} from "@saflib/ory-kratos-sdk";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
 import {
   buildSettingsUpdateBodyFromFormData,
   formDataFromKratosSettingsForm,
 } from "./Settings.logic.ts";
 import { settings_page as pageStrings } from "./Settings.strings.ts";
-import { BrowserRedirectRequired } from "@saflib/ory-kratos-sdk";
 
 /**
- * Submit profile / password updates for the active settings flow.
+ * Submit profile / password / TOTP updates for the active settings flow.
  */
-export function useSettingsFlow(flowId: Ref<string>) {
+export function useSettingsFlow(flowId: MaybeRefOrGetter<string>) {
+  const queryClient = useQueryClient();
   const updateSettings = useUpdateSettingsFlowMutation();
 
   const submitting = ref(false);
@@ -25,12 +32,14 @@ export function useSettingsFlow(flowId: Ref<string>) {
     form: HTMLFormElement,
     submitter?: HTMLElement | null,
   ) {
+    const id = toValue(flowId);
+    if (!id) return;
     const fd = formDataFromKratosSettingsForm(form, submitter);
     submitting.value = true;
     submitError.value = null;
     try {
       const updated = await updateSettings.mutateAsync({
-        flow: toValue(flowId),
+        flow: id,
         updateSettingsFlowBody: buildSettingsUpdateBodyFromFormData(fd),
       });
       if (updated instanceof BrowserRedirectRequired) {
@@ -40,14 +49,20 @@ export function useSettingsFlow(flowId: Ref<string>) {
         window.location.assign(updated.payload.redirect_browser_to);
         return;
       }
+      if (updated instanceof SettingsFlowUpdated) {
+        queryClient.setQueryData(
+          getSettingsFlowQueryKey(id),
+          new SettingsFlowFetched(updated.flow),
+        );
+      }
     } catch (e) {
       submitError.value = registrationSubmitErrorMessage(
         e,
         pageStrings.settings_failed,
       );
-      return;
+    } finally {
+      submitting.value = false;
     }
-    submitting.value = false;
   }
 
   return {

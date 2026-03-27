@@ -15,7 +15,10 @@ describe("KratosSettings", () => {
 
   it("should render", async () => {
     const router = createTestRouter();
-    await router.push("/settings");
+    await router.push({
+      path: "/settings",
+      query: { flow: "mock-settings-flow" },
+    });
     await router.isReady();
 
     const wrapper = mountTestApp(KratosSettingsAsync, {}, { router });

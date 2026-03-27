@@ -31,7 +31,8 @@ const props = withDefaults(
     result: FlowGone;
     /** Route path to navigate to when starting again (e.g. `/new-registration`). */
     restartPath: string;
-    /** Query keys to copy from the current route onto the restart navigation. */
+    /** Optional query for restart (e.g. preserve `return_to`). */
+    restartQuery?: Record<string, string>;
   }>(),
   {},
 );
@@ -47,6 +48,7 @@ const detailLine = computed(() => {
 function restart() {
   void router.push({
     path: props.restartPath,
+    query: props.restartQuery ?? {},
   });
 }
 </script>

@@ -103,7 +103,7 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: t(hub_layout.nav_app) },
-      { ...authLinks.kratosSettings, name: t(hub_layout.nav_account) },
+      { ...authLinks.kratosNewSettings, name: t(hub_layout.nav_account) },
       { ...authLinks.logout, name: t(hub_layout.nav_logout) },
       ...(props.isAdmin
         ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }]
@@ -125,7 +125,7 @@ function getNavHref(link: LinkWithName) {
     returnTo = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
     returnTo = linkToHref(rootLinks.home, { domain: getHost() });
-  } else if (link.path === "/settings") {
+  } else if (link.path === "/new-settings") {
     returnTo = typeof window !== "undefined" ? window.location.href : undefined;
   }
   return linkToHrefWithHost(
