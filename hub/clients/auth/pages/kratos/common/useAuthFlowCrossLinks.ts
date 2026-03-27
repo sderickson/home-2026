@@ -32,7 +32,7 @@ export function useAuthFlowCrossLinks(flowReturnTo?: MaybeRefOrGetter<string | n
     linkToHrefWithHost(authLinks.kratosNewRegistration, returnToOptions.value),
   );
   const recoveryHref = computed(() =>
-    linkToHrefWithHost(authLinks.kratosRecovery, returnToOptions.value),
+    linkToHrefWithHost(authLinks.kratosNewRecovery, returnToOptions.value),
   );
   return { loginHref, registerHref, recoveryHref };
 }

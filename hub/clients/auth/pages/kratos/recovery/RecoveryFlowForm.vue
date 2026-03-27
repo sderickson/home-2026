@@ -1,5 +1,22 @@
 <template>
   <div>
+    <RecoveryIntro :flow-return-to="flow.return_to" />
+    <div class="d-flex flex-column flex-sm-row align-sm-center ga-2 mb-4">
+      <span class="text-body-2 text-medium-emphasis">{{
+        t(strings.resend_help)
+      }}</span>
+      <v-btn
+        variant="tonal"
+        size="small"
+        tag="a"
+        :href="newRecoveryHref"
+        :disabled="submitting"
+        :aria-label="t(strings.cta_new_flow)"
+      >
+        {{ t(strings.cta_new_flow) }}
+      </v-btn>
+    </div>
+
     <v-alert
       v-if="submitError"
       type="error"
@@ -23,22 +40,33 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import type { RecoveryFlow } from "@ory/client";
+import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosFlowUi from "../common/KratosFlowUi.vue";
+import RecoveryIntro from "./RecoveryIntro.vue";
+import { kratos_recovery_flow as strings } from "./RecoveryFlowForm.strings.ts";
 import { useRecoveryFlow } from "./useRecoveryFlow.ts";
+import { useNewRecoveryEntryHref } from "./useNewRecoveryEntryHref.ts";
 
 const props = defineProps<{
-  flowId: string;
-  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
-  browserReturnTo: string;
-  /** Optional token from `?token=` when the recovery email includes it. */
-  recoveryToken?: string;
+  flow: RecoveryFlow;
 }>();
 
-const { flow, submitting, submitError, clearSubmitError, submitRecoveryForm } =
-  useRecoveryFlow(
-    toRef(props, "flowId"),
-    toRef(props, "browserReturnTo"),
-    toRef(props, "recoveryToken"),
-  );
+const { t } = useReverseT();
+const route = useRoute();
+
+const recoveryToken = computed(() =>
+  typeof route.query.token === "string" ? route.query.token : undefined,
+);
+
+const newRecoveryHref = useNewRecoveryEntryHref(() => props.flow.return_to);
+
+const {
+  submitting,
+  submitError,
+  clearSubmitError,
+  submitRecoveryForm,
+} = useRecoveryFlow(recoveryToken, () => props.flow.id);
 </script>

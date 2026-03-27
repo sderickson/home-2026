@@ -3,18 +3,18 @@ import {
   type RecoveryFlow,
   RecoveryFlowState,
 } from "@ory/client";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import { useQueryClient } from "@tanstack/vue-query";
+import { ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
   BrowserRedirectRequired,
-  invalidateKratosSessionQueries,
-  recoveryFlowQueryKey,
-  recoveryFlowQueryOptions,
+  getRecoveryFlowQueryKey,
+  RecoveryFlowFetched,
+  RecoveryFlowUpdated,
   useUpdateRecoveryFlowMutation,
-} from "@sderickson/recipes-sdk";
+} from "@saflib/ory-kratos-sdk";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
 import {
   buildRecoveryUpdateBodyFromFormData,
@@ -26,27 +26,15 @@ import {
 import { kratos_recovery_flow as flowStrings } from "./RecoveryFlowForm.strings.ts";
 
 /**
- * Submit recovery flow steps. Flow creation and `?flow=` URL sync live on the page (`Recovery.vue` + loader).
+ * Submit recovery flow steps. Browser flow creation is handled by `/new-recovery`.
  */
 export function useRecoveryFlow(
-  flowId: MaybeRefOrGetter<string>,
-  browserReturnTo: MaybeRefOrGetter<string>,
   recoveryToken: MaybeRefOrGetter<string | undefined>,
+  flowId: MaybeRefOrGetter<string>,
 ) {
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const queryClient = useQueryClient();
   const updateRecovery = useUpdateRecoveryFlowMutation();
-
-  const returnTo = computed(() => toValue(browserReturnTo));
-
-  const recoveryFlowQuery = useQuery(
-    computed(() =>
-      recoveryFlowQueryOptions({
-        flowId: toValue(flowId),
-        returnTo: returnTo.value,
-      }),
-    ),
-  );
 
   const submitting = ref(false);
   const submitError = ref<string | null>(null);
@@ -61,20 +49,20 @@ export function useRecoveryFlow(
     });
   }
 
-  async function applyBrowserLocationChangeRequired(
+  function applyBrowserLocationChangeRequired(
     body: ErrorBrowserLocationChangeRequired,
   ) {
     const raw = body.redirect_browser_to?.trim();
     if (!raw) return;
     const url = resolveRecoveryBrowserRedirectUrl(raw);
-    await invalidateKratosSessionQueries(queryClient);
     window.location.assign(url);
   }
 
-  async function applyRecoveryFlow(updated: RecoveryFlow) {
+  function applyRecoveryFlow(updated: RecoveryFlow) {
+    const id = toValue(flowId);
     queryClient.setQueryData(
-      recoveryFlowQueryKey(toValue(flowId), returnTo.value),
-      updated,
+      getRecoveryFlowQueryKey(id),
+      new RecoveryFlowFetched(updated),
     );
 
     const continueUrl = recoveryFlowContinueWithUrl(
@@ -82,7 +70,6 @@ export function useRecoveryFlow(
       settingsFlowHrefFromId,
     );
     if (continueUrl) {
-      await invalidateKratosSessionQueries(queryClient);
       window.location.assign(continueUrl);
       return;
     }
@@ -92,7 +79,6 @@ export function useRecoveryFlow(
         updated.return_to,
         postAuthFallbackHref.value,
       );
-      await invalidateKratosSessionQueries(queryClient);
       window.location.assign(fallback);
     }
   }
@@ -101,8 +87,8 @@ export function useRecoveryFlow(
     form: HTMLFormElement,
     submitter?: HTMLElement | null,
   ) {
-    const current = recoveryFlowQuery.data.value;
-    if (!current || submitting.value) return;
+    const id = toValue(flowId);
+    if (!id || submitting.value) return;
     const fd = formDataFromKratosRecoveryForm(form, submitter);
     submitting.value = true;
     submitError.value = null;
@@ -111,7 +97,7 @@ export function useRecoveryFlow(
       try {
         const token = toValue(recoveryToken);
         result = await updateRecovery.mutateAsync({
-          flow: current.id,
+          flow: id,
           updateRecoveryFlowBody: buildRecoveryUpdateBodyFromFormData(fd),
           ...(token ? { token } : {}),
         });
@@ -124,19 +110,19 @@ export function useRecoveryFlow(
       }
 
       if (result instanceof BrowserRedirectRequired) {
-        await applyBrowserLocationChangeRequired(result.payload);
+        applyBrowserLocationChangeRequired(result.payload);
         return;
       }
 
-      await applyRecoveryFlow(result);
+      if (result instanceof RecoveryFlowUpdated) {
+        applyRecoveryFlow(result.flow);
+      }
     } finally {
       submitting.value = false;
     }
   }
 
   return {
-    recoveryFlowQuery,
-    flow: computed(() => recoveryFlowQuery.data.value),
     submitting,
     submitError,
     clearSubmitError,

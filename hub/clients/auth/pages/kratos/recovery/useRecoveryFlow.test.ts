@@ -1,7 +1,10 @@
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { linkToHrefWithHost, setClientName } from "@saflib/links";
-import { appLinks } from "@sderickson/hub-links";
+import { setClientName } from "@saflib/links";
+import {
+  getRecoveryFlowQueryKey,
+  RecoveryFlowFetched,
+} from "@saflib/ory-kratos-sdk";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
@@ -46,7 +49,6 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/after-recovery";
 
     server.use(
@@ -56,15 +58,13 @@ describe("useRecoveryFlow", () => {
     );
 
     try {
-      const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
+      const [{ submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
-          () => mockRecoveryFlowId,
-          () => hubAppHome,
           () => undefined,
+          () => mockRecoveryFlowId,
         ),
       );
 
-      await recoveryFlowQuery.refetch();
       await submitRecoveryForm(recoveryLinkMethodForm());
 
       await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(nextUrl));
@@ -80,7 +80,6 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/complete";
 
     server.use(
@@ -101,15 +100,13 @@ describe("useRecoveryFlow", () => {
     );
 
     try {
-      const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
+      const [{ submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
-          () => mockRecoveryFlowId,
-          () => hubAppHome,
           () => undefined,
+          () => mockRecoveryFlowId,
         ),
       );
 
-      await recoveryFlowQuery.refetch();
       await submitRecoveryForm(recoveryLinkMethodForm());
 
       await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(nextUrl));
@@ -125,7 +122,6 @@ describe("useRecoveryFlow", () => {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
     const nextUrl = "https://settings.example/complete";
 
     server.use(
@@ -143,15 +139,13 @@ describe("useRecoveryFlow", () => {
     );
 
     try {
-      const [{ recoveryFlowQuery, submitRecoveryForm }, app] = withVueQuery(() =>
+      const [{ submitRecoveryForm }, app] = withVueQuery(() =>
         useRecoveryFlow(
-          () => mockRecoveryFlowId,
-          () => hubAppHome,
           () => undefined,
+          () => mockRecoveryFlowId,
         ),
       );
 
-      await recoveryFlowQuery.refetch();
       await submitRecoveryForm(recoveryLinkMethodForm());
 
       await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(nextUrl));
@@ -180,23 +174,33 @@ describe("useRecoveryFlow", () => {
       ),
     );
 
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
-    const [{ recoveryFlowQuery, submitRecoveryForm, flow }, app] = withVueQuery(() =>
+    const [{ submitRecoveryForm }, app, queryClient] = withVueQuery(() =>
       useRecoveryFlow(
-        () => mockRecoveryFlowId,
-        () => hubAppHome,
         () => undefined,
+        () => mockRecoveryFlowId,
       ),
     );
 
-    await recoveryFlowQuery.refetch();
+    queryClient.setQueryData(
+      getRecoveryFlowQueryKey(mockRecoveryFlowId),
+      new RecoveryFlowFetched(mockRecoveryFlow),
+    );
+
     await submitRecoveryForm(recoveryLinkMethodForm());
 
-    await vi.waitFor(() =>
-      expect(
-        flow.value?.ui.messages?.some((m) => String(m.text).includes("Recovery validation failed")),
-      ).toBe(true),
-    );
+    await vi.waitFor(() => {
+      const data = queryClient.getQueryData(
+        getRecoveryFlowQueryKey(mockRecoveryFlowId),
+      );
+      expect(data).toBeInstanceOf(RecoveryFlowFetched);
+      if (data instanceof RecoveryFlowFetched) {
+        expect(
+          data.flow.ui.messages?.some((m) =>
+            String(m.text).includes("Recovery validation failed"),
+          ),
+        ).toBe(true);
+      }
+    });
     app.unmount();
   });
 });

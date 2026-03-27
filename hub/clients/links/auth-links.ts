@@ -72,13 +72,21 @@ export const authLinks: LinkMap = {
     params: ["return_to"],
   },
   /**
-   * Kratos account recovery. Resume with `params.flow` and optional `params.token`. Browser-initiated
-   * recovery uses `params.return_to` only (do not mix with `flow` on the same URL).
+   * Kratos account recovery. Resume with `params.flow` and optional `params.token`. Start a browser
+   * flow via `/new-recovery?return_to=` (do not mix `flow` with `return_to` on the same URL).
    */
   kratosRecovery: {
     subdomain,
     path: "/recovery",
     params: ["flow", "token", "return_to"],
+  },
+  /**
+   * Kratos new recovery UI (browser flow creation). Use `params.return_to` for post-recovery navigation.
+   */
+  kratosNewRecovery: {
+    subdomain,
+    path: "/new-recovery",
+    params: ["return_to"],
   },
   /**
    * Kratos account settings. Resume with `params.flow`, or create with `params.return_to` only — not
