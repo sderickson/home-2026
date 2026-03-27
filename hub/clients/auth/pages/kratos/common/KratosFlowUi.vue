@@ -12,7 +12,7 @@
       @submit.prevent="onSubmit"
     >
       <v-alert
-        v-for="(m, i) in flowMessages"
+        v-for="(m, i) in visibleFlowMessages"
         :key="'flow-msg-' + i"
         :type="m.type === 'error' ? 'error' : 'info'"
         variant="tonal"
@@ -26,7 +26,7 @@
         <template v-for="(node, idx) in renderedNodes" :key="'node-' + idx">
           <template v-if="node.type === 'text'">
             <v-alert
-              v-for="(nm, mi) in node.messages"
+              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
               :key="'text-nm-' + idx + '-' + mi"
               :type="nm.type === 'error' ? 'error' : 'info'"
               variant="tonal"
@@ -42,7 +42,7 @@
 
           <template v-else-if="includeImgNodes && node.type === 'img'">
             <v-alert
-              v-for="(nm, mi) in node.messages"
+              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
               :key="'img-nm-' + idx + '-' + mi"
               :type="nm.type === 'error' ? 'error' : 'info'"
               variant="tonal"
@@ -64,7 +64,7 @@
             v-else-if="isKratosInputNode(node) && !shouldHideSubmit(node)"
           >
             <v-alert
-              v-for="(nm, mi) in node.messages"
+              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
               :key="'in-nm-' + idx + '-' + mi"
               :type="nm.type === 'error' ? 'error' : 'info'"
               variant="tonal"
@@ -121,8 +121,9 @@
 </template>
 
 <script setup lang="ts">
-import type { UiContainer, UiNode } from "@ory/client";
+import type { UiContainer, UiNode, UiText } from "@ory/client";
 import { computed, ref } from "vue";
+import type { KratosFlowUiMessageFilterContext } from "./kratosUiMessages.ts";
 import { kratosPrependInnerIconForFieldName } from "./kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForNodes } from "./useKratosFieldModelsForNodes.ts";
 import { useKratosFlowFocusAfterUiChange } from "./useKratosFlowFocusAfterUiChange.ts";
@@ -150,6 +151,14 @@ const props = withDefaults(
     hideSubmitNames?: string[];
     /** Render `img` nodes (e.g. TOTP QR in settings). */
     includeImgNodes?: boolean;
+    /**
+     * Return false to hide a message. Used e.g. to soften Kratos "Property … is missing" on the first
+     * step of multi-field flows (registration: email → password).
+     */
+    messageFilter?: (
+      message: UiText,
+      context: KratosFlowUiMessageFilterContext,
+    ) => boolean;
   }>(),
   {
     idPrefix: "kratos-flow",
@@ -158,7 +167,19 @@ const props = withDefaults(
   },
 );
 
-const flowMessages = computed(() => props.flow?.ui.messages ?? []);
+const visibleFlowMessages = computed(() => {
+  const raw = props.flow?.ui.messages ?? [];
+  const nf = props.messageFilter;
+  if (!nf) return raw;
+  return raw.filter((m) => nf(m, { kind: "flow" }));
+});
+
+function visibleNodeMessages(node: UiNode, idx: number): UiText[] {
+  const raw = node.messages ?? [];
+  const nf = props.messageFilter;
+  if (!nf) return raw;
+  return raw.filter((m) => nf(m, { kind: "node", node, nodeIdx: idx }));
+}
 
 const renderedNodes = computed(
   () => props.nodes ?? props.flow?.ui.nodes ?? [],

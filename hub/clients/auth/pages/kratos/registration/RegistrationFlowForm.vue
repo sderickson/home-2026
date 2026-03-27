@@ -17,6 +17,7 @@
       :flow="flow"
       :submitting="submitting"
       id-prefix="kratos-login"
+      :message-filter="registrationMessageFilter"
       @submit="submitRegistrationForm"
     />
   </div>
@@ -31,6 +32,11 @@ import type { RegistrationFlow } from "@ory/client";
 
 const props = defineProps<{ flow: RegistrationFlow }>();
 
-const { submitting, submitError, clearSubmitError, submitRegistrationForm } =
-  useRegistrationFlow(toRef(props, "flow"));
+const {
+  submitting,
+  submitError,
+  clearSubmitError,
+  submitRegistrationForm,
+  registrationMessageFilter,
+} = useRegistrationFlow(toRef(props, "flow"));
 </script>

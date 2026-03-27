@@ -1,3 +1,4 @@
+import type { RegistrationFlow, UiText } from "@ory/client";
 import { ref, type Ref } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
@@ -13,6 +14,8 @@ import {
   fetchKratosSession,
 } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
+import { isKratosPropertyMissingMessage } from "../common/kratosUiMessages.ts";
 import {
   buildLoginPasswordBody,
   buildRegistrationPasswordBody,
@@ -20,7 +23,6 @@ import {
   traitsEmailFromFormData,
 } from "./Registration.logic.ts";
 import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.strings.ts";
-import type { RegistrationFlow } from "@ory/client";
 
 /**
  * Submit and post-login navigation for an existing registration flow.
@@ -38,10 +40,30 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
   }
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
 
+  /**
+   * Used to hide Kratos "Property password is missing" on the first response after submitting email
+   * only (multi-step password UI). Second submit with an empty password shows the message.
+   */
+  const registrationSubmitCount = ref(0);
+
+  function registrationMessageFilter(
+    msg: UiText,
+    _ctx: KratosFlowUiMessageFilterContext,
+  ): boolean {
+    if (registrationSubmitCount.value !== 1) return true;
+    if (!isKratosPropertyMissingMessage(msg)) return true;
+    const prop = (msg.context as { property?: string } | undefined)?.property;
+    if (prop !== "password") return true;
+    return false;
+  }
+
   async function submitRegistrationForm(form: HTMLFormElement) {
     const fd = new FormData(form);
+    registrationSubmitCount.value += 1;
     submitting.value = true;
     submitError.value = null;
+    /** When true, keep the form in its loading state until the browser navigates away (avoid flashing stale Kratos errors). */
+    let keepSubmittingUntilNavigation = false;
     try {
       const updated = await updateRegistration.mutateAsync({
         flow: flow.value.id,
@@ -52,6 +74,7 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
           throw new Error("Redirect browser to is required");
         }
         window.location.assign(updated.payload.redirect_browser_to);
+        keepSubmittingUntilNavigation = true;
         return;
       }
       if (updated instanceof RegistrationFlowUpdated) {
@@ -87,6 +110,7 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
       } else {
         window.location.assign(destination);
       }
+      keepSubmittingUntilNavigation = true;
     } catch (e) {
       submitError.value = registrationSubmitErrorMessage(
         e,
@@ -94,7 +118,9 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
       );
       return;
     } finally {
-      submitting.value = false;
+      if (!keepSubmittingUntilNavigation) {
+        submitting.value = false;
+      }
     }
   }
 
@@ -103,5 +129,6 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
     submitError,
     clearSubmitError,
     submitRegistrationForm,
+    registrationMessageFilter,
   };
 }
