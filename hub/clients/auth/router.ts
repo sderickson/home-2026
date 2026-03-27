@@ -5,6 +5,7 @@ import { authLinks } from "@sderickson/hub-links";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import KratosLoginAsync from "./pages/kratos/login/LoginAsync.vue";
+import KratosNewLoginAsync from "./pages/kratos/new-login/NewLoginAsync.vue";
 // import KratosRecoveryAsync from "./pages/kratos/recovery/RecoveryAsync.vue";
 // import KratosSettingsAsync from "./pages/kratos/settings/SettingsAsync.vue";
 import KratosRegistrationAsync from "./pages/kratos/registration/RegistrationAsync.vue";
@@ -41,6 +42,10 @@ export const createAuthRouter = (options?: { history?: RouterHistory }) => {
       {
         path: authLinks.kratosLogin.path,
         component: KratosLoginAsync,
+      },
+      {
+        path: authLinks.kratosNewLogin.path,
+        component: KratosNewLoginAsync,
       },
       {
         path: authLinks.kratosVerification.path,

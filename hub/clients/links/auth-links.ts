@@ -40,6 +40,14 @@ export const authLinks: LinkMap = {
     params: ["redirect", "flow"],
   },
   /**
+   * Kratos new login UI. Use `params.redirect` (full URL) for `return_to`.
+   */
+  kratosNewLogin: {
+    subdomain,
+    path: "/new-login",
+    params: ["redirect"],
+  },
+  /**
    * Kratos email verification (code flow). Use `params.redirect` (full URL) for `return_to`, resume
    * with `params.flow` (Kratos flow id from email links), optional `params.token` when the courier
    * includes it. After a browser flow is created, the page replaces the URL with `?flow=`.
