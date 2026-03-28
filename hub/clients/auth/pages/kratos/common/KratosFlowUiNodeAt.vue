@@ -15,7 +15,7 @@
     </p>
   </template>
 
-  <template v-else-if="includeImgNodes && node && node.type === 'img'">
+  <template v-else-if="node && node.type === 'img'">
     <v-alert
       v-for="(nm, mi) in ctx.visibleNodeMessages(node, idx)"
       :key="'img-nm-' + idx + '-' + mi"
@@ -120,7 +120,6 @@ const ctx = inject(KRATOS_FLOW_UI_INJECT) as KratosFlowUiInject;
 
 const fieldModels = ctx.fieldModels;
 const submitting = computed(() => unref(ctx.submitting));
-const includeImgNodes = computed(() => unref(ctx.includeImgNodes));
 
 const node = computed(
   () => ctx.displayNodes.value[props.idx] as UiNode | undefined,

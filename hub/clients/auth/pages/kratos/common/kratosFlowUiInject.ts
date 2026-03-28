@@ -7,7 +7,6 @@ export interface KratosFlowUiInject {
   renderedNodes: ComputedRef<readonly UiNode[]>;
   submitting: ComputedRef<boolean>;
   idPrefix: ComputedRef<string>;
-  includeImgNodes: ComputedRef<boolean>;
   fieldModels: Ref<Record<number, string>>;
   passwordVisible: Ref<Record<number, boolean>>;
   passkeyLoginTriggerNode: ComputedRef<UiNode | null>;

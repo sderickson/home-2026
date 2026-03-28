@@ -109,8 +109,6 @@ const props = withDefaults(
     idPrefix?: string;
     /** Submit inputs to omit (e.g. in-flow resend when the page provides its own resend). */
     hideSubmitNames?: string[];
-    /** Render `img` nodes (e.g. TOTP QR in settings). */
-    includeImgNodes?: boolean;
     /**
      * Return false to hide a message. Used e.g. to soften Kratos "Property … is missing" on the first
      * step of multi-field flows (registration: email → password).
@@ -146,7 +144,6 @@ const props = withDefaults(
   {
     idPrefix: "kratos-flow",
     hideSubmitNames: () => [],
-    includeImgNodes: true,
     interceptOryProgrammaticSubmit: false,
     identityPasskeyDisplayFallback: undefined,
     mergePasskeyTriggerIntoIdentifier: false,
@@ -395,7 +392,6 @@ provide(KRATOS_FLOW_UI_INJECT, {
   renderedNodes,
   submitting: computed(() => props.submitting),
   idPrefix: prefix,
-  includeImgNodes: computed(() => props.includeImgNodes),
   fieldModels,
   passwordVisible,
   passkeyLoginTriggerNode,
