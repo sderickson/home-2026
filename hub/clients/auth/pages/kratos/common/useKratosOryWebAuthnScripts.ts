@@ -1,7 +1,6 @@
 import type { UiNode, UiNodeScriptAttributes } from "@ory/client";
 import { getHost, getProtocol } from "@saflib/links";
 import { onBeforeUnmount, watch, type Ref } from "vue";
-import { wireOryWebAuthnWindowAliases } from "./oryWebAuthnWindow.ts";
 
 /** Resolve script `src` from Kratos (often root-relative) against the public Kratos origin. */
 function resolveKratosScriptSrc(src: string): string {
@@ -55,9 +54,6 @@ export function useKratosOryWebAuthnScripts(nodes: Ref<readonly UiNode[]>) {
       if (attrs.nonce) {
         script.setAttribute("nonce", attrs.nonce);
       }
-      script.addEventListener("load", () => {
-        wireOryWebAuthnWindowAliases();
-      });
       document.body.appendChild(script);
       attached.push(script);
     }

@@ -2,6 +2,12 @@
 
 import type { HtmlTagDescriptor } from "vite";
 
+const protocol = process.env.PROTOCOL;
+const domain = process.env.DOMAIN;
+if (!protocol || !domain) {
+  throw new Error("PROTOCOL and DOMAIN must be set");
+}
+
 export const htmlHeaderPlugin = () => {
   return {
     name: "html-transform",
@@ -73,11 +79,10 @@ const htmlTagDescriptor: HtmlTagDescriptor[] = [
     injectTo: "head",
   },
 
-  // <script src="https://public-kratos.example.org/.well-known/ory/webauthn.js" type="script" async />
   {
     tag: "script",
     attrs: {
-      src: "http://kratos.docker.localhost/.well-known/ory/webauthn.js",
+      src: `${protocol}://kratos.${domain}/.well-known/ory/webauthn.js`,
       type: "module",
       async: true,
     },
