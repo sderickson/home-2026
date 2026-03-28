@@ -2,6 +2,7 @@ import type { Session, SettingsFlow } from "@ory/client";
 import { describe, expect, it } from "vitest";
 import {
   buildSettingsUpdateBodyFromFormData,
+  settingsFlowHasPasswordRecoveryMessage,
   settingsFlowShouldFetch,
   settingsNodesForGroup,
 } from "./Settings.logic.ts";
@@ -122,5 +123,25 @@ describe("settingsNodesForGroup", () => {
       "totp_code",
       undefined,
     ]);
+  });
+});
+
+describe("settingsFlowHasPasswordRecoveryMessage", () => {
+  it("detects Kratos message id 1060001 (post-recovery password prompt)", () => {
+    const flow = {
+      ui: {
+        messages: [{ id: 1060001, type: "info" as const, text: "Original Kratos copy" }],
+      },
+    } as SettingsFlow;
+    expect(settingsFlowHasPasswordRecoveryMessage(flow)).toBe(true);
+  });
+
+  it("returns false when that message is absent", () => {
+    const flow = {
+      ui: {
+        messages: [{ id: 1060002, type: "info" as const, text: "Other" }],
+      },
+    } as SettingsFlow;
+    expect(settingsFlowHasPasswordRecoveryMessage(flow)).toBe(false);
   });
 });

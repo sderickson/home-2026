@@ -5,6 +5,7 @@
     :nodes="nodes"
     :submitting="submitting"
     :id-prefix="idPrefix"
+    :message-filter="messageFilter"
     @submit="onSubmit"
   />
   <p v-else-if="flow" class="text-body-2 text-medium-emphasis">
@@ -13,8 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingsFlow } from "@ory/client";
+import type { SettingsFlow, UiText } from "@ory/client";
 import { computed } from "vue";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import KratosFlowUi from "../common/KratosFlowUi.vue";
 import { settings_group_empty as strings } from "./Settings.strings.ts";
@@ -25,6 +27,10 @@ const props = defineProps<{
   group: "profile" | "password" | "totp";
   submitting: boolean;
   idPrefix: string;
+  messageFilter?: (
+    message: UiText,
+    context: KratosFlowUiMessageFilterContext,
+  ) => boolean;
 }>();
 
 const { t } = useReverseT();

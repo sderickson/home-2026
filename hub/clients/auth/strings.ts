@@ -7,6 +7,7 @@ import { recovery_intro } from "./pages/kratos/recovery/RecoveryIntro.strings.ts
 import {
   settings_group_empty,
   settings_page,
+  settings_password_recovery,
   settings_tabs,
 } from "./pages/kratos/settings/Settings.strings.ts";
 import { settings_intro } from "./pages/kratos/settings/SettingsIntro.strings.ts";
@@ -35,6 +36,7 @@ export const auth_strings = {
   settings_group_empty,
   settings_intro,
   settings_page,
+  settings_password_recovery,
   settings_tabs,
   kratos_registration_flow,
   kratos_verification,

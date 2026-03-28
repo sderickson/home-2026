@@ -5,6 +5,18 @@ import type {
   UpdateSettingsFlowBody,
 } from "@ory/client";
 
+/**
+ * Kratos flow-level message id: account recovered — user should set a new password (session may be
+ * short-lived). See Kratos i18n ids (e.g. 1060001).
+ */
+export const KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID = 1060001;
+
+export function settingsFlowHasPasswordRecoveryMessage(flow: SettingsFlow): boolean {
+  return (flow.ui.messages ?? []).some(
+    (m) => Number(m.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID,
+  );
+}
+
 /** Settings flow query runs only when the user has a Kratos session (browser flow creation requires auth). */
 export function settingsFlowShouldFetch(
   sessionIsPending: boolean,

@@ -4,6 +4,16 @@
       <SettingsIntro />
 
       <v-alert
+        v-if="showPasswordRecoveryPrompt"
+        type="info"
+        variant="tonal"
+        class="mb-4"
+        density="comfortable"
+      >
+        {{ t(passwordRecoveryStrings.prompt) }}
+      </v-alert>
+
+      <v-alert
         v-if="submitError"
         type="error"
         variant="tonal"
@@ -27,6 +37,7 @@
             group="profile"
             :submitting="submitting"
             id-prefix="settings-profile"
+            :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
@@ -36,6 +47,7 @@
             group="password"
             :submitting="submitting"
             id-prefix="settings-password"
+            :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
@@ -45,6 +57,7 @@
             group="totp"
             :submitting="submitting"
             id-prefix="settings-totp"
+            :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
@@ -77,7 +90,7 @@ import { computed, ref, toValue, watch } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
-import type { SettingsFlow } from "@ory/client";
+import type { SettingsFlow, UiText } from "@ory/client";
 import {
   BrowserRedirectRequired,
   FlowGone,
@@ -87,7 +100,15 @@ import {
 } from "@saflib/ory-kratos-sdk";
 import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
-import { settings_tabs as tabs } from "./Settings.strings.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
+import {
+  KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID,
+  settingsFlowHasPasswordRecoveryMessage,
+} from "./Settings.logic.ts";
+import {
+  settings_password_recovery as passwordRecoveryStrings,
+  settings_tabs as tabs,
+} from "./Settings.strings.ts";
 import { useSettingsFlow } from "./useSettingsFlow.ts";
 import { useSettingsLoader } from "./Settings.loader.ts";
 import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
@@ -119,7 +140,34 @@ const hasTotpSettings = computed(() =>
   Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
 );
 
+const showPasswordRecoveryPrompt = computed(() =>
+  flow.value ? settingsFlowHasPasswordRecoveryMessage(flow.value) : false,
+);
+
+function settingsMessageFilter(
+  msg: UiText,
+  ctx: KratosFlowUiMessageFilterContext,
+): boolean {
+  if (
+    ctx.kind === "flow" &&
+    Number(msg.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID
+  ) {
+    return false;
+  }
+  return true;
+}
+
 const tab = ref<"email" | "password" | "totp">("email");
+
+watch(
+  flow,
+  (f) => {
+    if (f && settingsFlowHasPasswordRecoveryMessage(f)) {
+      tab.value = "password";
+    }
+  },
+  { immediate: true },
+);
 
 /** Flow-level banners (e.g. “saved”) apply to the whole flow; clear them when switching tabs. */
 watch(tab, (_next, prev) => {
