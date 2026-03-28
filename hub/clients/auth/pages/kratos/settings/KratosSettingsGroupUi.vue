@@ -7,6 +7,7 @@
     :id-prefix="idPrefix"
     :message-filter="messageFilter"
     :intercept-ory-programmatic-submit="group === 'passkey'"
+    :identity-passkey-display-fallback="identityPasskeyDisplayFallback"
     @submit="onSubmit"
   />
   <p v-else-if="flow" class="text-body-2 text-medium-emphasis">
@@ -32,6 +33,8 @@ const props = defineProps<{
     message: UiText,
     context: KratosFlowUiMessageFilterContext,
   ) => boolean;
+  /** Passkey remove-button label fallback when Kratos has no AAGUID display name (see KratosFlowUi). */
+  identityPasskeyDisplayFallback?: string;
 }>();
 
 const { t } = useReverseT();

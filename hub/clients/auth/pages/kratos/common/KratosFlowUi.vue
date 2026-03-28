@@ -23,7 +23,7 @@
       </v-alert>
 
       <fieldset class="kratos-flow-form__fieldset">
-        <template v-for="(node, idx) in renderedNodes" :key="'node-' + idx">
+        <template v-for="(node, idx) in displayNodes" :key="'node-' + idx">
           <template v-if="node.type === 'text'">
             <v-alert
               v-for="(nm, mi) in visibleNodeMessages(node, idx)"
@@ -120,12 +120,13 @@
               :label="node.meta?.label?.text"
               :required="node.attributes.required"
               :prepend-inner-icon="prependIcon(node)"
-              :append-inner-icon="appendPasswordIcon(node, idx)"
+              :append-inner-icon="appendInnerIcon(node, idx)"
               :disabled="submitting"
               density="comfortable"
               class="mb-4"
+              :class="identifierPasskeyFieldClass(node)"
               autocomplete="off"
-              @click:append-inner="togglePasswordVisibility(idx, node)"
+              @click:append-inner="onAppendInnerClick(idx, node)"
             />
           </template>
         </template>
@@ -143,6 +144,12 @@ import { useKratosFieldModelsForNodes } from "./useKratosFieldModelsForNodes.ts"
 import { useKratosFlowFocusAfterUiChange } from "./useKratosFlowFocusAfterUiChange.ts";
 import { useKratosOryWebAuthnScripts } from "./useKratosOryWebAuthnScripts.ts";
 import { patchKratosFormSubmitForOryProgrammaticSubmit } from "./kratosFormSubmitOryPatch.ts";
+import {
+  filterOutMergedLoginTriggerButton,
+  findPasskeyOrWebAuthnLoginTrigger,
+  shouldMergePasskeyTriggerIntoIdentifier,
+} from "./kratosLoginPasskeyInIdentifier.ts";
+import { kratosPasskeyRemoveButtonLabel } from "./kratosPasskeyRemoveLabel.ts";
 import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   isKratosInputNode,
@@ -182,12 +189,24 @@ const props = withDefaults(
      * `@submit.prevent` runs; see `kratosFormSubmitOryPatch.ts`).
      */
     interceptOryProgrammaticSubmit?: boolean;
+    /**
+     * When Kratos labels a passkey as "unnamed" (no AAGUID display name), use this (e.g. account
+     * email) for remove-button copy instead.
+     */
+    identityPasskeyDisplayFallback?: string;
+    /**
+     * Login only: hide the full-width “Sign in with passkey” button and put a passkey action
+     * (`mdi-cloud-key`) on the identifier field instead (password field keeps the visibility toggle).
+     */
+    mergePasskeyTriggerIntoIdentifier?: boolean;
   }>(),
   {
     idPrefix: "kratos-flow",
     hideSubmitNames: () => [],
     includeImgNodes: true,
     interceptOryProgrammaticSubmit: false,
+    identityPasskeyDisplayFallback: undefined,
+    mergePasskeyTriggerIntoIdentifier: false,
   },
 );
 
@@ -207,9 +226,27 @@ function visibleNodeMessages(node: UiNode, idx: number): UiText[] {
   return raw;
 }
 
-const renderedNodes = computed(
-  () => props.nodes ?? props.flow?.ui.nodes ?? [],
+const renderedNodes = computed(() => props.nodes ?? props.flow?.ui.nodes ?? []);
+
+const displayNodes = computed(() =>
+  filterOutMergedLoginTriggerButton(
+    props.mergePasskeyTriggerIntoIdentifier,
+    renderedNodes.value,
+  ),
 );
+
+/** Present when the passkey/WebAuthn login button is merged into the identifier field. */
+const passkeyLoginTriggerNode = computed(() => {
+  if (
+    !shouldMergePasskeyTriggerIntoIdentifier(
+      props.mergePasskeyTriggerIntoIdentifier,
+      renderedNodes.value,
+    )
+  ) {
+    return null;
+  }
+  return findPasskeyOrWebAuthnLoginTrigger(renderedNodes.value);
+});
 
 const flowForFocus = computed(() => {
   const f = props.flow;
@@ -217,7 +254,7 @@ const flowForFocus = computed(() => {
   return {
     ui: {
       ...f.ui,
-      nodes: renderedNodes.value,
+      nodes: displayNodes.value,
     },
   };
 });
@@ -226,9 +263,9 @@ const formRef = ref<HTMLFormElement | null>(null);
 useKratosFlowFocusAfterUiChange(flowForFocus, formRef);
 
 const { fieldModels, passwordVisible } =
-  useKratosFieldModelsForNodes(renderedNodes);
+  useKratosFieldModelsForNodes(displayNodes);
 
-useKratosOryWebAuthnScripts(renderedNodes);
+useKratosOryWebAuthnScripts(displayNodes);
 
 let unpatchOryFormSubmit: (() => void) | undefined;
 watch(
@@ -237,7 +274,8 @@ watch(
     unpatchOryFormSubmit?.();
     unpatchOryFormSubmit = undefined;
     if (form && intercept) {
-      unpatchOryFormSubmit = patchKratosFormSubmitForOryProgrammaticSubmit(form);
+      unpatchOryFormSubmit =
+        patchKratosFormSubmitForOryProgrammaticSubmit(form);
     }
   },
   { immediate: true },
@@ -260,6 +298,12 @@ function shouldHideSubmit(node: UiNode): boolean {
 
 function kratosSubmitLabel(node: UiNode) {
   if (!isKratosInputNode(node)) return "";
+  const passkeyRemove = kratosPasskeyRemoveButtonLabel(
+    node,
+    renderedNodes.value,
+    props.identityPasskeyDisplayFallback,
+  );
+  if (passkeyRemove) return passkeyRemove;
   const t = node.meta?.label?.text?.trim();
   if (t) return t;
   const v = (node.attributes as { value?: string }).value;
@@ -287,6 +331,43 @@ function appendPasswordIcon(node: UiNode, idx: number): string | undefined {
   if (kratosEffectiveInputType(node.attributes) !== "password")
     return undefined;
   return passwordVisible.value[idx] ? "mdi-eye-off" : "mdi-eye";
+}
+
+/** Cloud key: passkey / password manager (not fingerprint-specific). */
+function appendInnerIcon(node: UiNode, idx: number): string | undefined {
+  const pwd = appendPasswordIcon(node, idx);
+  if (pwd) return pwd;
+  if (
+    passkeyLoginTriggerNode.value &&
+    isKratosInputNode(node) &&
+    node.attributes.name === "identifier"
+  ) {
+    return "mdi-cloud-key";
+  }
+  return undefined;
+}
+
+function identifierPasskeyFieldClass(node: UiNode): string | undefined {
+  if (
+    passkeyLoginTriggerNode.value &&
+    isKratosInputNode(node) &&
+    node.attributes.name === "identifier"
+  ) {
+    return "kratos-flow-form__identifier-with-passkey";
+  }
+  return undefined;
+}
+
+function onAppendInnerClick(idx: number, node: UiNode) {
+  if (!isKratosInputNode(node)) return;
+  if (kratosEffectiveInputType(node.attributes) === "password") {
+    togglePasswordVisibility(idx, node);
+    return;
+  }
+  const trigger = passkeyLoginTriggerNode.value;
+  if (trigger && node.attributes.name === "identifier") {
+    runKratosWebAuthnInputClick(trigger);
+  }
 }
 
 function togglePasswordVisibility(idx: number, node: UiNode) {
@@ -318,5 +399,12 @@ function onSubmit(ev: Event) {
   width: 192px;
   height: 192px;
   object-fit: contain;
+}
+
+/* Passkey trigger uses append-inner icon; emphasize affordance slightly */
+.kratos-flow-form__identifier-with-passkey
+  :deep(.v-field__append-inner)
+  .v-icon {
+  opacity: 1;
 }
 </style>

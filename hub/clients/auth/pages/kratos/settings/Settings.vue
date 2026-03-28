@@ -69,6 +69,7 @@
             :submitting="submitting"
             id-prefix="settings-passkey"
             :message-filter="settingsMessageFilter"
+            :identity-passkey-display-fallback="sessionEmail"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
@@ -106,6 +107,8 @@ import {
   FlowGone,
   SecurityCsrfViolation,
   SettingsFlowFetched,
+  kratosIdentityEmail,
+  useKratosSession,
 } from "@saflib/ory-kratos-sdk";
 import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
@@ -140,6 +143,11 @@ const flow = computed((): SettingsFlow | null => {
 });
 
 const flowIdForSubmit = computed(() => flow.value?.id ?? "");
+
+const { data: kratosSession } = useKratosSession();
+const sessionEmail = computed(() =>
+  kratosIdentityEmail(kratosSession.value ?? undefined),
+);
 
 const { submitting, submitError, clearSubmitError, submitSettingsForm } =
   useSettingsFlow(flowIdForSubmit);

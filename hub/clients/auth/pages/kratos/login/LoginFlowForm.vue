@@ -18,6 +18,7 @@
       :submitting="submitting"
       id-prefix="kratos-login"
       :intercept-ory-programmatic-submit="interceptOryProgrammaticSubmit"
+      merge-passkey-trigger-into-identifier
       @submit="(form, submitter) => submitLoginForm(form, submitter)"
     />
   </div>
