@@ -25,112 +25,41 @@
       </v-alert>
 
       <fieldset class="kratos-flow-form__fieldset">
-        <template v-for="(node, idx) in displayNodes" :key="'node-' + idx">
-          <template v-if="node.type === 'text'">
-            <v-alert
-              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
-              :key="'text-nm-' + idx + '-' + mi"
-              :type="nm.type === 'error' ? 'error' : 'info'"
-              variant="tonal"
-              class="mb-2"
-              density="comfortable"
-            >
-              {{ nm.text }}
-            </v-alert>
-            <p class="text-body-2 mb-2">
-              {{ (node.attributes as { text?: { text: string } }).text?.text }}
-            </p>
-          </template>
-
-          <template v-else-if="includeImgNodes && node.type === 'img'">
-            <v-alert
-              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
-              :key="'img-nm-' + idx + '-' + mi"
-              :type="nm.type === 'error' ? 'error' : 'info'"
-              variant="tonal"
-              class="mb-2"
-              density="comfortable"
-            >
-              {{ nm.text }}
-            </v-alert>
-            <div class="mb-4 d-flex justify-center">
-              <img
-                :src="String((node.attributes as { src?: string }).src ?? '')"
-                :alt="node.meta?.label?.text ?? 'Authenticator QR code'"
-                class="kratos-flow-form__qr"
-              />
-            </div>
-          </template>
-
-          <template
-            v-else-if="isKratosInputNode(node) && !shouldHideSubmit(node)"
+        <template v-if="!useMfaGroupTabs">
+          <KratosFlowUiNodeAt
+            v-for="idx in allNodeIndices"
+            :key="'node-' + idx"
+            :idx="idx"
+          />
+        </template>
+        <template v-else>
+          <KratosFlowUiNodeAt
+            v-for="idx in defaultNodeIndices"
+            :key="'node-def-' + idx"
+            :idx="idx"
+          />
+          <v-tabs
+            v-model="mfaTab"
+            color="primary"
+            density="comfortable"
+            class="mb-1"
           >
-            <v-alert
-              v-for="(nm, mi) in visibleNodeMessages(node, idx)"
-              :key="'in-nm-' + idx + '-' + mi"
-              :type="nm.type === 'error' ? 'error' : 'info'"
-              variant="tonal"
-              class="mb-2"
-              density="comfortable"
+            <v-tab v-for="g in nonDefaultGroupsInOrder" :key="g.key">
+              {{ groupTabTitle(g.key) }}
+            </v-tab>
+          </v-tabs>
+          <v-window v-model="mfaTab">
+            <v-window-item
+              v-for="g in nonDefaultGroupsInOrder"
+              :key="'win-' + g.key"
             >
-              {{ nm.text }}
-            </v-alert>
-            <input
-              v-if="node.attributes.type === 'hidden'"
-              type="hidden"
-              :name="node.attributes.name"
-              :value="node.attributes.value ?? undefined"
-            />
-            <v-btn
-              v-else-if="node.attributes.type === 'button'"
-              :id="elementId(idx)"
-              type="button"
-              color="primary"
-              block
-              size="large"
-              variant="tonal"
-              class="mb-4 mt-1"
-              :disabled="submitting"
-              @click="runKratosWebAuthnInputClick(node)"
-            >
-              {{ kratosSubmitLabel(node) }}
-            </v-btn>
-            <v-btn
-              v-else-if="node.attributes.type === 'submit'"
-              :id="elementId(idx)"
-              type="submit"
-              color="primary"
-              block
-              size="large"
-              variant="tonal"
-              class="mb-8 mt-1"
-              :name="node.attributes.name"
-              :value="
-                (node.attributes as { value?: string }).value ?? undefined
-              "
-              :loading="submitting"
-              :disabled="submitting"
-            >
-              {{ kratosSubmitLabel(node) }}
-            </v-btn>
-            <v-text-field
-              v-else
-              :id="elementId(idx)"
-              v-model="fieldModels[idx]"
-              :name="node.attributes.name"
-              :type="effectiveInputType(node, idx)"
-              :label="node.meta?.label?.text"
-              :required="node.attributes.required"
-              :prepend-inner-icon="prependIcon(node)"
-              :append-inner-icon="appendInnerIcon(node, idx)"
-              :disabled="submitting"
-              density="comfortable"
-              class="mb-4"
-              :class="identifierPasskeyFieldClass(node)"
-              autocomplete="off"
-              @click:append-inner="onAppendInnerClick(idx, node)"
-            />
-          </template>
+              <KratosFlowUiNodeAt
+                v-for="idx in g.indices"
+                :key="'node-tab-' + idx"
+                :idx="idx"
+              />
+            </v-window-item>
+          </v-window>
         </template>
       </fieldset>
     </form>
@@ -139,7 +68,12 @@
 
 <script setup lang="ts">
 import type { UiContainer, UiNode, UiText } from "@ory/client";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, provide, ref, watch } from "vue";
+import KratosFlowUiNodeAt from "./KratosFlowUiNodeAt.vue";
+import {
+  KRATOS_FLOW_UI_INJECT,
+  type KratosFlowUiInject,
+} from "./kratosFlowUiInject.ts";
 import type { KratosFlowUiMessageFilterContext } from "./kratosUiMessages.ts";
 import { kratosPrependInnerIconForFieldName } from "./kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForNodes } from "./useKratosFieldModelsForNodes.ts";
@@ -201,6 +135,13 @@ const props = withDefaults(
      * (`mdi-cloud-key`) on the identifier field instead (password field keeps the visibility toggle).
      */
     mergePasskeyTriggerIntoIdentifier?: boolean;
+    /**
+     * Login AAL2: when multiple non-`default` UI groups are present (e.g. `code` + `totp`), render
+     * them under Vuetify tabs instead of stacking in one column.
+     */
+    splitLoginSecondFactorGroupsIntoTabs?: boolean;
+    /** Tab labels for {@link splitLoginSecondFactorGroupsIntoTabs}; defaults to titled group keys. */
+    resolveGroupTabLabel?: (group: string) => string;
   }>(),
   {
     idPrefix: "kratos-flow",
@@ -209,6 +150,8 @@ const props = withDefaults(
     interceptOryProgrammaticSubmit: false,
     identityPasskeyDisplayFallback: undefined,
     mergePasskeyTriggerIntoIdentifier: false,
+    splitLoginSecondFactorGroupsIntoTabs: false,
+    resolveGroupTabLabel: undefined,
   },
 );
 
@@ -249,6 +192,65 @@ const passkeyLoginTriggerNode = computed(() => {
   }
   return findPasskeyOrWebAuthnLoginTrigger(renderedNodes.value);
 });
+
+const nonDefaultGroupsInOrder = computed(() => {
+  const nodes = displayNodes.value;
+  const order: string[] = [];
+  const seen = new Set<string>();
+  const map = new Map<string, number[]>();
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i]!;
+    const g = n.group ?? "default";
+    if (g === "default") continue;
+    if (!seen.has(g)) {
+      seen.add(g);
+      order.push(g);
+      map.set(g, []);
+    }
+    map.get(g)!.push(i);
+  }
+  return order.map((key) => ({ key, indices: map.get(key)! }));
+});
+
+const defaultNodeIndices = computed(() => {
+  const nodes = displayNodes.value;
+  const out: number[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    if ((nodes[i]!.group ?? "default") === "default") out.push(i);
+  }
+  return out;
+});
+
+const allNodeIndices = computed(() => displayNodes.value.map((_, i) => i));
+
+const useMfaGroupTabs = computed(
+  () =>
+    props.splitLoginSecondFactorGroupsIntoTabs &&
+    nonDefaultGroupsInOrder.value.length > 1,
+);
+
+const mfaTab = ref(0);
+
+const flowId = computed(() => {
+  const f = props.flow as { id?: string } | null | undefined;
+  return f?.id ?? "";
+});
+
+watch(flowId, () => {
+  mfaTab.value = 0;
+});
+
+function groupTabTitle(group: string): string {
+  if (props.resolveGroupTabLabel) return props.resolveGroupTabLabel(group);
+  const fallback: Record<string, string> = {
+    code: "Email code",
+    totp: "Authenticator app",
+    webauthn: "Security key",
+    passkey: "Passkey",
+    lookup_secret: "Backup codes",
+  };
+  return fallback[group] ?? group.replace(/_/g, " ");
+}
 
 const flowForFocus = computed(() => {
   const f = props.flow;
@@ -387,6 +389,29 @@ function onAppendInnerClick(idx: number, node: UiNode) {
     runKratosWebAuthnInputClick(trigger);
   }
 }
+
+provide(KRATOS_FLOW_UI_INJECT, {
+  displayNodes,
+  renderedNodes,
+  submitting: computed(() => props.submitting),
+  idPrefix: prefix,
+  includeImgNodes: computed(() => props.includeImgNodes),
+  fieldModels,
+  passwordVisible,
+  passkeyLoginTriggerNode,
+  identityPasskeyDisplayFallback: computed(
+    () => props.identityPasskeyDisplayFallback,
+  ),
+  visibleNodeMessages,
+  shouldHideSubmit,
+  kratosSubmitLabel,
+  prependIcon,
+  effectiveInputType,
+  appendInnerIcon,
+  identifierPasskeyFieldClass,
+  onAppendInnerClick,
+  elementId,
+} satisfies KratosFlowUiInject);
 
 function togglePasswordVisibility(idx: number, node: UiNode) {
   if (!isKratosInputNode(node)) return;
