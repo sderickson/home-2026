@@ -1,6 +1,6 @@
 <template>
   <v-alert type="info" variant="tonal" class="mb-4">
-    Re-authentication required. Redirecting to sign in...
+    Second factor authentication required. Redirecting...
   </v-alert>
 
   <v-btn :href="redirectBrowserTo">Go now</v-btn>
@@ -19,6 +19,6 @@ onMounted(() => {
   }
   setTimeout(() => {
     window.location.replace(props.redirectBrowserTo!);
-  }, 3000);
+  }, 1000);
 });
 </script>
