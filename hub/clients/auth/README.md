@@ -52,33 +52,60 @@ Routes are defined in `router.ts` using link constants from `@sderickson/hub-lin
 | `interceptOryProgrammaticSubmit` | `boolean` | `false` | Patch `form.submit()` so Ory's `webauthn.js` triggers the SPA submit handler instead of a full navigation |
 | `identityPasskeyDisplayFallback` | `string` | — | Fallback label for "unnamed" passkeys in settings remove buttons |
 
-Props that only a single consumer needs (e.g. login-specific passkey merge, MFA tab layout) should **not** live on KratosFlowUi. Instead, the consuming page should use the `#node` scoped slot or its own composable to own that behavior.
+Props that only a single consumer needs (e.g. login-specific passkey merge, MFA tab layout) should **not** live on KratosFlowUi. Instead, the consuming page should use slots, `KratosFlowUiNodeAt` props, or its own composable to own that behavior.
 
-### Scoped slot: `#node`
+### Slots
 
-For flow-specific node customization (custom icons, merged fields, alternate layouts), KratosFlowUi exposes a `#node` scoped slot:
+KratosFlowUi exposes two scoped slots for flow-specific customization. Use the narrowest one that fits.
+
+#### `#node` — per-node override
+
+For tweaking how individual nodes render (custom icons, extra wrappers, hiding a specific field):
 
 ```vue
 <KratosFlowUi :flow="flow" :submitting="submitting" @submit="onSubmit">
-  <template #node="{ node, idx, defaultRender }">
-    <!-- Return nothing to use default rendering -->
-    <!-- Or render custom markup for specific nodes -->
+  <template #node="{ node, idx }">
+    <!-- Custom rendering for a specific node, e.g.: -->
+    <MyCustomField v-if="node.attributes.name === 'special'" :node="node" />
+    <!-- Fall back to default for everything else -->
+    <KratosFlowUiNodeAt v-else :idx="idx" />
   </template>
 </KratosFlowUi>
 ```
 
-The slot receives:
-- `node` — the `UiNode` at this position
-- `idx` — the node index within the display list
-- `defaultRender` — a render function / component for the standard rendering of this node
+#### `#fieldset` — full layout override
 
-This keeps flow-specific UX (e.g. merging a passkey trigger into the identifier field) in the flow's own `*FlowForm.vue` rather than adding boolean flags to the shared component.
+For restructuring the entire field layout (e.g. splitting nodes into tabs, reordering groups). The login page uses this for MFA second-factor tabs:
+
+```vue
+<KratosFlowUi :flow="flow" :submitting="submitting" @submit="onSubmit">
+  <template #fieldset="{ displayNodes, allNodeIndices }">
+    <!-- Full control over layout; render KratosFlowUiNodeAt for each node -->
+    <KratosFlowUiNodeAt v-for="idx in allNodeIndices" :key="idx" :idx="idx" />
+  </template>
+</KratosFlowUi>
+```
+
+The `#fieldset` slot receives:
+- `displayNodes` — the resolved node list (`readonly UiNode[]`)
+- `allNodeIndices` — index array for iteration (`readonly number[]`)
+
+When `#fieldset` is provided, `#node` is not used (the fieldset consumer renders `KratosFlowUiNodeAt` directly and controls the full structure).
 
 ### KratosFlowUiNodeAt
 
-`common/KratosFlowUiNodeAt.vue` is the default per-node renderer. It receives context from `KratosFlowUi` via Vue `provide`/`inject` (see `kratosFlowUiInject.ts`).
+`common/KratosFlowUiNodeAt.vue` is the default per-node renderer. It receives context from `KratosFlowUi` via Vue `provide`/`inject` (see `kratosFlowUiInject.ts`). It can also be used directly by consumers who override `#fieldset`.
 
-The inject interface should contain **only** members that `KratosFlowUiNodeAt` actually reads. Internal computed values that KratosFlowUi uses for its own logic (e.g. password visibility state, intermediate filtered-node lists) stay as local variables — they do not go on the inject.
+**Props:**
+
+| Prop | Type | Required | Purpose |
+|---|---|---|---|
+| `idx` | `number` | yes | Index into the display node list |
+| `passkeyLoginTrigger` | `UiNode \| null` | no | When set, adds a passkey cloud-key icon to the identifier field and wires it to invoke the Ory WebAuthn ceremony. Login passes this for the identifier node only. |
+
+The `passkeyLoginTrigger` prop pattern demonstrates how to add flow-specific node behavior: the generic component (`KratosFlowUiNodeAt`) gets an optional prop, and only the consuming page that needs the behavior provides it. The component's default behavior (no prop → no passkey icon) is unchanged for all other consumers.
+
+The inject interface should contain **only** members that `KratosFlowUiNodeAt` actually reads. Internal computed values that KratosFlowUi uses for its own logic stay as local variables — they do not go on the inject.
 
 ### Events
 
@@ -87,6 +114,16 @@ The inject interface should contain **only** members that `KratosFlowUiNodeAt` a
 | `submit` | `(form: HTMLFormElement, submitter: HTMLElement \| null)` | The page's `*FlowForm.vue` builds `FormData`, calls the Kratos update mutation, and handles the response |
 
 Submit-body construction is a pure function in the flow's `.logic.ts` file (e.g. `buildLoginUpdateBodyFromFormData`), making it easy to test without a DOM.
+
+## Example: LoginFlowForm
+
+`login/LoginFlowForm.vue` is the most customized consumer of `KratosFlowUi` and demonstrates both extension patterns:
+
+- **Passkey-in-identifier merge**: Filters the passkey trigger button out of the node list (`:nodes="filteredLoginNodes"`), then passes `KratosFlowUiNodeAt` a `passkeyLoginTrigger` prop on the identifier field so the cloud-key icon appears. Uses helpers from `kratosLoginPasskeyInIdentifier.ts`.
+- **MFA tabs**: Overrides `#fieldset` to split non-default groups into `v-tabs` / `v-window` for AAL2 login. Tab logic lives in `useKratosMfaGroupTabs.ts`.
+- **Passkey-specific CSS**: The `.kratos-flow-form__identifier-with-passkey` style lives in `LoginFlowForm.vue`'s `<style scoped>`, not in the shared component.
+
+Other flow forms (registration, recovery, verification, settings) use `KratosFlowUi` with just props — no slots needed.
 
 ## Ory WebAuthn / passkey integration
 
@@ -104,9 +141,10 @@ When a flow contains passkey or WebAuthn nodes, the consuming `*FlowForm.vue` sh
 1. Enable the method in `hub/dev/kratos/kratos.yml`.
 2. If the method has its own submit body shape, add a builder to the relevant `.logic.ts` and cover it in `.logic.test.ts`.
 3. Update `buildLoginUpdateBodyFromFormData` (or the corresponding flow's builder) to detect the new method from `FormData`.
-4. If the method needs custom rendering (special icons, merged fields, etc.), implement it in the flow's `*FlowForm.vue` via the `#node` slot — not by adding props to `KratosFlowUi`.
-5. If the method introduces new Vuetify field icons, add them to `kratosVuetifyFieldIcons.ts`.
-6. Add UI copy to the appropriate `.strings.ts` file.
+4. If the method needs **per-node** custom rendering (special icons, merged fields), use the `#node` slot in the flow's `*FlowForm.vue`, or add an optional prop to `KratosFlowUiNodeAt` (see `passkeyLoginTrigger` for the pattern). Do not add boolean flags to `KratosFlowUi`.
+5. If the method needs **structural layout changes** (tabs, reordered groups), use the `#fieldset` slot in the flow's `*FlowForm.vue` (see `LoginFlowForm.vue` for the MFA tabs pattern). Extract layout logic into a composable in the flow's directory (see `useKratosMfaGroupTabs.ts`).
+6. If the method introduces new Vuetify field icons, add them to `kratosVuetifyFieldIcons.ts`.
+7. Add UI copy to the appropriate `.strings.ts` file.
 
 ## Testing
 

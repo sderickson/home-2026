@@ -1,12 +1,14 @@
-# Auth UI refactor prompts
+# Auth UI refactor prompts (completed)
 
-A series of self-contained prompts to bring the code in line with `hub/clients/auth/README.md`. Execute them in order — each builds on the previous.
+These prompts were executed in order to bring the code in line with `hub/clients/auth/README.md`.
 
-Run tests after each step to verify nothing broke:
+**Status: All prompts completed.** The notes below are kept for historical reference.
 
-```sh
-npx vitest run --config hub/clients/auth/vitest.config.ts
-```
+Implementation diverged from the prompts in two ways (both improvements):
+- Login uses `#fieldset` instead of `#node` for MFA tabs, since it needs full layout control.
+- Passkey-in-identifier uses a `passkeyLoginTrigger` prop on `KratosFlowUiNodeAt` (passed by `LoginFlowForm` via `#fieldset`) rather than a `#node` slot override — simpler and keeps the rendering logic co-located in the node component.
+
+See `README.md` for the documented architecture.
 
 ---
 
