@@ -27,8 +27,15 @@ export function useLoginFlow(flow: Ref<LoginFlow>) {
     submitError.value = null;
   }
 
-  async function submitLoginForm(form: HTMLFormElement) {
-    const fd = new FormData(form);
+  async function submitLoginForm(
+    form: HTMLFormElement,
+    submitter?: HTMLElement | null,
+  ) {
+    const btn =
+      submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+        ? submitter
+        : undefined;
+    const fd = btn ? new FormData(form, btn) : new FormData(form);
     submitting.value = true;
     submitError.value = null;
     try {

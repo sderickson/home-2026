@@ -17,13 +17,14 @@
       :flow="flow"
       :submitting="submitting"
       id-prefix="kratos-login"
-      @submit="submitLoginForm"
+      :intercept-ory-programmatic-submit="interceptOryProgrammaticSubmit"
+      @submit="(form, submitter) => submitLoginForm(form, submitter)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed, toRef } from "vue";
 import KratosFlowUi from "../common/KratosFlowUi.vue";
 import LoginIntro from "./LoginIntro.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
@@ -35,4 +36,9 @@ const props = defineProps<{
 
 const { submitting, submitError, clearSubmitError, submitLoginForm } =
   useLoginFlow(toRef(props, "flow"));
+
+/** Ory `webauthn.js` calls `form.submit()` after passkey login; patch so `@submit.prevent` runs (see `kratosFormSubmitOryPatch.ts`). */
+const interceptOryProgrammaticSubmit = computed(() =>
+  props.flow.ui.nodes.some((n) => n.group === "passkey" || n.group === "webauthn"),
+);
 </script>

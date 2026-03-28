@@ -118,4 +118,18 @@ describe("buildLoginUpdateBodyFromFormData", () => {
       csrf_token: "tok",
     });
   });
+
+  it("uses passkey when passkey_login is set even if method and identifier look like password login", () => {
+    const fd = new FormData();
+    fd.set("method", "password");
+    fd.set("csrf_token", "tok");
+    fd.set("identifier", "a@b.co");
+    fd.set("password", "");
+    fd.set("passkey_login", '{"id":"cred"}');
+    expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
+      method: "passkey",
+      identifier: "a@b.co",
+      passkey_login: '{"id":"cred"}',
+    });
+  });
 });

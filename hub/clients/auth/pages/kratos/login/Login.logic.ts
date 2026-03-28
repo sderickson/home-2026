@@ -36,16 +36,25 @@ export function credentialsFromLoginForm(fd: FormData): { identifier: string; pa
  */
 export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowBody {
   let method = String(fd.get("method") ?? "").trim();
-  if (!method) {
-    // Some browser/component submit paths omit the submit-button pair. Infer method from known fields.
-    if (String(fd.get("password") ?? "").trim() || String(fd.get("identifier") ?? "").trim()) {
-      method = "password";
-    } else if (String(fd.get("totp_code") ?? "").trim()) {
+
+  const passkeyLogin = String(fd.get("passkey_login") ?? "").trim();
+  const webauthnLogin = String(fd.get("webauthn_login") ?? "").trim();
+
+  // Passkey / WebAuthn responses must win over `method` and identifier/password heuristics: the form
+  // still has `identifier` (and often `method=password` from the other submit control) while Ory fills
+  // `passkey_login` after the ceremony.
+  if (passkeyLogin) {
+    method = "passkey";
+  } else if (webauthnLogin) {
+    method = "webauthn";
+  } else if (!method) {
+    if (String(fd.get("totp_code") ?? "").trim()) {
       method = "totp";
-    } else if (String(fd.get("passkey_login") ?? "").trim()) {
-      method = "passkey";
-    } else if (String(fd.get("webauthn_login") ?? "").trim()) {
-      method = "webauthn";
+    } else if (
+      String(fd.get("password") ?? "").trim() ||
+      String(fd.get("identifier") ?? "").trim()
+    ) {
+      method = "password";
     }
   }
   if (!method) {
