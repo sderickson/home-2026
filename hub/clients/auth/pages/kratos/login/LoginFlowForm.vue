@@ -1,5 +1,6 @@
 <template>
   <div>
+    <LoginIntro :flow-return-to="flow.return_to" />
     <v-alert
       v-if="submitError"
       type="error"
@@ -11,10 +12,11 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosLoginUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
+      id-prefix="kratos-login"
       @submit="submitLoginForm"
     />
   </div>
@@ -22,15 +24,15 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import KratosLoginUi from "./KratosLoginUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
+import LoginIntro from "./LoginIntro.vue";
 import { useLoginFlow } from "./useLoginFlow.ts";
+import type { LoginFlow } from "@ory/client";
 
 const props = defineProps<{
-  flowId: string;
-  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
-  browserReturnTo: string;
+  flow: LoginFlow;
 }>();
 
-const { flow, submitting, submitError, clearSubmitError, submitLoginForm } =
-  useLoginFlow(toRef(props, "flowId"), toRef(props, "browserReturnTo"));
+const { submitting, submitError, clearSubmitError, submitLoginForm } =
+  useLoginFlow(toRef(props, "flow"));
 </script>

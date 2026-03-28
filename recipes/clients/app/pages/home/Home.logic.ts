@@ -22,22 +22,22 @@ export function getCollectionsList<T>(data: T[] | undefined): T[] {
  * Returns props for the login CTA. Redirect after login goes to recipes app home.
  */
 export function getLoginLinkProps() {
-  const redirect =
+  const returnTo =
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.kratosLogin, { params: { redirect } });
+  return linkToProps(authLinks.kratosNewLogin, { params: { return_to: returnTo } });
 }
 
 /**
- * Kratos registration on the auth SPA; `redirect` is stored as Kratos `return_to` on the flow.
+ * Kratos registration on the auth SPA; `return_to` is stored on the browser registration flow.
  */
 export function getRegisterLinkProps() {
-  const redirect =
+  const returnTo =
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.kratosRegistration, { params: { redirect } });
+  return linkToProps(authLinks.kratosNewRegistration, { params: { return_to: returnTo } });
 }
 
 /**

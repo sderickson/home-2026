@@ -1,6 +1,8 @@
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
+import { getLoginFlowQueryOptions, LoginFlowFetched } from "@saflib/ory-kratos-sdk";
 import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
@@ -49,12 +51,9 @@ describe("useLoginFlow", () => {
     const hubAppHome = linkToHrefWithHost(appLinks.home);
 
     try {
-      const [{ loginFlowQuery, submitLoginForm, flow }, app] = withVueQuery(() =>
-        useLoginFlow(() => mockLoginFlowId, () => hubAppHome),
+      const [{ submitLoginForm }, app] = withVueQuery(() =>
+        useLoginFlow(ref(mockLoginFlow)),
       );
-
-      await loginFlowQuery.refetch();
-      expect(flow.value?.id).toBeDefined();
 
       await submitLoginForm(loginTestForm());
 
@@ -65,7 +64,7 @@ describe("useLoginFlow", () => {
     }
   });
 
-  it("updates cached login flow from a 400 response body", async () => {
+  it("writes updated login flow to TanStack cache from a 400 response body", async () => {
     server.use(
       http.post("*/self-service/login", () =>
         HttpResponse.json(
@@ -84,19 +83,30 @@ describe("useLoginFlow", () => {
       ),
     );
 
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
-    const [{ loginFlowQuery, submitLoginForm, flow }, app] = withVueQuery(() =>
-      useLoginFlow(() => mockLoginFlowId, () => hubAppHome),
+    const [{ submitLoginForm }, app, queryClient] = withVueQuery(() =>
+      useLoginFlow(ref(mockLoginFlow)),
     );
 
-    await loginFlowQuery.refetch();
+    queryClient.setQueryData(
+      getLoginFlowQueryOptions({ flowId: mockLoginFlowId }).queryKey,
+      new LoginFlowFetched(mockLoginFlow),
+    );
+
     await submitLoginForm(loginTestForm());
 
-    await vi.waitFor(() =>
-      expect(
-        flow.value?.ui.messages?.some((m) => String(m.text).includes("Login validation failed")),
-      ).toBe(true),
-    );
+    await vi.waitFor(() => {
+      const data = queryClient.getQueryData(
+        getLoginFlowQueryOptions({ flowId: mockLoginFlowId }).queryKey,
+      );
+      expect(data).toBeInstanceOf(LoginFlowFetched);
+      if (data instanceof LoginFlowFetched) {
+        expect(
+          data.flow.ui.messages?.some((m) =>
+            String(m.text).includes("Login validation failed"),
+          ),
+        ).toBe(true);
+      }
+    });
     app.unmount();
   });
 });

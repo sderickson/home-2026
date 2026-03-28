@@ -1,116 +1,86 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import type { UiText } from "@ory/client";
+import { ref, type MaybeRefOrGetter, toValue } from "vue";
 import {
   useUpdateVerificationFlowMutation,
-  verificationFlowQueryKey,
-  verificationFlowQueryOptions,
-} from "@sderickson/recipes-sdk";
+  VerificationFlowUpdated,
+} from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
 import {
-  buildVerificationCodeBody,
+  buildVerificationUpdateBodyFromFormData,
   destinationAfterVerification,
   verificationFlowIsComplete,
 } from "./Verification.logic.ts";
-import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
-import { kratos_verification_flow as flowStrings } from "./VerificationFlowForm.strings.ts";
-import { useVerificationNewBrowserFlow } from "./useVerificationNewBrowserFlow.ts";
 
 /**
- * Submit verification code for an active flow. Starting or replacing a browser flow is handled by
- * {@link useVerificationNewBrowserFlow}.
+ * Submit verification steps for an active flow (email → code → done). Starting a browser flow is handled by
+ * {@link useNewVerificationEntryHref} / the `/new-verification` route.
  */
 export function useVerificationFlow(
-  flowId: MaybeRefOrGetter<string>,
-  browserReturnTo: MaybeRefOrGetter<string>,
   verificationToken: MaybeRefOrGetter<string | undefined>,
+  flowId: MaybeRefOrGetter<string>,
 ) {
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const queryClient = useQueryClient();
   const updateVerification = useUpdateVerificationFlowMutation();
-  const { startNewBrowserFlow } = useVerificationNewBrowserFlow();
-
-  const returnTo = computed(() => toValue(browserReturnTo));
-
-  const verificationFlowQuery = useQuery(
-    computed(() => verificationFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
-  );
 
   const submitting = ref(false);
-  const resending = ref(false);
   const submitError = ref<string | null>(null);
 
   function clearSubmitError() {
     submitError.value = null;
   }
 
-  async function resendVerificationCode() {
-    if (resending.value || submitting.value) return;
-    resending.value = true;
-    submitError.value = null;
-    try {
-      try {
-        await startNewBrowserFlow();
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
-          e,
-          flowStrings.verification_failed,
-        );
-      }
-    } finally {
-      resending.value = false;
-    }
+  /**
+   * Hides Kratos flow-level **info** copy (e.g. “a code was sent…”) until the first submit, so email-link
+   * entry isn’t buried in a long banner before the user acts.
+   */
+  const verificationSubmitCount = ref(0);
+
+  function verificationMessageFilter(
+    msg: UiText,
+    ctx: KratosFlowUiMessageFilterContext,
+  ): boolean {
+    if (verificationSubmitCount.value > 0) return true;
+    if (ctx.kind === "flow" && msg.type === "info") return false;
+    return true;
   }
 
   async function submitVerificationForm(form: HTMLFormElement) {
-    const current = verificationFlowQuery.data.value;
-    if (!current || submitting.value || resending.value) return;
     const fd = new FormData(form);
+    verificationSubmitCount.value += 1;
     submitting.value = true;
     submitError.value = null;
     try {
-      let updated;
-      try {
-        const token = toValue(verificationToken);
-        updated = await updateVerification.mutateAsync({
-          flow: current.id,
-          updateVerificationFlowBody: buildVerificationCodeBody(fd),
-          ...(token ? { token } : {}),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
-          e,
-          flowStrings.verification_failed,
+      const id = toValue(flowId);
+      const token = toValue(verificationToken);
+      const updated = await updateVerification.mutateAsync({
+        flow: id,
+        updateVerificationFlowBody: buildVerificationUpdateBodyFromFormData(fd),
+        ...(token ? { token } : {}),
+      });
+
+      if (!(updated instanceof VerificationFlowUpdated)) {
+        throw new Error("Unexpected result");
+      }
+
+      if (verificationFlowIsComplete(updated.flow)) {
+        window.location.assign(
+          destinationAfterVerification(
+            updated.flow.return_to,
+            postAuthFallbackHref.value,
+          ),
         );
-        return;
       }
-
-      queryClient.setQueryData(
-        verificationFlowQueryKey(toValue(flowId), returnTo.value),
-        updated,
-      );
-
-      if (!verificationFlowIsComplete(updated)) {
-        return;
-      }
-
-      const destination = destinationAfterVerification(
-        updated.return_to ?? current.return_to,
-        postAuthFallbackHref.value,
-      );
-      window.location.assign(destination);
     } finally {
       submitting.value = false;
     }
   }
 
   return {
-    verificationFlowQuery,
-    flow: computed(() => verificationFlowQuery.data.value),
     submitting,
-    resending,
     submitError,
     clearSubmitError,
     submitVerificationForm,
-    resendVerificationCode,
+    verificationMessageFilter,
   };
 }

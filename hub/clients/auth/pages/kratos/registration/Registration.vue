@@ -1,94 +1,45 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <RegistrationIntro v-if="!session" />
-    <AuthSessionDecisionPanel
-      v-if="session"
-      :identity-email="identityEmail"
-      :continue-href="continueHref"
-      variant="registration"
+    <RegistrationFlowForm
+      v-if="queryData instanceof RegistrationFlowFetched && flow"
+      :flow="flow"
     />
-    <RegistrationFlowForm v-else-if="flowIdForForm" :flow-id="flowIdForForm" />
+    <FlowGonePanel
+      v-else-if="queryData instanceof FlowGone"
+      restart-path="/new-registration"
+      :result="queryData"
+    />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-registration"
+      :result="queryData"
+    />
+    <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { useQueryClient } from "@tanstack/vue-query";
-import { computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
-import { identityNeedsEmailVerification, registrationFlowQueryKey } from "@sderickson/recipes-sdk";
-import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
 import {
-  registrationFlowQueryEnabledForSession,
-  useRegistrationBrowserReturnTo,
-  useRegistrationLoader,
-} from "./Registration.loader.ts";
+  FlowGone,
+  RegistrationFlowFetched,
+  SecurityCsrfViolation,
+} from "@saflib/ory-kratos-sdk";
+import { useRegistrationLoader } from "./Registration.loader.ts";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
+import FlowGonePanel from "../common/FlowGonePanel.vue";
+import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import RegistrationFlowForm from "./RegistrationFlowForm.vue";
-import RegistrationIntro from "./RegistrationIntro.vue";
+import { computed, toValue } from "vue";
 
-const route = useRoute();
-const router = useRouter();
-const queryClient = useQueryClient();
-const { sessionQuery, registrationFlowQuery } = useRegistrationLoader();
-const browserReturnTo = useRegistrationBrowserReturnTo();
+const { getRegistrationFlowQuery } = useRegistrationLoader();
 
-const registrationFlowEnabled = computed(() =>
-  registrationFlowQueryEnabledForSession(sessionQuery),
-);
+const queryData = computed(() => toValue(getRegistrationFlowQuery.data));
 
-if (sessionQuery.status.value !== "success") {
-  throw new Error("Failed to load session");
-}
-
-watch(
-  () => ({
-    status: registrationFlowQuery.status.value,
-    data: registrationFlowQuery.data.value,
-    flowParam: route.query.flow,
-  }),
-  ({ status, data, flowParam }) => {
-    if (status !== "success" || !data?.id) return;
-    if (typeof flowParam === "string") return;
-    queryClient.setQueryData(registrationFlowQueryKey(data.id), data);
-    router.replace({
-      path: route.path,
-      query: { flow: data.id },
-    });
-  },
-  { immediate: true },
-);
-
-const session = computed(() => sessionQuery.data.value);
-
-const identityEmail = computed(() => {
-  const s = session.value;
-  const traits = s?.identity?.traits as { email?: string } | undefined;
-  return traits?.email ?? "";
-});
-
-const continueHref = computed(() => {
-  const s = session.value;
-  if (!s) return "";
-  if (identityNeedsEmailVerification(s.identity)) {
-    return linkToHrefWithHost(authLinks.kratosVerifyWall, {
-      params: { redirect: browserReturnTo.value },
-    });
+const flow = computed(() => {
+  const d = queryData.value;
+  if (d instanceof RegistrationFlowFetched) {
+    return d.flow;
   }
-  return browserReturnTo.value;
+  return null;
 });
-
-const flowIdForForm = computed(() => {
-  if (typeof route.query.flow === "string") return route.query.flow;
-  return registrationFlowQuery.data.value?.id ?? "";
-});
-
-if (
-  !session.value &&
-  registrationFlowEnabled.value &&
-  (registrationFlowQuery.status.value !== "success" ||
-    !registrationFlowQuery.data.value?.id)
-) {
-  throw new Error("Failed to load registration flow");
-}
 </script>

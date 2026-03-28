@@ -1,23 +1,27 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
-import { linkToHrefWithHost, navigateToLink } from "@saflib/links";
+import type { RegistrationFlow, UiText } from "@ory/client";
+import { useQueryClient } from "@tanstack/vue-query";
+import { ref, type Ref } from "vue";
+import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  fetchBrowserLoginFlow,
+  createLoginFlowQueryOptions,
   identityNeedsEmailVerification,
-  invalidateKratosSessionQueries,
-  kratosSessionQueryOptions,
-  LoginFlowUpdated,
-  registrationFlowQueryKey,
-  registrationFlowQueryOptions,
+  LoginFlowCreated,
   RegistrationFlowUpdated,
   useUpdateLoginFlowMutation,
   useUpdateRegistrationFlowMutation,
-} from "@sderickson/recipes-sdk";
+  BrowserRedirectRequired,
+  RegistrationCompleted,
+  LoginCompleted,
+  SessionAlreadyAvailable,
+  UnhandledResponse,
+} from "@saflib/ory-kratos-sdk";
+import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
+import { isKratosPropertyMissingMessage } from "../common/kratosUiMessages.ts";
 import {
   buildLoginPasswordBody,
   buildRegistrationPasswordBody,
-  postRegistrationNavigationUrl,
   registrationSubmitErrorMessage,
   traitsEmailFromFormData,
 } from "./Registration.logic.ts";
@@ -27,14 +31,10 @@ import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.
  * Submit and post-login navigation for an existing registration flow.
  * Flow creation and `?flow=` URL sync live on the page (`Registration.vue` + loader).
  */
-export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
+export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
   const queryClient = useQueryClient();
   const updateRegistration = useUpdateRegistrationFlowMutation();
   const updateLogin = useUpdateLoginFlowMutation();
-
-  const registrationFlowQuery = useQuery(
-    computed(() => registrationFlowQueryOptions({ flowId: toValue(flowId) })),
-  );
 
   const submitting = ref(false);
   const submitError = ref<string | null>(null);
@@ -42,91 +42,111 @@ export function useRegistrationFlow(flowId: MaybeRefOrGetter<string>) {
   function clearSubmitError() {
     submitError.value = null;
   }
+  const postAuthFallbackHref = useAuthPostAuthFallbackHref();
+
+  /**
+   * Used to hide Kratos "Property password is missing" on the first response after submitting email
+   * only (multi-step password UI). Second submit with an empty password shows the message.
+   */
+  const registrationSubmitCount = ref(0);
+
+  function registrationMessageFilter(
+    msg: UiText,
+    _ctx: KratosFlowUiMessageFilterContext,
+  ): boolean {
+    if (registrationSubmitCount.value !== 1) return true;
+    if (!isKratosPropertyMissingMessage(msg)) return true;
+    const prop = (msg.context as { property?: string } | undefined)?.property;
+    if (prop !== "password") return true;
+    return false;
+  }
 
   async function submitRegistrationForm(form: HTMLFormElement) {
-    const current = registrationFlowQuery.data.value;
-    if (!current || submitting.value) return;
     const fd = new FormData(form);
+    registrationSubmitCount.value += 1;
     submitting.value = true;
     submitError.value = null;
+    /** When true, keep the form in its loading state until the browser navigates away (avoid flashing stale Kratos errors). */
+    let keepSubmittingUntilNavigation = false;
     try {
-      let updated;
-      try {
-        updated = await updateRegistration.mutateAsync({
-          flow: current.id,
-          updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
-          e,
-          flowStrings.registration_failed,
-        );
+      const updated = await updateRegistration.mutateAsync({
+        flow: flow.value.id,
+        updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
+      });
+      if (updated instanceof BrowserRedirectRequired) {
+        if (!updated.payload.redirect_browser_to) {
+          throw new Error("Redirect browser to is required");
+        }
+        window.location.assign(updated.payload.redirect_browser_to);
+        keepSubmittingUntilNavigation = true;
         return;
       }
-
       if (updated instanceof RegistrationFlowUpdated) {
-        queryClient.setQueryData(
-          registrationFlowQueryKey(toValue(flowId)),
-          updated.flow,
-        );
         return;
       }
 
-      const destination = postRegistrationNavigationUrl(current);
+      if (!(updated instanceof RegistrationCompleted)) {
+        throw new Error("Unexpected result");
+      }
+
       const email = traitsEmailFromFormData(fd);
       const password = String(fd.get("password") ?? "");
-
-      let loginResult;
-      try {
-        const loginFlow = await fetchBrowserLoginFlow(destination);
-        loginResult = await updateLogin.mutateAsync({
-          flow: loginFlow.id,
-          updateLoginFlowBody: buildLoginPasswordBody(
-            loginFlow,
-            email,
-            password,
-          ),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
-          e,
-          flowStrings.post_reg_login_failed,
-        );
-        return;
+      const destination = flow.value.return_to ?? postAuthFallbackHref.value;
+      const created = await queryClient.fetchQuery({
+        ...createLoginFlowQueryOptions({ returnTo: destination }),
+        staleTime: 0,
+      });
+      if (!(created instanceof LoginFlowCreated)) {
+        if (
+          created instanceof SessionAlreadyAvailable ||
+          created instanceof UnhandledResponse
+        ) {
+          submitError.value = flowStrings.post_reg_login_failed;
+          return;
+        }
+        throw new Error("Unexpected create login flow result");
       }
+      const loginFlow = created.flow;
+      const loginResult = await updateLogin.mutateAsync({
+        flow: loginFlow.id,
+        updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),
+      });
 
-      if (loginResult instanceof LoginFlowUpdated) {
+      if (!(loginResult instanceof LoginCompleted)) {
         submitError.value = flowStrings.post_reg_login_failed;
         return;
       }
 
-      await invalidateKratosSessionQueries(queryClient);
-      const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const postVerifyTarget =
-        destination ?? linkToHrefWithHost(authLinks.home);
+      const session = loginResult.session.session;
 
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
           linkToHrefWithHost(authLinks.kratosVerifyWall, {
-            params: { redirect: postVerifyTarget },
+            params: { return_to: destination },
           }),
         );
-      } else if (destination) {
-        window.location.assign(destination);
       } else {
-        navigateToLink(authLinks.home);
+        window.location.assign(destination);
       }
+      keepSubmittingUntilNavigation = true;
+    } catch (e) {
+      submitError.value = registrationSubmitErrorMessage(
+        e,
+        flowStrings.registration_failed,
+      );
+      return;
     } finally {
-      submitting.value = false;
+      if (!keepSubmittingUntilNavigation) {
+        submitting.value = false;
+      }
     }
   }
 
   return {
-    registrationFlowQuery,
-    flow: computed(() => registrationFlowQuery.data.value),
     submitting,
     submitError,
     clearSubmitError,
     submitRegistrationForm,
+    registrationMessageFilter,
   };
 }

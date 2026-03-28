@@ -19,6 +19,10 @@ import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import { useAuthFlowCrossLinks } from "../common/useAuthFlowCrossLinks.ts";
 import { registration_intro as strings } from "./RegistrationIntro.strings.ts";
 
+const props = defineProps<{
+  flowReturnTo?: string | null;
+}>();
+
 const { t } = useReverseT();
-const { loginHref } = useAuthFlowCrossLinks();
+const { loginHref } = useAuthFlowCrossLinks(() => props.flowReturnTo);
 </script>

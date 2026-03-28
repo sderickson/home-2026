@@ -4,9 +4,12 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setClientName } from "@saflib/links";
-import { useKratosSession } from "@sderickson/recipes-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
-import { kratosFakeHandlers, resetKratosFlowMocks } from "@sderickson/recipes-sdk/fakes";
+import {
+  kratosFakeHandlers,
+  resetKratosFlowMocks,
+} from "@sderickson/recipes-sdk/fakes";
 import { useVerifyWallPage } from "./useVerifyWallPage.ts";
 
 const unverifiedSession = {
@@ -85,7 +88,9 @@ describe("useVerifyWallPage", () => {
   });
 
   it("sets showUnverifiedWall when the session has an unverified email address", async () => {
-    server.use(http.get("*/sessions/whoami", () => HttpResponse.json(unverifiedSession)));
+    server.use(
+      http.get("*/sessions/whoami", () => HttpResponse.json(unverifiedSession)),
+    );
 
     const { page, app } = await mountVerifyWallPage("/verify-wall");
     expect(page.showUnverifiedWall.value).toBe(true);
@@ -95,13 +100,20 @@ describe("useVerifyWallPage", () => {
   });
 
   it("sets showVerifiedWall when the session email is verified (no auto redirect)", async () => {
-    server.use(http.get("*/sessions/whoami", () => HttpResponse.json(verifiedSession)));
+    server.use(
+      http.get("*/sessions/whoami", () => HttpResponse.json(verifiedSession)),
+    );
 
     const assignMock = vi.fn();
-    vi.stubGlobal("location", { href: "http://localhost/", assign: assignMock });
+    vi.stubGlobal("location", {
+      href: "http://localhost/",
+      assign: assignMock,
+    });
 
     try {
-      const { page, app } = await mountVerifyWallPage("/verify-wall?redirect=https://recipes.example/ok");
+      const { page, app } = await mountVerifyWallPage(
+        "/verify-wall?return_to=https://recipes.example/ok",
+      );
       expect(page.showVerifiedWall.value).toBe(true);
       expect(page.showUnverifiedWall.value).toBe(false);
       expect(page.redirectAfter.value).toBe("https://recipes.example/ok");

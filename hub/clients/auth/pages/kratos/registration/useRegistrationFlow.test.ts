@@ -1,17 +1,17 @@
+import type { UiText } from "@ory/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
+import { linkToHrefWithHost, setClientName } from "@saflib/links";
+import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
+import { resetKratosFlowMocks, setMockRegistrationPostResult } from "@sderickson/recipes-sdk/fakes";
 import {
-  kratosFakeHandlers,
-  resetKratosFlowMocks,
-  setMockRegistrationPostResult,
-} from "@sderickson/recipes-sdk/fakes";
-import * as linkUtils from "@saflib/links";
-import { setClientName } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
+  RegistrationFlowFetched,
+  getRegistrationFlowQueryOptions,
+} from "@saflib/ory-kratos-sdk";
+import { kratosFakeHandlers, mockRegistrationFlow } from "@saflib/ory-kratos-sdk/fakes";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
-
-const mockRegistrationFlowId = "mock-registration-flow";
 
 function registrationTestForm() {
   const form = document.createElement("form");
@@ -40,40 +40,49 @@ describe("useRegistrationFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("falls back to auth home when the flow has no return_to", async () => {
+  it("falls back to app home when the flow has no return_to", async () => {
     setMockRegistrationPostResult("success");
-    const navSpy = vi.spyOn(linkUtils, "navigateToLink").mockImplementation(() => {});
+    const assignMock = vi.fn();
+    vi.stubGlobal("location", {
+      href: "http://localhost/",
+      assign: assignMock,
+    });
+    try {
+      const flowRef = ref({ ...mockRegistrationFlow });
+      const [{ submitRegistrationForm }, app] = withVueQuery(() =>
+        useRegistrationFlow(flowRef),
+      );
 
-    const [{ registrationFlowQuery, submitRegistrationForm, flow }, app] = withVueQuery(() =>
-      useRegistrationFlow(() => mockRegistrationFlowId),
-    );
+      await submitRegistrationForm(registrationTestForm());
 
-    await registrationFlowQuery.refetch();
-    expect(flow.value?.id).toBeDefined();
-
-    await submitRegistrationForm(registrationTestForm());
-
-    await vi.waitFor(() =>
-      expect(navSpy).toHaveBeenCalledWith(authLinks.home),
-    );
-    app.unmount();
+      const expected = linkToHrefWithHost(appLinks.home);
+      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(expected));
+      app.unmount();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("updates cached registration flow from a 400 response body", async () => {
     setMockRegistrationPostResult("validation_error");
 
-    const [{ registrationFlowQuery, submitRegistrationForm, flow }, app] = withVueQuery(() =>
-      useRegistrationFlow(() => mockRegistrationFlowId),
+    const flowRef = ref({ ...mockRegistrationFlow });
+    const [{ submitRegistrationForm }, app, queryClient] = withVueQuery(() =>
+      useRegistrationFlow(flowRef),
     );
 
-    await registrationFlowQuery.refetch();
     await submitRegistrationForm(registrationTestForm());
 
-    await vi.waitFor(() =>
-      expect(
-        flow.value?.ui.messages?.some((m) => String(m.text).includes("Validation failed")),
-      ).toBe(true),
-    );
+    const key = getRegistrationFlowQueryOptions({
+      flowId: mockRegistrationFlow.id,
+    }).queryKey;
+    const data = queryClient.getQueryData(key);
+    expect(data).toBeInstanceOf(RegistrationFlowFetched);
+    expect(
+      (data as RegistrationFlowFetched).flow.ui.messages?.some((m: UiText) =>
+        String(m.text).includes("Validation failed"),
+      ),
+    ).toBe(true);
     app.unmount();
   });
 });

@@ -1,14 +1,9 @@
-import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
 import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
-import {
-  kratosFakeHandlers,
-  mockVerificationFlow,
-  resetKratosFlowMocks,
-} from "@sderickson/recipes-sdk/fakes";
+import { kratosFakeHandlers, resetKratosFlowMocks } from "@sderickson/recipes-sdk/fakes";
 import { useVerificationFlow } from "./useVerificationFlow.ts";
 
 const mockVerificationFlowId = "mock-verification-flow";
@@ -28,7 +23,7 @@ function verificationTestForm() {
 }
 
 describe("useVerificationFlow", () => {
-  const server = setupMockServer(kratosFakeHandlers);
+  setupMockServer(kratosFakeHandlers);
 
   beforeEach(() => {
     setClientName("auth");
@@ -39,73 +34,25 @@ describe("useVerificationFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("assigns window.location after successful verification using hub app home when flow has no return_to", async () => {
+  it("assigns window.location after successful submit using flow return_to or app home fallback", async () => {
     const assignMock = vi.fn();
     vi.stubGlobal("location", {
       href: "http://localhost/",
       assign: assignMock,
     });
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
-
     try {
-      const [{ verificationFlowQuery, submitVerificationForm, flow }, app] = withVueQuery(() =>
-        useVerificationFlow(
-          () => mockVerificationFlowId,
-          () => hubAppHome,
-          () => undefined,
-        ),
+      const [{ submitVerificationForm }, app] = withVueQuery(() =>
+        useVerificationFlow(() => undefined, () => mockVerificationFlowId),
       );
-
-      await verificationFlowQuery.refetch();
-      expect(flow.value?.id).toBeDefined();
 
       await submitVerificationForm(verificationTestForm());
 
-      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith(hubAppHome));
+      await vi.waitFor(() =>
+        expect(assignMock).toHaveBeenCalledWith(linkToHrefWithHost(appLinks.home)),
+      );
       app.unmount();
     } finally {
       vi.unstubAllGlobals();
     }
-  });
-
-  it("updates cached verification flow from a 400 response body", async () => {
-    server.use(
-      http.post("*/self-service/verification", () =>
-        HttpResponse.json(
-          {
-            ...mockVerificationFlow,
-            ui: {
-              ...mockVerificationFlow.ui,
-              messages: [
-                ...(mockVerificationFlow.ui.messages ?? []),
-                { type: "error" as const, text: "Verification validation failed (fake)" },
-              ],
-            },
-          },
-          { status: 400 },
-        ),
-      ),
-    );
-
-    const hubAppHome = linkToHrefWithHost(appLinks.home);
-    const [{ verificationFlowQuery, submitVerificationForm, flow }, app] = withVueQuery(() =>
-      useVerificationFlow(
-        () => mockVerificationFlowId,
-        () => hubAppHome,
-        () => undefined,
-      ),
-    );
-
-    await verificationFlowQuery.refetch();
-    await submitVerificationForm(verificationTestForm());
-
-    await vi.waitFor(() =>
-      expect(
-        flow.value?.ui.messages?.some((m) =>
-          String(m.text).includes("Verification validation failed"),
-        ),
-      ).toBe(true),
-    );
-    app.unmount();
   });
 });

@@ -1,10 +1,8 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
+import { ref, toValue, type MaybeRefOrGetter } from "vue";
 import {
-  settingsFlowQueryKey,
-  settingsFlowQueryOptions,
+  BrowserRedirectRequired,
   useUpdateSettingsFlowMutation,
-} from "@sderickson/recipes-sdk";
+} from "@saflib/ory-kratos-sdk";
 import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
 import {
   buildSettingsUpdateBodyFromFormData,
@@ -13,20 +11,10 @@ import {
 import { settings_page as pageStrings } from "./Settings.strings.ts";
 
 /**
- * Submit profile / password updates for the active settings flow.
+ * Submit profile / password / TOTP updates for the active settings flow.
  */
-export function useSettingsFlow(
-  flowId: MaybeRefOrGetter<string>,
-  browserReturnTo: MaybeRefOrGetter<string>,
-) {
-  const queryClient = useQueryClient();
+export function useSettingsFlow(flowId: MaybeRefOrGetter<string>) {
   const updateSettings = useUpdateSettingsFlowMutation();
-
-  const returnTo = computed(() => toValue(browserReturnTo));
-
-  const settingsFlowQuery = useQuery(
-    computed(() => settingsFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
-  );
 
   const submitting = ref(false);
   const submitError = ref<string | null>(null);
@@ -35,26 +23,31 @@ export function useSettingsFlow(
     submitError.value = null;
   }
 
-  async function submitSettingsForm(form: HTMLFormElement, submitter?: HTMLElement | null) {
-    const current = settingsFlowQuery.data.value;
-    if (!current || submitting.value) return;
+  async function submitSettingsForm(
+    form: HTMLFormElement,
+    submitter?: HTMLElement | null,
+  ) {
+    const id = toValue(flowId);
+    if (!id) return;
     const fd = formDataFromKratosSettingsForm(form, submitter);
     submitting.value = true;
     submitError.value = null;
     try {
-      let updated;
-      try {
-        updated = await updateSettings.mutateAsync({
-          flow: current.id,
-          updateSettingsFlowBody: buildSettingsUpdateBodyFromFormData(fd),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(e, pageStrings.settings_failed);
+      const updated = await updateSettings.mutateAsync({
+        flow: id,
+        updateSettingsFlowBody: buildSettingsUpdateBodyFromFormData(fd),
+      });
+      if (updated instanceof BrowserRedirectRequired) {
+        if (!updated.payload.redirect_browser_to) {
+          throw new Error("Redirect browser to is required");
+        }
+        window.location.assign(updated.payload.redirect_browser_to);
         return;
       }
-      queryClient.setQueryData(
-        settingsFlowQueryKey(toValue(flowId), returnTo.value),
-        updated,
+    } catch (e) {
+      submitError.value = registrationSubmitErrorMessage(
+        e,
+        pageStrings.settings_failed,
       );
     } finally {
       submitting.value = false;
@@ -62,8 +55,6 @@ export function useSettingsFlow(
   }
 
   return {
-    settingsFlowQuery,
-    flow: computed(() => settingsFlowQuery.data.value),
     submitting,
     submitError,
     clearSubmitError,

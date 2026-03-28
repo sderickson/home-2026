@@ -7,6 +7,7 @@ import { recovery_intro } from "./pages/kratos/recovery/RecoveryIntro.strings.ts
 import {
   settings_group_empty,
   settings_page,
+  settings_password_recovery,
   settings_tabs,
 } from "./pages/kratos/settings/Settings.strings.ts";
 import { settings_intro } from "./pages/kratos/settings/SettingsIntro.strings.ts";
@@ -15,7 +16,6 @@ import { kratos_verification } from "./pages/kratos/verification/Verification.st
 import { kratos_verification_flow } from "./pages/kratos/verification/VerificationFlowForm.strings.ts";
 import { login_intro } from "./pages/kratos/login/LoginIntro.strings.ts";
 import { registration_intro } from "./pages/kratos/registration/RegistrationIntro.strings.ts";
-import { auth_session_decision } from "./pages/kratos/common/AuthSessionDecisionPanel.strings.ts";
 import {
   verification_intro,
   verification_verified,
@@ -36,13 +36,13 @@ export const auth_strings = {
   settings_group_empty,
   settings_intro,
   settings_page,
+  settings_password_recovery,
   settings_tabs,
   kratos_registration_flow,
   kratos_verification,
   kratos_verification_flow,
   login_intro,
   registration_intro,
-  auth_session_decision,
   verification_intro,
   verification_verified,
   verify_wall_actions,

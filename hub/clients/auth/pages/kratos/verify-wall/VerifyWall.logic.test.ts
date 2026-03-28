@@ -1,25 +1,25 @@
 import type { Session } from "@ory/client";
 import { describe, expect, it } from "vitest";
 import {
-  resolveVerifyWallRedirectDestination,
+  resolveVerifyWallReturnToDestination,
   sessionDisplayEmail,
 } from "./VerifyWall.logic.ts";
 
-describe("resolveVerifyWallRedirectDestination", () => {
-  it("uses the redirect query when it is a non-empty string", () => {
-    expect(resolveVerifyWallRedirectDestination("https://app.example/after", "https://fallback")).toBe(
+describe("resolveVerifyWallReturnToDestination", () => {
+  it("uses the return_to query when it is a non-empty string", () => {
+    expect(resolveVerifyWallReturnToDestination("https://app.example/after", "https://fallback")).toBe(
       "https://app.example/after",
     );
   });
 
-  it("trims the redirect query", () => {
-    expect(resolveVerifyWallRedirectDestination("  https://x  ", "https://fallback")).toBe("https://x");
+  it("trims the return_to query", () => {
+    expect(resolveVerifyWallReturnToDestination("  https://x  ", "https://fallback")).toBe("https://x");
   });
 
-  it("uses the fallback when redirect is missing or blank", () => {
-    expect(resolveVerifyWallRedirectDestination(undefined, "https://fallback")).toBe("https://fallback");
-    expect(resolveVerifyWallRedirectDestination("", "https://fallback")).toBe("https://fallback");
-    expect(resolveVerifyWallRedirectDestination("   ", "https://fallback")).toBe("https://fallback");
+  it("uses the fallback when return_to is missing or blank", () => {
+    expect(resolveVerifyWallReturnToDestination(undefined, "https://fallback")).toBe("https://fallback");
+    expect(resolveVerifyWallReturnToDestination("", "https://fallback")).toBe("https://fallback");
+    expect(resolveVerifyWallReturnToDestination("   ", "https://fallback")).toBe("https://fallback");
   });
 });
 

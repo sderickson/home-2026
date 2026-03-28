@@ -1,5 +1,6 @@
 <template>
   <div>
+    <RegistrationIntro :flow-return-to="flow.return_to" />
     <v-alert
       v-if="submitError"
       type="error"
@@ -11,10 +12,12 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosLoginUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
       :submitting="submitting"
+      id-prefix="kratos-login"
+      :message-filter="registrationMessageFilter"
       @submit="submitRegistrationForm"
     />
   </div>
@@ -22,16 +25,18 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
-import KratosLoginUi from "../login/KratosLoginUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
+import RegistrationIntro from "./RegistrationIntro.vue";
 import { useRegistrationFlow } from "./useRegistrationFlow.ts";
+import type { RegistrationFlow } from "@ory/client";
 
-const props = defineProps<{ flowId: string }>();
+const props = defineProps<{ flow: RegistrationFlow }>();
 
 const {
-  flow,
   submitting,
   submitError,
   clearSubmitError,
   submitRegistrationForm,
-} = useRegistrationFlow(toRef(props, "flowId"));
+  registrationMessageFilter,
+} = useRegistrationFlow(toRef(props, "flow"));
 </script>

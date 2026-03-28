@@ -1,31 +1,28 @@
 <template>
   <div>
-    <h1 class="text-h4 mb-2">{{ t(active.title) }}</h1>
+    <div class="float-right mb-4">
+      <a
+        :href="loginHref"
+        class="text-primary text-decoration-none d-inline-flex align-center ga-1"
+      >
+        {{ t(strings.link_login) }}
+        <v-icon icon="mdi-chevron-right" size="small" />
+      </a>
+    </div>
+    <div style="clear: both"></div>
+    <h1 class="text-h4 mb-2">{{ t(strings.title) }}</h1>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
+import { useAuthFlowCrossLinks } from "../common/useAuthFlowCrossLinks.ts";
 import { verification_intro as strings } from "./VerificationIntro.strings.ts";
 
-const props = withDefaults(
-  defineProps<{
-    /** `request` — before a flow exists (send a code first). `enter` — code entry step. */
-    variant?: "request" | "enter";
-  }>(),
-  { variant: "enter" },
-);
+const props = defineProps<{
+  flowReturnTo?: string | null;
+}>();
 
 const { t } = useReverseT();
-
-const active = computed(() =>
-  props.variant === "request"
-    ? {
-        title: strings.request_title,
-      }
-    : {
-        title: strings.title,
-      },
-);
+const { loginHref } = useAuthFlowCrossLinks(() => props.flowReturnTo);
 </script>

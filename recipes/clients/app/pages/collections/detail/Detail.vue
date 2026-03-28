@@ -86,7 +86,10 @@
 
     <div class="d-flex align-center flex-wrap gap-3 mb-3">
       <h2 class="text-h6 mb-0">{{ t(strings.recipes_heading) }}</h2>
-      <div v-if="canEdit" class="d-flex flex-wrap align-center recipes-pills-row">
+      <div
+        v-if="canEdit"
+        class="d-flex flex-wrap align-center recipes-pills-row"
+      >
         <v-chip
           variant="tonal"
           color="primary"
@@ -129,7 +132,10 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { RecipeList, useDeleteCollectionsMutation } from "@sderickson/recipes-sdk";
+import {
+  RecipeList,
+  useDeleteCollectionsMutation,
+} from "@sderickson/recipes-sdk";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { collections_detail as strings } from "./Detail.strings.ts";
@@ -140,7 +146,7 @@ import {
   getMenusList,
   getRecipesList,
 } from "./Detail.logic.ts";
-import { kratosIdentityEmail } from "@sderickson/recipes-sdk";
+import { kratosIdentityEmail } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MembersManagementDialog from "../../../components/collections/MembersManagementDialog.vue";
 import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
@@ -168,7 +174,9 @@ assertCollectionDetailLoaded(
 const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
-const userEmail = computed(() => kratosIdentityEmail(sessionQuery.data.value) ?? "");
+const userEmail = computed(
+  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+);
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),
 );

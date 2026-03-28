@@ -19,7 +19,7 @@ describe("KratosRegistration", () => {
 
   it("should render", async () => {
     const router = createTestRouter();
-    await router.push("/registration");
+    await router.push("/registration?flow=mock-registration-flow");
     await router.isReady();
 
     const wrapper = mountTestApp(KratosRegistrationAsync, {}, { router });

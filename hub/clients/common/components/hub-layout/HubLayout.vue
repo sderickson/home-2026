@@ -66,7 +66,12 @@ import { useRoute } from "vue-router";
 import { TopLevelContainer } from "@saflib/vue/components";
 import { hub_layout } from "./HubLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
-import { linkToHref, linkToHrefWithHost, getHost, type Link } from "@saflib/links";
+import {
+  linkToHref,
+  linkToHrefWithHost,
+  getHost,
+  type Link,
+} from "@saflib/links";
 import { events } from "@saflib/vue";
 import { SnackbarQueue } from "@saflib/vue/components";
 import { SpaLink } from "@saflib/vue/components";
@@ -74,7 +79,6 @@ import { SpaLink } from "@saflib/vue/components";
 import {
   rootLinks,
   appLinks,
-  accountLinks,
   authLinks,
   adminLinks,
 } from "@sderickson/hub-links";
@@ -99,9 +103,11 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: t(hub_layout.nav_app) },
-      { ...accountLinks.home, name: t(hub_layout.nav_account) },
+      { ...authLinks.kratosNewSettings, name: t(hub_layout.nav_account) },
       { ...authLinks.logout, name: t(hub_layout.nav_logout) },
-      ...(props.isAdmin ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }] : []),
+      ...(props.isAdmin
+        ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }]
+        : []),
     ];
   }
   return [
@@ -114,16 +120,17 @@ function getNavHref(link: LinkWithName) {
   if (link.subdomain !== "auth") {
     return linkToHrefWithHost(link);
   }
-  let redirect: string | undefined;
-  if (
-    link.path === "/login" ||
-    link.path === "/register" ||
-    link.path === "/registration"
-  ) {
-    redirect = linkToHref(appLinks.home, { domain: getHost() });
+  let returnTo: string | undefined;
+  if (link.path === "/new-login" || link.path === "/new-verification") {
+    returnTo = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
-    redirect = linkToHref(rootLinks.home, { domain: getHost() });
+    returnTo = linkToHref(rootLinks.home, { domain: getHost() });
+  } else if (link.path === "/new-settings") {
+    returnTo = typeof window !== "undefined" ? window.location.href : undefined;
   }
-  return linkToHrefWithHost(link, redirect != null ? { params: { redirect } } : undefined);
+  return linkToHrefWithHost(
+    link,
+    returnTo != null ? { params: { return_to: returnTo } } : undefined,
+  );
 }
 </script>

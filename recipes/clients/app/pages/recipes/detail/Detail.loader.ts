@@ -1,8 +1,8 @@
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import {
   filesListRecipesQuery,
   getCollectionsQuery,
   getRecipeQuery,
-  kratosSessionRequiredQueryOptions,
   listRecipeVersionsQuery,
   membersListCollectionsQuery,
   notesListRecipesQuery,
@@ -20,10 +20,11 @@ export type RecipeDetailLoaderParams = {
 export function useDetailLoader(params?: RecipeDetailLoaderParams) {
   const route = useRoute();
   const recipeId = params?.recipeId ?? (route.params.id as string);
-  const collectionId = params?.collectionId ?? (route.params.collectionId as string);
+  const collectionId =
+    params?.collectionId ?? (route.params.collectionId as string);
 
   return {
-    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
+    sessionQuery: useKratosSession(),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipeQuery: useQuery(getRecipeQuery(recipeId)),

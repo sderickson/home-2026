@@ -11,8 +11,8 @@ function postAuthRedirectHref() {
  * Props for the register CTA: auth registration with `return_to` = hub app home.
  */
 export function getRegisterLinkProps() {
-  return linkToProps(authLinks.kratosRegistration, {
-    params: { redirect: postAuthRedirectHref() },
+  return linkToProps(authLinks.kratosNewRegistration, {
+    params: { return_to: postAuthRedirectHref() },
   });
 }
 
@@ -20,7 +20,7 @@ export function getRegisterLinkProps() {
  * Props for the login CTA: auth login with `return_to` = hub app home.
  */
 export function getLoginLinkProps() {
-  return linkToProps(authLinks.kratosLogin, {
-    params: { redirect: postAuthRedirectHref() },
+  return linkToProps(authLinks.kratosNewLogin, {
+    params: { return_to: postAuthRedirectHref() },
   });
 }

@@ -1,7 +1,7 @@
 import { VerificationFlowState } from "@ory/client";
 import { describe, expect, it } from "vitest";
 import {
-  buildVerificationCodeBody,
+  buildVerificationUpdateBodyFromFormData,
   buildVerificationResendCodeBody,
   destinationAfterVerification,
   emailForVerificationResend,
@@ -49,15 +49,27 @@ describe("destinationAfterVerification", () => {
   });
 });
 
-describe("buildVerificationCodeBody", () => {
-  it("builds a code-method body from form data", () => {
+describe("buildVerificationUpdateBodyFromFormData", () => {
+  it("sends trimmed code only when the user entered a code", () => {
     const fd = new FormData();
     fd.set("csrf_token", "csrf");
+    fd.set("email", "a@b.co");
     fd.set("code", " 123456 ");
-    expect(buildVerificationCodeBody(fd)).toEqual({
+    expect(buildVerificationUpdateBodyFromFormData(fd)).toEqual({
       method: "code",
       csrf_token: "csrf",
       code: "123456",
+    });
+  });
+
+  it("sends email when there is no code (request or confirm email step)", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "csrf");
+    fd.set("email", "  user@example.com ");
+    expect(buildVerificationUpdateBodyFromFormData(fd)).toEqual({
+      method: "code",
+      csrf_token: "csrf",
+      email: "user@example.com",
     });
   });
 });

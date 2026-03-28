@@ -16,7 +16,10 @@ describe("KratosRecovery", () => {
   it("should render", async () => {
     const router = createTestRouter();
     // TODO: replace any route params (e.g. :id) with actual test values
-    await router.push("/recovery");
+    await router.push({
+      path: "/recovery",
+      query: { flow: "mock-recovery-flow" },
+    });
     await router.isReady();
 
     const wrapper = mountTestApp(KratosRecoveryAsync, {}, { router });

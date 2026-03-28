@@ -19,7 +19,9 @@
     <template v-if="!showForm">
       <p class="mb-4">{{ t(strings.forbidden) }}</p>
       <v-btn
-        v-bind="linkToProps(appLinks.collectionsDetail, { params: { collectionId } })"
+        v-bind="
+          linkToProps(appLinks.collectionsDetail, { params: { collectionId } })
+        "
         color="primary"
       >
         {{ t(strings.breadcrumb_menus) }}
@@ -37,7 +39,7 @@ import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { menus_create as strings } from "./Create.strings.ts";
 import { useCreateLoader } from "./Create.loader.ts";
-import { kratosIdentityEmail } from "@sderickson/recipes-sdk";
+import { kratosIdentityEmail } from "@saflib/ory-kratos-sdk";
 import { assertCreateDataLoaded, canEditMenuForRole } from "./Create.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import CreateMenuForm from "./CreateMenuForm.vue";
@@ -45,12 +47,8 @@ import CreateMenuForm from "./CreateMenuForm.vue";
 const { t } = useReverseT();
 const route = useRoute();
 const collectionId = route.params.collectionId as string;
-const {
-  sessionQuery,
-  collectionQuery,
-  membersQuery,
-  recipesQuery,
-} = useCreateLoader();
+const { sessionQuery, collectionQuery, membersQuery, recipesQuery } =
+  useCreateLoader();
 
 assertCreateDataLoaded(
   sessionQuery.data.value,
@@ -62,20 +60,19 @@ assertCreateDataLoaded(
 const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
-const userEmail = computed(() => kratosIdentityEmail(sessionQuery.data.value) ?? "");
+const userEmail = computed(
+  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+);
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),
 );
-const showForm = computed(() =>
-  canEditMenuForRole(currentMember.value?.role),
-);
+const showForm = computed(() => canEditMenuForRole(currentMember.value?.role));
 
-const recipes = computed(
-  () =>
-    (recipesQuery.data.value ?? []).map((r) => ({
-      id: r.id,
-      title: r.title,
-    })),
+const recipes = computed(() =>
+  (recipesQuery.data.value ?? []).map((r) => ({
+    id: r.id,
+    title: r.title,
+  })),
 );
 
 const collectionDetailPath = computed(() =>

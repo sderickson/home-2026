@@ -33,6 +33,7 @@ selfservice:
 
     settings:
       ui_url: http://auth.docker.localhost/settings
+      required_aal: highest_available
 
     logout:
       after:
@@ -46,8 +47,14 @@ selfservice:
   methods:
     password:
       enabled: true
+    totp:
+      enabled: true
+      config:
+        issuer: Scott's Home Page (Hub Dev)
 
 session:
+  whoami:
+    required_aal: aal1
   cookie:
     domain: .docker.localhost
     same_site: Lax

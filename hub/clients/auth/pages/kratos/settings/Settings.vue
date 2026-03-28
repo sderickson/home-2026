@@ -1,31 +1,33 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <SettingsIntro />
+    <template v-if="queryData instanceof SettingsFlowFetched && flow">
+      <SettingsIntro />
 
-    <v-alert
-      v-if="submitError"
-      type="error"
-      variant="tonal"
-      class="mb-4"
-      closable
-      @click:close="clearSubmitError"
-    >
-      {{ submitError }}
-    </v-alert>
+      <v-alert
+        v-if="showPasswordRecoveryPrompt"
+        type="info"
+        variant="tonal"
+        class="mb-4"
+        density="comfortable"
+      >
+        {{ t(passwordRecoveryStrings.prompt) }}
+      </v-alert>
 
-    <div
-      v-for="(m, i) in flow?.ui.messages ?? []"
-      :key="'gm-' + i"
-      class="text-body-2 mb-2"
-      :class="m.type === 'error' ? 'text-error' : ''"
-    >
-      {{ m.text }}
-    </div>
+      <v-alert
+        v-if="submitError"
+        type="error"
+        variant="tonal"
+        class="mb-4"
+        closable
+        @click:close="clearSubmitError"
+      >
+        {{ submitError }}
+      </v-alert>
 
-    <template v-if="flow && flowIdForForm">
       <v-tabs v-model="tab" class="mb-4" color="primary">
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
+        <v-tab v-if="hasTotpSettings" value="totp">{{ t(tabs.totp) }}</v-tab>
       </v-tabs>
 
       <v-window v-model="tab">
@@ -35,6 +37,7 @@
             group="profile"
             :submitting="submitting"
             id-prefix="settings-profile"
+            :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
@@ -44,31 +47,153 @@
             group="password"
             :submitting="submitting"
             id-prefix="settings-password"
+            :message-filter="settingsMessageFilter"
+            @submit="(form, submitter) => submitSettingsForm(form, submitter)"
+          />
+        </v-window-item>
+        <v-window-item v-if="hasTotpSettings" value="totp">
+          <KratosSettingsGroupUi
+            :flow="flow"
+            group="totp"
+            :submitting="submitting"
+            id-prefix="settings-totp"
+            :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
         </v-window-item>
       </v-window>
     </template>
+
+    <SettingsAalReauthRedirect
+      v-else-if="queryData instanceof BrowserRedirectRequired"
+      :redirect-browser-to="queryData.payload.redirect_browser_to"
+    />
+
+    <FlowGonePanel
+      v-else-if="queryData instanceof FlowGone"
+      restart-path="/new-settings"
+      :restart-query="settingsRestartQuery"
+      :result="queryData"
+    />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-settings"
+      :restart-query="settingsRestartQuery"
+      :result="queryData"
+    />
+    <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref, toValue, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
+import type { SettingsFlow, UiText } from "@ory/client";
+import {
+  BrowserRedirectRequired,
+  FlowGone,
+  SecurityCsrfViolation,
+  SettingsFlowFetched,
+} from "@saflib/ory-kratos-sdk";
 import KratosSettingsGroupUi from "./KratosSettingsGroupUi.vue";
 import SettingsIntro from "./SettingsIntro.vue";
-import { settings_tabs as tabs } from "./Settings.strings.ts";
+import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
+import {
+  KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID,
+  settingsFlowHasPasswordRecoveryMessage,
+} from "./Settings.logic.ts";
+import {
+  settings_password_recovery as passwordRecoveryStrings,
+  settings_tabs as tabs,
+} from "./Settings.strings.ts";
 import { useSettingsFlow } from "./useSettingsFlow.ts";
-import { useSettingsRouteSync } from "./useSettingsRouteSync.ts";
+import { useSettingsLoader } from "./Settings.loader.ts";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
+import FlowGonePanel from "../common/FlowGonePanel.vue";
+import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
+import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
 
 const { t } = useReverseT();
+const route = useRoute();
+const { getSettingsFlowQuery } = useSettingsLoader();
 
-const tab = ref<"email" | "password">("email");
+const queryData = computed(() => toValue(getSettingsFlowQuery.data));
 
-const { browserReturnTo, flowIdForForm } = useSettingsRouteSync();
+const flow = computed((): SettingsFlow | null => {
+  const d = queryData.value;
+  if (d instanceof SettingsFlowFetched) {
+    return d.flow;
+  }
+  return null;
+});
 
-const { flow, submitting, submitError, clearSubmitError, submitSettingsForm } = useSettingsFlow(
-  () => flowIdForForm.value,
-  () => browserReturnTo.value,
+const flowIdForSubmit = computed(() => flow.value?.id ?? "");
+
+const { submitting, submitError, clearSubmitError, submitSettingsForm } =
+  useSettingsFlow(flowIdForSubmit);
+
+/** Hide stale Kratos flow-level banners (e.g. “saved”) after switching tabs; cleared when a submit finishes. */
+const suppressFlowLevelKratosMessages = ref(false);
+
+const hasTotpSettings = computed(() =>
+  Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
 );
+
+const showPasswordRecoveryPrompt = computed(() =>
+  flow.value ? settingsFlowHasPasswordRecoveryMessage(flow.value) : false,
+);
+
+const settingsMessageFilter = computed(
+  (): ((
+    msg: UiText,
+    ctx: KratosFlowUiMessageFilterContext,
+  ) => boolean) => {
+    return (msg, ctx) => {
+      if (
+        ctx.kind === "flow" &&
+        Number(msg.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID
+      ) {
+        return false;
+      }
+      if (ctx.kind === "flow" && suppressFlowLevelKratosMessages.value) {
+        return false;
+      }
+      return true;
+    };
+  },
+);
+
+const tab = ref<"email" | "password" | "totp">("email");
+
+watch(
+  flow,
+  (f) => {
+    if (f && settingsFlowHasPasswordRecoveryMessage(f)) {
+      tab.value = "password";
+    }
+  },
+  { immediate: true },
+);
+
+watch(tab, (_next, prev) => {
+  if (prev !== undefined) {
+    suppressFlowLevelKratosMessages.value = true;
+  }
+});
+
+watch(submitting, (now, was) => {
+  if (was && !now) {
+    suppressFlowLevelKratosMessages.value = false;
+  }
+});
+
+/** Preserve `return_to` when restarting from CSRF or expired flow. */
+const settingsRestartQuery = computed(() => {
+  const q: Record<string, string> = {};
+  if (typeof route.query.return_to === "string" && route.query.return_to.trim()) {
+    q.return_to = route.query.return_to.trim();
+  }
+  return q;
+});
 </script>

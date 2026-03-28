@@ -1,5 +1,21 @@
-import type { Session, SettingsFlow, UiNode, UpdateSettingsFlowBody } from "@ory/client";
-import { UiNodeGroupEnum } from "@ory/client";
+import type {
+  Session,
+  SettingsFlow,
+  UiNode,
+  UpdateSettingsFlowBody,
+} from "@ory/client";
+
+/**
+ * Kratos flow-level message id: account recovered — user should set a new password (session may be
+ * short-lived). See Kratos i18n ids (e.g. 1060001).
+ */
+export const KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID = 1060001;
+
+export function settingsFlowHasPasswordRecoveryMessage(flow: SettingsFlow): boolean {
+  return (flow.ui.messages ?? []).some(
+    (m) => Number(m.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID,
+  );
+}
 
 /** Settings flow query runs only when the user has a Kratos session (browser flow creation requires auth). */
 export function settingsFlowShouldFetch(
@@ -18,12 +34,15 @@ export function formDataFromKratosSettingsForm(
   submitter: HTMLElement | null | undefined,
 ): FormData {
   const btn =
-    submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+    submitter instanceof HTMLButtonElement ||
+    submitter instanceof HTMLInputElement
       ? submitter
       : undefined;
   const fd = new FormData(form, btn);
   if (!String(fd.get("method") ?? "").trim()) {
-    const methodControl = form.querySelector<HTMLInputElement | HTMLButtonElement>(
+    const methodControl = form.querySelector<
+      HTMLInputElement | HTMLButtonElement
+    >(
       'button[type="submit"][name="method"], input[type="submit"][name="method"]',
     );
     if (methodControl?.name) {
@@ -36,26 +55,31 @@ export function formDataFromKratosSettingsForm(
 /** Nodes for one settings group (e.g. profile / password), plus shared CSRF from `default`. */
 export function settingsNodesForGroup(
   flow: SettingsFlow,
-  group: "profile" | "password",
+  group: "profile" | "password" | "totp",
 ): UiNode[] {
-  const g = group === "profile" ? UiNodeGroupEnum.Profile : UiNodeGroupEnum.Password;
+  const g = group;
   return flow.ui.nodes.filter((node) => {
-    if (node.type === "text") {
-      return node.group === g;
-    }
-    if (node.type !== "input") return false;
-    if (node.group === UiNodeGroupEnum.Default) {
+    if (
+      node.attributes &&
+      "id" in node.attributes &&
+      node.attributes.id === "totp_secret_key"
+    )
+      return false;
+    if (node.group === g) return true;
+    if (node.type === "input" && node.group === "default") {
       const attrs = node.attributes as { name?: string };
       return attrs.name === "csrf_token";
     }
-    return node.group === g;
+    return false;
   });
 }
 
 /**
- * Builds an update body from a Kratos settings form. Supports `profile` and `password` methods.
+ * Builds an update body from a Kratos settings form. Supports any enabled Kratos settings method.
  */
-export function buildSettingsUpdateBodyFromFormData(fd: FormData): UpdateSettingsFlowBody {
+export function buildSettingsUpdateBodyFromFormData(
+  fd: FormData,
+): UpdateSettingsFlowBody {
   const method = String(fd.get("method") ?? "").trim();
   if (method === "profile") {
     const traits: Record<string, unknown> = {};
@@ -70,12 +94,15 @@ export function buildSettingsUpdateBodyFromFormData(fd: FormData): UpdateSetting
       traits,
     } as UpdateSettingsFlowBody;
   }
-  if (method === "password") {
-    return {
-      method: "password",
-      csrf_token: String(fd.get("csrf_token") ?? ""),
-      password: String(fd.get("password") ?? ""),
-    } as UpdateSettingsFlowBody;
+  if (!method) {
+    throw new Error("Unsupported settings method in form");
   }
-  throw new Error("Unsupported settings method in form");
+  const body: Record<string, string> = {};
+  fd.forEach((value, key) => {
+    body[key] = String(value);
+  });
+  return {
+    ...body,
+    method,
+  } as UpdateSettingsFlowBody;
 }

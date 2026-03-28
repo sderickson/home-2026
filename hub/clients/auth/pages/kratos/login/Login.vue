@@ -1,100 +1,41 @@
 <template>
   <v-container class="py-8" max-width="720">
-    <LoginIntro v-if="!session" />
-    <AuthSessionDecisionPanel
-      v-if="session"
-      :identity-email="identityEmail"
-      :continue-href="continueHref"
-      variant="login"
-    />
     <LoginFlowForm
-      v-else-if="flowIdForForm"
-      :flow-id="flowIdForForm"
-      :browser-return-to="browserReturnTo"
+      v-if="queryData instanceof LoginFlowFetched && flow"
+      :flow="flow"
     />
+    <FlowGonePanel
+      v-else-if="queryData instanceof FlowGone"
+      restart-path="/new-login"
+      :result="queryData"
+    />
+    <CsrfViolationPanel
+      v-else-if="queryData instanceof SecurityCsrfViolation"
+      restart-path="/new-login"
+      :result="queryData"
+    />
+    <UnhandledResponsePanel v-else :result="queryData" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
-import { useQueryClient } from "@tanstack/vue-query";
-import { useRoute, useRouter } from "vue-router";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
-import { identityNeedsEmailVerification } from "@sderickson/recipes-sdk";
-import { loginFlowQueryKey } from "@sderickson/recipes-sdk";
-import AuthSessionDecisionPanel from "../common/AuthSessionDecisionPanel.vue";
-import { sessionDisplayEmail } from "../verify-wall/VerifyWall.logic.ts";
-import {
-  loginFlowQueryEnabledForSession,
-  useLoginBrowserReturnTo,
-  useLoginLoader,
-} from "./Login.loader.ts";
+import { FlowGone, LoginFlowFetched, SecurityCsrfViolation } from "@saflib/ory-kratos-sdk";
+import { useLoginLoader } from "./Login.loader.ts";
+import CsrfViolationPanel from "../common/CsrfViolationPanel.vue";
+import FlowGonePanel from "../common/FlowGonePanel.vue";
+import UnhandledResponsePanel from "../common/UnhandledResponsePanel.vue";
 import LoginFlowForm from "./LoginFlowForm.vue";
-import LoginIntro from "./LoginIntro.vue";
+import { computed, toValue } from "vue";
 
-const route = useRoute();
-const router = useRouter();
-const queryClient = useQueryClient();
+const { getLoginFlowQuery } = useLoginLoader();
 
-const { sessionQuery, loginFlowQuery } = useLoginLoader();
-const browserReturnTo = useLoginBrowserReturnTo();
+const queryData = computed(() => toValue(getLoginFlowQuery.data));
 
-const loginFlowEnabled = computed(() =>
-  loginFlowQueryEnabledForSession(sessionQuery),
-);
-
-if (sessionQuery.status.value !== "success") {
-  throw new Error("Failed to load session");
-}
-
-const session = computed(() => sessionQuery.data.value);
-
-const identityEmail = computed(() => {
-  const s = session.value;
-  return s ? sessionDisplayEmail(s) : "";
-});
-
-/** Continue target when a session already exists: verified users skip the verify wall and use `?redirect=` / fallback only. */
-const continueHref = computed(() => {
-  const s = session.value;
-  if (!s) return "";
-  if (!identityNeedsEmailVerification(s.identity)) {
-    return browserReturnTo.value;
+const flow = computed(() => {
+  const d = queryData.value;
+  if (d instanceof LoginFlowFetched) {
+    return d.flow;
   }
-  return linkToHrefWithHost(authLinks.kratosVerifyWall, {
-    params: { redirect: browserReturnTo.value },
-  });
+  return null;
 });
-
-watch(
-  () => ({
-    status: loginFlowQuery.status.value,
-    data: loginFlowQuery.data.value,
-    flowParam: route.query.flow,
-  }),
-  ({ status, data, flowParam }) => {
-    if (status !== "success" || !data?.id) return;
-    if (typeof flowParam === "string") return;
-    queryClient.setQueryData(loginFlowQueryKey(data.id), data);
-    router.replace({
-      path: route.path,
-      query: { flow: data.id },
-    });
-  },
-  { immediate: true },
-);
-
-const flowIdForForm = computed(() => {
-  if (typeof route.query.flow === "string") return route.query.flow;
-  return loginFlowQuery.data.value?.id ?? "";
-});
-
-if (
-  !sessionQuery.data.value &&
-  loginFlowEnabled.value &&
-  (loginFlowQuery.status.value !== "success" || !loginFlowQuery.data.value?.id)
-) {
-  throw new Error("Failed to load login flow");
-}
 </script>

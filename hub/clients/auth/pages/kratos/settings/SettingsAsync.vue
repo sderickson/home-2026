@@ -1,8 +1,5 @@
 <template>
-  <AsyncPage
-    :loader="useSettingsLoader"
-    :page-component="Settings"
-  />
+  <AsyncPage :loader="useSettingsLoader" :page-component="Settings" />
 </template>
 
 <script setup lang="ts">

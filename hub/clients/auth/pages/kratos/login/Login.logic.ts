@@ -1,3 +1,5 @@
+import type { UpdateLoginFlowBody } from "@ory/client";
+
 /**
  * Pure helpers for Kratos login (browser flow + form submit).
  */
@@ -11,13 +13,13 @@ export function destinationAfterLogin(
   return u || fallbackRecipesHomeHref;
 }
 
-/** Resolves Kratos `return_to` for `createBrowserLoginFlow`: `?redirect=` or default post-auth fallback URL. */
+/** Resolves Kratos `return_to` for browser flows: `?return_to=` or default post-auth fallback URL. */
 export function resolveLoginBrowserReturnTo(
-  redirectQueryParam: unknown,
+  returnToQueryParam: unknown,
   fallbackRecipesHomeHref: string,
 ): string {
-  if (typeof redirectQueryParam === "string" && redirectQueryParam.trim()) {
-    return redirectQueryParam.trim();
+  if (typeof returnToQueryParam === "string" && returnToQueryParam.trim()) {
+    return returnToQueryParam.trim();
   }
   return fallbackRecipesHomeHref;
 }
@@ -27,4 +29,33 @@ export function credentialsFromLoginForm(fd: FormData): { identifier: string; pa
     identifier: String(fd.get("identifier") ?? "").trim(),
     password: String(fd.get("password") ?? ""),
   };
+}
+
+/**
+ * Build a login submit body for any Kratos login method available in the flow (password, totp, ...).
+ */
+export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowBody {
+  let method = String(fd.get("method") ?? "").trim();
+  if (!method) {
+    // Some browser/component submit paths omit the submit-button pair. Infer method from known fields.
+    if (String(fd.get("password") ?? "").trim() || String(fd.get("identifier") ?? "").trim()) {
+      method = "password";
+    } else if (String(fd.get("totp_code") ?? "").trim()) {
+      method = "totp";
+    }
+  }
+  if (!method) {
+    throw new Error("Missing login method in form");
+  }
+  const body: Record<string, string> = {};
+  fd.forEach((value, key) => {
+    body[key] = String(value);
+  });
+  if (body.identifier) {
+    body.identifier = body.identifier.trim();
+  }
+  return {
+    ...body,
+    method,
+  } as UpdateLoginFlowBody;
 }

@@ -1,46 +1,23 @@
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { computed, ref, type MaybeRefOrGetter, toValue } from "vue";
-import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
+import { computed, ref, type Ref } from "vue";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
-  identityNeedsEmailVerification,
-  invalidateKratosSessionQueries,
-  kratosSessionQueryOptions,
+  BrowserRedirectRequired,
+  LoginCompleted,
   LoginFlowUpdated,
-  loginFlowQueryKey,
-  loginFlowQueryOptions,
   useUpdateLoginFlowMutation,
-} from "@sderickson/recipes-sdk";
-import {
-  buildLoginPasswordBody,
-  registrationSubmitErrorMessage,
-} from "../registration/Registration.logic.ts";
-import {
-  credentialsFromLoginForm,
-  destinationAfterLogin,
-} from "./Login.logic.ts";
-import { kratos_login_flow as flowStrings } from "./LoginFlowForm.strings.ts";
-
+} from "@saflib/ory-kratos-sdk";
+import { buildLoginUpdateBodyFromFormData } from "./Login.logic.ts";
+import type { LoginFlow } from "@ory/client";
 /**
  * Submit login for an existing login flow. Flow creation and `?flow=` URL sync live on the page
  * (`Login.vue` + loader).
- *
- * @param browserReturnTo — Full URL passed to `createBrowserLoginFlow` / query key (from route in
- *   the page; resolved with {@link resolveLoginBrowserReturnTo} in the loader).
  */
-export function useLoginFlow(
-  flowId: MaybeRefOrGetter<string>,
-  browserReturnTo: MaybeRefOrGetter<string>,
-) {
+export function useLoginFlow(flow: Ref<LoginFlow>) {
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const queryClient = useQueryClient();
   const updateLogin = useUpdateLoginFlowMutation();
 
-  const returnTo = computed(() => toValue(browserReturnTo));
-
-  const loginFlowQuery = useQuery(
-    computed(() => loginFlowQueryOptions({ flowId: toValue(flowId), returnTo: returnTo.value })),
+  const returnTo = computed(
+    () => flow.value.return_to ?? postAuthFallbackHref.value,
   );
 
   const submitting = ref(false);
@@ -51,47 +28,34 @@ export function useLoginFlow(
   }
 
   async function submitLoginForm(form: HTMLFormElement) {
-    const current = loginFlowQuery.data.value;
-    if (!current || submitting.value) return;
     const fd = new FormData(form);
-    const { identifier, password } = credentialsFromLoginForm(fd);
     submitting.value = true;
     submitError.value = null;
     try {
-      let result;
-      try {
-        result = await updateLogin.mutateAsync({
-          flow: current.id,
-          updateLoginFlowBody: buildLoginPasswordBody(current, identifier, password),
-        });
-      } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(e, flowStrings.login_failed);
+      const result = await updateLogin.mutateAsync({
+        flow: flow.value.id,
+        updateLoginFlowBody: buildLoginUpdateBodyFromFormData(fd),
+      });
+      if (result instanceof BrowserRedirectRequired) {
+        if (!result.payload.redirect_browser_to) {
+          throw new Error("Redirect browser to is required");
+        }
+        window.location.assign(result.payload.redirect_browser_to);
         return;
       }
-
       if (result instanceof LoginFlowUpdated) {
-        queryClient.setQueryData(loginFlowQueryKey(toValue(flowId), returnTo.value), result.flow);
         return;
       }
-
-      await invalidateKratosSessionQueries(queryClient);
-      const session = await queryClient.fetchQuery(kratosSessionQueryOptions());
-      const destination = destinationAfterLogin(current.return_to, postAuthFallbackHref.value);
-      if (session && identityNeedsEmailVerification(session.identity)) {
-        window.location.assign(
-          linkToHrefWithHost(authLinks.kratosVerifyWall, { params: { redirect: destination } }),
-        );
-      } else {
-        window.location.assign(destination);
+      if (!(result instanceof LoginCompleted)) {
+        throw new Error("Unexpected result");
       }
+      window.location.assign(returnTo.value);
     } finally {
       submitting.value = false;
     }
   }
 
   return {
-    loginFlowQuery,
-    flow: computed(() => loginFlowQuery.data.value),
     submitting,
     submitError,
     clearSubmitError,

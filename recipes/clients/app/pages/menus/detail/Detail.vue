@@ -50,12 +50,7 @@
       <template v-if="showEdit">
         <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
           <template #activator="{ props: tooltipProps }">
-            <v-btn
-              v-bind="tooltipProps"
-              icon
-              variant="text"
-              @click="startEdit"
-            >
+            <v-btn v-bind="tooltipProps" icon variant="text" @click="startEdit">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
@@ -63,7 +58,12 @@
         <template v-else>
           <v-tooltip location="bottom" :text="t(strings.cancel)">
             <template #activator="{ props: tooltipProps }">
-              <v-btn v-bind="tooltipProps" icon variant="text" @click="cancelEdit">
+              <v-btn
+                v-bind="tooltipProps"
+                icon
+                variant="text"
+                @click="cancelEdit"
+              >
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </template>
@@ -130,7 +130,7 @@ import {
   canEditMenuForRole,
   type MenuEditFormModel,
 } from "./Detail.logic.ts";
-import { kratosIdentityEmail } from "@sderickson/recipes-sdk";
+import { kratosIdentityEmail } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MenuGroupingsDisplay from "./MenuGroupingsDisplay.vue";
 import MenuEditForm from "./MenuEditForm.vue";
@@ -140,13 +140,8 @@ const { t } = useReverseT();
 const route = useRoute();
 const collectionId = route.params.collectionId as string;
 const menuId = route.params.id as string;
-const {
-  sessionQuery,
-  collectionQuery,
-  membersQuery,
-  menuQuery,
-  recipesQuery,
-} = useDetailLoader();
+const { sessionQuery, collectionQuery, membersQuery, menuQuery, recipesQuery } =
+  useDetailLoader();
 
 assertMenuDetailLoaded(
   sessionQuery.data.value,
@@ -159,13 +154,13 @@ assertMenuDetailLoaded(
 const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
-const userEmail = computed(() => kratosIdentityEmail(sessionQuery.data.value) ?? "");
+const userEmail = computed(
+  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+);
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),
 );
-const showEdit = computed(() =>
-  canEditMenuForRole(currentMember.value?.role),
-);
+const showEdit = computed(() => canEditMenuForRole(currentMember.value?.role));
 
 const menuData = computed(() => menuQuery.data.value!);
 const menu = computed(() => menuData.value.menu);
@@ -179,12 +174,11 @@ const menuRecipesForDisplay = computed(() =>
   })),
 );
 
-const recipesList = computed(
-  () =>
-    (recipesQuery.data.value ?? []).map((r) => ({
-      id: r.id,
-      title: r.title,
-    })),
+const recipesList = computed(() =>
+  (recipesQuery.data.value ?? []).map((r) => ({
+    id: r.id,
+    title: r.title,
+  })),
 );
 
 const collectionDetailPath = computed(() =>

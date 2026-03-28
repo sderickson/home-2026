@@ -1,5 +1,6 @@
 <template>
   <div>
+    <VerificationIntro :flow-return-to="flow.return_to" />
     <div class="d-flex flex-column flex-sm-row align-sm-center ga-2 mb-4">
       <span class="text-body-2 text-medium-emphasis">{{
         t(strings.resend_help)
@@ -7,9 +8,10 @@
       <v-btn
         variant="tonal"
         size="small"
-        :loading="resending"
+        tag="a"
+        :href="newVerificationHref"
         :disabled="submitting"
-        @click="resendVerificationCode"
+        :aria-label="t(strings.cta_resend_code)"
       >
         {{ t(strings.cta_resend_code) }}
       </v-btn>
@@ -26,43 +28,49 @@
       {{ submitError }}
     </v-alert>
 
-    <KratosVerificationUi
+    <KratosFlowUi
       v-if="flow"
       :flow="flow"
-      :submitting="submitting || resending"
-      @submit="submitVerificationForm"
+      :submitting="submitting"
+      id-prefix="kratos-verify"
+      :hide-submit-names="['email']"
+      :message-filter="verificationMessageFilter"
+      @submit="(form) => submitVerificationForm(form)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
-import KratosVerificationUi from "./KratosVerificationUi.vue";
+import KratosFlowUi from "../common/KratosFlowUi.vue";
+import VerificationIntro from "./VerificationIntro.vue";
 import { kratos_verification_flow as strings } from "./VerificationFlowForm.strings.ts";
 import { useVerificationFlow } from "./useVerificationFlow.ts";
+import { useNewVerificationEntryHref } from "./useNewVerificationEntryHref.ts";
+import type { VerificationFlow } from "@ory/client";
 
 const props = defineProps<{
-  flowId: string;
-  /** Kratos browser-flow `return_to` (see loader / `resolveLoginBrowserReturnTo`). */
-  browserReturnTo: string;
-  /** Optional token from `?token=` when the verification email includes it. */
-  verificationToken?: string;
+  flow: VerificationFlow;
 }>();
 
 const { t } = useReverseT();
+const route = useRoute();
+
+const verificationToken = computed(() =>
+  typeof route.query.token === "string" ? route.query.token : undefined,
+);
+
+const newVerificationHref = useNewVerificationEntryHref(
+  () => props.flow.return_to,
+);
 
 const {
-  flow,
   submitting,
-  resending,
   submitError,
   clearSubmitError,
   submitVerificationForm,
-  resendVerificationCode,
-} = useVerificationFlow(
-  toRef(props, "flowId"),
-  toRef(props, "browserReturnTo"),
-  toRef(props, "verificationToken"),
-);
+  verificationMessageFilter,
+} = useVerificationFlow(verificationToken, () => props.flow.id);
 </script>

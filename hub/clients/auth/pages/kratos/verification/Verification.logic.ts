@@ -20,12 +20,24 @@ export function destinationAfterVerification(
   return u || fallbackRecipesHomeHref;
 }
 
-export function buildVerificationCodeBody(fd: FormData): UpdateVerificationFlowBody {
-  return {
-    method: "code",
-    csrf_token: String(fd.get("csrf_token") ?? ""),
-    code: String(fd.get("code") ?? "").trim(),
-  };
+/**
+ * Builds the verification `code` strategy body from the browser form.
+ * Kratos: send `email` without `code` to request/send a code; send `code` without `email` to verify it.
+ */
+export function buildVerificationUpdateBodyFromFormData(
+  fd: FormData,
+): UpdateVerificationFlowBody {
+  const csrf_token = String(fd.get("csrf_token") ?? "");
+  const code = String(fd.get("code") ?? "").trim();
+  const email = String(fd.get("email") ?? "").trim();
+
+  if (code) {
+    return { method: "code", csrf_token, code };
+  }
+  if (email) {
+    return { method: "code", csrf_token, email };
+  }
+  return { method: "code", csrf_token };
 }
 
 export function csrfTokenFromVerificationFlow(flow: VerificationFlow): string {
