@@ -1,4 +1,4 @@
-import { kratosSessionRequiredQueryOptions } from "@saflib/ory-kratos-sdk";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import {
   filesListRecipesQuery,
   getCollectionsQuery,
@@ -24,7 +24,7 @@ export function useDetailLoader(params?: RecipeDetailLoaderParams) {
     params?.collectionId ?? (route.params.collectionId as string);
 
   return {
-    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
+    sessionQuery: useKratosSession(),
     collectionQuery: useQuery(getCollectionsQuery(collectionId)),
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipeQuery: useQuery(getRecipeQuery(recipeId)),

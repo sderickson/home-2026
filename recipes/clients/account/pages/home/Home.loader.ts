@@ -1,8 +1,7 @@
-import { kratosSessionRequiredQueryOptions } from "@saflib/ory-kratos-sdk";
-import { useQuery } from "@tanstack/vue-query";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 
 export function useHomeLoader() {
   return {
-    sessionQuery: useQuery(kratosSessionRequiredQueryOptions()),
+    sessionQuery: useKratosSession(),
   };
 }

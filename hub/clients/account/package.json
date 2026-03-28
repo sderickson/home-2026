@@ -19,6 +19,7 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",

@@ -7,10 +7,7 @@ import {
   useMembersUpdateCollectionsMutation,
 } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
-import {
-  kratosSessionQueryOptions,
-  kratosIdentityEmail,
-} from "@saflib/ory-kratos-sdk";
+import { kratosIdentityEmail, useKratosSession } from "@saflib/ory-kratos-sdk";
 
 /**
  * Stateful flow for the members management dialog: list members, add/change/remove
@@ -24,7 +21,7 @@ export function useMembersManagementFlow(
   const newMemberRole = ref<"owner" | "editor" | "viewer">("editor");
   const addingMember = ref(false);
 
-  const sessionQuery = useQuery(kratosSessionQueryOptions());
+  const sessionQuery = useKratosSession();
   const membersQuery = useQuery(
     computed(() => ({
       ...membersListCollectionsQuery(collectionId.value),

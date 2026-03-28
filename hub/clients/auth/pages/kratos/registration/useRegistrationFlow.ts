@@ -13,7 +13,6 @@ import {
   BrowserRedirectRequired,
   RegistrationCompleted,
   LoginCompleted,
-  fetchKratosSession,
   SessionAlreadyAvailable,
   UnhandledResponse,
 } from "@saflib/ory-kratos-sdk";
@@ -118,7 +117,7 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
         return;
       }
 
-      const session = await fetchKratosSession();
+      const session = loginResult.session.session;
 
       if (session && identityNeedsEmailVerification(session.identity)) {
         window.location.assign(
