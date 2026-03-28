@@ -14,7 +14,7 @@ const ORY_WEBAUTHN_TRIGGER_NAMES = [
   "oryPasskeySettingsRegistration",
 ] as const;
 
-export function wireOryWebAuthnWindowAliases(): void {
+function wireOryWebAuthnWindowAliases(): void {
   const w = window as unknown as Record<string, unknown>;
   for (const name of ORY_WEBAUTHN_TRIGGER_NAMES) {
     const implName = `__${name}`;

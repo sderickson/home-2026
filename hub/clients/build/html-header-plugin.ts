@@ -78,14 +78,4 @@ const htmlTagDescriptor: HtmlTagDescriptor[] = [
     },
     injectTo: "head",
   },
-
-  {
-    tag: "script",
-    attrs: {
-      src: `${protocol}://kratos.${domain}/.well-known/ory/webauthn.js`,
-      type: "module",
-      async: true,
-    },
-    injectTo: "head",
-  },
 ];
