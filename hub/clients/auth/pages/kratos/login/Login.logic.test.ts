@@ -90,6 +90,38 @@ describe("buildLoginUpdateBodyFromFormData", () => {
     });
   });
 
+  it("builds a code-method body for email MFA (AAL2)", () => {
+    const fd = new FormData();
+    fd.set("method", "code");
+    fd.set("csrf_token", "tok");
+    fd.set("code", "123456");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toEqual({
+      method: "code",
+      csrf_token: "tok",
+      code: "123456",
+    });
+  });
+
+  it("infers code method when a code value is present without method", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "tok");
+    fd.set("code", "654321");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
+      method: "code",
+      code: "654321",
+    });
+  });
+
+  it("infers code method for resend without a code value", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "tok");
+    fd.set("resend", "email");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
+      method: "code",
+      resend: "email",
+    });
+  });
+
   it("throws when method is missing", () => {
     const fd = new FormData();
     expect(() => buildLoginUpdateBodyFromFormData(fd)).toThrow("Missing login method in form");

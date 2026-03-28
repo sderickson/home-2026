@@ -2,6 +2,7 @@ import { mockingOn } from "@saflib/email";
 import { getSafReporters } from "@saflib/node";
 import type {
   KratosCourierCallbacks,
+  LoginCodeValidPayload,
   RecoveryCodeValidPayload,
   RecoveryValidPayload,
   VerificationCodeValidPayload,
@@ -34,8 +35,18 @@ async function onRecoveryValid(payload: RecoveryValidPayload) {
   }
 }
 
+async function onLoginCodeValid(payload: LoginCodeValidPayload) {
+  const { log } = getSafReporters();
+  const { user, loginCode } = payload;
+  log.info(`Login code email for ${user.id}`);
+  if (mockingOn) {
+    log.info(`Code: ${loginCode}`);
+  }
+}
+
 export const callbacks: KratosCourierCallbacks = {
   onVerificationCodeValid,
   onRecoveryCodeValid,
   onRecoveryValid,
+  onLoginCodeValid,
 };

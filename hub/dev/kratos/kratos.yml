@@ -47,6 +47,10 @@ selfservice:
   methods:
     password:
       enabled: true
+    # Email one-time code as second factor (AAL2). Requires `passwordless_enabled: false` when MFA-only.
+    code:
+      enabled: true
+      mfa_enabled: true
     passkey:
       enabled: true
       config:

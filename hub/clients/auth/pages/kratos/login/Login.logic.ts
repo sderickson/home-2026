@@ -51,6 +51,12 @@ export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowB
     if (String(fd.get("totp_code") ?? "").trim()) {
       method = "totp";
     } else if (
+      String(fd.get("code") ?? "").trim() ||
+      String(fd.get("resend") ?? "").trim()
+    ) {
+      // Email/SMS OTP as second factor (AAL2); `resend` submits without a code to request a new one.
+      method = "code";
+    } else if (
       String(fd.get("password") ?? "").trim() ||
       String(fd.get("identifier") ?? "").trim()
     ) {
