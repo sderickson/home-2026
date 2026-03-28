@@ -55,7 +55,7 @@ export function formDataFromKratosSettingsForm(
 /** Nodes for one settings group (e.g. profile / password), plus shared CSRF from `default`. */
 export function settingsNodesForGroup(
   flow: SettingsFlow,
-  group: "profile" | "password" | "totp",
+  group: "profile" | "password" | "totp" | "passkey",
 ): UiNode[] {
   const g = group;
   return flow.ui.nodes.filter((node) => {

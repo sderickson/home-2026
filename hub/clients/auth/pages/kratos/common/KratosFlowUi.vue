@@ -80,6 +80,20 @@
               :value="node.attributes.value ?? undefined"
             />
             <v-btn
+              v-else-if="node.attributes.type === 'button'"
+              :id="elementId(idx)"
+              type="button"
+              color="primary"
+              block
+              size="large"
+              variant="tonal"
+              class="mb-4 mt-1"
+              :disabled="submitting"
+              @click="runKratosWebAuthnInputClick(node)"
+            >
+              {{ kratosSubmitLabel(node) }}
+            </v-btn>
+            <v-btn
               v-else-if="node.attributes.type === 'submit'"
               :id="elementId(idx)"
               type="submit"
@@ -127,6 +141,8 @@ import type { KratosFlowUiMessageFilterContext } from "./kratosUiMessages.ts";
 import { kratosPrependInnerIconForFieldName } from "./kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForNodes } from "./useKratosFieldModelsForNodes.ts";
 import { useKratosFlowFocusAfterUiChange } from "./useKratosFlowFocusAfterUiChange.ts";
+import { useKratosOryWebAuthnScripts } from "./useKratosOryWebAuthnScripts.ts";
+import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   isKratosInputNode,
   kratosEffectiveInputType,
@@ -203,6 +219,8 @@ useKratosFlowFocusAfterUiChange(flowForFocus, formRef);
 
 const { fieldModels, passwordVisible } =
   useKratosFieldModelsForNodes(renderedNodes);
+
+useKratosOryWebAuthnScripts(renderedNodes);
 
 const prefix = computed(() => props.idPrefix);
 function elementId(idx: number) {

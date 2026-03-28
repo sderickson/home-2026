@@ -24,7 +24,7 @@ import { settingsNodesForGroup } from "./Settings.logic.ts";
 
 const props = defineProps<{
   flow: SettingsFlow;
-  group: "profile" | "password" | "totp";
+  group: "profile" | "password" | "totp" | "passkey";
   submitting: boolean;
   idPrefix: string;
   messageFilter?: (
@@ -40,7 +40,9 @@ const emptyCopy = computed(() =>
     ? strings.no_profile_fields
     : props.group === "password"
       ? strings.no_password_fields
-      : strings.no_totp_fields,
+      : props.group === "totp"
+        ? strings.no_totp_fields
+        : strings.no_passkey_fields,
 );
 
 const nodes = computed(() => settingsNodesForGroup(props.flow, props.group));

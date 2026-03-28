@@ -28,6 +28,7 @@
         <v-tab value="email">{{ t(tabs.email) }}</v-tab>
         <v-tab value="password">{{ t(tabs.password) }}</v-tab>
         <v-tab v-if="hasTotpSettings" value="totp">{{ t(tabs.totp) }}</v-tab>
+        <v-tab v-if="hasPasskeySettings" value="passkey">{{ t(tabs.passkey) }}</v-tab>
       </v-tabs>
 
       <v-window v-model="tab">
@@ -57,6 +58,16 @@
             group="totp"
             :submitting="submitting"
             id-prefix="settings-totp"
+            :message-filter="settingsMessageFilter"
+            @submit="(form, submitter) => submitSettingsForm(form, submitter)"
+          />
+        </v-window-item>
+        <v-window-item v-if="hasPasskeySettings" value="passkey">
+          <KratosSettingsGroupUi
+            :flow="flow"
+            group="passkey"
+            :submitting="submitting"
+            id-prefix="settings-passkey"
             :message-filter="settingsMessageFilter"
             @submit="(form, submitter) => submitSettingsForm(form, submitter)"
           />
@@ -140,6 +151,10 @@ const hasTotpSettings = computed(() =>
   Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
 );
 
+const hasPasskeySettings = computed(() =>
+  Boolean(flow.value?.ui.nodes.some((node) => node.group === "passkey")),
+);
+
 const showPasswordRecoveryPrompt = computed(() =>
   flow.value ? settingsFlowHasPasswordRecoveryMessage(flow.value) : false,
 );
@@ -164,7 +179,7 @@ const settingsMessageFilter = computed(
   },
 );
 
-const tab = ref<"email" | "password" | "totp">("email");
+const tab = ref<"email" | "password" | "totp" | "passkey">("email");
 
 watch(
   flow,
