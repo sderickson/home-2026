@@ -1,6 +1,6 @@
 import type { UiNode } from "@ory/client";
 import { type ComputedRef, type Ref, computed, ref, unref, watch } from "vue";
-import { isKratosInputNode, kratosEffectiveInputType } from "../registration/Registration.logic.ts";
+import { isKratosInputNode, kratosEffectiveInputType } from "./kratosNodeUtils.ts";
 
 function nodesInputSignature(nodes: readonly UiNode[]): string {
   return nodes

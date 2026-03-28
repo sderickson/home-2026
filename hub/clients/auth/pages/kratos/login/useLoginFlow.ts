@@ -10,7 +10,7 @@ import {
   buildLoginFormData,
   buildLoginUpdateBodyFromFormData,
 } from "./Login.logic.ts";
-import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
+import { kratosSubmitErrorMessage } from "../common/kratosErrorMessage.ts";
 import { kratos_login_flow } from "./LoginFlowForm.strings.ts";
 import type { LoginFlow } from "@ory/client";
 /**
@@ -59,7 +59,7 @@ export function useLoginFlow(flow: Ref<LoginFlow>) {
       }
       window.location.assign(returnTo.value);
     } catch (e) {
-      submitError.value = registrationSubmitErrorMessage(
+      submitError.value = kratosSubmitErrorMessage(
         e,
         kratos_login_flow.login_failed,
       );

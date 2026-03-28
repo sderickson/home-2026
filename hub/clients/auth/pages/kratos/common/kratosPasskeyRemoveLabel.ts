@@ -1,5 +1,5 @@
 import type { UiNode } from "@ory/client";
-import { isKratosInputNode } from "../registration/Registration.logic.ts";
+import { isKratosInputNode } from "./kratosNodeUtils.ts";
 
 /**
  * Kratos stores passkey `display_name` from AAGUID metadata when known; otherwise the credential has

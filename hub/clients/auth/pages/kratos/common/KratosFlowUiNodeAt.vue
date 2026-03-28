@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import type { UiNode } from "@ory/client";
 import { computed, inject, unref } from "vue";
-import { isKratosInputNode } from "../registration/Registration.logic.ts";
+import { isKratosInputNode } from "./kratosNodeUtils.ts";
 import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   KRATOS_FLOW_UI_INJECT,

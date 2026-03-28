@@ -1,5 +1,5 @@
 import type { UiNode } from "@ory/client";
-import { isKratosInputNode } from "../registration/Registration.logic.ts";
+import { isKratosInputNode } from "./kratosNodeUtils.ts";
 
 /** Passkey login trigger (browser flow). */
 export function isPasskeyLoginTriggerButton(node: UiNode): boolean {

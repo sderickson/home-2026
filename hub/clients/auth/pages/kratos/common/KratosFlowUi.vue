@@ -90,7 +90,7 @@ import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   isKratosInputNode,
   kratosEffectiveInputType,
-} from "../registration/Registration.logic.ts";
+} from "./kratosNodeUtils.ts";
 
 /** Any browser self-service flow whose `ui.nodes` we render. */
 export type KratosFlowUiModel = {
