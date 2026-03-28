@@ -389,15 +389,9 @@ function onAppendInnerClick(idx: number, node: UiNode) {
 
 provide(KRATOS_FLOW_UI_INJECT, {
   displayNodes,
-  renderedNodes,
   submitting: computed(() => props.submitting),
   idPrefix: prefix,
   fieldModels,
-  passwordVisible,
-  passkeyLoginTriggerNode,
-  identityPasskeyDisplayFallback: computed(
-    () => props.identityPasskeyDisplayFallback,
-  ),
   visibleNodeMessages,
   shouldHideSubmit,
   kratosSubmitLabel,
@@ -437,12 +431,6 @@ function onSubmit(ev: Event) {
   margin: 0;
   padding: 0;
   min-width: 0;
-}
-
-.kratos-flow-form__qr {
-  width: 192px;
-  height: 192px;
-  object-fit: contain;
 }
 
 /* Passkey trigger uses append-inner icon; emphasize affordance slightly */

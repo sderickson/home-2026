@@ -4,13 +4,9 @@ import type { ComputedRef, InjectionKey, Ref } from "vue";
 /** Context for {@link KratosFlowUiNodeAt.vue} (one row per `flow.ui.nodes` index). */
 export interface KratosFlowUiInject {
   displayNodes: ComputedRef<readonly UiNode[]>;
-  renderedNodes: ComputedRef<readonly UiNode[]>;
   submitting: ComputedRef<boolean>;
   idPrefix: ComputedRef<string>;
   fieldModels: Ref<Record<number, string>>;
-  passwordVisible: Ref<Record<number, boolean>>;
-  passkeyLoginTriggerNode: ComputedRef<UiNode | null>;
-  identityPasskeyDisplayFallback: ComputedRef<string | undefined>;
   visibleNodeMessages: (node: UiNode, idx: number) => UiText[];
   shouldHideSubmit: (node: UiNode) => boolean;
   kratosSubmitLabel: (node: UiNode) => string;
