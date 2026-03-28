@@ -93,13 +93,13 @@
       :label="node.meta?.label?.text"
       :required="node.attributes.required"
       :prepend-inner-icon="ctx.prependIcon(node)"
-      :append-inner-icon="ctx.appendInnerIcon(node, idx)"
+      :append-inner-icon="appendInnerIconForField(node, idx)"
       :disabled="submitting"
       density="comfortable"
       class="mb-4"
-      :class="ctx.identifierPasskeyFieldClass(node)"
+      :class="identifierPasskeyClass(node)"
       autocomplete="off"
-      @click:append-inner="ctx.onAppendInnerClick(idx, node)"
+      @click:append-inner="onAppendInnerForField(idx, node)"
     />
   </template>
 </template>
@@ -107,14 +107,21 @@
 <script setup lang="ts">
 import type { UiNode } from "@ory/client";
 import { computed, inject, unref } from "vue";
-import { isKratosInputNode } from "./kratosNodeUtils.ts";
+import { isKratosInputNode, kratosEffectiveInputType } from "./kratosNodeUtils.ts";
 import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   KRATOS_FLOW_UI_INJECT,
   type KratosFlowUiInject,
 } from "./kratosFlowUiInject.ts";
 
-const props = defineProps<{ idx: number }>();
+const props = defineProps<{
+  idx: number;
+  /**
+   * When the passkey/WebAuthn login trigger is merged into the identifier field (login only),
+   * pass the hidden trigger node so the cloud-key icon can invoke it.
+   */
+  passkeyLoginTrigger?: UiNode | null;
+}>();
 
 const ctx = inject(KRATOS_FLOW_UI_INJECT) as KratosFlowUiInject;
 
@@ -124,6 +131,44 @@ const submitting = computed(() => unref(ctx.submitting));
 const node = computed(
   () => ctx.displayNodes.value[props.idx] as UiNode | undefined,
 );
+
+function appendInnerIconForField(node: UiNode, idx: number): string | undefined {
+  const fromCtx = ctx.appendInnerIcon(node, idx);
+  if (fromCtx) return fromCtx;
+  if (
+    props.passkeyLoginTrigger &&
+    isKratosInputNode(node) &&
+    node.attributes.name === "identifier"
+  ) {
+    return "mdi-cloud-key";
+  }
+  return undefined;
+}
+
+function identifierPasskeyClass(node: UiNode): string | undefined {
+  if (
+    props.passkeyLoginTrigger &&
+    isKratosInputNode(node) &&
+    node.attributes.name === "identifier"
+  ) {
+    return "kratos-flow-form__identifier-with-passkey";
+  }
+  return undefined;
+}
+
+function onAppendInnerForField(idx: number, node: UiNode) {
+  if (!isKratosInputNode(node)) return;
+  if (kratosEffectiveInputType(node.attributes) === "password") {
+    ctx.onAppendInnerClick(idx, node);
+    return;
+  }
+  if (
+    props.passkeyLoginTrigger &&
+    node.attributes.name === "identifier"
+  ) {
+    runKratosWebAuthnInputClick(props.passkeyLoginTrigger);
+  }
+}
 </script>
 
 <style scoped>

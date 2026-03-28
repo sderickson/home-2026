@@ -13,7 +13,6 @@ export interface KratosFlowUiInject {
   prependIcon: (node: UiNode) => string | undefined;
   effectiveInputType: (node: UiNode, idx: number) => string;
   appendInnerIcon: (node: UiNode, idx: number) => string | undefined;
-  identifierPasskeyFieldClass: (node: UiNode) => string | undefined;
   onAppendInnerClick: (idx: number, node: UiNode) => void;
   elementId: (idx: number) => string;
 }
