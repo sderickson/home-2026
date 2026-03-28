@@ -1,10 +1,12 @@
 import type { RegistrationFlow, UiText } from "@ory/client";
+import { useQueryClient } from "@tanstack/vue-query";
 import { ref, type Ref } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import {
-  fetchBrowserLoginFlow,
+  createLoginFlowQueryOptions,
   identityNeedsEmailVerification,
+  LoginFlowCreated,
   RegistrationFlowUpdated,
   useUpdateLoginFlowMutation,
   useUpdateRegistrationFlowMutation,
@@ -12,6 +14,8 @@ import {
   RegistrationCompleted,
   LoginCompleted,
   fetchKratosSession,
+  SessionAlreadyAvailable,
+  UnhandledResponse,
 } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessages.ts";
@@ -29,6 +33,7 @@ import { kratos_registration_flow as flowStrings } from "./RegistrationFlowForm.
  * Flow creation and `?flow=` URL sync live on the page (`Registration.vue` + loader).
  */
 export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
+  const queryClient = useQueryClient();
   const updateRegistration = useUpdateRegistrationFlowMutation();
   const updateLogin = useUpdateLoginFlowMutation();
 
@@ -88,7 +93,21 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
       const email = traitsEmailFromFormData(fd);
       const password = String(fd.get("password") ?? "");
       const destination = flow.value.return_to ?? postAuthFallbackHref.value;
-      const loginFlow = await fetchBrowserLoginFlow(destination);
+      const created = await queryClient.fetchQuery({
+        ...createLoginFlowQueryOptions({ returnTo: destination }),
+        staleTime: 0,
+      });
+      if (!(created instanceof LoginFlowCreated)) {
+        if (
+          created instanceof SessionAlreadyAvailable ||
+          created instanceof UnhandledResponse
+        ) {
+          submitError.value = flowStrings.post_reg_login_failed;
+          return;
+        }
+        throw new Error("Unexpected create login flow result");
+      }
+      const loginFlow = created.flow;
       const loginResult = await updateLogin.mutateAsync({
         flow: loginFlow.id,
         updateLoginFlowBody: buildLoginPasswordBody(loginFlow, email, password),

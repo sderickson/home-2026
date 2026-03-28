@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useQueryClient } from "@tanstack/vue-query";
 import { linkToHrefWithHost } from "@saflib/links";
-import { fetchBrowserLogoutFlow } from "@saflib/ory-kratos-sdk";
+import {
+  BrowserLogoutFlowCreated,
+  createBrowserLogoutFlowQueryOptions,
+} from "@saflib/ory-kratos-sdk";
 import { authLinks } from "@sderickson/hub-links";
 
 const route = useRoute();
+const queryClient = useQueryClient();
 
 onMounted(async () => {
   const q = route.query.return_to;
   const fromQuery = typeof q === "string" && q.trim() ? q.trim() : undefined;
   const returnTo = fromQuery ?? linkToHrefWithHost(authLinks.home);
-  const { logout_url } = await fetchBrowserLogoutFlow(returnTo);
-  window.location.assign(logout_url);
+  const result = await queryClient.fetchQuery({
+    ...createBrowserLogoutFlowQueryOptions({ returnTo }),
+    staleTime: 0,
+  });
+  if (!(result instanceof BrowserLogoutFlowCreated)) {
+    throw new Error("Browser logout failed");
+  }
+  window.location.assign(result.flow.logout_url);
 });
 </script>
 
