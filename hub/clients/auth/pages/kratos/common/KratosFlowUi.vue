@@ -136,12 +136,13 @@
 
 <script setup lang="ts">
 import type { UiContainer, UiNode, UiText } from "@ory/client";
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import type { KratosFlowUiMessageFilterContext } from "./kratosUiMessages.ts";
 import { kratosPrependInnerIconForFieldName } from "./kratosVuetifyFieldIcons.ts";
 import { useKratosFieldModelsForNodes } from "./useKratosFieldModelsForNodes.ts";
 import { useKratosFlowFocusAfterUiChange } from "./useKratosFlowFocusAfterUiChange.ts";
 import { useKratosOryWebAuthnScripts } from "./useKratosOryWebAuthnScripts.ts";
+import { patchKratosFormSubmitForOryProgrammaticSubmit } from "./kratosFormSubmitOryPatch.ts";
 import { runKratosWebAuthnInputClick } from "./kratosWebAuthnInputClick.ts";
 import {
   isKratosInputNode,
@@ -175,11 +176,18 @@ const props = withDefaults(
       message: UiText,
       context: KratosFlowUiMessageFilterContext,
     ) => boolean;
+    /**
+     * Ory `webauthn.js` calls `form.submit()` after passkey/WebAuthn, which skips `submit` events.
+     * When true, patch this form so programmatic submit dispatches a cancelable event first (SPA
+     * `@submit.prevent` runs; see `kratosFormSubmitOryPatch.ts`).
+     */
+    interceptOryProgrammaticSubmit?: boolean;
   }>(),
   {
     idPrefix: "kratos-flow",
     hideSubmitNames: () => [],
     includeImgNodes: true,
+    interceptOryProgrammaticSubmit: false,
   },
 );
 
@@ -221,6 +229,22 @@ const { fieldModels, passwordVisible } =
   useKratosFieldModelsForNodes(renderedNodes);
 
 useKratosOryWebAuthnScripts(renderedNodes);
+
+let unpatchOryFormSubmit: (() => void) | undefined;
+watch(
+  () => [formRef.value, props.interceptOryProgrammaticSubmit] as const,
+  ([form, intercept]) => {
+    unpatchOryFormSubmit?.();
+    unpatchOryFormSubmit = undefined;
+    if (form && intercept) {
+      unpatchOryFormSubmit = patchKratosFormSubmitForOryProgrammaticSubmit(form);
+    }
+  },
+  { immediate: true },
+);
+onBeforeUnmount(() => {
+  unpatchOryFormSubmit?.();
+});
 
 const prefix = computed(() => props.idPrefix);
 function elementId(idx: number) {

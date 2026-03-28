@@ -42,6 +42,10 @@ export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowB
       method = "password";
     } else if (String(fd.get("totp_code") ?? "").trim()) {
       method = "totp";
+    } else if (String(fd.get("passkey_login") ?? "").trim()) {
+      method = "passkey";
+    } else if (String(fd.get("webauthn_login") ?? "").trim()) {
+      method = "webauthn";
     }
   }
   if (!method) {

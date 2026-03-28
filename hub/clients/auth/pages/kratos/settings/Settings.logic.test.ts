@@ -62,6 +62,17 @@ describe("buildSettingsUpdateBodyFromFormData", () => {
     const fd = new FormData();
     expect(() => buildSettingsUpdateBodyFromFormData(fd)).toThrow("Unsupported settings method in form");
   });
+
+  it("infers passkey method when only passkey_remove is set (remove credential submit)", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "tok");
+    fd.set("passkey_remove", "cred-id-123");
+    expect(buildSettingsUpdateBodyFromFormData(fd)).toEqual({
+      method: "passkey",
+      csrf_token: "tok",
+      passkey_remove: "cred-id-123",
+    });
+  });
 });
 
 describe("settingsNodesForGroup", () => {

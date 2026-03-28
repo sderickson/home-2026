@@ -4,6 +4,7 @@ import type { LoginFlow, RegistrationFlow } from "@ory/client";
 import {
   buildLoginPasswordBody,
   buildRegistrationPasswordBody,
+  buildRegistrationUpdateBodyFromFormData,
   csrfTokenFromUiFlow,
   isKratosInputNode,
   kratosEffectiveInputType,
@@ -101,6 +102,34 @@ describe("Registration.logic", () => {
         method: "password",
         csrf_token: "tok",
         password: "secret",
+        traits: { email: "u@example.com" },
+      });
+    });
+  });
+
+  describe("buildRegistrationUpdateBodyFromFormData", () => {
+    it("defaults to password method for the email-first step", () => {
+      const fd = new FormData();
+      fd.set("csrf_token", "tok");
+      fd.set("traits.email", "u@example.com");
+      expect(buildRegistrationUpdateBodyFromFormData(fd)).toEqual({
+        method: "password",
+        csrf_token: "tok",
+        password: "",
+        traits: { email: "u@example.com" },
+      });
+    });
+
+    it("builds passkey method payload when passkey_register is set", () => {
+      const fd = new FormData();
+      fd.set("method", "passkey");
+      fd.set("csrf_token", "tok");
+      fd.set("traits.email", "u@example.com");
+      fd.set("passkey_register", '{"response":{}}');
+      expect(buildRegistrationUpdateBodyFromFormData(fd)).toEqual({
+        method: "passkey",
+        csrf_token: "tok",
+        passkey_register: '{"response":{}}',
         traits: { email: "u@example.com" },
       });
     });

@@ -107,4 +107,15 @@ describe("buildLoginUpdateBodyFromFormData", () => {
       csrf_token: "tok",
     });
   });
+
+  it("infers passkey method when passkey_login is present", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "tok");
+    fd.set("passkey_login", '{"id":"abc"}');
+    expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
+      method: "passkey",
+      passkey_login: '{"id":"abc"}',
+      csrf_token: "tok",
+    });
+  });
 });

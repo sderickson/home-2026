@@ -80,7 +80,17 @@ export function settingsNodesForGroup(
 export function buildSettingsUpdateBodyFromFormData(
   fd: FormData,
 ): UpdateSettingsFlowBody {
-  const method = String(fd.get("method") ?? "").trim();
+  let method = String(fd.get("method") ?? "").trim();
+  // Passkey remove is a lone `type: "submit"` input with `name: "passkey_remove"` and credential id in
+  // `value` (group `passkey`); there is no separate `method` field in the POST body.
+  if (!method) {
+    if (
+      String(fd.get("passkey_remove") ?? "").trim() ||
+      String(fd.get("passkey_settings_register") ?? "").trim()
+    ) {
+      method = "passkey";
+    }
+  }
   if (method === "profile") {
     const traits: Record<string, unknown> = {};
     fd.forEach((value, key) => {

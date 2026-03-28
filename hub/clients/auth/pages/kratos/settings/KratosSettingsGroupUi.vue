@@ -6,6 +6,7 @@
     :submitting="submitting"
     :id-prefix="idPrefix"
     :message-filter="messageFilter"
+    :intercept-ory-programmatic-submit="group === 'passkey'"
     @submit="onSubmit"
   />
   <p v-else-if="flow" class="text-body-2 text-medium-emphasis">
