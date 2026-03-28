@@ -47,10 +47,10 @@ export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowB
   if (!method) {
     throw new Error("Missing login method in form");
   }
-  const body = Object.fromEntries(Array.from(fd.entries()).map(([k, v]) => [k, String(v)])) as Record<
-    string,
-    string
-  >;
+  const body: Record<string, string> = {};
+  fd.forEach((value, key) => {
+    body[key] = String(value);
+  });
   if (body.identifier) {
     body.identifier = body.identifier.trim();
   }

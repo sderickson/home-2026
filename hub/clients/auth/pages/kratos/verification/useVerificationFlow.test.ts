@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setClientName } from "@saflib/links";
+import { linkToHrefWithHost, setClientName } from "@saflib/links";
+import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import { kratosFakeHandlers, resetKratosFlowMocks } from "@sderickson/recipes-sdk/fakes";
@@ -33,7 +34,7 @@ describe("useVerificationFlow", () => {
     vi.restoreAllMocks();
   });
 
-  it("assigns window.location after successful submit using flow return_to or /login fallback", async () => {
+  it("assigns window.location after successful submit using flow return_to or app home fallback", async () => {
     const assignMock = vi.fn();
     vi.stubGlobal("location", {
       href: "http://localhost/",
@@ -46,7 +47,9 @@ describe("useVerificationFlow", () => {
 
       await submitVerificationForm(verificationTestForm());
 
-      await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith("/login"));
+      await vi.waitFor(() =>
+        expect(assignMock).toHaveBeenCalledWith(linkToHrefWithHost(appLinks.home)),
+      );
       app.unmount();
     } finally {
       vi.unstubAllGlobals();
