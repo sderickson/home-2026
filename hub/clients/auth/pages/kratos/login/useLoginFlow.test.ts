@@ -2,10 +2,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import { linkToHrefWithHost, setClientName } from "@saflib/links";
-import {
-  getLoginFlowQueryKey,
-  LoginFlowFetched,
-} from "@saflib/ory-kratos-sdk";
+import { getLoginFlowQueryOptions, LoginFlowFetched } from "@saflib/ory-kratos-sdk";
 import { appLinks } from "@sderickson/hub-links";
 import { withVueQuery } from "@saflib/sdk/testing";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
@@ -91,7 +88,7 @@ describe("useLoginFlow", () => {
     );
 
     queryClient.setQueryData(
-      getLoginFlowQueryKey(mockLoginFlowId),
+      getLoginFlowQueryOptions({ flowId: mockLoginFlowId }).queryKey,
       new LoginFlowFetched(mockLoginFlow),
     );
 
@@ -99,7 +96,7 @@ describe("useLoginFlow", () => {
 
     await vi.waitFor(() => {
       const data = queryClient.getQueryData(
-        getLoginFlowQueryKey(mockLoginFlowId),
+        getLoginFlowQueryOptions({ flowId: mockLoginFlowId }).queryKey,
       );
       expect(data).toBeInstanceOf(LoginFlowFetched);
       if (data instanceof LoginFlowFetched) {

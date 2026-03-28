@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setClientName } from "@saflib/links";
 import {
-  getRecoveryFlowQueryKey,
+  getRecoveryFlowQueryOptions,
   RecoveryFlowFetched,
 } from "@saflib/ory-kratos-sdk";
 import { withVueQuery } from "@saflib/sdk/testing";
@@ -182,7 +182,7 @@ describe("useRecoveryFlow", () => {
     );
 
     queryClient.setQueryData(
-      getRecoveryFlowQueryKey(mockRecoveryFlowId),
+      getRecoveryFlowQueryOptions({ flowId: mockRecoveryFlowId }).queryKey,
       new RecoveryFlowFetched(mockRecoveryFlow),
     );
 
@@ -190,7 +190,7 @@ describe("useRecoveryFlow", () => {
 
     await vi.waitFor(() => {
       const data = queryClient.getQueryData(
-        getRecoveryFlowQueryKey(mockRecoveryFlowId),
+        getRecoveryFlowQueryOptions({ flowId: mockRecoveryFlowId }).queryKey,
       );
       expect(data).toBeInstanceOf(RecoveryFlowFetched);
       if (data instanceof RecoveryFlowFetched) {

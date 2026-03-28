@@ -87,14 +87,12 @@
 
 <script setup lang="ts">
 import { computed, ref, toValue, watch } from "vue";
-import { useQueryClient } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import type { SettingsFlow, UiText } from "@ory/client";
 import {
   BrowserRedirectRequired,
   FlowGone,
-  getSettingsFlowQueryKey,
   SecurityCsrfViolation,
   SettingsFlowFetched,
 } from "@saflib/ory-kratos-sdk";
@@ -118,7 +116,6 @@ import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
-const queryClient = useQueryClient();
 const { getSettingsFlowQuery } = useSettingsLoader();
 
 const queryData = computed(() => toValue(getSettingsFlowQuery.data));
@@ -136,6 +133,9 @@ const flowIdForSubmit = computed(() => flow.value?.id ?? "");
 const { submitting, submitError, clearSubmitError, submitSettingsForm } =
   useSettingsFlow(flowIdForSubmit);
 
+/** Hide stale Kratos flow-level banners (e.g. “saved”) after switching tabs; cleared when a submit finishes. */
+const suppressFlowLevelKratosMessages = ref(false);
+
 const hasTotpSettings = computed(() =>
   Boolean(flow.value?.ui.nodes.some((node) => node.group === "totp")),
 );
@@ -144,18 +144,25 @@ const showPasswordRecoveryPrompt = computed(() =>
   flow.value ? settingsFlowHasPasswordRecoveryMessage(flow.value) : false,
 );
 
-function settingsMessageFilter(
-  msg: UiText,
-  ctx: KratosFlowUiMessageFilterContext,
-): boolean {
-  if (
-    ctx.kind === "flow" &&
-    Number(msg.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID
-  ) {
-    return false;
-  }
-  return true;
-}
+const settingsMessageFilter = computed(
+  (): ((
+    msg: UiText,
+    ctx: KratosFlowUiMessageFilterContext,
+  ) => boolean) => {
+    return (msg, ctx) => {
+      if (
+        ctx.kind === "flow" &&
+        Number(msg.id) === KRATOS_SETTINGS_PASSWORD_RECOVERY_MESSAGE_ID
+      ) {
+        return false;
+      }
+      if (ctx.kind === "flow" && suppressFlowLevelKratosMessages.value) {
+        return false;
+      }
+      return true;
+    };
+  },
+);
 
 const tab = ref<"email" | "password" | "totp">("email");
 
@@ -169,22 +176,16 @@ watch(
   { immediate: true },
 );
 
-/** Flow-level banners (e.g. “saved”) apply to the whole flow; clear them when switching tabs. */
 watch(tab, (_next, prev) => {
-  if (prev === undefined) return;
-  const id = flowIdForSubmit.value;
-  const currentFlow = flow.value;
-  if (!id || !currentFlow) return;
-  queryClient.setQueryData(
-    getSettingsFlowQueryKey(id),
-    new SettingsFlowFetched({
-      ...currentFlow,
-      ui: {
-        ...currentFlow.ui,
-        messages: [],
-      },
-    }),
-  );
+  if (prev !== undefined) {
+    suppressFlowLevelKratosMessages.value = true;
+  }
+});
+
+watch(submitting, (now, was) => {
+  if (was && !now) {
+    suppressFlowLevelKratosMessages.value = false;
+  }
 });
 
 /** Preserve `return_to` when restarting from CSRF or expired flow. */
