@@ -1,9 +1,9 @@
 import { computed, ref, type Ref } from "vue";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
+  BrowserRedirectRequired,
   LoginCompleted,
   LoginFlowUpdated,
-  BrowserRedirectRequired,
   useUpdateLoginFlowMutation,
 } from "@saflib/ory-kratos-sdk";
 import { buildLoginUpdateBodyFromFormData } from "./Login.logic.ts";

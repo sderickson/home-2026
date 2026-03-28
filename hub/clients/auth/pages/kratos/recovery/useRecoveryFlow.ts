@@ -3,15 +3,12 @@ import {
   type RecoveryFlow,
   RecoveryFlowState,
 } from "@ory/client";
-import { useQueryClient } from "@tanstack/vue-query";
 import { ref, type MaybeRefOrGetter, toValue } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
 import { authLinks } from "@sderickson/hub-links";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
 import {
   BrowserRedirectRequired,
-  getRecoveryFlowQueryKey,
-  RecoveryFlowFetched,
   RecoveryFlowUpdated,
   useUpdateRecoveryFlowMutation,
 } from "@saflib/ory-kratos-sdk";
@@ -33,7 +30,6 @@ export function useRecoveryFlow(
   flowId: MaybeRefOrGetter<string>,
 ) {
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
-  const queryClient = useQueryClient();
   const updateRecovery = useUpdateRecoveryFlowMutation();
 
   const submitting = ref(false);
@@ -59,12 +55,6 @@ export function useRecoveryFlow(
   }
 
   function applyRecoveryFlow(updated: RecoveryFlow) {
-    const id = toValue(flowId);
-    queryClient.setQueryData(
-      getRecoveryFlowQueryKey(id),
-      new RecoveryFlowFetched(updated),
-    );
-
     const continueUrl = recoveryFlowContinueWithUrl(
       updated,
       settingsFlowHrefFromId,

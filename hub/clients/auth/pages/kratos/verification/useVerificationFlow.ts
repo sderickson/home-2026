@@ -1,10 +1,7 @@
 import type { UiText } from "@ory/client";
 import { ref, type MaybeRefOrGetter, toValue } from "vue";
-import { useQueryClient } from "@tanstack/vue-query";
 import {
-  getVerificationFlowQueryKey,
   useUpdateVerificationFlowMutation,
-  VerificationFlowFetched,
   VerificationFlowUpdated,
 } from "@saflib/ory-kratos-sdk";
 import { useAuthPostAuthFallbackHref } from "../../../authFallbackInject.ts";
@@ -23,7 +20,6 @@ export function useVerificationFlow(
   verificationToken: MaybeRefOrGetter<string | undefined>,
   flowId: MaybeRefOrGetter<string>,
 ) {
-  const queryClient = useQueryClient();
   const postAuthFallbackHref = useAuthPostAuthFallbackHref();
   const updateVerification = useUpdateVerificationFlowMutation();
 
@@ -66,11 +62,6 @@ export function useVerificationFlow(
       if (!(updated instanceof VerificationFlowUpdated)) {
         throw new Error("Unexpected result");
       }
-
-      queryClient.setQueryData(
-        getVerificationFlowQueryKey(id),
-        new VerificationFlowFetched(updated.flow),
-      );
 
       if (verificationFlowIsComplete(updated.flow)) {
         window.location.assign(
