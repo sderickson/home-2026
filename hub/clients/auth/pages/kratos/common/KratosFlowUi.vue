@@ -8,7 +8,9 @@
     <form
       ref="formRef"
       class="kratos-flow-form"
+      novalidate
       :aria-busy="submitting ? 'true' : undefined"
+      @pointerdown.capture="onFormPointerDownCapture"
       @submit.prevent="onSubmit"
     >
       <v-alert
@@ -260,6 +262,22 @@ const flowForFocus = computed(() => {
 });
 
 const formRef = ref<HTMLFormElement | null>(null);
+
+/** When {@link SubmitEvent.submitter} is null (often with Vuetify `v-btn`), `FormData` loses the clicked control. */
+const lastPointerSubmitter = ref<HTMLButtonElement | HTMLInputElement | null>(null);
+
+function onFormPointerDownCapture(ev: Event) {
+  const t = ev.target;
+  if (!(t instanceof Element)) return;
+  const el = t.closest("button[type='submit'],input[type='submit']");
+  if (el instanceof HTMLButtonElement && el.type === "submit") {
+    lastPointerSubmitter.value = el;
+    return;
+  }
+  if (el instanceof HTMLInputElement && el.type === "submit") {
+    lastPointerSubmitter.value = el;
+  }
+}
 useKratosFlowFocusAfterUiChange(flowForFocus, formRef);
 
 const { fieldModels, passwordVisible } =
@@ -381,9 +399,14 @@ function togglePasswordVisibility(idx: number, node: UiNode) {
 
 function onSubmit(ev: Event) {
   const el = ev.currentTarget;
-  if (el instanceof HTMLFormElement) {
-    emit("submit", el, (ev as SubmitEvent).submitter);
+  if (!(el instanceof HTMLFormElement)) return;
+  const se = ev as SubmitEvent;
+  let sub: HTMLElement | null = (se.submitter as HTMLElement | null) ?? null;
+  if (!sub && lastPointerSubmitter.value) {
+    sub = lastPointerSubmitter.value;
   }
+  lastPointerSubmitter.value = null;
+  emit("submit", el, sub);
 }
 </script>
 

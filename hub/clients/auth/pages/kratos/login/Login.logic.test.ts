@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildLoginFormData,
   buildLoginUpdateBodyFromFormData,
   credentialsFromLoginForm,
   destinationAfterLogin,
@@ -63,6 +64,24 @@ describe("credentialsFromLoginForm", () => {
   });
 });
 
+describe("buildLoginFormData", () => {
+  it("merges a type=button submitter name/value (Vuetify) into FormData", () => {
+    const form = document.createElement("form");
+    const csrf = document.createElement("input");
+    csrf.name = "csrf_token";
+    csrf.value = "tok";
+    form.appendChild(csrf);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.name = "method";
+    btn.value = "code";
+    form.appendChild(btn);
+    const fd = buildLoginFormData(form, btn);
+    expect(fd.get("csrf_token")).toBe("tok");
+    expect(fd.get("method")).toBe("code");
+  });
+});
+
 describe("buildLoginUpdateBodyFromFormData", () => {
   it("builds a password-method body", () => {
     const fd = new FormData();
@@ -119,6 +138,16 @@ describe("buildLoginUpdateBodyFromFormData", () => {
     expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
       method: "code",
       resend: "email",
+    });
+  });
+
+  it("infers code method when submitting the address send-code control (MFA)", () => {
+    const fd = new FormData();
+    fd.set("csrf_token", "tok");
+    fd.set("address", "user@example.com");
+    expect(buildLoginUpdateBodyFromFormData(fd)).toMatchObject({
+      method: "code",
+      address: "user@example.com",
     });
   });
 

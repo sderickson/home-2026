@@ -32,6 +32,35 @@ export function credentialsFromLoginForm(fd: FormData): { identifier: string; pa
 }
 
 /**
+ * Builds {@link FormData} for a login submit. The clicked control must be represented so Kratos gets
+ * the right `method` (MFA has several submit buttons). `new FormData(form, submitter)` only accepts
+ * real `type="submit"` elements; Vuetify `VBtn` often renders `type="button"`, which throws — so we
+ * merge `name` / `value` manually when needed.
+ */
+export function buildLoginFormData(
+  form: HTMLFormElement,
+  submitter: HTMLElement | null | undefined,
+): FormData {
+  const btn =
+    submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+      ? submitter
+      : undefined;
+  if (btn?.type === "submit") {
+    try {
+      return new FormData(form, btn);
+    } catch {
+      /* continue — invalid submitter for FormData constructor */
+    }
+  }
+  const fd = new FormData(form);
+  if (btn?.name) {
+    const v = btn instanceof HTMLInputElement ? btn.value : (btn as HTMLButtonElement).value ?? "";
+    fd.set(btn.name, String(v));
+  }
+  return fd;
+}
+
+/**
  * Build a login submit body for any Kratos login method available in the flow (password, totp, ...).
  */
 export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowBody {
@@ -52,9 +81,11 @@ export function buildLoginUpdateBodyFromFormData(fd: FormData): UpdateLoginFlowB
       method = "totp";
     } else if (
       String(fd.get("code") ?? "").trim() ||
-      String(fd.get("resend") ?? "").trim()
+      String(fd.get("resend") ?? "").trim() ||
+      String(fd.get("address") ?? "").trim()
     ) {
       // Email/SMS OTP as second factor (AAL2); `resend` submits without a code to request a new one.
+      // `address` is the `type="submit"` control for “Send code to …” (not `method=code`).
       method = "code";
     } else if (
       String(fd.get("password") ?? "").trim() ||
