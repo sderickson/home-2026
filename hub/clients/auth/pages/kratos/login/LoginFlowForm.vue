@@ -22,22 +22,54 @@
       :submitting="submitting"
       id-prefix="kratos-login"
       :intercept-ory-programmatic-submit="interceptOryProgrammaticSubmit"
-      :split-login-second-factor-groups-into-tabs="loginUsesMfaGroupTabs"
-      :resolve-group-tab-label="resolveLoginGroupTabLabel"
       @submit="(form, submitter) => submitLoginForm(form, submitter)"
     >
-      <template #node="{ node, idx }">
-        <KratosFlowUiNodeAt
-          :idx="idx"
-          :passkey-login-trigger="passkeyTriggerForNode(node)"
-        />
+      <template #fieldset="{ displayNodes: flowNodes, allNodeIndices: flatIndices }">
+        <template v-if="!showMfaGroupTabs">
+          <template v-for="idx in flatIndices" :key="'node-' + idx">
+            <KratosFlowUiNodeAt
+              :idx="idx"
+              :passkey-login-trigger="passkeyTriggerForNode(flowNodes[idx])"
+            />
+          </template>
+        </template>
+        <template v-else>
+          <template v-for="idx in defaultNodeIndices" :key="'node-def-' + idx">
+            <KratosFlowUiNodeAt
+              :idx="idx"
+              :passkey-login-trigger="passkeyTriggerForNode(flowNodes[idx])"
+            />
+          </template>
+          <v-tabs
+            v-model="mfaTab"
+            color="primary"
+            density="comfortable"
+            class="mb-1"
+          >
+            <v-tab v-for="g in nonDefaultGroupsInOrder" :key="g.key">
+              {{ groupTabTitle(g.key) }}
+            </v-tab>
+          </v-tabs>
+          <v-window v-model="mfaTab">
+            <v-window-item
+              v-for="g in nonDefaultGroupsInOrder"
+              :key="'win-' + g.key"
+            >
+              <template v-for="idx in g.indices" :key="'node-tab-' + idx">
+                <KratosFlowUiNodeAt
+                  :idx="idx"
+                  :passkey-login-trigger="passkeyTriggerForNode(flowNodes[idx])"
+                />
+              </template>
+            </v-window-item>
+          </v-window>
+        </template>
       </template>
     </KratosFlowUi>
   </div>
 </template>
 
 <script setup lang="ts">
-import { AuthenticatorAssuranceLevel } from "@ory/client";
 import type { LoginFlow, UiNode } from "@ory/client";
 import { computed, toRef } from "vue";
 import KratosFlowUi from "../common/KratosFlowUi.vue";
@@ -50,6 +82,7 @@ import {
 import { isKratosInputNode } from "../common/kratosNodeUtils.ts";
 import LoginIntro from "./LoginIntro.vue";
 import { login_intro } from "./LoginIntro.strings.ts";
+import { useKratosMfaGroupTabs } from "./useKratosMfaGroupTabs.ts";
 import { useLoginFlow } from "./useLoginFlow.ts";
 
 const props = defineProps<{
@@ -64,23 +97,17 @@ const interceptOryProgrammaticSubmit = computed(() =>
   props.flow.ui.nodes.some((n) => n.group === "passkey" || n.group === "webauthn"),
 );
 
-const isSecondFactorStep = computed(
-  () => props.flow.requested_aal === AuthenticatorAssuranceLevel.Aal2,
-);
-
-const loginUsesMfaGroupTabs = computed(() => {
-  if (!isSecondFactorStep.value) return false;
-  const groups = new Set<string>();
-  for (const n of props.flow.ui.nodes) {
-    const g = n.group ?? "default";
-    if (g !== "default") groups.add(g);
-  }
-  return groups.size > 1;
-});
-
 const filteredLoginNodes = computed(() =>
   filterOutMergedLoginTriggerButton(true, props.flow.ui.nodes),
 );
+
+const {
+  isSecondFactorStep,
+  nonDefaultGroupsInOrder,
+  defaultNodeIndices,
+  showMfaGroupTabs,
+  mfaTab,
+} = useKratosMfaGroupTabs(() => props.flow, filteredLoginNodes);
 
 const passkeyLoginTriggerNode = computed(() =>
   findPasskeyOrWebAuthnLoginTrigger(props.flow.ui.nodes),
@@ -109,7 +136,7 @@ function isIdentifierTextField(node: UiNode): boolean {
   return t !== "hidden" && t !== "submit" && t !== "button";
 }
 
-function resolveLoginGroupTabLabel(group: string): string {
+function groupTabTitle(group: string): string {
   const s = login_intro;
   const map: Record<string, string> = {
     code: s.mfa_tab_code,

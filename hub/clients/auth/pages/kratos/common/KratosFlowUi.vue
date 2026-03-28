@@ -25,42 +25,13 @@
       </v-alert>
 
       <fieldset class="kratos-flow-form__fieldset">
-        <template v-if="!useMfaGroupTabs">
+        <slot name="fieldset" :display-nodes="displayNodes" :all-node-indices="allNodeIndices">
           <template v-for="idx in allNodeIndices" :key="'node-' + idx">
             <slot name="node" :node="displayNodes[idx]!" :idx="idx">
               <KratosFlowUiNodeAt :idx="idx" />
             </slot>
           </template>
-        </template>
-        <template v-else>
-          <template v-for="idx in defaultNodeIndices" :key="'node-def-' + idx">
-            <slot name="node" :node="displayNodes[idx]!" :idx="idx">
-              <KratosFlowUiNodeAt :idx="idx" />
-            </slot>
-          </template>
-          <v-tabs
-            v-model="mfaTab"
-            color="primary"
-            density="comfortable"
-            class="mb-1"
-          >
-            <v-tab v-for="g in nonDefaultGroupsInOrder" :key="g.key">
-              {{ groupTabTitle(g.key) }}
-            </v-tab>
-          </v-tabs>
-          <v-window v-model="mfaTab">
-            <v-window-item
-              v-for="g in nonDefaultGroupsInOrder"
-              :key="'win-' + g.key"
-            >
-              <template v-for="idx in g.indices" :key="'node-tab-' + idx">
-                <slot name="node" :node="displayNodes[idx]!" :idx="idx">
-                  <KratosFlowUiNodeAt :idx="idx" />
-                </slot>
-              </template>
-            </v-window-item>
-          </v-window>
-        </template>
+        </slot>
       </fieldset>
     </form>
   </v-card>
@@ -90,6 +61,14 @@ import {
 export type KratosFlowUiModel = {
   ui: Pick<UiContainer, "nodes" | "messages">;
 };
+
+defineSlots<{
+  fieldset(props: {
+    displayNodes: readonly UiNode[];
+    allNodeIndices: readonly number[];
+  }): unknown;
+  node(props: { node: UiNode; idx: number }): unknown;
+}>();
 
 const props = withDefaults(
   defineProps<{
@@ -122,21 +101,12 @@ const props = withDefaults(
      * email) for remove-button copy instead.
      */
     identityPasskeyDisplayFallback?: string;
-    /**
-     * Login AAL2: when multiple non-`default` UI groups are present (e.g. `code` + `totp`), render
-     * them under Vuetify tabs instead of stacking in one column.
-     */
-    splitLoginSecondFactorGroupsIntoTabs?: boolean;
-    /** Tab labels for {@link splitLoginSecondFactorGroupsIntoTabs}; defaults to titled group keys. */
-    resolveGroupTabLabel?: (group: string) => string;
   }>(),
   {
     idPrefix: "kratos-flow",
     hideSubmitNames: () => [],
     interceptOryProgrammaticSubmit: false,
     identityPasskeyDisplayFallback: undefined,
-    splitLoginSecondFactorGroupsIntoTabs: false,
-    resolveGroupTabLabel: undefined,
   },
 );
 
@@ -158,64 +128,7 @@ function visibleNodeMessages(node: UiNode, idx: number): UiText[] {
 
 const displayNodes = computed(() => props.nodes ?? props.flow?.ui.nodes ?? []);
 
-const nonDefaultGroupsInOrder = computed(() => {
-  const nodes = displayNodes.value;
-  const order: string[] = [];
-  const seen = new Set<string>();
-  const map = new Map<string, number[]>();
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i]!;
-    const g = n.group ?? "default";
-    if (g === "default") continue;
-    if (!seen.has(g)) {
-      seen.add(g);
-      order.push(g);
-      map.set(g, []);
-    }
-    map.get(g)!.push(i);
-  }
-  return order.map((key) => ({ key, indices: map.get(key)! }));
-});
-
-const defaultNodeIndices = computed(() => {
-  const nodes = displayNodes.value;
-  const out: number[] = [];
-  for (let i = 0; i < nodes.length; i++) {
-    if ((nodes[i]!.group ?? "default") === "default") out.push(i);
-  }
-  return out;
-});
-
 const allNodeIndices = computed(() => displayNodes.value.map((_, i) => i));
-
-const useMfaGroupTabs = computed(
-  () =>
-    props.splitLoginSecondFactorGroupsIntoTabs &&
-    nonDefaultGroupsInOrder.value.length > 1,
-);
-
-const mfaTab = ref(0);
-
-const flowId = computed(() => {
-  const f = props.flow as { id?: string } | null | undefined;
-  return f?.id ?? "";
-});
-
-watch(flowId, () => {
-  mfaTab.value = 0;
-});
-
-function groupTabTitle(group: string): string {
-  if (props.resolveGroupTabLabel) return props.resolveGroupTabLabel(group);
-  const fallback: Record<string, string> = {
-    code: "Email code",
-    totp: "Authenticator app",
-    webauthn: "Security key",
-    passkey: "Passkey",
-    lookup_secret: "Backup codes",
-  };
-  return fallback[group] ?? group.replace(/_/g, " ");
-}
 
 const flowForFocus = computed(() => {
   const f = props.flow;
