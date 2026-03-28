@@ -73,13 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toValue } from "vue";
+import { computed, ref, toValue, watch } from "vue";
+import { useQueryClient } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import { useReverseT } from "@sderickson/hub-auth-spa/i18n";
 import type { SettingsFlow } from "@ory/client";
 import {
   BrowserRedirectRequired,
   FlowGone,
+  getSettingsFlowQueryKey,
   SecurityCsrfViolation,
   SettingsFlowFetched,
 } from "@saflib/ory-kratos-sdk";
@@ -95,6 +97,7 @@ import SettingsAalReauthRedirect from "./SettingsAalReauthRedirect.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
+const queryClient = useQueryClient();
 const { getSettingsFlowQuery } = useSettingsLoader();
 
 const queryData = computed(() => toValue(getSettingsFlowQuery.data));
@@ -117,6 +120,24 @@ const hasTotpSettings = computed(() =>
 );
 
 const tab = ref<"email" | "password" | "totp">("email");
+
+/** Flow-level banners (e.g. “saved”) apply to the whole flow; clear them when switching tabs. */
+watch(tab, (_next, prev) => {
+  if (prev === undefined) return;
+  const id = flowIdForSubmit.value;
+  const currentFlow = flow.value;
+  if (!id || !currentFlow) return;
+  queryClient.setQueryData(
+    getSettingsFlowQueryKey(id),
+    new SettingsFlowFetched({
+      ...currentFlow,
+      ui: {
+        ...currentFlow.ui,
+        messages: [],
+      },
+    }),
+  );
+});
 
 /** Preserve `return_to` when restarting from CSRF or expired flow. */
 const settingsRestartQuery = computed(() => {
