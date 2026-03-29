@@ -16,10 +16,6 @@
               "password": {
                 "identifier": true
               },
-              "code": {
-                "identifier": true,
-                "via": "email"
-              },
               "passkey": {
                 "display_name": true
               }
