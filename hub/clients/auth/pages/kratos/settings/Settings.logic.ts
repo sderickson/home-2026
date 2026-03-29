@@ -66,9 +66,14 @@ export function settingsNodesForGroup(
     )
       return false;
     if (node.group === g) return true;
+    if (node.type === "script" && g === "passkey") {
+      const ng = node.group ?? "default";
+      // Kratos often sends webauthn.js as `group: webauthn` on settings (not default/passkey).
+      return ng === "default" || ng === "passkey" || ng === "webauthn";
+    }
     if (node.type === "input" && node.group === "default") {
       const attrs = node.attributes as { name?: string };
-      return attrs.name === "csrf_token";
+      return attrs.name === "csrf_token" || attrs.name === "method";
     }
     return false;
   });
@@ -90,6 +95,10 @@ export function buildSettingsUpdateBodyFromFormData(
     ) {
       method = "passkey";
     }
+  }
+  // TOTP unlink uses submit `totp_unlink` only (no hidden `method`; profile/password use submit name=method).
+  if (!method && String(fd.get("totp_unlink") ?? "").trim()) {
+    method = "totp";
   }
   if (method === "profile") {
     const traits: Record<string, unknown> = {};
