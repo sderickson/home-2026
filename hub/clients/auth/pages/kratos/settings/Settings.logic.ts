@@ -55,7 +55,7 @@ export function formDataFromKratosSettingsForm(
 /** Nodes for one settings group (e.g. profile / password), plus shared CSRF from `default`. */
 export function settingsNodesForGroup(
   flow: SettingsFlow,
-  group: "profile" | "password" | "totp",
+  group: "profile" | "password" | "totp" | "passkey",
 ): UiNode[] {
   const g = group;
   return flow.ui.nodes.filter((node) => {
@@ -66,9 +66,14 @@ export function settingsNodesForGroup(
     )
       return false;
     if (node.group === g) return true;
+    if (node.type === "script" && g === "passkey") {
+      const ng = node.group ?? "default";
+      // Kratos often sends webauthn.js as `group: webauthn` on settings (not default/passkey).
+      return ng === "default" || ng === "passkey" || ng === "webauthn";
+    }
     if (node.type === "input" && node.group === "default") {
       const attrs = node.attributes as { name?: string };
-      return attrs.name === "csrf_token";
+      return attrs.name === "csrf_token" || attrs.name === "method";
     }
     return false;
   });
@@ -80,7 +85,21 @@ export function settingsNodesForGroup(
 export function buildSettingsUpdateBodyFromFormData(
   fd: FormData,
 ): UpdateSettingsFlowBody {
-  const method = String(fd.get("method") ?? "").trim();
+  let method = String(fd.get("method") ?? "").trim();
+  // Passkey remove is a lone `type: "submit"` input with `name: "passkey_remove"` and credential id in
+  // `value` (group `passkey`); there is no separate `method` field in the POST body.
+  if (!method) {
+    if (
+      String(fd.get("passkey_remove") ?? "").trim() ||
+      String(fd.get("passkey_settings_register") ?? "").trim()
+    ) {
+      method = "passkey";
+    }
+  }
+  // TOTP unlink uses submit `totp_unlink` only (no hidden `method`; profile/password use submit name=method).
+  if (!method && String(fd.get("totp_unlink") ?? "").trim()) {
+    method = "totp";
+  }
   if (method === "profile") {
     const traits: Record<string, unknown> = {};
     fd.forEach((value, key) => {

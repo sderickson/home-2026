@@ -1,6 +1,6 @@
 import type { UiNode } from "@ory/client";
 import { nextTick, watch, type Ref } from "vue";
-import { isKratosInputNode } from "../registration/Registration.logic.ts";
+import { isKratosInputNode } from "./kratosNodeUtils.ts";
 
 function focusableInputNames(flow: { ui: { nodes: UiNode[] } }): string[] {
   const names: string[] = [];

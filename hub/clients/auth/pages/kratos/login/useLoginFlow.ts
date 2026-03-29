@@ -6,7 +6,12 @@ import {
   LoginFlowUpdated,
   useUpdateLoginFlowMutation,
 } from "@saflib/ory-kratos-sdk";
-import { buildLoginUpdateBodyFromFormData } from "./Login.logic.ts";
+import {
+  buildLoginFormData,
+  buildLoginUpdateBodyFromFormData,
+} from "./Login.logic.ts";
+import { kratosSubmitErrorMessage } from "../common/kratosErrorMessage.ts";
+import { kratos_login_flow } from "./LoginFlowForm.strings.ts";
 import type { LoginFlow } from "@ory/client";
 /**
  * Submit login for an existing login flow. Flow creation and `?flow=` URL sync live on the page
@@ -27,11 +32,14 @@ export function useLoginFlow(flow: Ref<LoginFlow>) {
     submitError.value = null;
   }
 
-  async function submitLoginForm(form: HTMLFormElement) {
-    const fd = new FormData(form);
+  async function submitLoginForm(
+    form: HTMLFormElement,
+    submitter?: HTMLElement | null,
+  ) {
     submitting.value = true;
     submitError.value = null;
     try {
+      const fd = buildLoginFormData(form, submitter ?? null);
       const result = await updateLogin.mutateAsync({
         flow: flow.value.id,
         updateLoginFlowBody: buildLoginUpdateBodyFromFormData(fd),
@@ -50,6 +58,11 @@ export function useLoginFlow(flow: Ref<LoginFlow>) {
         throw new Error("Unexpected result");
       }
       window.location.assign(returnTo.value);
+    } catch (e) {
+      submitError.value = kratosSubmitErrorMessage(
+        e,
+        kratos_login_flow.login_failed,
+      );
     } finally {
       submitting.value = false;
     }
