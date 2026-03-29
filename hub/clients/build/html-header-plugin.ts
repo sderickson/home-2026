@@ -2,12 +2,6 @@
 
 import type { HtmlTagDescriptor } from "vite";
 
-const protocol = process.env.PROTOCOL;
-const domain = process.env.DOMAIN;
-if (!protocol || !domain) {
-  throw new Error("PROTOCOL and DOMAIN must be set");
-}
-
 export const htmlHeaderPlugin = () => {
   return {
     name: "html-transform",
