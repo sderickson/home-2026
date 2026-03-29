@@ -6,6 +6,8 @@
     :submitting="submitting"
     :id-prefix="idPrefix"
     :message-filter="messageFilter"
+    :intercept-ory-programmatic-submit="group === 'passkey'"
+    :identity-passkey-display-fallback="identityPasskeyDisplayFallback"
     @submit="onSubmit"
   />
   <p v-else-if="flow" class="text-body-2 text-medium-emphasis">
@@ -24,13 +26,15 @@ import { settingsNodesForGroup } from "./Settings.logic.ts";
 
 const props = defineProps<{
   flow: SettingsFlow;
-  group: "profile" | "password" | "totp";
+  group: "profile" | "password" | "totp" | "passkey";
   submitting: boolean;
   idPrefix: string;
   messageFilter?: (
     message: UiText,
     context: KratosFlowUiMessageFilterContext,
   ) => boolean;
+  /** Passkey remove-button label fallback when Kratos has no AAGUID display name (see KratosFlowUi). */
+  identityPasskeyDisplayFallback?: string;
 }>();
 
 const { t } = useReverseT();
@@ -40,7 +44,9 @@ const emptyCopy = computed(() =>
     ? strings.no_profile_fields
     : props.group === "password"
       ? strings.no_password_fields
-      : strings.no_totp_fields,
+      : props.group === "totp"
+        ? strings.no_totp_fields
+        : strings.no_passkey_fields,
 );
 
 const nodes = computed(() => settingsNodesForGroup(props.flow, props.group));

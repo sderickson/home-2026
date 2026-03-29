@@ -21,7 +21,7 @@ import type { KratosFlowUiMessageFilterContext } from "../common/kratosUiMessage
 import { isKratosPropertyMissingMessage } from "../common/kratosUiMessages.ts";
 import {
   buildLoginPasswordBody,
-  buildRegistrationPasswordBody,
+  buildRegistrationUpdateBodyFromFormData,
   registrationSubmitErrorMessage,
   traitsEmailFromFormData,
 } from "./Registration.logic.ts";
@@ -71,7 +71,7 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
     try {
       const updated = await updateRegistration.mutateAsync({
         flow: flow.value.id,
-        updateRegistrationFlowBody: buildRegistrationPasswordBody(fd),
+        updateRegistrationFlowBody: buildRegistrationUpdateBodyFromFormData(fd),
       });
       if (updated instanceof BrowserRedirectRequired) {
         if (!updated.payload.redirect_browser_to) {
@@ -89,9 +89,33 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
         throw new Error("Unexpected result");
       }
 
+      const destination = flow.value.return_to ?? postAuthFallbackHref.value;
+      const registrationSession = updated.result.session;
+      if (registrationSession) {
+        if (identityNeedsEmailVerification(registrationSession.identity)) {
+          window.location.assign(
+            linkToHrefWithHost(authLinks.kratosVerifyWall, {
+              params: { return_to: destination },
+            }),
+          );
+        } else {
+          window.location.assign(destination);
+        }
+        keepSubmittingUntilNavigation = true;
+        return;
+      }
+
       const email = traitsEmailFromFormData(fd);
       const password = String(fd.get("password") ?? "");
-      const destination = flow.value.return_to ?? postAuthFallbackHref.value;
+      if (!password.trim()) {
+        window.location.assign(
+          linkToHrefWithHost(authLinks.kratosNewLogin, {
+            params: { return_to: destination },
+          }),
+        );
+        keepSubmittingUntilNavigation = true;
+        return;
+      }
       const created = await queryClient.fetchQuery({
         ...createLoginFlowQueryOptions({ returnTo: destination }),
         staleTime: 0,
@@ -117,9 +141,9 @@ export function useRegistrationFlow(flow: Ref<RegistrationFlow>) {
         return;
       }
 
-      const session = loginResult.session.session;
+      const loginSession = loginResult.session.session;
 
-      if (session && identityNeedsEmailVerification(session.identity)) {
+      if (loginSession && identityNeedsEmailVerification(loginSession.identity)) {
         window.location.assign(
           linkToHrefWithHost(authLinks.kratosVerifyWall, {
             params: { return_to: destination },

@@ -12,7 +12,7 @@ import {
   RecoveryFlowUpdated,
   useUpdateRecoveryFlowMutation,
 } from "@saflib/ory-kratos-sdk";
-import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
+import { kratosSubmitErrorMessage } from "../common/kratosErrorMessage.ts";
 import {
   buildRecoveryUpdateBodyFromFormData,
   destinationAfterRecovery,
@@ -92,7 +92,7 @@ export function useRecoveryFlow(
           ...(token ? { token } : {}),
         });
       } catch (e) {
-        submitError.value = registrationSubmitErrorMessage(
+        submitError.value = kratosSubmitErrorMessage(
           e,
           flowStrings.recovery_failed,
         );

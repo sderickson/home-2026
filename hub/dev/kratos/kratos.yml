@@ -47,6 +47,14 @@ selfservice:
   methods:
     password:
       enabled: true
+    passkey:
+      enabled: true
+      config:
+        rp:
+          id: docker.localhost
+          display_name: "Hub Dev"
+          origins:
+            - http://auth.docker.localhost
     totp:
       enabled: true
       config:

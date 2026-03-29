@@ -7,5 +7,11 @@ export function kratosPrependInnerIconForFieldName(name: string): string | undef
   if (n === "password" || n.includes("password")) {
     return "mdi-lock-outline";
   }
+  if (n === "totp_code") {
+    return "mdi-shield-key-outline";
+  }
+  if (n === "code") {
+    return "mdi-message-lock-outline";
+  }
   return undefined;
 }

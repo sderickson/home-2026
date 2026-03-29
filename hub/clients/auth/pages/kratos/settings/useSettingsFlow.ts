@@ -3,7 +3,7 @@ import {
   BrowserRedirectRequired,
   useUpdateSettingsFlowMutation,
 } from "@saflib/ory-kratos-sdk";
-import { registrationSubmitErrorMessage } from "../registration/Registration.logic.ts";
+import { kratosSubmitErrorMessage } from "../common/kratosErrorMessage.ts";
 import {
   buildSettingsUpdateBodyFromFormData,
   formDataFromKratosSettingsForm,
@@ -45,7 +45,7 @@ export function useSettingsFlow(flowId: MaybeRefOrGetter<string>) {
         return;
       }
     } catch (e) {
-      submitError.value = registrationSubmitErrorMessage(
+      submitError.value = kratosSubmitErrorMessage(
         e,
         pageStrings.settings_failed,
       );

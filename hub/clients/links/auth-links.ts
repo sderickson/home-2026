@@ -95,7 +95,7 @@ export const authLinks: LinkMap = {
   kratosSettings: {
     subdomain,
     path: "/settings",
-    params: ["flow", "return_to"],
+    params: ["flow"],
   },
   /**
    * Kratos new settings UI (browser flow creation). Use `params.return_to` for post-settings navigation.

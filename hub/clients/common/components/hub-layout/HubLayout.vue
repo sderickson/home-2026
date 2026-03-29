@@ -112,7 +112,7 @@ const links = computed<LinkWithName[]>(() => {
   }
   return [
     { ...rootLinks.home, name: t(hub_layout.nav_home) },
-    { ...authLinks.register, name: t(hub_layout.nav_sign_up) },
+    { ...authLinks.kratosNewRegistration, name: t(hub_layout.nav_sign_up) },
   ];
 });
 
