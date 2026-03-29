@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!secondFactor">
     <div class="float-right mb-4">
       <a
         :href="registerHref"
@@ -41,5 +41,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useReverseT();
-const { registerHref, recoveryHref } = useAuthFlowCrossLinks(() => props.flowReturnTo);
+const { registerHref, recoveryHref } = useAuthFlowCrossLinks(
+  () => props.flowReturnTo,
+);
 </script>
