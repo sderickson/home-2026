@@ -16,6 +16,16 @@
         />
       </v-card-title>
       <v-card-text>
+        <v-alert
+          v-if="submitError"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+          closable
+          @click:close="submitError = null"
+        >
+          {{ submitError }}
+        </v-alert>
         <v-text-field
           v-model="name"
           :label="t(strings.name_label)"
@@ -51,6 +61,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useCreateCollectionsMutation } from "@sderickson/recipes-sdk";
+import { TanstackError, getTanstackErrorMessage } from "@saflib/sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { create_collection_dialog as strings } from "./CreateCollectionDialog.strings.ts";
 
@@ -68,6 +79,7 @@ const emit = defineEmits<{
 const name = ref("");
 const optionalId = ref("");
 const saving = ref(false);
+const submitError = ref<string | null>(null);
 const createMutation = useCreateCollectionsMutation();
 
 watch(
@@ -76,12 +88,14 @@ watch(
     if (!open) {
       name.value = "";
       optionalId.value = "";
+      submitError.value = null;
     }
   },
 );
 
 async function handleCreate() {
   if (!name.value.trim() || saving.value) return;
+  submitError.value = null;
   saving.value = true;
   try {
     await createMutation.mutateAsync({
@@ -90,6 +104,14 @@ async function handleCreate() {
     });
     emit("update:modelValue", false);
     emit("success");
+  } catch (e) {
+    if (e instanceof TanstackError && e.status === 403) {
+      submitError.value = t(strings.forbidden_create_collection);
+    } else if (e instanceof TanstackError) {
+      submitError.value = getTanstackErrorMessage(e);
+    } else {
+      submitError.value = t(strings.unexpected_error);
+    }
   } finally {
     saving.value = false;
   }
