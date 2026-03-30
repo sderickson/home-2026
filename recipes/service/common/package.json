@@ -12,6 +12,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
     "@saflib/object-store": "*"

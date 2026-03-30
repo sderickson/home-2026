@@ -5,6 +5,10 @@
 
 export interface RecipesServiceCommonEnvSchema {
   /**
+   * Comma-separated list of admin emails
+   */
+  ADMIN_EMAILS: string;
+  /**
    * Whether to allow the creation of new databases. Useful for ensuring existing production environments don't inadvertently create new databases.
    */
   ALLOW_DB_CREATION?: "true" | "false";
@@ -78,6 +82,4 @@ export interface RecipesServiceCommonEnvSchema {
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process
-  ? process.env
-  : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;
