@@ -44,8 +44,8 @@ services:
       dockerfile: recipes/service/monolith/Dockerfile
 
     env_file:
-      - ./.env
       - ./env.dev
+      - ./.env
 
   kratos-migrate:
     image: oryd/kratos:v26.2.0

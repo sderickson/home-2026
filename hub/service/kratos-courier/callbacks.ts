@@ -2,11 +2,10 @@ import { mockingOn } from "@saflib/email";
 import { getSafReporters } from "@saflib/node";
 import type {
   KratosCourierCallbacks,
-  LoginCodeValidPayload,
   RecoveryCodeValidPayload,
-  RecoveryValidPayload,
   VerificationCodeValidPayload,
 } from "@saflib/ory-kratos";
+import { emailClient } from "@saflib/email";
 
 async function onVerificationCodeValid(payload: VerificationCodeValidPayload) {
   const { log } = getSafReporters();
@@ -15,6 +14,12 @@ async function onVerificationCodeValid(payload: VerificationCodeValidPayload) {
   if (mockingOn && verificationUrl) {
     log.info(`Link: ${verificationUrl}`);
   }
+  await emailClient.sendEmail({
+    to: user.email,
+    from: `noreply@scotterickson.info`,
+    subject: "Verification code",
+    text: `To verify your email, go to ${verificationUrl}`,
+  });
 }
 
 async function onRecoveryCodeValid(payload: RecoveryCodeValidPayload) {
@@ -24,29 +29,15 @@ async function onRecoveryCodeValid(payload: RecoveryCodeValidPayload) {
   if (mockingOn) {
     log.info(`Code: ${recoveryCode}`);
   }
-}
-
-async function onRecoveryValid(payload: RecoveryValidPayload) {
-  const { log } = getSafReporters();
-  const { user, recoveryUrl } = payload;
-  log.info(`Recovery link email for ${user.id}`);
-  if (mockingOn) {
-    log.info(`Link: ${recoveryUrl}`);
-  }
-}
-
-async function onLoginCodeValid(payload: LoginCodeValidPayload) {
-  const { log } = getSafReporters();
-  const { user, loginCode } = payload;
-  log.info(`Login code email for ${user.id}`);
-  if (mockingOn) {
-    log.info(`Code: ${loginCode}`);
-  }
+  await emailClient.sendEmail({
+    to: user.email,
+    from: `noreply@scotterickson.info`,
+    subject: "Recovery code",
+    text: `Your recovery code is ${recoveryCode}`,
+  });
 }
 
 export const callbacks: KratosCourierCallbacks = {
   onVerificationCodeValid,
   onRecoveryCodeValid,
-  onRecoveryValid,
-  onLoginCodeValid,
 };
