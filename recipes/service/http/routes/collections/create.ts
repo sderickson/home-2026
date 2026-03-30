@@ -6,7 +6,10 @@ import type {
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
 import { collectionQueries } from "@sderickson/recipes-db";
-import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import {
+  isRecipesAdminEmail,
+  recipesServiceStorage,
+} from "@sderickson/recipes-service-common";
 import { createCollectionResultToCreateCollectionsResponse } from "./_helpers.ts";
 
 export const createCollectionsHandler = createHandler(async (req, res) => {
@@ -14,7 +17,7 @@ export const createCollectionsHandler = createHandler(async (req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
   const userEmail = auth.userEmail;
-  if (!userEmail) {
+  if (!userEmail || !isRecipesAdminEmail(userEmail)) {
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 

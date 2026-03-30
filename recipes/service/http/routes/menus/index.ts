@@ -18,6 +18,7 @@ export const createMenusRouter = () => {
     createScopedMiddleware({
       apiSpec: jsonSpec,
       enforceAuth: false,
+      emailVerificationRequired: false,
     }),
   );
   router.get("/menus", listMenusHandler);
