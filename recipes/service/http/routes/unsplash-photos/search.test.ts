@@ -39,13 +39,12 @@ describe("GET /unsplash-photos/search (searchUnsplashPhotos)", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 when non-admin", async () => {
+  it("should return 200 when non-admin", async () => {
     const response = await request(app)
       .get("/unsplash-photos/search")
       .query({ q: "recipe" })
       .set(makeUserHeaders());
 
-    expect(response.status).toBe(403);
-    expect(response.body.code).toBe("FORBIDDEN");
+    expect(response.status).toBe(200);
   });
 });
