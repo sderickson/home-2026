@@ -82,4 +82,6 @@ export interface RecipesServiceCommonEnvSchema {
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesServiceCommonEnvSchema;

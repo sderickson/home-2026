@@ -5,6 +5,10 @@
 
 export interface HubMonolithEnvSchema {
   /**
+   * Comma-separated list of admin emails
+   */
+  ADMIN_EMAILS: string;
+  /**
    * Whether to allow the creation of new databases. Useful for ensuring existing production environments don't inadvertently create new databases.
    */
   ALLOW_DB_CREATION?: "true" | "false";
@@ -69,10 +73,6 @@ export interface HubMonolithEnvSchema {
    * Whether to mock 3rd party integrations. Set to 'true' to mock. And integration packages should respect this setting.
    */
   MOCK_INTEGRATIONS?: "true" | "false";
-  /**
-   * JSON string which can be passed into nodemailer.createTransport. See https://nodemailer.com/usage for more details.
-   */
-  NODEMAILER_TRANSPORT_CONFIG: string;
   /**
    * The environment of the deployment. Generally should avoid using this, consider its use deprecated, prefer instead more specific environment variables.
    */
