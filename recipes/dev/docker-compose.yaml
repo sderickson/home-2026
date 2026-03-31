@@ -71,15 +71,6 @@ services:
       - ./kratos/data:/var/lib/sqlite
       - ./kratos:/etc/config/kratos
 
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    hostname: azurite
-    ports:
-      - "10000:10000"
-      - "10001:10001"
-      - "10002:10002"
-    command: "azurite-blob --blobHost 0.0.0.0 --loose"
-
 volumes:
   caddy_data:
   caddy_config:
