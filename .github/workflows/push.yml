@@ -3,12 +3,11 @@
 
 name: Push images to GHCR
 
-# on:
-#   pull_request:
-#     branches:
-#       - main
-# TODO: switch to this once confirmed everything is working
 on:
+  # Uncomment to test changes. Pushes will go live, though!
+  pull_request:
+    branches:
+      - main
   push:
     branches: [main]
 
@@ -40,8 +39,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install rollup for linux
-        run: npm install @rollup/rollup-linux-x64-gnu
+      # - name: Install rollup for linux
+      #   run: npm install @rollup/rollup-linux-x64-gnu
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
