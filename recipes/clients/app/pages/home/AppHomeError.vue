@@ -15,6 +15,26 @@
       </div>
     </v-alert>
   </v-container>
+  <v-container v-else-if="is403">
+    <v-alert type="warning" variant="tonal" class="pa-6">
+      <v-alert-title>{{ t(strings.verify_email_title) }}</v-alert-title>
+      <p class="my-4 mb-0">
+        <i18n-t
+          scope="global"
+          :keypath="lookupTKey(strings.verify_email_message)"
+        >
+          <template #resend>
+            <a
+              :href="newVerificationHref"
+              class="text-primary text-decoration-underline"
+            >
+              {{ t(strings.verify_email_resend_link) }}
+            </a>
+          </template>
+        </i18n-t>
+      </p>
+    </v-alert>
+  </v-container>
   <AsyncPageError v-else :error="error" :message="errorMessage" />
 </template>
 
@@ -23,18 +43,27 @@ import { computed } from "vue";
 import { AsyncPageError } from "@saflib/vue/components";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { home_page as strings } from "./Home.strings.ts";
-import { getLoginLinkProps, enterDemoModeFromError } from "./Home.logic.ts";
+import {
+  getLoginLinkProps,
+  getNewVerificationHref,
+  enterDemoModeFromError,
+} from "./Home.logic.ts";
 
 const props = defineProps<{
   error?: unknown;
   errorMessage?: string;
 }>();
 
-const { t } = useReverseT();
+const { t, lookupTKey } = useReverseT();
 
 const is401 = computed(
   () => (props.error as { status?: number } | undefined)?.status === 401,
 );
 
+const is403 = computed(
+  () => (props.error as { status?: number } | undefined)?.status === 403,
+);
+
 const loginLinkProps = getLoginLinkProps();
+const newVerificationHref = getNewVerificationHref();
 </script>

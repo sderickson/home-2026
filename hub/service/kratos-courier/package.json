@@ -6,7 +6,6 @@
     ".": "./index.ts"
   },
   "dependencies": {
-    "@saflib/email": "*",
     "@saflib/node": "*",
     "@saflib/ory-kratos": "*"
   },

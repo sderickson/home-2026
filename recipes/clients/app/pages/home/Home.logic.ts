@@ -1,4 +1,9 @@
-import { linkToProps, linkToHref, getHost } from "@saflib/links";
+import {
+  linkToProps,
+  linkToHref,
+  linkToHrefWithHost,
+  getHost,
+} from "@saflib/links";
 import { appLinks, authLinks } from "@sderickson/recipes-links";
 import { setDemoMode } from "@sderickson/recipes-clients-common";
 
@@ -27,6 +32,19 @@ export function getLoginLinkProps() {
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
   return linkToProps(authLinks.kratosNewLogin, { params: { return_to: returnTo } });
+}
+
+/**
+ * Auth SPA `/new-verification` URL; after verification, return to recipes home.
+ */
+export function getNewVerificationHref(): string {
+  const returnTo =
+    typeof window !== "undefined"
+      ? linkToHref(appLinks.home, { domain: getHost() })
+      : "";
+  return linkToHrefWithHost(authLinks.kratosNewVerification, {
+    params: { return_to: returnTo },
+  });
 }
 
 /**

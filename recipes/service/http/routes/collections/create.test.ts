@@ -13,13 +13,21 @@ const SEED_USER_EMAIL = "create-collections@example.com";
 describe("POST /collections", () => {
   let app: express.Express;
   let dbKey: DbKey;
+  let priorAdminEmails: string | undefined;
 
   beforeEach(async () => {
+    priorAdminEmails = process.env.ADMIN_EMAILS;
+    process.env.ADMIN_EMAILS = SEED_USER_EMAIL;
     dbKey = recipesDb.connect();
     app = createRecipesHttpApp({ recipesDbKey: dbKey });
   });
 
   afterEach(() => {
+    if (priorAdminEmails === undefined) {
+      delete process.env.ADMIN_EMAILS;
+    } else {
+      process.env.ADMIN_EMAILS = priorAdminEmails;
+    }
     recipesDb.disconnect(dbKey);
   });
 

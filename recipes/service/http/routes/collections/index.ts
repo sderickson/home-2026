@@ -22,6 +22,7 @@ export const createCollectionsRouter = () => {
     createScopedMiddleware({
       apiSpec: jsonSpec,
       enforceAuth: true,
+      emailVerificationRequired: true,
     }),
   );
   router.get("/collections", listCollectionsHandler);

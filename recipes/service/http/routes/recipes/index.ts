@@ -36,6 +36,7 @@ export const createRecipesRouter = () => {
     createScopedMiddleware({
       apiSpec: jsonSpec,
       enforceAuth: true,
+      emailVerificationRequired: true,
       fileUploader: uploadToDiskOptions,
     }),
   );

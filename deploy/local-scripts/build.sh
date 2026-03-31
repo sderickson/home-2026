@@ -7,6 +7,9 @@ if [ -z "$CONTAINER_REGISTRY" ]; then
 fi
 echo "Container registry: $CONTAINER_REGISTRY"
 
+# Print out git status
+git status
+
 # Generate git-hashes.json files that get COPY'd into images
 npx saf-git-hashes
 

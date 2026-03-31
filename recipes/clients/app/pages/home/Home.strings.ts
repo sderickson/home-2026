@@ -14,4 +14,8 @@ export const home_page = {
     "You can either log in to access your collections and others, or enter demo mode to try out the app without an account.",
   cta_login: "Log in",
   cta_demo: "Try demo mode",
+  verify_email_title: "Verify your email first",
+  verify_email_message:
+    "You need a verified email to load your collections. Check your email for the verification message, or {resend}.",
+  verify_email_resend_link: "send a new one",
 };
