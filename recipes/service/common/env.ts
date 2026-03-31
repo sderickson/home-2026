@@ -13,10 +13,6 @@ export interface RecipesServiceCommonEnvSchema {
    */
   ALLOW_DB_CREATION?: "true" | "false";
   /**
-   * The Azure Client ID.
-   */
-  AZURE_CLIENT_ID?: string;
-  /**
    * The Azure Blob Storage URL.
    */
   AZURE_COLD_BLOB_STORAGE_URL?: string;
