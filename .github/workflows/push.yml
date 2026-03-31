@@ -5,9 +5,9 @@ name: Push images to GHCR
 
 on:
   # Uncomment to test changes. Pushes will go live, though!
-  pull_request:
-    branches:
-      - main
+  # pull_request:
+  #   branches:
+  #     - main
   push:
     branches: [main]
 
