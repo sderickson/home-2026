@@ -15,7 +15,7 @@ export interface HubMonolithEnvSchema {
   /**
    * The Azure Client ID.
    */
-  AZURE_CLIENT_ID: string;
+  AZURE_CLIENT_ID?: string;
   /**
    * The Azure Blob Storage URL.
    */
