@@ -4,7 +4,7 @@ import type { Component } from "vue";
 import { createMemoryHistory, type Router } from "vue-router";
 import { createAuthRouter } from "./router.ts";
 import { auth_strings } from "./strings.ts";
-import { kratosFakeHandlers } from "@sderickson/recipes-sdk/fakes";
+import { kratosFakeHandlers } from "@saflib/ory-kratos-sdk/fakes";
 
 export const createTestRouter = () =>
   createAuthRouter({ history: createMemoryHistory() });
