@@ -5,7 +5,6 @@
   "exports": {
     ".": "./main.ts",
     "./router": "./router.ts",
-    "./fixtures": "./fixtures.ts",
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
     "./test-app": "./test-app.ts"
@@ -20,12 +19,13 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@sderickson/recipes-sdk": "*",
-    "@saflib/sdk": "*",
     "@saflib/links": "*",
+    "@saflib/ory-kratos-spa": "*",
+    "@saflib/sdk": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",
+    "@sderickson/recipes-sdk": "*",
     "vue-router": "*"
   }
 }
