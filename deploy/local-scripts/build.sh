@@ -15,32 +15,40 @@ npx saf-git-hashes
 
 # Build dependent images
 
-# BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
+# Build static clients
+# When adding a new static client, add the docker build command here, like so:
+# docker build -f ./blog/Dockerfile . --platform linux/amd64 \
+# 	-t (org name)-(product name)-client:latest \
+# 	-t "$CONTAINER_REGISTRY/(org name)-(product name)-client:latest"
 docker build -f ./blog/Dockerfile . --platform linux/amd64 \
 	-t sderickson-blog-client:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-blog-client:latest"
 docker build -f ./recipes/clients/static-root/Dockerfile . --platform linux/amd64 \
 	-t sderickson-recipes-static-root:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-recipes-static-root:latest"
+
+# BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
 docker build -f ./recipes/service/monolith/Dockerfile . --platform linux/amd64 \
 	-t sderickson-recipes-monolith:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-recipes-monolith:latest"
+docker build -f ./recipes/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-recipes-clients:latest
+
 docker build -f ./notebook/service/monolith/Dockerfile . --platform linux/amd64 \
 	-t sderickson-notebook-monolith:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-notebook-monolith:latest"
+docker build -f ./notebook/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-notebook-clients:latest
+
 docker build -f ./hub/service/monolith/Dockerfile . --platform linux/amd64 \
 	-t sderickson-hub-monolith:latest \
 	-t "$CONTAINER_REGISTRY/sderickson-hub-monolith:latest"
+docker build -f ./hub/clients/build/Dockerfile . --platform linux/amd64 \
+	-t sderickson-hub-clients:latest
 
 # END WORKFLOW AREA
 
 # SPA client images (intermediate; bundled into caddy by deploy/Dockerfile.prod)
-docker build -f ./recipes/clients/build/Dockerfile . --platform linux/amd64 \
-	-t sderickson-recipes-clients:latest
-docker build -f ./notebook/clients/build/Dockerfile . --platform linux/amd64 \
-	-t sderickson-notebook-clients:latest
-docker build -f ./hub/clients/build/Dockerfile . --platform linux/amd64 \
-	-t sderickson-hub-clients:latest
 
 # Build reverse proxy image
 docker build -f ./deploy/Dockerfile.prod . --platform linux/amd64 \
