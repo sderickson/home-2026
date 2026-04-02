@@ -103,7 +103,7 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: t(hub_layout.nav_app) },
-      { ...authLinks.kratosNewSettings, name: t(hub_layout.nav_account) },
+      { ...authLinks.newSettings, name: t(hub_layout.nav_account) },
       { ...authLinks.logout, name: t(hub_layout.nav_logout) },
       ...(props.isAdmin
         ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }]
@@ -112,7 +112,7 @@ const links = computed<LinkWithName[]>(() => {
   }
   return [
     { ...rootLinks.home, name: t(hub_layout.nav_home) },
-    { ...authLinks.kratosNewRegistration, name: t(hub_layout.nav_sign_up) },
+    { ...authLinks.newRegistration, name: t(hub_layout.nav_sign_up) },
   ];
 });
 

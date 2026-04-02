@@ -31,7 +31,7 @@ export function getLoginLinkProps() {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.kratosNewLogin, { params: { return_to: returnTo } });
+  return linkToProps(authLinks.newLogin, { params: { return_to: returnTo } });
 }
 
 /**
@@ -42,7 +42,7 @@ export function getNewVerificationHref(): string {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToHrefWithHost(authLinks.kratosNewVerification, {
+  return linkToHrefWithHost(authLinks.newVerification, {
     params: { return_to: returnTo },
   });
 }
@@ -55,7 +55,9 @@ export function getRegisterLinkProps() {
     typeof window !== "undefined"
       ? linkToHref(appLinks.home, { domain: getHost() })
       : "";
-  return linkToProps(authLinks.kratosNewRegistration, { params: { return_to: returnTo } });
+  return linkToProps(authLinks.newRegistration, {
+    params: { return_to: returnTo },
+  });
 }
 
 /**
