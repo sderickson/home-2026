@@ -15,6 +15,7 @@
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
-    "@saflib/object-store": "*"
+    "@saflib/object-store": "*",
+    "@saflib/secret-store": "*"
   }
 }

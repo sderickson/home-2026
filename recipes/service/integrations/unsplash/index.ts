@@ -1,5 +1,6 @@
 export {
   isMocked,
+  configureUnsplash,
   request,
   isUnsplashRateLimitError,
   UnsplashMockUseError,

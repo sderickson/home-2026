@@ -15,7 +15,7 @@ export type TrackDownloadResult = UnsplashTrackDownloadResponse;
 export async function trackDownload(
   photoId: string,
 ): Promise<ReturnsError<TrackDownloadResult, UnsplashClientError>> {
-  if (isMocked) {
+  if (isMocked()) {
     return { result: mockTrackDownload() };
   }
 
