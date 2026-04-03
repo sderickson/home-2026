@@ -6,6 +6,7 @@ import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/sentry";
 import { startOryKratosService } from "@saflib/ory-kratos";
 import { callbacks } from "@sderickson/hub-kratos-courier";
+import { initializeDependencies } from "@sderickson/recipes-service-common";
 
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
@@ -17,5 +18,6 @@ addLokiTransport();
 initSentry();
 collectSystemMetrics();
 
+await initializeDependencies();
 startOryKratosService({ callbacks });
 startRecipesService();

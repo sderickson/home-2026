@@ -6,6 +6,7 @@
     ".": "./index.ts"
   },
   "dependencies": {
+    "@sderickson/recipes-service-common": "*",
     "@saflib/node": "*",
     "@saflib/ory-kratos": "*"
   },

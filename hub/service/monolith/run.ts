@@ -8,6 +8,7 @@ import { startOryKratosService } from "@saflib/ory-kratos";
 import { callbacks } from "@sderickson/hub-kratos-courier";
 import { startRecipesService } from "@sderickson/recipes-service";
 import { startNotebookService } from "@sderickson/notebook-service";
+import { initializeDependencies } from "@sderickson/recipes-service-common";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
@@ -19,6 +20,7 @@ addLokiTransport();
 initSentry();
 collectSystemMetrics();
 
+await initializeDependencies();
 startOryKratosService({ callbacks });
 startHubService();
 startRecipesService();
