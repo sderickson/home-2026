@@ -24,7 +24,7 @@ export type SearchResult = UnsplashSearchPhotosResponse;
 export async function search(
   params: SearchParams,
 ): Promise<ReturnsError<SearchResult, UnsplashClientError>> {
-  if (isMocked) {
+  if (isMocked()) {
     return { result: mockSearch() };
   }
 

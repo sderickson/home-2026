@@ -14,7 +14,7 @@ export type GetPhotoResult = UnsplashPhotoDetail;
 export async function getPhoto(
   photoId: string,
 ): Promise<ReturnsError<GetPhotoResult, UnsplashClientError>> {
-  if (isMocked) {
+  if (isMocked()) {
     return { result: mockGetPhoto() };
   }
 

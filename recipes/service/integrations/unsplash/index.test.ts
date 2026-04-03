@@ -12,7 +12,7 @@ import {
 
 describe("@sderickson/recipes-unsplash", () => {
   it("should export isMocked and request", () => {
-    expect(typeof isMocked).toBe("boolean");
+    expect(typeof isMocked).toBe("function");
     expect(typeof request).toBe("function");
   });
 

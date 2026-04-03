@@ -1,38 +1,55 @@
 import type { ReturnsError } from "@saflib/monorepo";
-import { recipesSecretStore } from "@sderickson/recipes-service-common";
+import type { SecretStore } from "@saflib/secret-store";
 import { UNSPLASH_API_BASE } from "./types.ts";
 import { typedEnv } from "./env.ts";
 
 const isTest = typedEnv.NODE_ENV === "test";
+let _isMocked = isTest;
+let _configured = isTest;
 let apiKey: string | undefined;
+let secretStore: SecretStore | undefined;
 let lastFetchAttemptAt = 0;
 const FETCH_COOLDOWN_MS = 10_000;
 
-const initial = await recipesSecretStore.getSecretByName("UNSPLASH_API_KEY");
-if (initial.result !== undefined) {
-  apiKey = initial.result;
-} else {
-  console.warn(
-    "[Unsplash] UNSPLASH_API_KEY not found in Infisical:",
-    initial.error?.message,
-  );
+/** True when using mocks (test mode or API key is "mock"). */
+export function isMocked(): boolean {
+  return _isMocked;
 }
 
-/** Use mocks when key is "mock" or when running tests. Client must not be used when mocking. */
-export const isMocked = (apiKey !== undefined && apiKey === "mock") || isTest;
+/**
+ * Initializes the Unsplash client by fetching the API key from the given
+ * secret store. Idempotent — subsequent calls are no-ops.
+ */
+export async function configureUnsplash(store: SecretStore): Promise<void> {
+  if (_configured) return;
+  secretStore = store;
+
+  const initial = await store.getSecretByName("UNSPLASH_API_KEY");
+  if (initial.result !== undefined) {
+    apiKey = initial.result;
+    _isMocked = apiKey === "mock";
+  } else {
+    console.warn(
+      "[Unsplash] UNSPLASH_API_KEY not found in secret store:",
+      initial.error?.message,
+    );
+  }
+  _configured = true;
+}
 
 async function ensureApiKey(): Promise<boolean> {
   if (apiKey) return true;
+  if (!secretStore) return false;
   const now = Date.now();
   if (now - lastFetchAttemptAt < FETCH_COOLDOWN_MS) return false;
   lastFetchAttemptAt = now;
-  const out = await recipesSecretStore.getSecretByName("UNSPLASH_API_KEY");
+  const out = await secretStore.getSecretByName("UNSPLASH_API_KEY");
   if (out.result !== undefined) {
     apiKey = out.result;
     return true;
   }
   console.warn(
-    "[Unsplash] UNSPLASH_API_KEY not found in Infisical (retry):",
+    "[Unsplash] UNSPLASH_API_KEY not found in secret store (retry):",
     out.error?.message,
   );
   return false;
@@ -162,7 +179,7 @@ export async function request<T>(
   path: string,
   init?: RequestInit,
 ): Promise<ReturnsError<T, UnsplashClientError>> {
-  if (isMocked) {
+  if (isMocked()) {
     return { error: new UnsplashMockUseError() };
   }
 
