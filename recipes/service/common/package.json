@@ -12,10 +12,12 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@saflib/email-service": "*",
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
     "@saflib/object-store": "*",
-    "@saflib/secret-store": "*"
+    "@saflib/secret-store": "*",
+    "@sderickson/recipes-unsplash": "*"
   }
 }
