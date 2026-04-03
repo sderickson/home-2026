@@ -41,6 +41,18 @@ export interface RecipesServiceCommonEnvSchema {
    */
   DOMAIN_REDIRECTS?: string;
   /**
+   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. getSecret); not needed when using the mock client.
+   */
+  INFISICAL_ENVIRONMENT?: string;
+  /**
+   * Infisical project ID. Required for live API calls (e.g. getSecret); not needed when using the mock client.
+   */
+  INFISICAL_PROJECT_ID?: string;
+  /**
+   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  INFISICAL_TOKEN?: string;
+  /**
    * The hostname or URL of the Loki instance to send logs to (e.g., http://loki:3100)
    */
   LOKI_HOSTNAME?: string;
@@ -78,6 +90,4 @@ export interface RecipesServiceCommonEnvSchema {
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process
-  ? process.env
-  : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;

@@ -1,5 +1,5 @@
 import type { ReturnsError } from "@saflib/monorepo";
-import { getSecretByName } from "@sderickson/recipes-infisical";
+import { recipesSecretStore } from "@sderickson/recipes-service-common";
 import { UNSPLASH_API_BASE } from "./types.ts";
 import { typedEnv } from "./env.ts";
 
@@ -8,7 +8,7 @@ let apiKey: string | undefined;
 let lastFetchAttemptAt = 0;
 const FETCH_COOLDOWN_MS = 10_000;
 
-const initial = await getSecretByName("UNSPLASH_API_KEY");
+const initial = await recipesSecretStore.getSecretByName("UNSPLASH_API_KEY");
 if (initial.result !== undefined) {
   apiKey = initial.result;
 } else {
@@ -26,7 +26,7 @@ async function ensureApiKey(): Promise<boolean> {
   const now = Date.now();
   if (now - lastFetchAttemptAt < FETCH_COOLDOWN_MS) return false;
   lastFetchAttemptAt = now;
-  const out = await getSecretByName("UNSPLASH_API_KEY");
+  const out = await recipesSecretStore.getSecretByName("UNSPLASH_API_KEY");
   if (out.result !== undefined) {
     apiKey = out.result;
     return true;
