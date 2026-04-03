@@ -1,6 +1,7 @@
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
 import { isDemoMode } from "@sderickson/recipes-clients-common";
+import "vuetify/styles";
 import Spa from "./AppSpa.vue";
 import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
@@ -8,9 +9,8 @@ import { app_strings } from "./strings.ts";
 async function startDemoWorker() {
   const { setupWorker } = await import("msw/browser");
   const { http, bypass } = await import("msw");
-  const { recipesServiceFakeHandlers } = await import(
-    "@sderickson/recipes-sdk/fakes"
-  );
+  const { recipesServiceFakeHandlers } =
+    await import("@sderickson/recipes-sdk/fakes");
   const worker = setupWorker(
     ...recipesServiceFakeHandlers,
     http.get("*", ({ request }) => {

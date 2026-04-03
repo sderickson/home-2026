@@ -1,5 +1,6 @@
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
+import "vuetify/styles";
 import Spa from "./AdminSpa.vue";
 import { createAdminRouter } from "./router.ts";
 import { admin_strings } from "./strings.ts";
