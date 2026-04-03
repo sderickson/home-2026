@@ -12,7 +12,6 @@ async function configureEmail(store: SecretStore): Promise<void> {
   if (emailClient) return;
 
   const out = await store.getSecretByName("BREVO_API_KEY");
-  console.log("BREVO_API_KEY", out);
   let apiKey: string | "mock";
   if (out.result !== undefined && out.result.trim() !== "") {
     apiKey = out.result.trim();
