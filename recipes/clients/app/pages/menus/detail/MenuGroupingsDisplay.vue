@@ -1,41 +1,41 @@
 <template>
   <div>
-    <!-- Fancy menu layout: masonry columns, centered when fewer sections -->
+    <!-- List view: masonry columns (same idea as RecipeList), one block per grouping -->
     <template v-if="viewMode === 'menu'">
-      <div
-        class="menu-fancy"
-        :class="[
-          groupings.length === 1 && 'menu-fancy--sections-1',
-          groupings.length === 2 && 'menu-fancy--sections-2',
-        ]"
-      >
-        <h1 v-if="menuTitle" class="menu-fancy-title">{{ menuTitle }}</h1>
-        <div
+      <div class="menu-groupings-grid">
+        <section
           v-for="(grouping, gIndex) in groupings"
           :key="gIndex"
-          class="menu-fancy-section"
+          class="menu-grouping"
         >
-          <h2 class="menu-fancy-section-title">{{ grouping.name }}</h2>
-          <ul class="menu-fancy-list">
+          <h2
+            class="text-caption text-medium-emphasis text-uppercase text-center mb-2 pb-2 border-b-sm opacity-90"
+          >
+            {{ grouping.name }}
+          </h2>
+          <ul class="menu-dish-list">
             <li
               v-for="recipeId in grouping.recipeIds"
               :key="recipeId"
-              class="menu-fancy-item"
+              class="menu-dish-item"
             >
-              <router-link :to="recipeLink(recipeId)" class="menu-fancy-link">
-                <span class="menu-fancy-dish">{{
+              <router-link
+                :to="recipeLink(recipeId)"
+                class="menu-dish-link text-decoration-none text-high-emphasis"
+              >
+                <span class="text-body-1 font-weight-medium d-block">{{
                   recipeById.get(recipeId)?.title ?? recipeId
                 }}</span>
                 <span
                   v-if="subtextByRecipeId.get(recipeId)"
-                  class="menu-fancy-desc"
+                  class="text-body-2 text-medium-emphasis d-block mt-1"
                 >
                   {{ subtextByRecipeId.get(recipeId) }}
                 </span>
               </router-link>
             </li>
           </ul>
-        </div>
+        </section>
       </div>
     </template>
 
@@ -168,7 +168,14 @@ const recipeById = computed(() => {
 const enrichmentByRecipeId = computed(() => {
   const map = new Map<
     string,
-    { firstImageUrl: string | null; keyIngredients: { name: string; quantity: string; unit: string }[] }
+    {
+      firstImageUrl: string | null;
+      keyIngredients: {
+        name: string;
+        quantity: string;
+        unit: string;
+      }[];
+    }
   >();
   uniqueRecipeIds.value.forEach((id, i) => {
     const detail = detailQueries.value[i]?.data;
@@ -207,117 +214,52 @@ function recipeLink(recipeId: string) {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
-
-.menu-fancy {
-  font-family: "Outfit", system-ui, sans-serif;
-  max-width: 72rem;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  padding: 1rem 0;
+/* Masonry: match breakpoints in recipes/service/sdk/.../RecipeList.vue */
+.menu-groupings-grid {
   column-count: 1;
-  column-gap: 2rem;
-}
-
-/* Narrower width when 1–2 sections so the masonry block is centered */
-.menu-fancy--sections-1 {
-  max-width: 22rem;
-  column-count: 1;
-}
-
-.menu-fancy--sections-2 {
-  max-width: 44rem;
+  column-gap: 1rem;
 }
 
 @media (min-width: 600px) {
-  .menu-fancy {
-    column-count: 2;
-  }
-
-  .menu-fancy--sections-2 {
+  .menu-groupings-grid {
     column-count: 2;
   }
 }
 
 @media (min-width: 960px) {
-  .menu-fancy {
+  .menu-groupings-grid {
     column-count: 3;
   }
+}
 
-  .menu-fancy--sections-2 {
-    column-count: 2;
+@media (min-width: 1280px) {
+  .menu-groupings-grid {
+    column-count: 4;
   }
 }
 
-.menu-fancy-title {
-  font-family: "Outfit", system-ui, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: rgb(var(--v-theme-on-surface));
-  margin: 0 0 2rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  column-span: all;
-}
-
-.menu-fancy-section {
+.menu-grouping {
   break-inside: avoid;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.menu-fancy-section:last-child {
-  margin-bottom: 0;
-}
-
-.menu-fancy-section-title {
-  font-family: "Outfit", system-ui, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgb(var(--v-theme-on-surface));
-  margin: 0 0 1.25rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-.menu-fancy-list {
+.menu-dish-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-top: 1rem;
 }
 
-.menu-fancy-item {
+.menu-dish-item {
   padding: 0.5rem 0;
 }
 
-.menu-fancy-link {
-  text-decoration: none;
-  color: inherit;
+.menu-dish-link {
   display: block;
   transition: color 0.15s ease;
 }
 
-.menu-fancy-link:hover {
+.menu-dish-link:hover {
   color: rgb(var(--v-theme-primary));
-}
-
-.menu-fancy-dish {
-  font-size: 1.125rem;
-  font-weight: 500;
-  display: block;
-}
-
-.menu-fancy-desc {
-  font-size: 0.875rem;
-  font-weight: 300;
-  font-style: normal;
-  opacity: 0.8;
-  display: block;
-  margin-top: 0.15rem;
 }
 
 .menu-diner-title {
