@@ -22,8 +22,9 @@ test("register", async ({ page, registrationPage, verifyWallPage }) => {
 
   await page.goto("http://docker.localhost/");
   await page.getByRole("link", { name: "Register" }).click();
+  await registrationPage.toBeVisible();
   await registrationPage.completeRegistration(uniqueEmail, "packtofu");
-  await verifyWallPage.expectConfirmEmailHeadingVisible();
+  await verifyWallPage.toBeVisible();
   await verifyWallPage.clickContinueToApp();
   await expect(page.getByRole("heading", { name: "App Home" })).toBeVisible();
 });
