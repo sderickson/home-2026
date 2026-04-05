@@ -5,9 +5,25 @@
 
 export interface NotebookMonolithEnvSchema {
   /**
+   * Comma-separated list of admin emails
+   */
+  ADMIN_EMAILS: string;
+  /**
    * Whether to allow the creation of new databases. Useful for ensuring existing production environments don't inadvertently create new databases.
    */
   ALLOW_DB_CREATION?: "true" | "false";
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COLD_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_COOL_BLOB_STORAGE_URL?: string;
+  /**
+   * The Azure Blob Storage URL.
+   */
+  AZURE_HOT_BLOB_STORAGE_URL?: string;
   /**
    * Comma-separated list of client subdomains, e.g. 'www,app,auth,'. Include an empty string (such as in the example) to indicate there's a client for the root domain.
    */
@@ -24,6 +40,18 @@ export interface NotebookMonolithEnvSchema {
    * Comma-separated list of domains to redirect to the root domain, e.g. 'old-subdomain1.saf.com,old-subdomain2.saf.com'.
    */
   DOMAIN_REDIRECTS?: string;
+  /**
+   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. getSecret); not needed when using the mock client.
+   */
+  INFISICAL_ENVIRONMENT?: string;
+  /**
+   * Infisical project ID. Required for live API calls (e.g. getSecret); not needed when using the mock client.
+   */
+  INFISICAL_PROJECT_ID?: string;
+  /**
+   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  INFISICAL_TOKEN?: string;
   /**
    * Host URL for the Ory Kratos courier callback server (e.g. recipes-monolith:3000).
    */
@@ -49,6 +77,7 @@ export interface NotebookMonolithEnvSchema {
    * The protocol of the deployment, e.g. 'https'
    */
   PROTOCOL: "https" | "http";
+  RECIPES_SERVICE_HTTP_HOST: string;
   SENTRY_DSN?: string;
   /**
    * Comma-separated list of service subdomains, e.g. 'revenue,geo,identity,core'.
@@ -62,6 +91,10 @@ export interface NotebookMonolithEnvSchema {
    * The timezone of the deployment, e.g. 'America/New_York'. Must be UTC.
    */
   TZ: "UTC";
+  /**
+   * Unsplash API Access Key. Create an application at https://unsplash.com/developers to obtain an access key. Required for live API calls; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  UNSPLASH_API_KEY?: string;
 }
 
 /**

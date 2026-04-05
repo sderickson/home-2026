@@ -22,7 +22,7 @@ services:
       - DOMAIN=docker.localhost
       - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
       - PROTOCOL=${PROTOCOL}
-      - SERVICE_SUBDOMAINS=identity,api.notebook
+      - SERVICE_SUBDOMAINS=api.notebook
       - TZ=${TZ}
     volumes:
       - ../../notebook/clients/:/app/notebook/clients/

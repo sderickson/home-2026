@@ -25,18 +25,6 @@ export interface RecipesUnsplashEnvSchema {
    */
   DOMAIN_REDIRECTS?: string;
   /**
-   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
-   */
-  INFISICAL_ENVIRONMENT?: string;
-  /**
-   * Infisical project ID. Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
-   */
-  INFISICAL_PROJECT_ID?: string;
-  /**
-   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
-   */
-  INFISICAL_TOKEN?: string;
-  /**
    * Whether to mock 3rd party integrations. Set to 'true' to mock. And integration packages should respect this setting.
    */
   MOCK_INTEGRATIONS?: "true" | "false";

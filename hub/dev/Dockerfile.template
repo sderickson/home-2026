@@ -11,10 +11,10 @@ RUN npm install --omit=dev
 #{ copy_src }#
 
 WORKDIR /app/recipes/clients/build
-RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=recipes,app.recipes,admin.recipes,account.recipes SERVICE_SUBDOMAINS=identity,api.recipes DEPLOYMENT_NAME=development TZ=UTC npm run build
+RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=recipes,app.recipes,admin.recipes,account.recipes SERVICE_SUBDOMAINS=api.recipes DEPLOYMENT_NAME=development TZ=UTC npm run build
 
 WORKDIR /app/notebook/clients/build
-RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=notebook,app.notebook,admin.notebook,account.notebook SERVICE_SUBDOMAINS=identity,api.notebook DEPLOYMENT_NAME=development TZ=UTC npm run build
+RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=notebook,app.notebook,admin.notebook,account.notebook SERVICE_SUBDOMAINS=api.notebook DEPLOYMENT_NAME=development TZ=UTC npm run build
 
 FROM caddy:2.11.2
 COPY --from=builder /app/recipes/clients/build/dist /srv/recipes-clients

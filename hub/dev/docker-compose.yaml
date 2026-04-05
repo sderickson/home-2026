@@ -22,7 +22,7 @@ services:
       - DOMAIN=docker.localhost
       - DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
       - PROTOCOL=${PROTOCOL}
-      - SERVICE_SUBDOMAINS=identity,hub
+      - SERVICE_SUBDOMAINS=hub
       - TZ=${TZ}
     volumes:
       - ../../hub/clients/:/app/hub/clients/

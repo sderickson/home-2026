@@ -42,11 +42,11 @@ export interface HubMonolithEnvSchema {
   DOMAIN_REDIRECTS?: string;
   HUB_SERVICE_HTTP_HOST: string;
   /**
-   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
+   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. getSecret); not needed when using the mock client.
    */
   INFISICAL_ENVIRONMENT?: string;
   /**
-   * Infisical project ID. Required for live API calls (e.g. ping, getSecret); not needed when using the mock client.
+   * Infisical project ID. Required for live API calls (e.g. getSecret); not needed when using the mock client.
    */
   INFISICAL_PROJECT_ID?: string;
   /**
