@@ -3,6 +3,7 @@
     :model-value="modelValue"
     max-width="600"
     persistent
+    scroll-strategy="none"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <v-card class="d-flex flex-column" style="max-height: 90vh">

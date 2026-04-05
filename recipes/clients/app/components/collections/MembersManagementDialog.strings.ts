@@ -2,7 +2,7 @@ export const members_management_dialog = {
   title: "Members",
   add_member: "Add member",
   email_label: "Email",
-  email_placeholder: "email@example.com",
+  email_placeholder: "email\\@example.com",
   role_label: "Role",
   creator_badge: "Creator",
   change_role: "Change role",
