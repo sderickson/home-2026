@@ -115,7 +115,7 @@
                 </v-list-item>
               </div>
               <v-autocomplete
-                :model-value="autocompleteBySection[gIndex] ?? null"
+                :key="`${gIndex}-${autocompleteRemountKey[gIndex] ?? 0}`"
                 :items="availableRecipes"
                 item-title="title"
                 item-value="id"
@@ -199,7 +199,8 @@ const formRef = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(
   null,
 );
 const updateMutation = useUpdateMenuMutation();
-const autocompleteBySection = reactive<Record<number, string | null>>({});
+/** Increment after each pick so the autocomplete remounts with a cleared field (Vuetify keeps search text otherwise). */
+const autocompleteRemountKey = reactive<Record<number, number>>({});
 const sectionsPanelsRef = ref<{ $el: HTMLElement } | null>(null);
 const recipeListSortables = ref<Sortable[]>([]);
 const nameDialogOpen = ref(false);
@@ -300,11 +301,8 @@ function recipeTitle(recipeId: string): string {
 function onAutocompleteSelect(id: string | null, sectionIndex: number) {
   if (id) {
     addRecipeToSection(id, sectionIndex);
-    nextTick(() => {
-      autocompleteBySection[sectionIndex] = null;
-    });
-  } else {
-    autocompleteBySection[sectionIndex] = null;
+    autocompleteRemountKey[sectionIndex] =
+      (autocompleteRemountKey[sectionIndex] ?? 0) + 1;
   }
 }
 
