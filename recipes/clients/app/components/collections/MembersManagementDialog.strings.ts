@@ -7,7 +7,7 @@ export const members_management_dialog = {
   role_creator: "Creator",
   change_role: "Change role",
   remove_member: "Remove",
-  cancel: "Cancel",
+  done: "Done",
   no_members: "No members.",
   role_owner: "Owner",
   role_editor: "Editor",

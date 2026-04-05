@@ -22,7 +22,9 @@
             <tr>
               <th>{{ t(strings.email_label) }}</th>
               <th>{{ t(strings.role_label) }}</th>
-              <th v-if="isOwner" class="text-right">{{ t(strings.actions_column) }}</th>
+              <th v-if="isOwner" class="text-right">
+                {{ t(strings.actions_column) }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -31,6 +33,7 @@
               <td>
                 <v-select
                   v-if="isOwner && !member.isCreator"
+                  class="role-select"
                   :model-value="member.role"
                   :items="roleItems"
                   item-title="label"
@@ -38,8 +41,9 @@
                   variant="outlined"
                   density="compact"
                   hide-details
-                  style="max-width: 120px"
-                  @update:model-value="(role: string) => handleChangeRole(member.id, role)"
+                  @update:model-value="
+                    (role: string) => handleChangeRole(member.id, role)
+                  "
                 />
                 <span v-else>{{
                   member.isCreator
@@ -72,6 +76,7 @@
               <td>
                 <v-select
                   v-model="newMemberRole"
+                  class="role-select"
                   :label="t(strings.role_label)"
                   :items="roleItems"
                   item-title="label"
@@ -79,7 +84,6 @@
                   variant="outlined"
                   density="compact"
                   hide-details
-                  style="max-width: 140px"
                 />
               </td>
               <td class="text-right">
@@ -108,7 +112,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="$emit('update:modelValue', false)">
-          {{ t(strings.cancel) }}
+          {{ t(strings.done) }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -168,5 +172,10 @@ function roleLabel(role: string) {
 .members-table :deep(tbody .v-input) {
   margin-top: 0;
   margin-bottom: 0;
+}
+.members-table :deep(.role-select),
+.members-table :deep(.role-select .v-field) {
+  width: 100%;
+  max-width: 100%;
 }
 </style>
