@@ -38,6 +38,7 @@ services:
       file: remote-assets/docker-compose.prod.yaml
       service: grafana
     volumes: !override []
+    env_file: !override []
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
