@@ -17,43 +17,7 @@
         />
       </v-card-title>
       <v-card-text class="flex-grow-1 overflow-auto">
-        <div v-if="isOwner" class="mb-4">
-          <v-label class="text-body-2 mb-1">{{ t(strings.add_member) }}</v-label>
-          <div class="d-flex gap-2 align-center flex-wrap">
-            <v-text-field
-              v-model="newMemberEmail"
-              :label="t(strings.email_label)"
-              :placeholder="t(strings.email_placeholder)"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="flex-grow-1"
-              style="min-width: 180px"
-            />
-            <v-select
-              v-model="newMemberRole"
-              :label="t(strings.role_label)"
-              :items="roleItems"
-              item-title="label"
-              item-value="value"
-              variant="outlined"
-              density="compact"
-              hide-details
-              style="min-width: 100px"
-            />
-            <v-btn
-              color="primary"
-              variant="tonal"
-              :disabled="!newMemberEmail.trim()"
-              :loading="addingMember"
-              @click="handleAddMember()"
-            >
-              {{ t(strings.add_member) }}
-            </v-btn>
-          </div>
-        </div>
-
-        <v-table>
+        <v-table class="members-table">
           <thead>
             <tr>
               <th>{{ t(strings.email_label) }}</th>
@@ -63,18 +27,7 @@
           </thead>
           <tbody>
             <tr v-for="member in members" :key="member.id">
-              <td>
-                {{ member.email }}
-                <v-chip
-                  v-if="member.isCreator"
-                  size="x-small"
-                  color="primary"
-                  variant="flat"
-                  class="ml-1"
-                >
-                  {{ t(strings.creator_badge) }}
-                </v-chip>
-              </td>
+              <td>{{ member.email }}</td>
               <td>
                 <v-select
                   v-if="isOwner && !member.isCreator"
@@ -85,11 +38,14 @@
                   variant="outlined"
                   density="compact"
                   hide-details
-                  class="mt-1"
                   style="max-width: 120px"
                   @update:model-value="(role: string) => handleChangeRole(member.id, role)"
                 />
-                <span v-else>{{ roleLabel(member.role) }}</span>
+                <span v-else>{{
+                  member.isCreator
+                    ? t(strings.role_creator)
+                    : roleLabel(member.role)
+                }}</span>
               </td>
               <td v-if="isOwner" class="text-right">
                 <v-btn
@@ -102,9 +58,50 @@
                 />
               </td>
             </tr>
+            <tr v-if="isOwner">
+              <td>
+                <v-text-field
+                  v-model="newMemberEmail"
+                  :label="t(strings.email_label)"
+                  :placeholder="t(strings.email_placeholder)"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                />
+              </td>
+              <td>
+                <v-select
+                  v-model="newMemberRole"
+                  :label="t(strings.role_label)"
+                  :items="roleItems"
+                  item-title="label"
+                  item-value="value"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  style="max-width: 140px"
+                />
+              </td>
+              <td class="text-right">
+                <v-btn
+                  icon="mdi-plus"
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  :disabled="!newMemberEmail.trim()"
+                  :loading="addingMember"
+                  :aria-label="t(strings.add_member)"
+                  :title="t(strings.add_member)"
+                  @click="handleAddMember()"
+                />
+              </td>
+            </tr>
           </tbody>
         </v-table>
-        <p v-if="members.length === 0" class="text-medium-emphasis mt-2">
+        <p
+          v-if="members.length === 0 && !isOwner"
+          class="text-medium-emphasis mt-2"
+        >
           {{ t(strings.no_members) }}
         </p>
       </v-card-text>
@@ -162,3 +159,14 @@ function roleLabel(role: string) {
   return t(strings.role_viewer);
 }
 </script>
+
+<style scoped>
+/* Align cell content with Vuetify row chrome; avoid extra margins on fields. */
+.members-table :deep(tbody td) {
+  vertical-align: middle;
+}
+.members-table :deep(tbody .v-input) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+</style>

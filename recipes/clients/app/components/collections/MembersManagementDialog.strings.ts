@@ -4,7 +4,7 @@ export const members_management_dialog = {
   email_label: "Email",
   email_placeholder: "email\\@example.com",
   role_label: "Role",
-  creator_badge: "Creator",
+  role_creator: "Creator",
   change_role: "Change role",
   remove_member: "Remove",
   cancel: "Cancel",
