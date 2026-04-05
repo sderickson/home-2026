@@ -1,6 +1,7 @@
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
 import Spa from "./RootSpa.vue";
+import "vuetify/styles";
 import { createRootRouter } from "./router.ts";
 import { root_strings } from "./strings.ts";
 

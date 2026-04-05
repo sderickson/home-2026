@@ -85,9 +85,15 @@ export interface RecipesServiceCommonEnvSchema {
    * The timezone of the deployment, e.g. 'America/New_York'. Must be UTC.
    */
   TZ: "UTC";
+  /**
+   * Unsplash API Access Key. Create an application at https://unsplash.com/developers to obtain an access key. Required for live API calls; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   */
+  UNSPLASH_API_KEY?: string;
 }
 
 /**
  * `process.env` casted to the `RecipesServiceCommonEnvSchema` type.
  */
-export const typedEnv = (globalThis.process ? process.env : {}) as unknown as RecipesServiceCommonEnvSchema;
+export const typedEnv = (globalThis.process
+  ? process.env
+  : {}) as unknown as RecipesServiceCommonEnvSchema;

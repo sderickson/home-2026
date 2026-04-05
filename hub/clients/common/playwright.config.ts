@@ -2,6 +2,6 @@
 // Hub model: single domain
 process.env.DOMAIN = "docker.localhost";
 process.env.PROTOCOL = "http";
-process.env.SERVICE_SUBDOMAINS = "identity,hub";
+process.env.SERVICE_SUBDOMAINS = "hub";
 
 export { default } from "@saflib/playwright/playwright.config";

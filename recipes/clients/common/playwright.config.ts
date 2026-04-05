@@ -2,6 +2,6 @@
 // Hub model: single domain, api.recipes subdomain for API
 process.env.DOMAIN = "docker.localhost";
 process.env.PROTOCOL = "http";
-process.env.SERVICE_SUBDOMAINS = "identity,api.recipes";
+process.env.SERVICE_SUBDOMAINS = "api.recipes";
 
 export { default } from "@saflib/playwright/playwright.config";

@@ -3,6 +3,7 @@ import { getSafReporters } from "@saflib/node";
 import type {
   KratosCourierCallbacks,
   RecoveryCodeValidPayload,
+  RecoveryValidPayload,
   VerificationCodeValidPayload,
 } from "@saflib/ory-kratos";
 
@@ -30,7 +31,20 @@ async function onRecoveryCodeValid(payload: RecoveryCodeValidPayload) {
   });
 }
 
+async function onRecoveryValid(payload: RecoveryValidPayload) {
+  const { log } = getSafReporters();
+  const { user, recoveryUrl } = payload;
+  log.info(`Recovery email for ${user.id}: ${recoveryUrl}`);
+  await getEmailClient().sendEmail({
+    to: user.email,
+    from: `noreply@scotterickson.info`,
+    subject: "Recovery",
+    text: `To recover your account, go to ${recoveryUrl}`,
+  });
+}
+
 export const callbacks: KratosCourierCallbacks = {
   onVerificationCodeValid,
   onRecoveryCodeValid,
+  onRecoveryValid,
 };
