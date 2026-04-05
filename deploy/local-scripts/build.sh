@@ -28,15 +28,15 @@ docker build -f ./recipes/clients/static-root/Dockerfile . --platform linux/amd6
 	-t "$CONTAINER_REGISTRY/sderickson-recipes-static-root:latest"
 
 # BEGIN WORKFLOW AREA build-product-dependencies FOR product/init
-docker build -f ./recipes/service/monolith/Dockerfile . --platform linux/amd64 \
-	-t sderickson-recipes-monolith:latest \
-	-t "$CONTAINER_REGISTRY/sderickson-recipes-monolith:latest"
+# docker build -f ./recipes/service/monolith/Dockerfile . --platform linux/amd64 \
+# 	-t sderickson-recipes-monolith:latest \
+# 	-t "$CONTAINER_REGISTRY/sderickson-recipes-monolith:latest"
 docker build -f ./recipes/clients/build/Dockerfile . --platform linux/amd64 \
 	-t sderickson-recipes-clients:latest
 
-docker build -f ./notebook/service/monolith/Dockerfile . --platform linux/amd64 \
-	-t sderickson-notebook-monolith:latest \
-	-t "$CONTAINER_REGISTRY/sderickson-notebook-monolith:latest"
+# docker build -f ./notebook/service/monolith/Dockerfile . --platform linux/amd64 \
+# 	-t sderickson-notebook-monolith:latest \
+# 	-t "$CONTAINER_REGISTRY/sderickson-notebook-monolith:latest"
 docker build -f ./notebook/clients/build/Dockerfile . --platform linux/amd64 \
 	-t sderickson-notebook-clients:latest
 
