@@ -63,4 +63,12 @@ const keyIngredientsDisplay = computed(() =>
 .recipe-card {
   break-inside: avoid;
 }
+/* v-card-title defaults to nowrap + ellipsis; allow multi-line titles. */
+.recipe-card :deep(.v-card-title) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
 </style>

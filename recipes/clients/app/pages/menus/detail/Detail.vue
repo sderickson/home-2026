@@ -15,10 +15,11 @@
     </v-breadcrumbs>
 
     <v-toolbar v-if="!isEditing" density="comfortable" class="mb-4">
-      <v-toolbar-title class="text-h6">
+      <v-toolbar-title class="text-h6 text-truncate">
         {{ menu.name }}
       </v-toolbar-title>
-      <template>
+      <v-spacer />
+      <div class="d-flex align-center flex-shrink-0 ga-1">
         <v-tooltip location="bottom" :text="t(strings.tooltip_menu_view)">
           <template #activator="{ props: tooltipProps }">
             <v-btn
@@ -45,8 +46,7 @@
             </v-btn>
           </template>
         </v-tooltip>
-      </template>
-      <v-spacer />
+      </div>
       <template v-if="showEdit">
         <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
           <template #activator="{ props: tooltipProps }">
@@ -96,7 +96,7 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       :view-mode="viewMode"
-      :menu-title="!isEditing ? menu.name : undefined"
+      :menu-title="viewMode === 'diner' ? menu.name : undefined"
     />
     <MenuEditForm
       v-else
