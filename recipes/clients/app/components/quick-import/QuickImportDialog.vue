@@ -62,7 +62,10 @@
           :loading="saving"
           @click="handleSave"
         >
-          {{ t(strings.save) }}
+          <span class="d-inline-flex align-center ga-2">
+            {{ t(strings.save) }}
+            <v-hotkey keys="cmd+enter" inline />
+          </span>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -71,6 +74,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useHotkey } from "vuetify";
 import type { Recipe, RecipeVersion } from "@sderickson/recipes-spec";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useCreateRecipeMutation } from "@sderickson/recipes-sdk";
@@ -130,6 +134,14 @@ const canSave = computed(
     title.value.trim() !== "" &&
     (parsed.value.ingredients.length > 0 ||
       parsed.value.instructionsMarkdown !== ""),
+);
+
+useHotkey(
+  computed(() => (props.modelValue ? "cmd+enter" : undefined)),
+  () => {
+    void handleSave();
+  },
+  { inputs: true, preventDefault: true },
 );
 
 function reset() {
