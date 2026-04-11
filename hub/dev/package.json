@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@saflib/dev-tools": "*",
-    "@sderickson/notebook-root-clients": "*",
     "@sderickson/recipes-root-clients": "*"
   }
 }

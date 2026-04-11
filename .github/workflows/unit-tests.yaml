@@ -15,7 +15,6 @@ jobs:
         project:
           # BEGIN WORKFLOW AREA test-product-dependencies FOR product/init
           - recipes
-          - notebook
           - hub
           # END WORKFLOW AREA
     steps:

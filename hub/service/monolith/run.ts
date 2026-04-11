@@ -1,5 +1,9 @@
 import { startHubService } from "./index.ts";
-import { addLokiTransport, collectSystemMetrics, getGitHashes } from "@saflib/node";
+import {
+  addLokiTransport,
+  collectSystemMetrics,
+  getGitHashes,
+} from "@saflib/node";
 import { setServiceName } from "@saflib/node";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
@@ -7,7 +11,6 @@ import { initSentry } from "@saflib/sentry";
 import { startOryKratosService } from "@saflib/ory-kratos";
 import { callbacks } from "@sderickson/hub-kratos-courier";
 import { startRecipesService } from "@sderickson/recipes-service";
-import { startNotebookService } from "@sderickson/notebook-service";
 import { initializeDependencies } from "@sderickson/recipes-service-common";
 
 validateEnv(process.env, envSchema);
@@ -24,4 +27,3 @@ await initializeDependencies();
 startOryKratosService({ callbacks });
 startHubService();
 startRecipesService();
-startNotebookService();

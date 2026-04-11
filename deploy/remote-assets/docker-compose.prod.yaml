@@ -21,7 +21,6 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: "true"
 
-  # Single hub monolith runs identity + hub + recipes + notebook services (Phase 6)
   monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     restart: unless-stopped
@@ -42,8 +41,6 @@ services:
       - /opt/recipes/cron:/app/recipes/service/cron/data
       - /opt/recipes/db:/app/recipes/service/db/data
       - /opt/recipes/common/data:/app/recipes/service/common/data
-      - /opt/notebook/cron:/app/notebook/service/cron/data
-      - /opt/notebook/db:/app/notebook/service/db/data
 
     build:
       context: ../..

@@ -9,10 +9,6 @@ FROM sderickson-recipes-clients:latest AS recipes-builder
 COPY ./deploy/env.recipes.prod-local /app/env.recipes.prod-local
 RUN export $(grep -v "^#" /app/env.recipes.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
 
-FROM sderickson-notebook-clients:latest AS notebook-builder
-COPY ./deploy/env.notebook.prod-local /app/env.notebook.prod-local
-RUN export $(grep -v "^#" /app/env.notebook.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
-
 FROM sderickson-hub-clients:latest AS hub-builder
 COPY ./deploy/env.hub.prod-local /app/env.hub.prod-local
 RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
@@ -25,7 +21,6 @@ FROM caddy:2.11.2
 COPY --from=blog_builder /app/blog/.vitepress/dist /srv/blog-client
 COPY --from=recipes_static_root_builder /app/recipes/clients/static-root/.vitepress/dist /srv/recipes-static-root
 COPY --from=recipes-builder /app/recipes/clients/build/dist /srv/recipes-clients
-COPY --from=notebook-builder /app/notebook/clients/build/dist /srv/notebook-clients
 COPY --from=hub-builder /app/hub/clients/build/dist /srv/hub-clients
 # END WORKFLOW AREA
 

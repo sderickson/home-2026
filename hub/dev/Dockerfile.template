@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:labs
-# Recipes + notebook static clients for hub dev (recipes.* / notebook.* on Caddy)
+# Recipes static clients for hub dev (recipes.* on Caddy)
 
 FROM node:24-slim AS builder
 
@@ -13,9 +13,5 @@ RUN npm install --omit=dev
 WORKDIR /app/recipes/clients/build
 RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=recipes,app.recipes,admin.recipes,account.recipes SERVICE_SUBDOMAINS=api.recipes DEPLOYMENT_NAME=development TZ=UTC npm run build
 
-WORKDIR /app/notebook/clients/build
-RUN DOMAIN=docker.localhost CLIENT_SUBDOMAINS=notebook,app.notebook,admin.notebook,account.notebook SERVICE_SUBDOMAINS=api.notebook DEPLOYMENT_NAME=development TZ=UTC npm run build
-
 FROM caddy:2.11.2
 COPY --from=builder /app/recipes/clients/build/dist /srv/recipes-clients
-COPY --from=builder /app/notebook/clients/build/dist /srv/notebook-clients

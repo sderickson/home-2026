@@ -40,34 +40,11 @@ http://account.recipes.docker.localhost {
 	import spa /recipes-clients /account.recipes/index.html
 }
 
-# Notebook client subdomains → static builds served by caddy
-
-http://notebook.docker.localhost {
-	import spa /notebook-clients /notebook/index.html
-}
-
-http://app.notebook.docker.localhost {
-	import spa /notebook-clients /app.notebook/index.html
-}
-
-http://admin.notebook.docker.localhost {
-	import spa /notebook-clients /admin.notebook/index.html
-}
-
-http://account.notebook.docker.localhost {
-	import spa /notebook-clients /account.notebook/index.html
-}
-
 # API subdomains
 
 http://api.recipes.docker.localhost {
 	import cors recipes.docker.localhost
 	import kratos-api-proxy monolith:3002
-}
-
-http://api.notebook.docker.localhost {
-	import cors notebook.docker.localhost
-	import kratos-api-proxy monolith:3003
 }
 
 http://hub.docker.localhost {
