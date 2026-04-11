@@ -5,25 +5,13 @@
 
 export interface RecipesServiceCommonEnvSchema {
   /**
-   * Comma-separated list of admin emails
+   * Comma-separated list of emails who will get the 'admin' scope. Emails must be validated to receive this scope.
    */
   ADMIN_EMAILS: string;
   /**
    * Whether to allow the creation of new databases. Useful for ensuring existing production environments don't inadvertently create new databases.
    */
   ALLOW_DB_CREATION?: "true" | "false";
-  /**
-   * The Azure Blob Storage URL.
-   */
-  AZURE_COLD_BLOB_STORAGE_URL?: string;
-  /**
-   * The Azure Blob Storage URL.
-   */
-  AZURE_COOL_BLOB_STORAGE_URL?: string;
-  /**
-   * The Azure Blob Storage URL.
-   */
-  AZURE_HOT_BLOB_STORAGE_URL?: string;
   /**
    * Comma-separated list of client subdomains, e.g. 'www,app,auth,'. Include an empty string (such as in the example) to indicate there's a client for the root domain.
    */
@@ -74,7 +62,7 @@ export interface RecipesServiceCommonEnvSchema {
   PROTOCOL: "https" | "http";
   RECIPES_SERVICE_HTTP_HOST: string;
   /**
-   * Comma-separated list of service subdomains, e.g. 'revenue,geo,identity,core'.
+   * Comma-separated list of service subdomains, e.g. 'revenue,geo,core'.
    */
   SERVICE_SUBDOMAINS: string;
   /**
