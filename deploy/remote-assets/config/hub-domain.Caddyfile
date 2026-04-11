@@ -9,10 +9,6 @@
 	import spa /recipes-clients {args[0]}
 }
 
-(notebook-spa) {
-	import spa /notebook-clients {args[0]}
-}
-
 (api-proxy-kratos) {
 	import kratos-api-proxy {args[0]}
 }
@@ -63,33 +59,11 @@
 	import recipes-spa /account.recipes/index.html
 }
 
-# Notebook client subdomains
-
-{$PROTOCOL}://notebook.{$DOMAIN} {
-	import notebook-spa /notebook/index.html
-}
-
-{$PROTOCOL}://app.notebook.{$DOMAIN} {
-	import notebook-spa /app.notebook/index.html
-}
-
-{$PROTOCOL}://admin.notebook.{$DOMAIN} {
-	import notebook-spa /admin.notebook/index.html
-}
-
-{$PROTOCOL}://account.notebook.{$DOMAIN} {
-	import notebook-spa /account.notebook/index.html
-}
-
 # API subdomains (forward_auth to Kratos whoami, then proxy to product service)
 
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
 	import cors recipes.{$DOMAIN}
 	import kratos-api-proxy {$RECIPES_SERVICE_HTTP_HOST}
-}
-
-{$PROTOCOL}://api.notebook.{$DOMAIN} {
-	import api-proxy-kratos {$NOTEBOOK_SERVICE_HTTP_HOST}
 }
 
 {$PROTOCOL}://hub.{$DOMAIN} {

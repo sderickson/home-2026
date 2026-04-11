@@ -39,7 +39,7 @@ import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { menus_create as strings } from "./Create.strings.ts";
 import { useCreateLoader } from "./Create.loader.ts";
-import { kratosIdentityEmail } from "@saflib/ory-kratos-sdk";
+import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { assertCreateDataLoaded, canEditMenuForRole } from "./Create.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import CreateMenuForm from "./CreateMenuForm.vue";
@@ -61,7 +61,7 @@ const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
 const userEmail = computed(
-  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+  () => kratosEmailFromSession(sessionQuery.data.value) ?? "",
 );
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),

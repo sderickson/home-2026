@@ -8,9 +8,6 @@
       <v-btn v-bind="recipesHomeLinkProps" color="primary" variant="tonal">
         {{ t(strings.cta_recipes) }}
       </v-btn>
-      <v-btn v-bind="notebookHomeLinkProps" variant="outlined">
-        {{ t(strings.cta_notebook) }}
-      </v-btn>
     </div>
   </v-container>
 </template>
@@ -18,7 +15,6 @@
 <script setup lang="ts">
 import { home_page as strings } from "./Home.strings.ts";
 import {
-  getNotebookHomeLinkProps,
   getRecipesHomeLinkProps,
 } from "./Home.logic.ts";
 import { useHomeLoader } from "./Home.loader.ts";
@@ -28,5 +24,4 @@ const { t } = useReverseT();
 useHomeLoader();
 
 const recipesHomeLinkProps = getRecipesHomeLinkProps();
-const notebookHomeLinkProps = getNotebookHomeLinkProps();
 </script>

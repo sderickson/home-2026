@@ -7,7 +7,10 @@ import {
   useMembersUpdateCollectionsMutation,
 } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
-import { kratosIdentityEmail, useKratosSession } from "@saflib/ory-kratos-sdk";
+import {
+  kratosEmailFromSession,
+  useKratosSession,
+} from "@saflib/ory-kratos-sdk";
 
 /**
  * Stateful flow for the members management dialog: list members, add/change/remove
@@ -32,7 +35,7 @@ export function useMembersManagementFlow(
   const members = computed(() => membersQuery.data.value?.members ?? []);
   const profile = computed(() => sessionQuery.data.value);
   const isOwner = computed(() => {
-    const email = kratosIdentityEmail(profile.value);
+    const email = kratosEmailFromSession(profile.value);
     if (!email) return false;
     return members.value.some((m) => m.email === email && m.role === "owner");
   });

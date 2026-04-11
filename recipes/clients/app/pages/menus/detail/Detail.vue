@@ -130,7 +130,7 @@ import {
   canEditMenuForRole,
   type MenuEditFormModel,
 } from "./Detail.logic.ts";
-import { kratosIdentityEmail } from "@saflib/ory-kratos-sdk";
+import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MenuGroupingsDisplay from "./MenuGroupingsDisplay.vue";
 import MenuEditForm from "./MenuEditForm.vue";
@@ -155,7 +155,7 @@ const collection = computed(() => collectionQuery.data.value!.collection);
 const collectionName = computed(() => collection.value?.name ?? collectionId);
 const members = computed(() => membersQuery.data.value?.members ?? []);
 const userEmail = computed(
-  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+  () => kratosEmailFromSession(sessionQuery.data.value) ?? "",
 );
 const currentMember = computed(() =>
   members.value.find((m) => m.email === userEmail.value),

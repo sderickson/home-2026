@@ -38,8 +38,6 @@ services:
       - ../../hub/service/identity/data:/app/hub/service/identity/data
       - ../../recipes/service/db/data:/app/recipes/service/db/data
       - ../../recipes/service/cron/data:/app/recipes/service/cron/data
-      - ../../notebook/service/db/data:/app/notebook/service/db/data
-      - ../../notebook/service/cron/data:/app/notebook/service/cron/data
       - identity_http_cache:/app/saflib/identity/identity-http/data
 
     build:

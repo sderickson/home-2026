@@ -87,7 +87,7 @@ import { useHomeLoader } from "./Home.loader.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   assertKratosSessionIdentityLoaded,
-  kratosIdentityEmail,
+  kratosEmailFromSession,
 } from "@saflib/ory-kratos-sdk";
 import { assertCollectionsLoaded, getCollectionsList } from "./Home.logic.ts";
 import CreateCollectionDialog from "../../components/collections/CreateCollectionDialog.vue";
@@ -104,7 +104,7 @@ const collections = computed(() =>
 const members = computed(() => collectionsQuery.data.value?.members ?? []);
 const menus = computed(() => collectionsQuery.data.value?.menus ?? []);
 const userEmail = computed(
-  () => kratosIdentityEmail(sessionQuery.data.value) ?? "",
+  () => kratosEmailFromSession(sessionQuery.data.value) ?? "",
 );
 
 function membersForCollection(collectionId: string) {

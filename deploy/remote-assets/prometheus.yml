@@ -21,17 +21,12 @@ scrape_configs:
     metrics_path: "/metrics"
     static_configs:
       - targets: ["recipes-monolith:3000"]
-      
-  - job_name: "notebook-monolith"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["notebook-monolith:3000"]
-      
+
   - job_name: "hub-monolith"
     metrics_path: "/metrics"
     static_configs:
       - targets: ["hub-monolith:3000"]
-      
+
   # END WORKFLOW AREA
 
   - job_name: "node_exporter"
