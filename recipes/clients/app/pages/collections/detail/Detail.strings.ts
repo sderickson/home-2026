@@ -9,6 +9,8 @@ export const collections_detail = {
   recipes_heading: "Recipes",
   recipes_search_placeholder: "Search recipes",
   recipes_search_no_match: "No recipes match your search.",
+  recipes_view_switch_list: "List",
+  recipes_view_switch_grid: "Grid",
   create_menu: "Create menu",
   create_recipe: "Create recipe",
   quick_import: "Quick import",

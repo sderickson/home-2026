@@ -109,30 +109,57 @@
           "
           variant="tonal"
           color="primary"
-          class="action-pill"
+          class="action-pill mr-2"
           link
         >
           <v-icon size="small">mdi-plus</v-icon>
         </v-chip>
+        <v-chip
+          variant="tonal"
+          color="primary"
+          class="action-pill flex-shrink-0"
+          :prepend-icon="
+            recipesListView
+              ? 'mdi-view-grid-outline'
+              : 'mdi-format-list-bulleted'
+          "
+          @click="recipesListView = !recipesListView"
+        >
+          {{
+            recipesListView
+              ? t(strings.recipes_view_switch_grid)
+              : t(strings.recipes_view_switch_list)
+          }}
+        </v-chip>
       </h2>
     </div>
-    <v-text-field
+    <div
       v-if="recipes.length > 0"
-      v-model="recipeSearchQuery"
-      :placeholder="t(strings.recipes_search_placeholder)"
-      prepend-inner-icon="mdi-magnify"
-      variant="outlined"
-      density="comfortable"
-      hide-details="auto"
-      clearable
-      class="mb-4"
-    />
+      class="d-flex flex-wrap align-center gap-3 mb-4"
+    >
+      <v-text-field
+        v-model="recipeSearchQuery"
+        :placeholder="t(strings.recipes_search_placeholder)"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="comfortable"
+        hide-details="auto"
+        clearable
+        class="flex-grow-1"
+        min-width="240"
+      />
+    </div>
     <div v-if="recipes.length > 0 && filteredRecipes.length === 0" class="py-4">
       <v-alert type="info" variant="tonal">
         {{ t(strings.recipes_search_no_match) }}
       </v-alert>
     </div>
     <RecipeList
+      v-else-if="!recipesListView"
+      :recipes="filteredRecipes"
+      :get-recipe-link-props="getRecipeLinkProps"
+    />
+    <RecipeListListView
       v-else
       :recipes="filteredRecipes"
       :get-recipe-link-props="getRecipeLinkProps"
@@ -175,6 +202,7 @@ import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MembersManagementDialog from "../../../components/collections/MembersManagementDialog.vue";
 import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
+import RecipeListListView from "../../../components/recipes/RecipeListListView.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
@@ -230,9 +258,7 @@ const recipeSearchQuery = ref("");
 
 /** Same queries as RecipeList — shared cache so ingredients are not fetched twice. */
 const recipeDetailQueries = useQueries({
-  queries: computed(() =>
-    recipes.value.map((r) => getRecipeQuery(r.id)),
-  ),
+  queries: computed(() => recipes.value.map((r) => getRecipeQuery(r.id))),
 });
 
 const filteredRecipes = computed(() => {
@@ -252,6 +278,8 @@ const filteredRecipes = computed(() => {
 
 const quickImportOpen = ref(false);
 const membersDialogOpen = ref(false);
+/** false = masonry grid (RecipeList), true = v-list rows */
+const recipesListView = ref(false);
 
 const memberCount = computed(() => members.value.length);
 const membersPillLabel = computed(() =>
