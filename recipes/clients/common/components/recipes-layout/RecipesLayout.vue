@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar height="90" class="px-4">
+    <v-app-bar height="90" class="px-4" v-if="mounted">
       <!-- Logo -->
       <v-app-bar-title>
         <a :href="toHref(rootLinks.home)" class="logo-link">
@@ -74,7 +74,9 @@ const drawer = ref(false);
 
 // Forces a re-render after SSG hydration so links recompute with the real domain.
 const mounted = ref(false);
+console.log("not mounted");
 onMounted(() => {
+  console.log("mounted");
   mounted.value = true;
 });
 

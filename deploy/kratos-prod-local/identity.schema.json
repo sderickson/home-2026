@@ -27,9 +27,22 @@
               "via": "email"
             }
           }
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "first": {
+              "type": "string"
+            },
+            "last": {
+              "type": "string"
+            }
+          },
+          "required": ["first", "last"],
+          "additionalProperties": false
         }
       },
-      "required": ["email"],
+      "required": ["email", "name"],
       "additionalProperties": false
     }
   }
