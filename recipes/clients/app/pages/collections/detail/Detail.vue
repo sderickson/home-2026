@@ -116,8 +116,25 @@
         </v-chip>
       </h2>
     </div>
+    <v-text-field
+      v-if="recipes.length > 0"
+      v-model="recipeSearchQuery"
+      :placeholder="t(strings.recipes_search_placeholder)"
+      prepend-inner-icon="mdi-magnify"
+      variant="outlined"
+      density="comfortable"
+      hide-details="auto"
+      clearable
+      class="mb-4"
+    />
+    <div v-if="recipes.length > 0 && filteredRecipes.length === 0" class="py-4">
+      <v-alert type="info" variant="tonal">
+        {{ t(strings.recipes_search_no_match) }}
+      </v-alert>
+    </div>
     <RecipeList
-      :recipes="recipes"
+      v-else
+      :recipes="filteredRecipes"
       :get-recipe-link-props="getRecipeLinkProps"
     />
     <QuickImportDialog
@@ -136,8 +153,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useQueries } from "@tanstack/vue-query";
+import type { Recipe } from "@sderickson/recipes-spec";
 import {
+  getRecipeQuery,
   RecipeList,
+  recipeDetailIngredientsSearchText,
   useDeleteCollectionsMutation,
 } from "@sderickson/recipes-sdk";
 import { appLinks } from "@sderickson/recipes-links";
@@ -201,7 +222,33 @@ const menus = computed(
       name: string;
     }[],
 );
-const recipes = computed(() => getRecipesList(recipesQuery.data.value));
+const recipes = computed(
+  () => getRecipesList(recipesQuery.data.value) as Recipe[],
+);
+
+const recipeSearchQuery = ref("");
+
+/** Same queries as RecipeList — shared cache so ingredients are not fetched twice. */
+const recipeDetailQueries = useQueries({
+  queries: computed(() =>
+    recipes.value.map((r) => getRecipeQuery(r.id)),
+  ),
+});
+
+const filteredRecipes = computed(() => {
+  const list = recipes.value;
+  const q = recipeSearchQuery.value.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((r, i) => {
+    const text = [r.title, r.subtitle, r.description ?? ""]
+      .join(" ")
+      .toLowerCase();
+    if (text.includes(q)) return true;
+    const detail = recipeDetailQueries.value[i]?.data;
+    if (!detail) return false;
+    return recipeDetailIngredientsSearchText(detail).includes(q);
+  });
+});
 
 const quickImportOpen = ref(false);
 const membersDialogOpen = ref(false);

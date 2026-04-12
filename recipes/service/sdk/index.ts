@@ -16,6 +16,7 @@ export {
   filterKeyIngredients,
   formatKeyIngredientsDisplay,
   getCardEnrichment,
+  recipeDetailIngredientsSearchText,
 } from "./components/recipe-list/RecipeList.logic.ts";
 export type {
   CardEnrichment,

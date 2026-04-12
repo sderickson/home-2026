@@ -7,6 +7,8 @@ export const collections_detail = {
   menus_private: "Private",
   menus_add: "New",
   recipes_heading: "Recipes",
+  recipes_search_placeholder: "Search recipes",
+  recipes_search_no_match: "No recipes match your search.",
   create_menu: "Create menu",
   create_recipe: "Create recipe",
   quick_import: "Quick import",
