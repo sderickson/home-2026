@@ -11,46 +11,50 @@
     </v-breadcrumbs>
 
     <div class="d-flex align-center flex-wrap gap-3 mb-0">
-      <h1 class="text-h4 mb-0">{{ collectionName }}</h1>
-      <v-chip
-        variant="tonal"
-        color="primary"
-        class="action-pill collection-members-pill"
-        @click="membersDialogOpen = true"
-      >
-        <v-icon size="small">mdi-account-group</v-icon>
-        <span class="ml-1">{{ membersPillLabel }}</span>
-      </v-chip>
-      <v-spacer />
-      <v-tooltip
-        v-if="isOwner"
-        :text="
-          canDeleteCollection
-            ? t(strings.delete_collection_tooltip_empty)
-            : t(strings.delete_collection_tooltip_disabled)
-        "
-        location="bottom"
-      >
-        <template #activator="{ props: tooltipProps }">
-          <span v-bind="tooltipProps" class="d-inline-block">
-            <v-btn
-              icon="mdi-delete-outline"
-              variant="outlined"
-              color="error"
-              :disabled="!canDeleteCollection"
-              :loading="deleteMutation.isPending.value"
-              @click="onDeleteCollection"
-            />
-          </span>
-        </template>
-      </v-tooltip>
+      <h1 class="text-h4 mb-0">
+        {{ collectionName }}
+
+        <v-chip
+          variant="tonal"
+          color="primary"
+          class="action-pill collection-members-pill mr-2"
+          @click="membersDialogOpen = true"
+        >
+          <v-icon size="small">mdi-account-group</v-icon>
+          <span class="ml-1">{{ membersPillLabel }}</span>
+        </v-chip>
+        <v-tooltip
+          v-if="isOwner"
+          :text="
+            canDeleteCollection
+              ? t(strings.delete_collection_tooltip_empty)
+              : t(strings.delete_collection_tooltip_disabled)
+          "
+          location="bottom"
+        >
+          <template #activator="{ props: tooltipProps }">
+            <span v-bind="tooltipProps" class="d-inline-block">
+              <v-chip
+                variant="outlined"
+                color="error"
+                :disabled="!canDeleteCollection"
+                :loading="deleteMutation.isPending.value"
+                @click="onDeleteCollection"
+              >
+                <v-icon size="small">mdi-delete-outline</v-icon>
+              </v-chip>
+            </span>
+          </template>
+        </v-tooltip>
+      </h1>
     </div>
 
     <v-divider class="my-4" />
 
     <div class="d-flex align-center flex-wrap gap-3 mb-4">
-      <h2 class="text-h6 mb-0">{{ t(strings.menus_heading) }}</h2>
-      <div class="d-flex flex-wrap align-center menus-pills-row">
+      <h2 class="text-h6 mb-0">
+        {{ t(strings.menus_heading) }}
+
         <v-chip
           v-for="menu in menus"
           :key="menu.id"
@@ -61,7 +65,7 @@
           "
           variant="tonal"
           color="primary"
-          class="menus-pill"
+          class="menus-pill mr-2"
           link
         >
           {{ menu.name }}
@@ -78,27 +82,28 @@
         >
           <v-icon size="small">mdi-plus</v-icon>
         </v-chip>
-      </div>
+      </h2>
+      <div class="d-flex flex-wrap align-center menus-pills-row"></div>
       <v-spacer />
     </div>
 
     <v-divider class="my-4" />
 
     <div class="d-flex align-center flex-wrap gap-3 mb-3">
-      <h2 class="text-h6 mb-0">{{ t(strings.recipes_heading) }}</h2>
-      <div
-        v-if="canEdit"
-        class="d-flex flex-wrap align-center recipes-pills-row"
-      >
+      <h2 class="text-h6 mb-0">
+        {{ t(strings.recipes_heading) }}
+
         <v-chip
+          v-if="canEdit"
           variant="tonal"
           color="primary"
-          class="action-pill"
+          class="action-pill mr-2"
           @click="quickImportOpen = true"
         >
           <v-icon size="small">mdi-import</v-icon>
         </v-chip>
         <v-chip
+          v-if="canEdit"
           v-bind="
             linkToProps(appLinks.recipesCreate, { params: { collectionId } })
           "
@@ -109,8 +114,7 @@
         >
           <v-icon size="small">mdi-plus</v-icon>
         </v-chip>
-      </div>
-      <v-spacer />
+      </h2>
     </div>
     <RecipeList
       :recipes="recipes"
