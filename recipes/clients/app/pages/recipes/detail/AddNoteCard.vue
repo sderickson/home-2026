@@ -9,7 +9,7 @@
         density="compact"
         hide-details
         class="add-note-composer__input"
-        @keydown.shift.enter.prevent="onShiftEnter"
+        @keydown="onComposerKeydown"
       />
       <v-btn
         icon
@@ -25,7 +25,7 @@
       </v-btn>
     </div>
     <div class="add-note-composer__hint text-caption text-medium-emphasis mt-1">
-      <kbd class="add-note-composer__kbd">Shift+Enter</kbd>
+      <kbd class="add-note-composer__kbd">{{ modifierEnterHint }}</kbd>
       <span class="ml-1">{{ t(strings.to_send) }}</span>
     </div>
   </div>
@@ -58,7 +58,22 @@ const { t } = useReverseT();
 
 const trimmedBody = computed(() => notesFlow.newNoteBody.value.trim());
 
-function onShiftEnter() {
+function appleLikePlatform(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /Mac|iPhone|iPad|iPod/.test(navigator.platform) ||
+    navigator.userAgent.includes("Mac OS")
+  );
+}
+
+const modifierEnterHint = computed(() =>
+  appleLikePlatform() ? "⌘+Enter" : "Ctrl+Enter",
+);
+
+function onComposerKeydown(e: KeyboardEvent) {
+  if (e.key !== "Enter") return;
+  if (!e.metaKey && !e.ctrlKey) return;
+  e.preventDefault();
   if (trimmedBody.value) notesFlow.submitNewNote();
 }
 </script>

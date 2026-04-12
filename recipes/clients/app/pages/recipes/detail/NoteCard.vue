@@ -4,7 +4,9 @@
       <div class="flex-grow-1 min-width-0">
         <div class="text-caption text-medium-emphasis mb-0">
           {{ formatNoteDateTime(note.createdAt) }}
-          <span v-if="note.everEdited" class="ml-1">· {{ t(strings.ever_edited) }}</span>
+          <span v-if="note.everEdited" class="ml-1"
+            >· {{ t(strings.ever_edited) }}</span
+          >
         </div>
         <template v-if="notesFlow.editingNoteId?.value === note.id">
           <v-textarea
@@ -27,7 +29,11 @@
             >
               {{ t(strings.save_note) }}
             </v-btn>
-            <v-btn size="x-small" variant="text" @click="notesFlow.cancelEdit()">
+            <v-btn
+              size="x-small"
+              variant="text"
+              @click="notesFlow.cancelEdit()"
+            >
               {{ t(strings.cancel) }}
             </v-btn>
           </div>
@@ -55,7 +61,11 @@
           </template>
         </template>
       </div>
-      <v-menu v-if="showNotesEdit" location="end" transition="scale-transition">
+      <v-menu
+        v-if="showNotesEdit"
+        location="start"
+        transition="scale-transition"
+      >
         <template #activator="{ props: menuProps }">
           <v-btn
             v-bind="menuProps"
@@ -63,7 +73,7 @@
             size="x-small"
             variant="text"
             density="compact"
-            class="note-card__menu-btn flex-shrink-0 mt-n1"
+            class="note-card__menu-btn flex-shrink-0 mt-1"
           >
             <v-icon size="small">mdi-dots-vertical</v-icon>
           </v-btn>
@@ -95,7 +105,11 @@
 
     <input
       v-if="showNotesEdit"
-      :ref="(el) => { noteFileFlow.fileInputRef.value = (el as HTMLInputElement) ?? null }"
+      :ref="
+        (el) => {
+          noteFileFlow.fileInputRef.value = (el as HTMLInputElement) ?? null;
+        }
+      "
       type="file"
       class="d-none"
       @change="noteFileFlow.onFileInputChangeAndUpload"
@@ -163,9 +177,7 @@ const editBodyModel = computed({
 });
 
 const renderedBody = computed(() =>
-  props.note.body
-    ? (marked(props.note.body, { async: false }) as string)
-    : "",
+  props.note.body ? (marked(props.note.body, { async: false }) as string) : "",
 );
 
 const deleteNoteDialogModel = computed({
