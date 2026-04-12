@@ -50,7 +50,7 @@ session:
   cookie:
     domain: .scotterickson.info
     same_site: Lax
-  lifespan: 30d
+  lifespan: 720h
 
 identity:
   default_schema_id: default
