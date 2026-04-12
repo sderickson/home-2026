@@ -85,6 +85,9 @@
         </tr>
       </tbody>
     </v-table>
+    <p class="text-caption text-medium-emphasis mt-2 mb-0 recipe-ingredients-form__hint">
+      {{ t(strings.format_hint) }}
+    </p>
   </div>
 </template>
 

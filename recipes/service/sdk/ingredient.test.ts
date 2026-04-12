@@ -53,6 +53,19 @@ describe("parseIngredientLine", () => {
     });
   });
 
+  it("parses mixed digit + unicode fraction in one token (e.g. 1⅔)", () => {
+    expect(parseIngredientLine("1⅔ cups milk")).toEqual({
+      quantity: "1⅔",
+      unit: "cups",
+      name: "milk",
+    });
+    expect(parseIngredientLine("2½ tsp salt")).toEqual({
+      quantity: "2½",
+      unit: "tsp",
+      name: "salt",
+    });
+  });
+
   it("treats any single word after quantity as unit", () => {
     expect(parseIngredientLine("1 1/2 flour")).toEqual({
       quantity: "1 1/2",
@@ -130,6 +143,7 @@ describe("formatIngredient", () => {
       "1 1/2 tsp vanilla",
       "salt and pepper",
       "½ cup water",
+      "1⅔ cups milk",
     ];
     for (const line of lines) {
       const parsed = parseIngredientLine(line);

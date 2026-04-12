@@ -4,7 +4,7 @@
  *
  * Rules:
  * - Quantity: leading tokens that are only numbers, /, and . are combined
- *   (e.g. "1 1/2", "1.5", "½"). No quantity → entire line is the ingredient name.
+ *   (e.g. "1 1/2", "1.5", "½", "1⅔"). No quantity → entire line is the ingredient name.
  * - Unit: if there is a quantity, the next token is the unit (any word).
  * - Name: the rest after quantity and unit, or the whole line if no quantity.
  */
@@ -17,10 +17,24 @@ export interface RecipeIngredient {
 
 /** Tokens that look like quantity parts: digits, /, . only, or unicode fractions. */
 const QUANTITY_TOKEN = /^[\d\/.]+$/u;
-const UNICODE_FRACTION = /^[½¼¾⅓⅔⅛]$/u;
+
+/** Single unicode vulgar fraction (e.g. ½, ⅔). */
+const UNICODE_FRACTION_CHARS =
+  "½¼¾⅓⅔⅛⅕⅖⅗⅘⅙⅚⅜⅝⅞⅐⅑⅒";
+const UNICODE_FRACTION = new RegExp(`^[${UNICODE_FRACTION_CHARS}]$`, "u");
+
+/** Digits directly followed by unicode fraction(s), no space (e.g. 1⅔, 2½). */
+const MIXED_UNICODE_QUANTITY = new RegExp(
+  `^\\d+[${UNICODE_FRACTION_CHARS}]+$`,
+  "u",
+);
 
 function isQuantityToken(t: string): boolean {
-  return QUANTITY_TOKEN.test(t) || UNICODE_FRACTION.test(t);
+  return (
+    QUANTITY_TOKEN.test(t) ||
+    UNICODE_FRACTION.test(t) ||
+    MIXED_UNICODE_QUANTITY.test(t)
+  );
 }
 
 /**
