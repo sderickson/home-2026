@@ -6,6 +6,8 @@ import Spa from "./AppSpa.vue";
 import { createAppRouter } from "./router.ts";
 import { app_strings } from "./strings.ts";
 
+const isJustVite = document.location.host.includes(":5173");
+
 async function startDemoWorker() {
   const { setupWorker } = await import("msw/browser");
   const { http, bypass } = await import("msw");
@@ -30,7 +32,7 @@ export const main = async () => {
   // Landing URL for `?redirect=` when opening hub auth from this app (Kratos `return_to` on the flow).
   setClientName("app.recipes");
   const router = createAppRouter();
-  if (isDemoMode()) {
+  if (isDemoMode() || isJustVite) {
     await startDemoWorker();
   }
   createVueApp(Spa, {
@@ -40,3 +42,7 @@ export const main = async () => {
     },
   });
 };
+
+if (isJustVite) {
+  main();
+}
