@@ -26,25 +26,20 @@
     <div v-if="collections.length === 0" class="text-medium-emphasis">
       {{ t(strings.no_collections) }}
     </div>
-    <div v-else class="d-flex flex-column gap-3">
+    <div v-else class="d-flex flex-column gap-4">
       <v-card
         v-for="collection in collections"
         :key="collection.id"
         class="collection-card"
         elevation="2"
       >
-        <v-card-title class="d-flex align-center">
-          <router-link
-            :to="collectionDetailPath(collection.id)"
-            class="text-primary text-decoration-none text-h6"
-          >
-            {{ collection.name }}
-          </router-link>
+        <v-card-title class="collection-card-title text-h5 font-weight-medium">
+          {{ collection.name }}
         </v-card-title>
-        <v-card-text class="pt-0">
+        <v-card-text class="collection-card-body">
           <div
             v-if="otherMemberEmailsForCollection(collection.id).length > 0"
-            class="mb-3"
+            class="mb-4"
           >
             <span class="text-caption text-medium-emphasis"
               >{{ t(strings.members) }}:
@@ -54,6 +49,7 @@
             }}</span>
           </div>
           <div class="d-flex flex-wrap align-center gap-2 menu-pills">
+            Menus:
             <v-chip
               v-for="menu in menusForCollection(collection.id)"
               :key="menu.id"
@@ -68,6 +64,17 @@
             </v-chip>
           </div>
         </v-card-text>
+        <v-card-actions class="collection-card-actions">
+          <v-btn
+            block
+            size="x-large"
+            color="primary"
+            variant="flat"
+            :to="collectionDetailPath(collection.id)"
+          >
+            {{ t(strings.see_all_recipes) }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </div>
 
@@ -144,6 +151,17 @@ function onCollectionCreated() {
 <style scoped>
 .collection-card {
   width: 100%;
+}
+.collection-card-title {
+  padding: 1.75rem 1.75rem 0.5rem;
+  line-height: 1.35;
+  white-space: normal;
+}
+.collection-card-body {
+  padding: 1rem 1.75rem 1.25rem;
+}
+.collection-card-actions {
+  padding: 0 1.75rem 1.75rem;
 }
 .menu-pills {
   gap: 0.5rem;

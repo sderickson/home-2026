@@ -85,6 +85,9 @@
         </tr>
       </tbody>
     </v-table>
+    <p class="text-caption text-medium-emphasis mt-2 mb-0 recipe-ingredients-form__hint">
+      {{ t(strings.format_hint) }}
+    </p>
   </div>
 </template>
 
@@ -225,21 +228,26 @@ function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
   });
 }
 
+function addNewRowFromInput() {
+  const value = newRowValue.value.trim();
+  if (!value) return;
+  const parsed = parseIngredientLine(value);
+  const next = [...list.value, parsed];
+  list.value = next;
+  emitList(next);
+  newRowValue.value = "";
+  nextTick(() => newRowInputRef.value?.focus?.());
+}
+
 function onNewRowEnter(e: KeyboardEvent) {
   e.preventDefault();
+  addNewRowFromInput();
 }
 
 function onNewRowTab(e: KeyboardEvent) {
-  const value = newRowValue.value.trim();
-  if (value) {
-    e.preventDefault();
-    const parsed = parseIngredientLine(value);
-    const next = [...list.value, parsed];
-    list.value = next;
-    emitList(next);
-    newRowValue.value = "";
-    nextTick(() => newRowInputRef.value?.focus?.());
-  }
+  if (!newRowValue.value.trim()) return;
+  e.preventDefault();
+  addNewRowFromInput();
 }
 
 function onNewRowShiftTab(_e: KeyboardEvent) {

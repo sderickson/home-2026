@@ -60,9 +60,25 @@ export interface CardEnrichment {
   keyIngredients: KeyIngredient[];
 }
 
+/** Lowercase blob of ingredient names, quantities, and units for client-side search. */
+export function recipeDetailIngredientsSearchText(
+  detail: RecipeDetailLike | undefined,
+): string {
+  const ingredients = detail?.currentVersion?.content?.ingredients ?? [];
+  return ingredients
+    .map((i) =>
+      [i.name, i.quantity, i.unit]
+        .map((s) => (s ?? "").trim())
+        .filter(Boolean)
+        .join(" "),
+    )
+    .join(" ")
+    .toLowerCase();
+}
+
 /**
  * Derives card display data from getRecipe and files-list responses.
- * Used by the list grid so enrichment lives next to the card.
+ * Used by the list grid and list view so enrichment lives next to the card.
  */
 export function getCardEnrichment(
   detail: RecipeDetailLike | undefined,

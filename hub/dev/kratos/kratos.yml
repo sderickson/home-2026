@@ -66,6 +66,7 @@ session:
   cookie:
     domain: .docker.localhost
     same_site: Lax
+  lifespan: 720h
 
 identity:
   default_schema_id: default

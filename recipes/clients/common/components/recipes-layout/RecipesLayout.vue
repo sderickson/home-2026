@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar height="90" class="px-4" v-if="mounted">
+    <v-app-bar height="90" class="px-4">
       <!-- Logo -->
       <v-app-bar-title>
         <a :href="toHref(rootLinks.home)" class="logo-link">
@@ -59,7 +59,6 @@ import { computed, onMounted, ref } from "vue";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { type Link, linkToHrefWithHost, type LinkOptions } from "@saflib/links";
 import {
-  accountLinks,
   adminLinks,
   appLinks,
   authLinks,
@@ -88,7 +87,7 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: "App" },
-      { ...accountLinks.home, name: "Account" },
+      { ...authLinks.newSettings, name: "Account" },
       ...(props.isAdmin ? [{ ...adminLinks.admin, name: "Admin" }] : []),
       {
         ...authLinks.logout,

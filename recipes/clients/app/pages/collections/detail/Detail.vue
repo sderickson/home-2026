@@ -11,46 +11,50 @@
     </v-breadcrumbs>
 
     <div class="d-flex align-center flex-wrap gap-3 mb-0">
-      <h1 class="text-h4 mb-0">{{ collectionName }}</h1>
-      <v-chip
-        variant="tonal"
-        color="primary"
-        class="action-pill collection-members-pill"
-        @click="membersDialogOpen = true"
-      >
-        <v-icon size="small">mdi-account-group</v-icon>
-        <span class="ml-1">{{ membersPillLabel }}</span>
-      </v-chip>
-      <v-spacer />
-      <v-tooltip
-        v-if="isOwner"
-        :text="
-          canDeleteCollection
-            ? t(strings.delete_collection_tooltip_empty)
-            : t(strings.delete_collection_tooltip_disabled)
-        "
-        location="bottom"
-      >
-        <template #activator="{ props: tooltipProps }">
-          <span v-bind="tooltipProps" class="d-inline-block">
-            <v-btn
-              icon="mdi-delete-outline"
-              variant="outlined"
-              color="error"
-              :disabled="!canDeleteCollection"
-              :loading="deleteMutation.isPending.value"
-              @click="onDeleteCollection"
-            />
-          </span>
-        </template>
-      </v-tooltip>
+      <h1 class="text-h4 mb-0">
+        {{ collectionName }}
+
+        <v-chip
+          variant="tonal"
+          color="primary"
+          class="action-pill collection-members-pill mr-2"
+          @click="membersDialogOpen = true"
+        >
+          <v-icon size="small">mdi-account-group</v-icon>
+          <span class="ml-1">{{ membersPillLabel }}</span>
+        </v-chip>
+        <v-tooltip
+          v-if="isOwner"
+          :text="
+            canDeleteCollection
+              ? t(strings.delete_collection_tooltip_empty)
+              : t(strings.delete_collection_tooltip_disabled)
+          "
+          location="bottom"
+        >
+          <template #activator="{ props: tooltipProps }">
+            <span v-bind="tooltipProps" class="d-inline-block">
+              <v-chip
+                variant="outlined"
+                color="error"
+                :disabled="!canDeleteCollection"
+                :loading="deleteMutation.isPending.value"
+                @click="onDeleteCollection"
+              >
+                <v-icon size="small">mdi-delete-outline</v-icon>
+              </v-chip>
+            </span>
+          </template>
+        </v-tooltip>
+      </h1>
     </div>
 
     <v-divider class="my-4" />
 
     <div class="d-flex align-center flex-wrap gap-3 mb-4">
-      <h2 class="text-h6 mb-0">{{ t(strings.menus_heading) }}</h2>
-      <div class="d-flex flex-wrap align-center menus-pills-row">
+      <h2 class="text-h6 mb-0">
+        {{ t(strings.menus_heading) }}
+
         <v-chip
           v-for="menu in menus"
           :key="menu.id"
@@ -61,7 +65,7 @@
           "
           variant="tonal"
           color="primary"
-          class="menus-pill"
+          class="menus-pill mr-2"
           link
         >
           {{ menu.name }}
@@ -78,42 +82,86 @@
         >
           <v-icon size="small">mdi-plus</v-icon>
         </v-chip>
-      </div>
+      </h2>
+      <div class="d-flex flex-wrap align-center menus-pills-row"></div>
       <v-spacer />
     </div>
 
     <v-divider class="my-4" />
 
     <div class="d-flex align-center flex-wrap gap-3 mb-3">
-      <h2 class="text-h6 mb-0">{{ t(strings.recipes_heading) }}</h2>
-      <div
-        v-if="canEdit"
-        class="d-flex flex-wrap align-center recipes-pills-row"
-      >
+      <h2 class="text-h6 mb-0">
+        {{ t(strings.recipes_heading) }}
+
         <v-chip
+          v-if="canEdit"
           variant="tonal"
           color="primary"
-          class="action-pill"
+          class="action-pill mr-2"
           @click="quickImportOpen = true"
         >
           <v-icon size="small">mdi-import</v-icon>
         </v-chip>
         <v-chip
+          v-if="canEdit"
           v-bind="
             linkToProps(appLinks.recipesCreate, { params: { collectionId } })
           "
           variant="tonal"
           color="primary"
-          class="action-pill"
+          class="action-pill mr-2"
           link
         >
           <v-icon size="small">mdi-plus</v-icon>
         </v-chip>
-      </div>
-      <v-spacer />
+        <v-chip
+          variant="tonal"
+          color="primary"
+          class="action-pill flex-shrink-0"
+          :prepend-icon="
+            recipesListView
+              ? 'mdi-view-grid-outline'
+              : 'mdi-format-list-bulleted'
+          "
+          @click="recipesListView = !recipesListView"
+        >
+          {{
+            recipesListView
+              ? t(strings.recipes_view_switch_grid)
+              : t(strings.recipes_view_switch_list)
+          }}
+        </v-chip>
+      </h2>
+    </div>
+    <div
+      v-if="recipes.length > 0"
+      class="d-flex flex-wrap align-center gap-3 mb-4"
+    >
+      <v-text-field
+        v-model="recipeSearchQuery"
+        :placeholder="t(strings.recipes_search_placeholder)"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="comfortable"
+        hide-details="auto"
+        clearable
+        class="flex-grow-1"
+        min-width="240"
+      />
+    </div>
+    <div v-if="recipes.length > 0 && filteredRecipes.length === 0" class="py-4">
+      <v-alert type="info" variant="tonal">
+        {{ t(strings.recipes_search_no_match) }}
+      </v-alert>
     </div>
     <RecipeList
-      :recipes="recipes"
+      v-else-if="!recipesListView"
+      :recipes="filteredRecipes"
+      :get-recipe-link-props="getRecipeLinkProps"
+    />
+    <RecipeListListView
+      v-else
+      :recipes="filteredRecipes"
       :get-recipe-link-props="getRecipeLinkProps"
     />
     <QuickImportDialog
@@ -132,8 +180,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useQueries } from "@tanstack/vue-query";
+import type { Recipe } from "@sderickson/recipes-spec";
 import {
+  getRecipeQuery,
   RecipeList,
+  recipeDetailIngredientsSearchText,
   useDeleteCollectionsMutation,
 } from "@sderickson/recipes-sdk";
 import { appLinks } from "@sderickson/recipes-links";
@@ -150,6 +202,7 @@ import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MembersManagementDialog from "../../../components/collections/MembersManagementDialog.vue";
 import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
+import RecipeListListView from "../../../components/recipes/RecipeListListView.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
@@ -197,10 +250,36 @@ const menus = computed(
       name: string;
     }[],
 );
-const recipes = computed(() => getRecipesList(recipesQuery.data.value));
+const recipes = computed(
+  () => getRecipesList(recipesQuery.data.value) as Recipe[],
+);
+
+const recipeSearchQuery = ref("");
+
+/** Same queries as RecipeList — shared cache so ingredients are not fetched twice. */
+const recipeDetailQueries = useQueries({
+  queries: computed(() => recipes.value.map((r) => getRecipeQuery(r.id))),
+});
+
+const filteredRecipes = computed(() => {
+  const list = recipes.value;
+  const q = recipeSearchQuery.value.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((r, i) => {
+    const text = [r.title, r.subtitle, r.description ?? ""]
+      .join(" ")
+      .toLowerCase();
+    if (text.includes(q)) return true;
+    const detail = recipeDetailQueries.value[i]?.data;
+    if (!detail) return false;
+    return recipeDetailIngredientsSearchText(detail).includes(q);
+  });
+});
 
 const quickImportOpen = ref(false);
 const membersDialogOpen = ref(false);
+/** false = masonry grid (RecipeList), true = v-list rows */
+const recipesListView = ref(false);
 
 const memberCount = computed(() => members.value.length);
 const membersPillLabel = computed(() =>

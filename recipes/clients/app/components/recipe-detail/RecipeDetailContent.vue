@@ -145,7 +145,7 @@
                 />
               </div>
               <v-sheet
-                v-if="notesDrawerOpen"
+                v-if="notesDrawerOpen && !notesUseBottomSheet"
                 variant="outlined"
                 class="detail-notes-panel d-flex flex-column flex-shrink-0"
               >
@@ -155,41 +155,56 @@
                   {{ t(strings.notes_section) }}
                 </div>
                 <v-divider />
-                <div
-                  class="detail-notes-list flex-grow-1 min-height-0 overflow-y-auto pa-2"
-                >
-                  <template v-if="notesForLatestVersion.length === 0">
-                    <p class="text-body-2 text-medium-emphasis pa-2">
-                      {{ t(strings.no_notes) }}
-                    </p>
-                  </template>
-                  <template v-else>
-                    <NoteCard
-                      v-for="note in notesTimelineOrder"
-                      :key="note.id"
-                      :recipe-id="props.recipe.id"
-                      :latest-version-id="props.currentVersion?.id"
-                      :note="note"
-                      :files="getFilesForNote(note)"
-                      :show-notes-edit="showNotesEdit"
-                    />
-                  </template>
-                </div>
-                <template v-if="showNotesEdit">
-                  <v-divider />
-                  <div class="detail-notes-composer pa-2 flex-shrink-0">
-                    <AddNoteCard
-                      :recipe-id="props.recipe.id"
-                      :latest-version-id="props.currentVersion?.id"
-                    />
-                  </div>
-                </template>
+                <RecipeNotesPanelBody
+                  :recipe-id="props.recipe.id"
+                  :latest-version-id="props.currentVersion?.id"
+                  :notes-for-latest-version="notesForLatestVersion"
+                  :notes-timeline-order="notesTimelineOrder"
+                  :show-notes-edit="showNotesEdit"
+                  :get-files-for-note="getFilesForNote"
+                />
               </v-sheet>
             </div>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
+
+    <v-bottom-sheet
+      v-if="notesUseBottomSheet"
+      v-model="notesDrawerOpen"
+      class="detail-notes-bottom-sheet"
+    >
+      <v-card
+        class="detail-notes-sheet-card d-flex flex-column rounded-t-xl pa-4"
+      >
+        <v-card-title class="d-flex align-center py-3 flex-shrink-0">
+          <span class="text-h6">{{ t(strings.notes_section) }}</span>
+          <v-spacer />
+          <v-btn
+            icon
+            variant="text"
+            :aria-label="t(strings.notes_close)"
+            @click="notesDrawerOpen = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider />
+        <v-card-text
+          class="detail-notes-sheet-text pa-0 d-flex flex-column flex-grow-1"
+        >
+          <RecipeNotesPanelBody
+            :recipe-id="props.recipe.id"
+            :latest-version-id="props.currentVersion?.id"
+            :notes-for-latest-version="notesForLatestVersion"
+            :notes-timeline-order="notesTimelineOrder"
+            :show-notes-edit="showNotesEdit"
+            :get-files-for-note="getFilesForNote"
+          />
+        </v-card-text>
+      </v-card>
+    </v-bottom-sheet>
 
     <v-dialog
       v-model="expandedImageDialogOpen"
@@ -285,6 +300,7 @@ import type {
 } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 import { recipe_detail_content as strings } from "./RecipeDetailContent.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
@@ -299,8 +315,7 @@ import {
   useDeleteRecipeMutation,
 } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import AddNoteCard from "../../pages/recipes/detail/AddNoteCard.vue";
-import NoteCard from "../../pages/recipes/detail/NoteCard.vue";
+import RecipeNotesPanelBody from "./RecipeNotesPanelBody.vue";
 import VersionHistoryModal from "../../pages/recipes/detail/VersionHistoryModal.vue";
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
 import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
@@ -322,6 +337,10 @@ const props = defineProps<RecipeDetailContentProps>();
 
 const { t, lookupTKey } = useReverseT();
 const router = useRouter();
+const { lgAndDown } = useDisplay();
+
+/** Bottom sheet below `md`; inline panel from `md` up. */
+const notesUseBottomSheet = lgAndDown.value;
 
 const showEdit = computed(() => {
   const currentMember = props.members.find((m) => m.email === props.userEmail);
@@ -381,7 +400,9 @@ async function doDeleteRecipe() {
   await deleteRecipeMutation.mutateAsync(props.recipe.id);
   deleteRecipeDialogOpen.value = false;
   await router.push(
-    constructPath(appLinks.collectionsDetail, { params: { collectionId: props.collectionId } }),
+    constructPath(appLinks.collectionsDetail, {
+      params: { collectionId: props.collectionId },
+    }),
   );
 }
 
@@ -409,5 +430,13 @@ watch(
 }
 .detail-notes-list {
   min-height: 0;
+}
+.detail-notes-sheet-text {
+  max-height: calc(90vh - 72px);
+  min-height: 0;
+  overflow: hidden;
+}
+.detail-notes-bottom-sheet :deep(.v-bottom-sheet__content) {
+  max-height: 90vh;
 }
 </style>
