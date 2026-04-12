@@ -47,7 +47,10 @@ import {
   assertVersionsLoaded,
 } from "./Detail.logic.ts";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
+import { useScreenWakeLock } from "../../../composables/useScreenWakeLock.ts";
 import { recipes_detail_page as strings } from "./Detail.strings.ts";
+
+useScreenWakeLock();
 
 const { t } = useReverseT();
 const route = useRoute();
