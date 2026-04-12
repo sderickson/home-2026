@@ -59,7 +59,6 @@ import { computed, onMounted, ref } from "vue";
 import { recipes_layout } from "./RecipesLayout.strings.ts";
 import { type Link, linkToHrefWithHost, type LinkOptions } from "@saflib/links";
 import {
-  accountLinks,
   adminLinks,
   appLinks,
   authLinks,
