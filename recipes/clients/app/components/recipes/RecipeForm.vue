@@ -10,18 +10,6 @@
             {{ t(strings.new_recipe_title) }}
           </template>
         </v-toolbar-title>
-        <template #extension>
-          <v-tabs
-            v-model="activeTab"
-            bg-color="transparent"
-            color="primary"
-            density="comfortable"
-            class="flex-grow-1"
-          >
-            <v-tab :value="0">{{ t(strings.tab_contents) }}</v-tab>
-            <v-tab :value="1">{{ t(strings.tab_metadata) }}</v-tab>
-          </v-tabs>
-        </template>
         <v-spacer />
         <v-btn
           icon="mdi-eye"
@@ -71,77 +59,55 @@
         />
       </v-toolbar>
 
-      <v-window v-model="activeTab">
-        <v-window-item :value="0">
-          <div
-            class="pa-4 bg-surface rounded-b-lg d-flex flex-column recipe-form__tab-contents"
-            style="min-height: 50vh"
+      <div
+        class="pa-4 bg-surface rounded-b-lg d-flex flex-column recipe-form__body"
+      >
+        <v-row class="flex-grow-1">
+          <v-col cols="12" md="6" class="recipe-form__col-min">
+            <v-text-field
+              v-model="model.title"
+              :label="t(strings.title_label)"
+              :placeholder="t(strings.title_placeholder)"
+              variant="outlined"
+              class="mb-4"
+            />
+            <v-textarea
+              v-model="model.description"
+              :label="t(strings.description_label)"
+              :placeholder="t(strings.description_placeholder)"
+              variant="outlined"
+              auto-grow
+              rows="3"
+              class="mb-4"
+            />
+            <div class="text-subtitle-2 mb-1">
+              {{ t(strings.ingredients_label) }}
+            </div>
+            <RecipeIngredientsForm
+              :model-value="content().ingredients ?? []"
+              @update:model-value="setIngredients"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="6"
+            class="d-flex flex-column recipe-form__col-min"
           >
-            <v-row class="flex-grow-1">
-              <v-col cols="12" md="6" class="recipe-form__col-min">
-                <div class="text-subtitle-2 mb-1">
-                  {{ t(strings.ingredients_label) }}
-                </div>
-                <RecipeIngredientsForm
-                  :model-value="content().ingredients ?? []"
-                  @update:model-value="setIngredients"
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                md="6"
-                class="d-flex flex-column recipe-form__col-min"
-              >
-                <div
-                  class="d-flex flex-column flex-grow-1 recipe-form__instructions-wrap"
-                >
-                  <v-textarea
-                    v-model="content().instructionsMarkdown"
-                    :label="t(strings.instructions_label)"
-                    :placeholder="t(strings.instructions_placeholder)"
-                    variant="outlined"
-                    rows="6"
-                    class="flex-grow-1 recipe-form__instructions-field"
-                  />
-                </div>
-              </v-col>
-            </v-row>
-          </div>
-        </v-window-item>
-        <v-window-item :value="1">
-          <div class="pa-4 bg-surface rounded-b-lg">
-            <v-row>
-              <v-col cols="12" md="5" class="recipe-form__col-min">
-                <v-text-field
-                  v-model="model.title"
-                  :label="t(strings.title_label)"
-                  :placeholder="t(strings.title_placeholder)"
-                  variant="outlined"
-                  class="mb-2"
-                />
-                <v-text-field
-                  v-model="model.subtitle"
-                  :label="t(strings.subtitle_label)"
-                  :placeholder="t(strings.subtitle_placeholder)"
-                  variant="outlined"
-                  class="mb-2"
-                />
-              </v-col>
-              <v-col cols="12" md="7" class="recipe-form__col-min">
-                <v-textarea
-                  v-model="model.description"
-                  :label="t(strings.description_label)"
-                  :placeholder="t(strings.description_placeholder)"
-                  variant="outlined"
-                  auto-grow
-                  rows="2"
-                  class="mb-2"
-                />
-              </v-col>
-            </v-row>
-          </div>
-        </v-window-item>
-      </v-window>
+            <div
+              class="d-flex flex-column flex-grow-1 recipe-form__instructions-wrap"
+            >
+              <v-textarea
+                v-model="content().instructionsMarkdown"
+                :label="t(strings.instructions_label)"
+                :placeholder="t(strings.instructions_placeholder)"
+                variant="outlined"
+                rows="6"
+                class="flex-grow-1 recipe-form__instructions-field"
+              />
+            </div>
+          </v-col>
+        </v-row>
+      </div>
     </v-card>
 
     <v-dialog v-model="showPreviewDialog" max-width="600" persistent>
@@ -241,7 +207,6 @@ const emit = defineEmits<{
   success: [recipeId: string];
 }>();
 
-const activeTab = ref(0);
 const model = defineModel<RecipeFormModel>({ required: true });
 const showPreviewDialog = ref(false);
 const showCommitDialog = ref(false);
@@ -415,6 +380,10 @@ function onUpdateCurrentVersion() {
 </script>
 
 <style scoped>
+.recipe-form__body {
+  min-height: 50vh;
+}
+
 @media (min-width: 960px) {
   .recipe-form__col-min {
     min-width: 400px;
