@@ -175,7 +175,9 @@
       v-model="notesDrawerOpen"
       class="detail-notes-bottom-sheet"
     >
-      <v-card class="detail-notes-sheet-card d-flex flex-column rounded-t-xl">
+      <v-card
+        class="detail-notes-sheet-card d-flex flex-column rounded-t-xl pa-4"
+      >
         <v-card-title class="d-flex align-center py-3 flex-shrink-0">
           <span class="text-h6">{{ t(strings.notes_section) }}</span>
           <v-spacer />
