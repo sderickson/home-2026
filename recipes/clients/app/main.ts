@@ -11,9 +11,10 @@ const isJustVite = document.location.host.includes(":5173");
 async function startDemoWorker() {
   const { setupWorker } = await import("msw/browser");
   const { http, bypass } = await import("msw");
-  const { recipesServiceFakeHandlers } =
+  const { recipesServiceFakeHandlers, kratosSessionLoggedInHandler } =
     await import("@sderickson/recipes-sdk/fakes");
   const worker = setupWorker(
+    kratosSessionLoggedInHandler,
     ...recipesServiceFakeHandlers,
     http.get("*", ({ request }) => {
       const originalUrl = new URL(request.url);
