@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar height="90" class="px-4" v-if="mounted">
+    <v-app-bar height="90" class="px-4">
       <!-- Logo -->
       <v-app-bar-title>
         <a :href="toHref(rootLinks.home)" class="logo-link">
