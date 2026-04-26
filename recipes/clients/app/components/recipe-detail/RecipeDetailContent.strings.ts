@@ -1,11 +1,7 @@
-/** Strings for the shared recipe detail content (toolbar, notes, dialogs). */
+/** Strings for the shared recipe detail content (toolbar, dialogs). */
 export const recipe_detail_content = {
-  notes_section: "Notes",
-  notes_close: "Close notes",
-  no_notes: "No notes yet.",
   toolbar_version_history: "Version history",
   toolbar_edit: "Edit",
-  toolbar_notes: "Notes",
   toolbar_images: "Add image",
   toolbar_upload_image: "Upload from computer",
   toolbar_choose_unsplash: "Choose from Unsplash",

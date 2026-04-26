@@ -48,27 +48,6 @@
                   </v-btn>
                 </template>
               </v-tooltip>
-              <v-tooltip location="bottom" :text="t(strings.toolbar_notes)">
-                <template #activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="tooltipProps"
-                    icon
-                    variant="text"
-                    :class="{ 'v-btn--active': notesDrawerOpen }"
-                    @click="notesDrawerOpen = !notesDrawerOpen"
-                  >
-                    <v-badge
-                      :model-value="
-                        !notesDrawerOpen && notesForLatestVersion.length > 0
-                      "
-                      :content="notesForLatestVersion.length"
-                      color="primary"
-                    >
-                      <v-icon>mdi-note-text</v-icon>
-                    </v-badge>
-                  </v-btn>
-                </template>
-              </v-tooltip>
               <template v-if="showFilesEdit">
                 <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
                   <template #activator="{ props: tooltipProps }">
@@ -130,81 +109,21 @@
               </template>
             </v-toolbar>
 
-            <div class="detail-card-body d-flex">
-              <div class="detail-card-preview flex-grow-1 min-width-0">
-                <RecipeContentPreview
-                  :recipe="props.recipe"
-                  :current-version="props.currentVersion"
-                  :files="props.files"
-                  :show-image-actions="showFilesEdit"
-                  :image-delete-disabled="
-                    filesFlow.deleteFileMutation.isPending.value
-                  "
-                  @click-image="expandedImageFile = $event"
-                  @delete-image="filesFlow.confirmDeleteFile($event)"
-                />
-              </div>
-              <v-sheet
-                v-if="notesDrawerOpen && !notesUseBottomSheet"
-                variant="outlined"
-                class="detail-notes-panel d-flex flex-column flex-shrink-0"
-              >
-                <div
-                  class="text-subtitle-2 text-medium-emphasis px-3 py-2 flex-shrink-0"
-                >
-                  {{ t(strings.notes_section) }}
-                </div>
-                <v-divider />
-                <RecipeNotesPanelBody
-                  :recipe-id="props.recipe.id"
-                  :latest-version-id="props.currentVersion?.id"
-                  :notes-for-latest-version="notesForLatestVersion"
-                  :notes-timeline-order="notesTimelineOrder"
-                  :show-notes-edit="showNotesEdit"
-                  :get-files-for-note="getFilesForNote"
-                />
-              </v-sheet>
-            </div>
+            <RecipeContentPreview
+              :recipe="props.recipe"
+              :current-version="props.currentVersion"
+              :files="props.files"
+              :show-image-actions="showFilesEdit"
+              :image-delete-disabled="
+                filesFlow.deleteFileMutation.isPending.value
+              "
+              @click-image="expandedImageFile = $event"
+              @delete-image="filesFlow.confirmDeleteFile($event)"
+            />
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-
-    <v-bottom-sheet
-      v-if="notesUseBottomSheet"
-      v-model="notesDrawerOpen"
-      class="detail-notes-bottom-sheet"
-    >
-      <v-card
-        class="detail-notes-sheet-card d-flex flex-column rounded-t-xl pa-4"
-      >
-        <v-card-title class="d-flex align-center py-3 flex-shrink-0">
-          <span class="text-h6">{{ t(strings.notes_section) }}</span>
-          <v-spacer />
-          <v-btn
-            icon
-            variant="text"
-            :aria-label="t(strings.notes_close)"
-            @click="notesDrawerOpen = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-divider />
-        <v-card-text
-          class="detail-notes-sheet-text pa-0 d-flex flex-column flex-grow-1"
-        >
-          <RecipeNotesPanelBody
-            :recipe-id="props.recipe.id"
-            :latest-version-id="props.currentVersion?.id"
-            :notes-for-latest-version="notesForLatestVersion"
-            :notes-timeline-order="notesTimelineOrder"
-            :show-notes-edit="showNotesEdit"
-            :get-files-for-note="getFilesForNote"
-          />
-        </v-card-text>
-      </v-card>
-    </v-bottom-sheet>
 
     <v-dialog
       v-model="expandedImageDialogOpen"
@@ -263,7 +182,6 @@
       v-model="versionHistoryModalOpen"
       :recipe="props.recipe"
       :versions="versionsNewestFirst"
-      :notes-by-version-id="notesByVersionId"
     />
 
     <ConfirmDialog
@@ -294,33 +212,23 @@ import type {
   CollectionMember,
   Recipe,
   RecipeFileInfo,
-  RecipeNote,
-  RecipeNoteFileInfo,
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useDisplay } from "vuetify";
 import { recipe_detail_content as strings } from "./RecipeDetailContent.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
-import {
-  groupNoteFilesByNoteId,
-  notesByVersionIdMap,
-  notesForLatestVersion as notesForLatestVersionFn,
-} from "./recipeDetailLogic.ts";
 import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
 import {
   RecipeContentPreview,
   useDeleteRecipeMutation,
 } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import RecipeNotesPanelBody from "./RecipeNotesPanelBody.vue";
 import VersionHistoryModal from "../../pages/recipes/detail/VersionHistoryModal.vue";
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
 import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
 
-/** Props: resolved data from recipe detail loader, using spec types. */
 export interface RecipeDetailContentProps {
   recipe: Recipe;
   currentVersion: RecipeVersion | null;
@@ -328,26 +236,19 @@ export interface RecipeDetailContentProps {
   members: CollectionMember[];
   userEmail: string;
   versions: RecipeVersion[];
-  notes: RecipeNote[];
   files: RecipeFileInfo[];
-  noteFilesByRecipe: RecipeNoteFileInfo[];
 }
 
 const props = defineProps<RecipeDetailContentProps>();
 
 const { t, lookupTKey } = useReverseT();
 const router = useRouter();
-const { lgAndDown } = useDisplay();
-
-/** Bottom sheet below `md`; inline panel from `md` up. */
-const notesUseBottomSheet = lgAndDown.value;
 
 const showEdit = computed(() => {
   const currentMember = props.members.find((m) => m.email === props.userEmail);
   return currentMember?.role === "editor" || currentMember?.role === "owner";
 });
 const showVersionHistory = true;
-const showNotesEdit = computed(() => showEdit.value);
 const showFilesEdit = computed(() => showEdit.value);
 
 const recipeEditPath = computed(() =>
@@ -360,7 +261,6 @@ const filesFlow = useDetailFilesFlow(computed(() => props.recipe.id));
 const deleteRecipeMutation = useDeleteRecipeMutation();
 
 const versionHistoryModalOpen = ref(false);
-const notesDrawerOpen = ref(false);
 const deleteRecipeDialogOpen = ref(false);
 const unsplashPickerOpen = ref(false);
 const imageFileInputRef = ref<HTMLInputElement | null>(null);
@@ -374,21 +274,6 @@ const expandedImageDialogOpen = computed({
 });
 
 const versionsNewestFirst = computed(() => [...props.versions].reverse());
-const notesByVersionId = computed(() => notesByVersionIdMap(props.notes));
-const notesForLatestVersion = computed(() =>
-  notesForLatestVersionFn(props.notes, props.currentVersion?.id ?? undefined),
-);
-const notesTimelineOrder = computed(() =>
-  [...notesForLatestVersion.value].reverse(),
-);
-
-const noteIdToFiles = computed(() =>
-  groupNoteFilesByNoteId(props.noteFilesByRecipe),
-);
-
-function getFilesForNote(note: { id: string }) {
-  return noteIdToFiles.value.get(note.id) ?? [];
-}
 
 const deleteFileDialogOpen = filesFlow.deleteFileDialogOpen;
 
@@ -415,28 +300,3 @@ watch(
   },
 );
 </script>
-
-<style scoped>
-.detail-card-body {
-  min-height: 420px;
-}
-.detail-notes-panel {
-  width: 33%;
-  min-width: 280px;
-  max-width: 400px;
-  min-height: 420px;
-  border-inline-start: 1px solid
-    rgba(var(--v-border-color), var(--v-border-opacity));
-}
-.detail-notes-list {
-  min-height: 0;
-}
-.detail-notes-sheet-text {
-  max-height: calc(90vh - 72px);
-  min-height: 0;
-  overflow: hidden;
-}
-.detail-notes-bottom-sheet :deep(.v-bottom-sheet__content) {
-  max-height: 90vh;
-}
-</style>

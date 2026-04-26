@@ -22,9 +22,7 @@
         :members="members"
         :user-email="userEmail"
         :versions="versions"
-        :notes="notes"
         :files="files"
-        :note-files-by-recipe="noteFilesByRecipe"
       />
     </v-container>
   </div>
@@ -40,8 +38,6 @@ import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
-  assertNotesLoaded,
-  assertNoteFilesByRecipeLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
@@ -61,9 +57,7 @@ const queries = useDetailLoader();
 assertRecipeLoaded(queries.recipeQuery.data.value);
 assertProfileLoaded(queries.sessionQuery.data.value);
 assertVersionsLoaded(queries.versionsQuery.data.value);
-assertNotesLoaded(queries.notesQuery.data.value);
 assertFilesLoaded(queries.filesQuery.data.value);
-assertNoteFilesByRecipeLoaded(queries.noteFilesByRecipeQuery.data.value);
 
 const recipe = computed(() => queries.recipeQuery.data.value!.recipe);
 const currentVersion = computed(
@@ -78,11 +72,7 @@ const userEmail = computed(
   () => kratosEmailFromSession(queries.sessionQuery.data.value) ?? "",
 );
 const versions = computed(() => queries.versionsQuery.data.value ?? []);
-const notes = computed(() => queries.notesQuery.data.value ?? []);
 const files = computed(() => queries.filesQuery.data.value ?? []);
-const noteFilesByRecipe = computed(
-  () => queries.noteFilesByRecipeQuery.data.value ?? [],
-);
 
 const collectionDetailPath = computed(() =>
   constructPath(appLinks.collectionsDetail, { params: { collectionId } }),

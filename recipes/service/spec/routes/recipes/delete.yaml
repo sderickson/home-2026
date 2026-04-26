@@ -1,5 +1,5 @@
 deleteRecipe:
-  summary: "Delete recipe (and handle versions/notes/files per policy). Admin only."
+  summary: "Delete recipe and related versions/files. Admin only."
   operationId: "deleteRecipe"
 
   parameters:

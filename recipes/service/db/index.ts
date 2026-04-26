@@ -10,7 +10,5 @@ export * from "./queries/collection-member/index.ts";
 export * from "./queries/collection/index.ts";
 export * from "./queries/menu/index.ts";
 export * from "./queries/recipe-file/index.ts";
-export * from "./queries/recipe-note-file/index.ts";
-export * from "./queries/recipe-note/index.ts";
 export * from "./queries/recipe/index.ts";
 // END WORKFLOW AREA

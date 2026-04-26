@@ -2,9 +2,6 @@
 export * from "./files-list.ts";
 export * from "./get.ts";
 export * from "./list.ts";
-export * from "./note-files-by-recipe.ts";
-export * from "./notes-files-list.ts";
-export * from "./notes-list.ts";
 export * from "./versions-list.ts";
 // END WORKFLOW AREA
 // BEGIN SORTED WORKFLOW AREA mutation-exports FOR sdk/add-mutation
@@ -13,11 +10,6 @@ export * from "./delete.ts";
 export * from "./files-delete.ts";
 export * from "./files-from-unsplash.ts";
 export * from "./files-upload.ts";
-export * from "./notes-create.ts";
-export * from "./notes-delete.ts";
-export * from "./notes-files-delete.ts";
-export * from "./notes-files-upload.ts";
-export * from "./notes-update.ts";
 export * from "./update.ts";
 export * from "./versions-create.ts";
 export * from "./versions-latest-update.ts";

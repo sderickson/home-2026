@@ -1,29 +1,16 @@
-import type {
-  RecipeNoteFileInfo,
-  RecipeVersion,
-} from "@sderickson/recipes-spec";
+import type { RecipeVersion } from "@sderickson/recipes-spec";
 import {
   assertFilesLoaded,
-  assertNoteFilesByRecipeLoaded,
-  assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-  groupNoteFilesByNoteId,
-  notesByVersionIdMap,
-  notesForLatestVersion,
 } from "../../../components/recipe-detail/recipeDetailLogic.ts";
 
 export {
   assertFilesLoaded,
-  assertNoteFilesByRecipeLoaded,
-  assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
-  groupNoteFilesByNoteId,
-  notesByVersionIdMap,
-  notesForLatestVersion,
 };
 
 /**
@@ -31,14 +18,6 @@ export {
  * @deprecated Use role-based checks for collection-scoped pages.
  */
 export function canShowVersionHistory(_profile?: { isAdmin?: boolean }): boolean {
-  return false;
-}
-
-/**
- * Whether the current user can add, edit, or delete notes (admin only).
- * @deprecated Use canEditInCollection for collection-scoped pages.
- */
-export function canShowNotesEdit(_profile?: { isAdmin?: boolean }): boolean {
   return false;
 }
 
@@ -60,18 +39,6 @@ export function formatVersionDate(createdAt: string): string {
 }
 
 /**
- * Formats an ISO date string for note display in chat style (e.g. "Mar 10, 2:30 PM").
- */
-export function formatNoteDateTime(createdAt: string): string {
-  return new Date(createdAt).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/**
  * Returns the version with the given id, or undefined if not found.
  */
 export function getVersionById(
@@ -79,19 +46,4 @@ export function getVersionById(
   id: string,
 ): RecipeVersion | undefined {
   return versions.find((v) => v.id === id);
-}
-
-/**
- * Builds a map from note id to that note's files, given notes and the
- * parallel array of note-files query results (same order as notes).
- */
-export function buildNoteIdToFilesMap(
-  notes: Array<{ id: string }>,
-  noteFilesResults: Array<{ data?: RecipeNoteFileInfo[] } | undefined>,
-): Map<string, RecipeNoteFileInfo[]> {
-  const map = new Map<string, RecipeNoteFileInfo[]>();
-  for (let i = 0; i < notes.length; i++) {
-    map.set(notes[i].id, (noteFilesResults[i]?.data ?? []) as RecipeNoteFileInfo[]);
-  }
-  return map;
 }

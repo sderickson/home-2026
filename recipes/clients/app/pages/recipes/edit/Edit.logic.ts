@@ -30,7 +30,6 @@ export function recipeToFormModel(response: GetRecipeResponse): RecipeFormModel 
         instructionsMarkdown: currentVersion.content.instructionsMarkdown ?? "",
       },
     },
-    note: "",
   };
 }
 

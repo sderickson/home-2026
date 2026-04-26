@@ -5,8 +5,6 @@ import {
   getRecipeQuery,
   listRecipeVersionsQuery,
   membersListCollectionsQuery,
-  notesListRecipesQuery,
-  recipeNoteFilesGetByNoteIdQuery,
 } from "@sderickson/recipes-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
@@ -29,8 +27,6 @@ export function useDetailLoader(params?: RecipeDetailLoaderParams) {
     membersQuery: useQuery(membersListCollectionsQuery(collectionId)),
     recipeQuery: useQuery(getRecipeQuery(recipeId)),
     versionsQuery: useQuery(listRecipeVersionsQuery(recipeId)),
-    notesQuery: useQuery(notesListRecipesQuery(recipeId)),
     filesQuery: useQuery(filesListRecipesQuery(recipeId)),
-    noteFilesByRecipeQuery: useQuery(recipeNoteFilesGetByNoteIdQuery(recipeId)),
   };
 }

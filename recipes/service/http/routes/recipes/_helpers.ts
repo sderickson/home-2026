@@ -2,8 +2,6 @@
 import type {
   RecipeEntity,
   RecipeFileEntity,
-  RecipeNoteEntity,
-  RecipeNoteFileEntity,
   RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
@@ -50,19 +48,8 @@ type UpdateRecipeVersionLatest200 =
   RecipesServiceResponseBody["updateRecipeVersionLatest"][200];
 type CreateRecipeVersion200 =
   RecipesServiceResponseBody["createRecipeVersion"][200];
-type NotesListRecipes200 = RecipesServiceResponseBody["notesListRecipes"][200];
-type RecipeNoteApi = NotesListRecipes200[number];
 type FilesListRecipes200 = RecipesServiceResponseBody["filesListRecipes"][200];
 type RecipeFileInfoApi = FilesListRecipes200[number];
-type NotesFilesListRecipes200 =
-  RecipesServiceResponseBody["notesFilesListRecipes"][200];
-type RecipeNoteFileInfoApi = NotesFilesListRecipes200[number];
-type NotesFilesUploadRecipes200 =
-  RecipesServiceResponseBody["notesFilesUploadRecipes"][200];
-type NotesCreateRecipes200 =
-  RecipesServiceResponseBody["notesCreateRecipes"][200];
-type NotesUpdateRecipes200 =
-  RecipesServiceResponseBody["notesUpdateRecipes"][200];
 
 export function recipeFileToApiRecipeFile(
   row: RecipeFileEntity,
@@ -88,74 +75,6 @@ export function filesListResultToFilesListRecipesResponse(
   files: RecipeFileEntity[],
 ): FilesListRecipes200 {
   return files.map(recipeFileToApiRecipeFile);
-}
-
-export function recipeNoteFileToApiRecipeNoteFile(
-  row: RecipeNoteFileEntity,
-  recipeId: string,
-): RecipeNoteFileInfoApi {
-  return {
-    id: row.id,
-    recipeNoteId: row.recipe_note_id,
-    blobName: row.blob_name,
-    fileOriginalName: row.file_original_name,
-    mimetype: row.mimetype,
-    size: row.size,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
-    downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${recipeId}/notes/${row.recipe_note_id}/files/${row.id}/blob`,
-  };
-}
-
-export function notesFilesListResultToNotesFilesListRecipesResponse(
-  files: RecipeNoteFileEntity[],
-  recipeId: string,
-): NotesFilesListRecipes200 {
-  return files.map((row) => recipeNoteFileToApiRecipeNoteFile(row, recipeId));
-}
-
-export function insertNoteFileResultToNotesFilesUploadRecipesResponse(
-  row: RecipeNoteFileEntity,
-  recipeId: string,
-): NotesFilesUploadRecipes200 {
-  return recipeNoteFileToApiRecipeNoteFile(row, recipeId);
-}
-
-export function recipeNoteToApiRecipeNote(
-  row: RecipeNoteEntity,
-): RecipeNoteApi {
-  return {
-    id: row.id,
-    recipeId: row.recipeId,
-    ...(row.recipeVersionId !== null && {
-      recipeVersionId: row.recipeVersionId,
-    }),
-    body: row.body,
-    everEdited: row.everEdited,
-    createdBy: row.createdBy,
-    createdAt: row.createdAt.toISOString(),
-    updatedBy: row.updatedBy,
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
-export function notesListResultToNotesListRecipesResponse(
-  notes: RecipeNoteEntity[],
-): NotesListRecipes200 {
-  return notes.map(recipeNoteToApiRecipeNote);
-}
-
-export function createNoteResultToNotesCreateRecipesResponse(
-  row: RecipeNoteEntity,
-): NotesCreateRecipes200 {
-  return recipeNoteToApiRecipeNote(row);
-}
-
-export function updateNoteResultToNotesUpdateRecipesResponse(
-  row: RecipeNoteEntity,
-): NotesUpdateRecipes200 {
-  return recipeNoteToApiRecipeNote(row);
 }
 
 export function recipeToApiRecipe(
@@ -251,22 +170,8 @@ export function deleteRecipeResultToDeleteRecipeResponse(
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */
-export function deleteNoteResultToNotesDeleteRecipesResponse(
-  _row: RecipeNoteEntity,
-): void {
-  // 204 No Content - no body to map
-}
-
-/** No response body for 204; mapper used for consistency with other routes. */
 export function deleteFileResultToFilesDeleteRecipesResponse(
   _row: RecipeFileEntity,
-): void {
-  // 204 No Content - no body to map
-}
-
-/** No response body for 204; mapper used for consistency with other routes. */
-export function deleteNoteFileResultToNotesFilesDeleteRecipesResponse(
-  _row: RecipeNoteFileEntity,
 ): void {
   // 204 No Content - no body to map
 }

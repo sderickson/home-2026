@@ -171,10 +171,9 @@ import { isRecipeFormValid, getEditedFields } from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   useCreateRecipeMutation,
+  useCreateRecipeVersionMutation,
   useUpdateRecipeMutation,
   useUpdateRecipeVersionLatestMutation,
-  useCreateRecipeVersionMutation,
-  useNotesCreateRecipesMutation,
 } from "@sderickson/recipes-sdk";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 
@@ -190,7 +189,6 @@ export type RecipeFormModel = Omit<
       instructionsMarkdown: string;
     };
   };
-  note: string;
 };
 
 type GetRecipeResponse = RecipesServiceResponseBody["getRecipe"][200];
@@ -234,7 +232,6 @@ const createMutation = useCreateRecipeMutation();
 const updateMutation = useUpdateRecipeMutation();
 const updateLatestMutation = useUpdateRecipeVersionLatestMutation();
 const createVersionMutation = useCreateRecipeVersionMutation();
-const notesCreateMutation = useNotesCreateRecipesMutation();
 
 const isValid = computed(() => isRecipeFormValid(model.value));
 
@@ -291,16 +288,7 @@ function setIngredients(
 
 async function handleCreate() {
   if (!isValid.value) return;
-  const { note: _note, ...createPayload } = model.value;
-  const data = await createMutation.mutateAsync(createPayload);
-  const noteBody = model.value.note?.trim();
-  if (data.initialVersion && noteBody) {
-    await notesCreateMutation.mutateAsync({
-      id: data.recipe.id,
-      body: noteBody,
-      recipeVersionId: data.initialVersion.id,
-    });
-  }
+  const data = await createMutation.mutateAsync(model.value);
   emit("success", data.recipe.id);
   props.onSuccess?.(data.recipe.id);
 }
@@ -318,19 +306,12 @@ async function handleUpdateLatest() {
     id: recipe.id,
     ...content(),
   });
-  const noteBody = model.value.note?.trim();
-  if (noteBody) {
-    await notesCreateMutation.mutateAsync({
-      id: recipe.id,
-      body: noteBody,
-      recipeVersionId: version.id,
-    });
-  }
+  void version;
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
 }
 
-async function doSaveNewVersion(noteBody: string) {
+async function doSaveNewVersion() {
   if (!props.recipe || !isValid.value) return;
   const { recipe } = props.recipe;
   await updateMutation.mutateAsync({
@@ -343,13 +324,7 @@ async function doSaveNewVersion(noteBody: string) {
     id: recipe.id,
     ...content(),
   });
-  if (noteBody.trim()) {
-    await notesCreateMutation.mutateAsync({
-      id: recipe.id,
-      body: noteBody.trim(),
-      recipeVersionId: version.id,
-    });
-  }
+  void version;
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
 }
@@ -367,7 +342,7 @@ function openCommitDialog() {
 async function confirmCommit() {
   commitSaving.value = true;
   try {
-    await doSaveNewVersion(commitMessage.value);
+    await doSaveNewVersion();
     showCommitDialog.value = false;
   } finally {
     commitSaving.value = false;
