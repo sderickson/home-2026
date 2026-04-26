@@ -31,6 +31,7 @@
                 hide-details
                 class="w-100"
                 :placeholder="t(strings.row_placeholder)"
+                enterkeyhint="done"
                 @blur="commitEdit"
                 @keydown.tab="onRowTab($event, i)"
                 @keydown.shift.tab="onRowTab($event, i, true)"
@@ -76,6 +77,7 @@
               hide-details
               class="w-100"
               :placeholder="t(strings.row_placeholder)"
+              enterkeyhint="done"
               @keydown.tab="onNewRowTab"
               @keydown.shift.tab="onNewRowShiftTab"
               @keydown.enter="onNewRowEnter"
@@ -192,13 +194,7 @@ function focusPreviousInForm(current: EventTarget | null) {
 }
 
 /** On Tab/Shift+Tab from row edit input: do nothing. Blur will commit; browser handles focus. */
-function onRowTab(_e: KeyboardEvent, _i: number, _shift?: boolean) {
-  // Do not preventDefault — browser moves focus by default tab order.
-  // Blur fires when focus leaves the input and will call commitEdit().
-}
-
-/** Enter doesn't move focus by default, so we mimic Tab: commit then focus next/prev. */
-function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
+function moveFromRowEdit(e: KeyboardEvent, i: number, shift?: boolean) {
   if (shift && i === 0) {
     e.preventDefault();
     return;
@@ -228,6 +224,16 @@ function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
   });
 }
 
+/** On mobile Chrome, keyboard "Next" may map to Tab. Treat Tab the same as Enter. */
+function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
+  moveFromRowEdit(e, i, shift);
+}
+
+/** Enter should commit current row and move to next/previous row target. */
+function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
+  moveFromRowEdit(e, i, shift);
+}
+
 function addNewRowFromInput() {
   const value = newRowValue.value.trim();
   if (!value) return;
@@ -245,7 +251,6 @@ function onNewRowEnter(e: KeyboardEvent) {
 }
 
 function onNewRowTab(e: KeyboardEvent) {
-  if (!newRowValue.value.trim()) return;
   e.preventDefault();
   addNewRowFromInput();
 }
