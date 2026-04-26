@@ -17,36 +17,15 @@
           :title="t(strings.toolbar_preview)"
           @click="showPreviewDialog = true"
         />
-        <template v-if="recipe">
-          <v-menu location="bottom end" transition="scale-transition">
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                icon="mdi-content-save"
-                variant="text"
-                :disabled="!isValid"
-                :loading="saveMenuLoading"
-                :title="t(strings.toolbar_save)"
-              />
-            </template>
-            <v-list>
-              <v-list-item
-                :disabled="!isValid"
-                :loading="updateLatestMutation.isPending.value"
-                prepend-icon="mdi-pencil"
-                :title="t(strings.save_menu_update_current)"
-                @click="onUpdateCurrentVersion"
-              />
-              <v-list-item
-                :disabled="!isValid"
-                :loading="createVersionMutation.isPending.value"
-                prepend-icon="mdi-plus-box"
-                :title="t(strings.save_menu_create_new)"
-                @click="openCommitDialog"
-              />
-            </v-list>
-          </v-menu>
-        </template>
+        <v-btn
+          v-if="recipe"
+          icon="mdi-content-save"
+          variant="text"
+          :disabled="!isValid"
+          :loading="editSaveLoading"
+          :title="t(strings.toolbar_save)"
+          @click="handleEditCreatesNewVersion"
+        />
         <v-btn
           v-else
           icon="mdi-content-save"
@@ -130,35 +109,11 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showCommitDialog" max-width="500" persistent>
-      <v-card>
-        <v-card-title>{{ t(strings.commit_dialog_title) }}</v-card-title>
-        <v-card-text>
-          <v-textarea
-            v-model="commitMessage"
-            :label="t(strings.commit_message_label)"
-            :placeholder="t(strings.commit_message_placeholder)"
-            variant="outlined"
-            rows="3"
-            auto-grow
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="showCommitDialog = false">
-            {{ t(strings.commit_cancel) }}
-          </v-btn>
-          <v-btn color="primary" :loading="commitSaving" @click="confirmCommit">
-            {{ t(strings.commit_confirm) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import type {
   Recipe,
   RecipesServiceRequestBody,
@@ -167,13 +122,12 @@ import type {
 } from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
-import { isRecipeFormValid, getEditedFields } from "./RecipeForm.logic.ts";
+import { isRecipeFormValid } from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   useCreateRecipeMutation,
   useCreateRecipeVersionMutation,
   useUpdateRecipeMutation,
-  useUpdateRecipeVersionLatestMutation,
 } from "@sderickson/recipes-sdk";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 
@@ -207,30 +161,9 @@ const emit = defineEmits<{
 
 const model = defineModel<RecipeFormModel>({ required: true });
 const showPreviewDialog = ref(false);
-const showCommitDialog = ref(false);
-const commitMessage = ref("");
-const commitSaving = ref(false);
-
-/** Snapshot of model when recipe was loaded, for commit message default. */
-const initialFormModel = ref<RecipeFormModel | null>(null);
-
-watch(
-  () => props.recipe,
-  (r) => {
-    if (r) {
-      initialFormModel.value = JSON.parse(
-        JSON.stringify(model.value),
-      ) as RecipeFormModel;
-    } else {
-      initialFormModel.value = null;
-    }
-  },
-  { immediate: true },
-);
 
 const createMutation = useCreateRecipeMutation();
 const updateMutation = useUpdateRecipeMutation();
-const updateLatestMutation = useUpdateRecipeVersionLatestMutation();
 const createVersionMutation = useCreateRecipeVersionMutation();
 
 const isValid = computed(() => isRecipeFormValid(model.value));
@@ -265,11 +198,9 @@ const previewVersion = computed((): RecipeVersion =>
   }) as RecipeVersion,
 );
 
-const saveMenuLoading = computed(
+const editSaveLoading = computed(
   () =>
-    updateLatestMutation.isPending.value ||
-    createVersionMutation.isPending.value ||
-    commitSaving.value,
+    updateMutation.isPending.value || createVersionMutation.isPending.value,
 );
 
 function content() {
@@ -293,25 +224,7 @@ async function handleCreate() {
   props.onSuccess?.(data.recipe.id);
 }
 
-async function handleUpdateLatest() {
-  if (!props.recipe || !isValid.value) return;
-  const { recipe } = props.recipe;
-  await updateMutation.mutateAsync({
-    id: recipe.id,
-    title: model.value.title,
-    subtitle: model.value.subtitle,
-    description: model.value.description ?? undefined,
-  });
-  const version = await updateLatestMutation.mutateAsync({
-    id: recipe.id,
-    ...content(),
-  });
-  void version;
-  emit("success", recipe.id);
-  props.onSuccess?.(recipe.id);
-}
-
-async function doSaveNewVersion() {
+async function handleEditCreatesNewVersion() {
   if (!props.recipe || !isValid.value) return;
   const { recipe } = props.recipe;
   await updateMutation.mutateAsync({
@@ -327,30 +240,6 @@ async function doSaveNewVersion() {
   void version;
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
-}
-
-function openCommitDialog() {
-  const initial = initialFormModel.value;
-  const fields = initial != null ? getEditedFields(initial, model.value) : [];
-  commitMessage.value =
-    fields.length > 0
-      ? t(strings.commit_default_prefix) + fields.join(", ")
-      : "";
-  showCommitDialog.value = true;
-}
-
-async function confirmCommit() {
-  commitSaving.value = true;
-  try {
-    await doSaveNewVersion();
-    showCommitDialog.value = false;
-  } finally {
-    commitSaving.value = false;
-  }
-}
-
-function onUpdateCurrentVersion() {
-  void handleUpdateLatest();
 }
 </script>
 
