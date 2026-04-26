@@ -26,9 +26,7 @@
         :members="members"
         :user-email="userEmail"
         :versions="versions"
-        :notes="notes"
         :files="files"
-        :note-files-by-recipe="noteFilesByRecipe"
       />
     </v-container>
   </div>
@@ -44,8 +42,6 @@ import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import {
   assertFilesLoaded,
-  assertNoteFilesByRecipeLoaded,
-  assertNotesLoaded,
   assertProfileLoaded,
   assertRecipeLoaded,
   assertVersionsLoaded,
@@ -64,9 +60,7 @@ const { menuQuery, ...queries } = loaderResult;
 assertRecipeLoaded(queries.recipeQuery.data.value);
 assertProfileLoaded(queries.sessionQuery.data.value);
 assertVersionsLoaded(queries.versionsQuery.data.value);
-assertNotesLoaded(queries.notesQuery.data.value);
 assertFilesLoaded(queries.filesQuery.data.value);
-assertNoteFilesByRecipeLoaded(queries.noteFilesByRecipeQuery.data.value);
 
 const menuData = computed(() => menuQuery.data.value);
 if (!menuData.value?.menu) {
@@ -87,11 +81,7 @@ const userEmail = computed(
   () => kratosEmailFromSession(queries.sessionQuery.data.value) ?? "",
 );
 const versions = computed(() => queries.versionsQuery.data.value ?? []);
-const notes = computed(() => queries.notesQuery.data.value ?? []);
 const files = computed(() => queries.filesQuery.data.value ?? []);
-const noteFilesByRecipe = computed(
-  () => queries.noteFilesByRecipeQuery.data.value ?? [],
-);
 
 const collectionDetailPath = computed(() =>
   constructPath(appLinks.collectionsDetail, { params: { collectionId } }),

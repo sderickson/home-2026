@@ -4,10 +4,8 @@ import type { ReturnsError } from "@saflib/monorepo";
 
 import { queryWrapper } from "@saflib/drizzle";
 import type { DbKey } from "@saflib/drizzle";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
-import { recipeNote } from "../../schemas/recipe-note.ts";
-import { recipeNoteFile } from "../../schemas/recipe-note-file.ts";
 import { recipeFile } from "../../schemas/recipe-file.ts";
 
 export type DeleteRecipeError = RecipeNotFoundError;
@@ -27,17 +25,7 @@ export const deleteRecipe = queryWrapper(
       };
     }
 
-    // Delete in FK order: note files → notes → recipe files → versions → recipe
-    const noteIds = await db
-      .select({ id: recipeNote.id })
-      .from(recipeNote)
-      .where(eq(recipeNote.recipeId, id));
-    if (noteIds.length > 0) {
-      await db
-        .delete(recipeNoteFile)
-        .where(inArray(recipeNoteFile.recipe_note_id, noteIds.map((n) => n.id)));
-    }
-    await db.delete(recipeNote).where(eq(recipeNote.recipeId, id));
+    // Delete in FK order: recipe files → versions → recipe
     await db.delete(recipeFile).where(eq(recipeFile.recipe_id, id));
     await db.delete(recipeVersion).where(eq(recipeVersion.recipeId, id));
 

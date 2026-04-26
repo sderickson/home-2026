@@ -26,16 +26,6 @@ paths:
   /recipes/{id}/versions/latest:
     put:
       $ref: "./routes/recipes/versions-latest-update.yaml#/updateRecipeVersionLatest"
-  /recipes/{id}/notes:
-    get:
-      $ref: "./routes/recipes/notes-list.yaml#/notesListRecipes"
-    post:
-      $ref: "./routes/recipes/notes-create.yaml#/notesCreateRecipes"
-  /recipes/{id}/notes/{noteId}:
-    put:
-      $ref: "./routes/recipes/notes-update.yaml#/notesUpdateRecipes"
-    delete:
-      $ref: "./routes/recipes/notes-delete.yaml#/notesDeleteRecipes"
   /recipes/{id}/files:
     get:
       $ref: "./routes/recipes/files-list.yaml#/filesListRecipes"
@@ -47,20 +37,6 @@ paths:
   /recipes/{id}/files/{fileId}/blob:
     get:
       $ref: "./routes/recipes/files-download.yaml#/filesDownloadRecipes"
-  /recipes/{id}/note-files:
-    get:
-      $ref: "./routes/recipes/notes-files-list-by-recipe.yaml#/recipeNoteFilesGetByNoteId"
-  /recipes/{id}/notes/{noteId}/files:
-    get:
-      $ref: "./routes/recipes/notes-files-list.yaml#/notesFilesListRecipes"
-    post:
-      $ref: "./routes/recipes/notes-files-upload.yaml#/notesFilesUploadRecipes"
-  /recipes/{id}/notes/{noteId}/files/{fileId}:
-    delete:
-      $ref: "./routes/recipes/notes-files-delete.yaml#/notesFilesDeleteRecipes"
-  /recipes/{id}/notes/{noteId}/files/{fileId}/blob:
-    get:
-      $ref: "./routes/recipes/notes-files-download.yaml#/notesFilesDownloadRecipes"
   /unsplash-photos/search:
     get:
       $ref: "./routes/unsplash-photos/search.yaml#/searchUnsplashPhotos"
@@ -115,12 +91,8 @@ components:
       $ref: "./schemas/recipe.yaml"
     RecipeVersion:
       $ref: "./schemas/recipe-version.yaml"
-    RecipeNote:
-      $ref: "./schemas/recipe-note.yaml"
     RecipeFileInfo:
       $ref: "./schemas/recipe-file-info.yaml"
-    RecipeNoteFileInfo:
-      $ref: "./schemas/recipe-note-file-info.yaml"
     UnsplashPhotoSearchItem:
       $ref: "./schemas/unsplash-photo-search-item.yaml"
     AddRecipeFileFromUnsplashRequest:

@@ -26,14 +26,7 @@
             <v-expansion-panel-title>
               <div class="d-flex flex-column py-1">
                 <span class="text-body-1">
-                  <template v-if="firstNoteFirstLine(ver)">
-                    {{ firstNoteFirstLine(ver) }}
-                  </template>
-                  <i18n-t
-                    v-else
-                    scope="global"
-                    :keypath="lookupTKey(strings.version_from_date)"
-                  >
+                  <i18n-t scope="global" :keypath="lookupTKey(strings.version_from_date)">
                     <template #date>{{ formatVersionDate(ver.createdAt) }}</template>
                   </i18n-t>
                 </span>
@@ -49,26 +42,6 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <RecipeContentPreview :recipe="recipe" :current-version="ver" />
-              <template v-if="notesByVersionId.get(ver.id)?.length">
-                <p class="text-caption text-medium-emphasis mt-2 mb-1">
-                  {{ t(strings.notes_for_version) }}
-                </p>
-                <ul class="text-body-2 pl-4 mb-0">
-                  <li
-                    v-for="n in notesByVersionId.get(ver.id)"
-                    :key="n.id"
-                    class="mb-1"
-                  >
-                    {{ n.body }}
-                    <span
-                      v-if="n.everEdited"
-                      class="text-caption text-medium-emphasis"
-                    >
-                      ({{ t(strings.ever_edited) }})
-                    </span>
-                  </li>
-                </ul>
-              </template>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -85,7 +58,6 @@
 
 <script setup lang="ts">
 import type {
-  RecipeNote,
   RecipeVersion,
   Recipe,
 } from "@sderickson/recipes-spec";
@@ -94,11 +66,10 @@ import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { version_history_modal as strings } from "./VersionHistoryModal.strings.ts";
 import { formatVersionDate } from "./Detail.logic.ts";
 
-const props = defineProps<{
+defineProps<{
   modelValue: boolean;
   recipe: Recipe;
   versions: RecipeVersion[];
-  notesByVersionId: Map<string, RecipeNote[]>;
 }>();
 
 defineEmits<{
@@ -106,17 +77,6 @@ defineEmits<{
 }>();
 
 const { t, lookupTKey } = useReverseT();
-
-/** First line of the first note for this version (commit-message style), or null if none. */
-function firstNoteFirstLine(ver: RecipeVersion): string | null {
-  const notes = props.notesByVersionId.get(ver.id) ?? [];
-  const firstNote = [...notes].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  )[0];
-  if (!firstNote?.body?.trim()) return null;
-  const firstLine = firstNote.body.split(/\r?\n/)[0].trim();
-  return firstLine || null;
-}
 
 /** If the version was updated after creation, returns updatedAt (for when the API supports it). */
 function versionUpdatedAt(ver: RecipeVersion): string | undefined {

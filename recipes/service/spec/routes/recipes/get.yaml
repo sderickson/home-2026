@@ -12,7 +12,7 @@ getRecipe:
 
   responses:
     "200":
-      description: "Recipe with current version; optionally includes recent notes and file list."
+      description: "Recipe with current version; may include recipe file list."
       content:
         application/json:
           schema:
@@ -25,11 +25,6 @@ getRecipe:
                 $ref: "../../schemas/recipe.yaml"
               currentVersion:
                 $ref: "../../schemas/recipe-version.yaml"
-              notes:
-                type: array
-                description: "Optional list of recent recipe notes."
-                items:
-                  type: object
               files:
                 type: array
                 description: "Optional list of recipe file info."

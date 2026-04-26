@@ -57,7 +57,6 @@ const formModel = ref<RecipeFormModel>({
       instructionsMarkdown: "",
     },
   },
-  note: "",
 });
 
 function handleSuccess(recipeId: string) {

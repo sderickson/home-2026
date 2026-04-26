@@ -9,8 +9,8 @@ import {
   CdStepMachine,
 } from "@saflib/workflows";
 import {
-  AddSchemaWorkflowDefinition,
-  AddRouteWorkflowDefinition,
+  OpenApiSchemaWorkflowDefinition,
+  OpenApiRouteWorkflowDefinition,
 } from "@saflib/openapi/workflows";
 import {
   UpdateSchemaWorkflowDefinition,
@@ -42,24 +42,24 @@ export const RecipesInitM3aRecipeFilesBackendWorkflowDefinition = defineWorkflow
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-file-info",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M3a: recipe files backend — list, upload, delete; Azure). Then: Add RecipeFileInfo schema (file metadata: blob_name, file_original_name, mimetype, size, etc. per SAF fileMetadataColumns). See spec.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-list.yaml",
       urlPath: "/recipes/{id}/files",
       method: "get",
       prompt: `GET /recipes/:id/files — list recipe files. See spec API #13.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-upload.yaml",
       upload: true,
       urlPath: "/recipes/{id}/files",
       method: "post",
       prompt: `POST /recipes/:id/files — upload file (multipart). Admin only. Azure storage. See spec API #14.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-delete.yaml",
       urlPath: "/recipes/{id}/files/{fileId}",
       method: "delete",
