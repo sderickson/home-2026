@@ -21,6 +21,7 @@ selfservice:
   flows:
     registration:
       enabled: true
+      style: unified
       ui_url: https://auth.scotterickson.info/registration
 
     login:
