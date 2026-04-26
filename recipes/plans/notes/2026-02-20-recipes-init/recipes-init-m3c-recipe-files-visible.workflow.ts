@@ -9,7 +9,7 @@ import {
   makeWorkflowMachine,
   CdStepMachine,
 } from "@saflib/workflows";
-import { AddRouteWorkflowDefinition } from "@saflib/openapi/workflows";
+import { OpenApiRouteWorkflowDefinition } from "@saflib/openapi/workflows";
 import { AddHandlerWorkflowDefinition } from "@saflib/express/workflows";
 import { AddSpaViewWorkflowDefinition } from "@saflib/vue/workflows";
 import path from "path";
@@ -36,7 +36,7 @@ export const RecipesInitM3cRecipeFilesVisibleWorkflowDefinition =
     versionControl: { allowPaths: ["**/*"], commitEachStep: true },
     steps: [
       step(CdStepMachine, () => ({ path: "../service/spec" })),
-      step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+      step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
         path: "./routes/recipes/files-download.yaml",
         urlPath: "/recipes/{id}/files/{fileId}/blob",
         method: "get",

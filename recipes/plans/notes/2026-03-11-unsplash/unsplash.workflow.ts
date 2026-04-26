@@ -10,8 +10,8 @@ import {
   PromptStepMachine,
 } from "@saflib/workflows";
 import {
-  AddSchemaWorkflowDefinition,
-  AddRouteWorkflowDefinition,
+  OpenApiSchemaWorkflowDefinition,
+  OpenApiRouteWorkflowDefinition,
 } from "@saflib/openapi/workflows";
 import {
   UpdateSchemaWorkflowDefinition,
@@ -59,25 +59,25 @@ export const UnsplashWorkflowDefinition = defineWorkflow<
   steps: [
     // --- OpenAPI: schemas and routes (cwd: recipes/service/spec) ---
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), ({ context }) => ({
       name: "unsplash-photo-search-item",
       prompt: `Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Add schema UnsplashPhotoSearchItem: id, thumbUrl, regularUrl, downloadLocation (all strings; URLs as format: uri).`,
     })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), () => ({
       name: "add-recipe-file-from-unsplash-request",
       prompt: `Add schema AddRecipeFileFromUnsplashRequest: unsplashPhotoId, downloadLocation, imageUrl (strings; URL fields format: uri). See spec.`,
     })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), () => ({
       name: "unsplash-attribution",
       prompt: `Add schema UnsplashAttribution: photographerName, photographerProfileUrl, unsplashSourceUrl (strings; URL fields format: uri). For display when showing Unsplash-sourced recipe files. See spec.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/unsplash-photos/search.yaml",
       urlPath: "/unsplash-photos/search",
       method: "get",
       prompt: `Add route GET /unsplash-photos/search. Query params: q (required), perPage (optional, default 10). Response: { unsplashPhotos: UnsplashPhotoSearchItem[] }. See spec and plan.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/files-from-unsplash.yaml",
       urlPath: "/recipes/{id}/files/from-unsplash",
       method: "post",

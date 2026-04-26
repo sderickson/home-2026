@@ -10,8 +10,8 @@ import {
   CdStepMachine,
 } from "@saflib/workflows";
 import {
-  AddSchemaWorkflowDefinition,
-  AddRouteWorkflowDefinition,
+  OpenApiSchemaWorkflowDefinition,
+  OpenApiRouteWorkflowDefinition,
 } from "@saflib/openapi/workflows";
 import path from "path";
 
@@ -37,57 +37,57 @@ export const RecipesInitM1SpecWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (Milestone 1: recipes backend — spec, db, http for recipe CRUD and versioning). Then: Add Recipe schema per spec: id, title, shortDescription, longDescription (optional), isPublic, createdBy, createdAt, updatedBy, updatedAt; optionally current version id for display. See spec.`,
     })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), () => ({
       name: "recipe-version",
       prompt: `Add RecipeVersion schema. Content shape: ingredients (array of { name, quantity, unit }), instructionsMarkdown (string). Include id, recipeId, content, isLatest, createdBy, createdAt. See docFiles.spec.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/list.yaml",
       urlPath: "/recipes",
       method: "get",
       prompt: `GET /recipes — list recipes; public-only for non-admin, admins see private too. See spec API #1.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/get.yaml",
       urlPath: "/recipes/{id}",
       method: "get",
       prompt: `GET /recipes/:id — one recipe with current version, optional notes and file list. See spec API #2.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/create.yaml",
       urlPath: "/recipes",
       method: "post",
       prompt: `POST /recipes — create recipe (and optional initial version). Admin only. See spec API #4.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/update.yaml",
       urlPath: "/recipes/{id}",
       method: "put",
       prompt: `PUT /recipes/:id — update recipe metadata only. Admin only. See spec API #5.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/versions-list.yaml",
       urlPath: "/recipes/{id}/versions",
       method: "get",
       prompt: `GET /recipes/:id/versions — list version history. See spec API #3.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/versions-latest-update.yaml",
       urlPath: "/recipes/{id}/versions/latest",
       method: "put",
       prompt: `PUT /recipes/:id/versions/latest — update latest version in place. Admin only. See spec API #6.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/versions-create.yaml",
       urlPath: "/recipes/{id}/versions",
       method: "post",
       prompt: `POST /recipes/:id/versions — create new version (history). Admin only. See spec API #7.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/delete.yaml",
       urlPath: "/recipes/{id}",
       method: "delete",

@@ -9,8 +9,8 @@ import {
   CdStepMachine,
 } from "@saflib/workflows";
 import {
-  AddSchemaWorkflowDefinition,
-  AddRouteWorkflowDefinition,
+  OpenApiSchemaWorkflowDefinition,
+  OpenApiRouteWorkflowDefinition,
 } from "@saflib/openapi/workflows";
 import {
   UpdateSchemaWorkflowDefinition,
@@ -42,30 +42,30 @@ export const RecipesInitM4aNoteFilesBackendWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note-file-info",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M4a: note files backend — list, upload, delete). Then: Add RecipeNoteFileInfo schema (file metadata per SAF). See spec.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-list.yaml",
       urlPath: "/recipes/{id}/notes/{noteId}/files",
       method: "get",
       prompt: `GET /recipes/:id/notes/:noteId/files. See spec API #16.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-upload.yaml",
       upload: true,
       urlPath: "/recipes/{id}/notes/{noteId}/files",
       method: "post",
       prompt: `POST /recipes/:id/notes/:noteId/files. Admin only. See spec API #17.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-delete.yaml",
       urlPath: "/recipes/{id}/notes/{noteId}/files/{fileId}",
       method: "delete",
       prompt: `DELETE /recipes/:id/notes/:noteId/files/:fileId. Admin only. See spec API #18.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-files-download.yaml",
       urlPath: "/recipes/{id}/notes/{noteId}/files/{fileId}/blob",
       method: "get",

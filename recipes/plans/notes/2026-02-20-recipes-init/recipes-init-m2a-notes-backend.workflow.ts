@@ -9,8 +9,8 @@ import {
   CdStepMachine,
 } from "@saflib/workflows";
 import {
-  AddSchemaWorkflowDefinition,
-  AddRouteWorkflowDefinition,
+  OpenApiSchemaWorkflowDefinition,
+  OpenApiRouteWorkflowDefinition,
 } from "@saflib/openapi/workflows";
 import {
   UpdateSchemaWorkflowDefinition,
@@ -42,29 +42,29 @@ export const RecipesInitM2aNotesBackendWorkflowDefinition = defineWorkflow<
   versionControl: { allowPaths: ["**/*"], commitEachStep: true },
   steps: [
     step(CdStepMachine, () => ({ path: "../service/spec" })),
-    step(makeWorkflowMachine(AddSchemaWorkflowDefinition), ({ context }) => ({
+    step(makeWorkflowMachine(OpenApiSchemaWorkflowDefinition), ({ context }) => ({
       name: "recipe-note",
       prompt: `Orientation: Read ${context.docFiles!.spec} and ${context.docFiles!.plan}. Make sure you understand the overall plan and your part in it (M2a: notes backend — spec, db, http for notes CRUD). Then: Add RecipeNote schema: id, recipeId, recipeVersionId (optional), body, everEdited, createdBy, createdAt, updatedBy, updatedAt. See spec.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-list.yaml",
       urlPath: "/recipes/{id}/notes",
       method: "get",
       prompt: `GET /recipes/:id/notes — list notes for recipe. See spec API #9. Reminder: this does not require auth.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-create.yaml",
       urlPath: "/recipes/{id}/notes",
       method: "post",
       prompt: `POST /recipes/:id/notes — create note. Admin only. See spec API #10.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-update.yaml",
       urlPath: "/recipes/{id}/notes/{noteId}",
       method: "put",
       prompt: `PUT /recipes/:id/notes/:noteId — edit note; set everEdited. Admin only. See spec API #11.`,
     })),
-    step(makeWorkflowMachine(AddRouteWorkflowDefinition), () => ({
+    step(makeWorkflowMachine(OpenApiRouteWorkflowDefinition), () => ({
       path: "./routes/recipes/notes-delete.yaml",
       urlPath: "/recipes/{id}/notes/{noteId}",
       method: "delete",

@@ -66,7 +66,7 @@ import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { version_history_modal as strings } from "./VersionHistoryModal.strings.ts";
 import { formatVersionDate } from "./Detail.logic.ts";
 
-const props = defineProps<{
+defineProps<{
   modelValue: boolean;
   recipe: Recipe;
   versions: RecipeVersion[];
