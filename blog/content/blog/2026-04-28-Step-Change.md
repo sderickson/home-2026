@@ -10,7 +10,7 @@ All that being said, I do think we're getting to a place where most code is gene
 
 The change I expect, the step change from before LLMs to where we're going in the near future, is when software development settles into a new equilibrium built around what I'll call agentic stacks. These are not that different than the software stacks we use today. I will go into how they are different, how it feels to work in them, and what the code they produce looks like. This is admittedly my speculation built on my personal experience with an agentic stack I built and used, but I've seen enough that I think it warrants seriously considering and exploring further.
 
-# Agentic Stacks
+## Agentic Stacks
 
 Vibe coding, as an approach to software development, is fundamentally limited and I don't think it's where the industry is headed. When you rely entirely on an LLM to structure and build out a piece of software, it will make decisions somewhat randomly, including whether to include you in decision-making. That randomness leads to inconsistencies across the codebase, and is heinously inefficient. If the agent has to decide each time how to structure, test, and validate what is built for every layer of a codebase, it's basically yak-shaving over and over again, and it will tend towards applying band-aids than coming up with durable solutions in order to scope the time and tokens spent. And any durable solutions that it _does_ generate will be inconsistently applied, based on if the agent happens to find it. Vibe-coding often turns cancerous, which can be fatal to a non-trivial project, as the inconsistencies, shortcuts, and available solutions compound and multiply. It's risky and it's costly, and just throwing more agents at the problem mitigates some of the risk while exploding the cost.
 
@@ -44,8 +44,9 @@ Besides including a workflow tool, an agentic stack also needs to come fully-loa
 - Containerization and orchestration
 - Local development
 - Unit, integration, and E2E testing
+- and more...
 
-And more! Basically these stacks need to come with all the _stuff_ which is used in most if not all non-trivial web applications. The workflows that the stack provides helps build out components which leverage all these chosen dependencies.
+Basically these stacks need to come with all the _stuff_ which is used in most if not all non-trivial web applications. The workflows that the stack provides helps build out components which leverage all these chosen dependencies.
 
 When you build most things, and especially new things, with those scripts, what you end up with is a codebase which is much more consistent and useful, built much more quickly and cost-effectively than having one designed ad-hoc by agent committee.
 
@@ -56,19 +57,19 @@ When you build most things, and especially new things, with those scripts, what 
 
 A stack that prescribes that many solutions needs to be fully owned by the individual or organization that owns the product. An open-source web stack that includes all the features above will still probably not include every platform feature a given product needs, nor will it have the best solutions for a given product. While most businesses depend on other organizations to provide coding languages, server software, and hosting services that power the company's product, the company itself still owns the combination of those things, and I expect that to continue to be the case.
 
-## What does coding in agentic stacks look like?
+## The New Coding Experience
 
 1. **New features and products are generated with the highly structured, heavily guided workflows.** This sets the standard for that area of the codebase, getting everything started on the right foot. This is similar to many existing agentic workflows: you write out a plan and you have the agent follow that plan. What is different from other agentic workflows is that the plan is a script, written in code, not a markdown document.
 2. **Smaller features and changes may use a freeform agent**, because the codebase is in a good place and the agent is not likely to diverge from the patterns and best practices that already exist.
 3. **Reviews focus on the constraints and expectations more than implementation**. It's more important to make sure the database model, API specification, integration scope, and product experience fit the needs of the person or business. The generated implementation will largely be fine, and issues can be identified and addressed reactively with well instrumented and organized code. The writing and review of the details of the implementation is where you save time as a software engineer, and building within an agentic stack delivers consistent enough results that you _can_ spend your attention elsewhere.
 4. **More time is spent investing in the platform and best practices as a whole**. When there _are_ issues that come up, and it's an issue that is likely to recur or is already cropping up repeatedly, it's best to improve the framework and the workflows to reduce their occurrence systemically. If there are competing standards, choose one and migrate everything else over. Coding starts to feel a bit more like gardening where you're continuously pulling weeds and pruning wayward branches.
 
-## How does the code written in an agentic stack look different?
+## The New Codebase
 
 1. **More comprehensive**. Because generating common elements as part of a workflow is so reliable, more can be included for each _thing_ than before. For example, when a Tanstack query is generated, the agent can also create a mock implementation for the API request the query wraps around, and a test that uses both. This way the agent tests the caching behavior, and the mock API implementation can be reused reliably in frontend integration tests. In a non-agentic stack it's sorely tempting to skip some of those steps for the short-term gains, but since it comes "for free" with everything that's built, teams can depend on these steps never getting skipped.
 2. **Easier to debug**. Once you've figured out how a codebase is structured, you can be confident that the layering and separation of concerns are adhered to, and you don't need to "learn the local language" when jumping from one part of the codebase to another; you know where to look for what you're looking for. You know what tools you have and what's measured and tracked and how to access it. This is particularly important because, since you're spending less time working on the codebase directly, the implementation details and structural decisions are that much easier to forget by the time you work on that area again.
 
-## Why so certain?
+## Examples
 
 I am confident systems will move in this direction because I've been experimenting with and experiencing this approach more and more over the last year and been very happy with the results. I've built four products (three for businesses, one for personal use) with successive iterations of my own web stack and workflow tool, getting better results the more I invest. At this point, I can dependably generate high-quality, fully featured, and well structured codebases, without investing in a premium plan or managing a fleet of agents.
 
@@ -117,7 +118,7 @@ Part of product development has been iterating on these templates and workflows 
 
 Agents are good at some things but they are not reliable or consistent. You can't depend on them to find the right instructions at the right time and follow them consistently and through to the end; this is not because they're flawed, it's because it takes time and effort to get a complete picture and determine an answer that may or may not exist. However, when they are given just the information they need and not expected to police themselves at the same time and make the perfect call, they produce better results cheaper, faster, and much more consistently. Being provided a starting point, specific guidance right when it's needed, and checks to ensure directions were followed, set them up for success and leave them to do what they're useful for. And in the years they've been on the market, that fundamental quality has not changed. And with prices rising and the honeymoon phase ending, I think it's time to start really figuring out how to harness them better so they can more consistently and effectively boost productivity without breaking the bank or the environment.
 
-## How might I get there?
+## How to Get There
 
 If this picture of where things are headed resonates and you want to try it out yourself, here's where to start:
 
