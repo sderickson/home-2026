@@ -116,8 +116,6 @@ By using these workflows, I get to be confident in the following (and more):
 
 Part of product development has been iterating on these templates and workflows when I notice agents building things that cause product, security, and maintainability problems. It's been gratifying to implement solutions and know that they will be enacted consistently going forward.
 
-Agents are good at some things but they are not reliable or consistent. You can't depend on them to find the right instructions at the right time and follow them consistently and through to the end; this is not because they're flawed, it's because it takes time and effort to get a complete picture and determine an answer that may or may not exist. However, when they are given just the information they need and not expected to police themselves at the same time and make the perfect call, they produce better results cheaper, faster, and much more consistently. Being provided a starting point, specific guidance right when it's needed, and checks to ensure directions were followed, set them up for success and leave them to do what they're useful for. And in the years they've been on the market, that fundamental quality has not changed. And with prices rising and the honeymoon phase ending, I think it's time to start really figuring out how to harness them better so they can more consistently and effectively boost productivity without breaking the bank or the environment.
-
 ## How to Get There
 
 If this picture of where things are headed resonates and you want to try it out yourself, here's where to start:
