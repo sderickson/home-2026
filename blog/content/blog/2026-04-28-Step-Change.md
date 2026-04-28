@@ -72,8 +72,6 @@ A stack that prescribes that many solutions needs to be fully owned by the indiv
 
 I am confident systems will move in this direction because I've been experimenting with and experiencing this approach more and more over the last year and been very happy with the results. I've built four products (three for businesses, one for personal use) with successive iterations of my own web stack and workflow tool, getting better results the more I invest. At this point, I can dependably generate high-quality, fully featured, and well structured codebases, without investing in a premium plan or managing a fleet of agents.
 
-All that being said, my evidence limited in that it is anecdotal and from my own projects, not controlled studies. Part of why I'm writing this is to put the thesis out there — to see where it breaks down, find where the counterarguments are strongest, and make the case for building out stronger evidence.
-
 Here are some examples from a recipe app I built for myself, just to help illustrate what things look like:
 
 - Drizzle Queries
@@ -126,3 +124,5 @@ If this picture of where things are headed resonates and you want to try it out 
 1. Recognize and adjust for the limitations of generative AI as it is structured (or unstructured). Avoid using it for adding to debt-ridden codebases, instead use it and other tools to reduce the debt and build a better environment before using agents to add on top. Identify bad patterns that agents proliferate and dedicate effort to remove those bad patterns or gaps in best practices.
 2. If you're starting from scratch, make sure to set aside time to deliberately provide a good foundation to build on. I've seen codebases initially built without AI and with AI, and ironically, the codebases initially set up without AI are better for AI to work in, because of how opinionated and consistent they are. Start from a good place.
 3. Experiment with scripts for generating new code in a consistent and heavily guided, templated manner. You may already have scripts or CLI tools for generating boilerplate, incorporate chatbots into those scripts to make building new code happen automatically and quickly and dependably. This will help you get to, or start from, a good place for agents to do great work.
+
+Also, please feel free to reach out to [me](mailto:sderickson@gmail.com) to discuss! My evidence for all of this is anecdotal — four products, my own stack, my own observations. Part of why I'm writing this is to put the thesis in front of people who can push back on it, poke holes in it, or help build out harder evidence. If any of this resonates — or doesn't — I'd love to hear from you.
