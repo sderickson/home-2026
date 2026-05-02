@@ -33,6 +33,7 @@
     <!-- Mobile Navigation Drawer -->
     <v-navigation-drawer
       v-model="drawer"
+      v-if="mounted"
       disable-resize-watcher
       location="top"
       :width="drawer ? '285' : '0'"
