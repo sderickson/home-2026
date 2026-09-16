@@ -2,7 +2,6 @@ import { defineConfig } from "vitepress";
 import vuetify from "vite-plugin-vuetify";
 import path from "path";
 import { fileURLToPath } from "url";
-import { vitepressLeanJsRolldownCompat } from "@saflib/vitepress/lean-js-plugin";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -20,7 +19,6 @@ export default defineConfig({
           configFile: path.resolve(__dirname, "./vuetify-overrides.scss"),
         },
       }),
-      vitepressLeanJsRolldownCompat(),
     ],
   },
   head: [
