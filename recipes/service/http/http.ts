@@ -1,4 +1,9 @@
+import { createDevAnalyticsRouter } from "@saflib/analytics-http";
+import { isDevelopmentDeployment } from "@saflib/env";
+import { createDevErrorsRouter } from "@saflib/errors-http";
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
+import { createDevLogsRouter } from "@saflib/node-log-http";
+import { createMetricsRouter } from "@saflib/node-metrics-http";
 import express from "express";
 import {
   makeContext,
@@ -32,6 +37,14 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions = {})
       next();
     });
   });
+
+  // Development-only observability routes (gated on DEPLOYMENT_NAME=development).
+  if (isDevelopmentDeployment()) {
+    app.use(createDevErrorsRouter());
+    app.use(createDevLogsRouter());
+    app.use(createDevAnalyticsRouter());
+    app.use(createMetricsRouter());
+  }
 
   // BEGIN WORKFLOW AREA app-use-routes FOR express/add-handler
 

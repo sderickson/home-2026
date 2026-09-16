@@ -1,81 +1,30 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { setClientName } from "@saflib/links";
 import {
-  restoreDocumentLocationStub,
-  stubDocumentLocation,
-} from "@saflib/vitest/document-location-stub";
-import {
-  assertProfileLoaded,
-  getProfileLinkProps,
-  getPasswordLinkProps,
+  buildAccountHomeNavItems,
+  resolveAccountHomeNavActiveId,
 } from "./Home.logic.ts";
 
 beforeEach(() => {
-  stubDocumentLocation({
-    hostname: "test.docker.localhost",
-    host: "test.docker.localhost",
-    protocol: "http:",
-  });
   setClientName("account");
 });
 
-afterEach(() => {
-  restoreDocumentLocationStub();
-});
-
-const sessionWithIdentity = {
-  identity: {
-    id: "1",
-    traits: { email: "user@example.com" },
-  },
-};
-
-describe("assertProfileLoaded", () => {
-  it("throws when session is null", () => {
-    expect(() => assertProfileLoaded(null)).toThrow("Failed to load session");
-  });
-
-  it("throws when session is undefined", () => {
-    expect(() => assertProfileLoaded(undefined)).toThrow(
-      "Failed to load session",
-    );
-  });
-
-  it("throws when session has no identity", () => {
-    expect(() => assertProfileLoaded({})).toThrow("Failed to load session");
-  });
-
-  it("does not throw when session has identity", () => {
-    expect(() => assertProfileLoaded(sessionWithIdentity)).not.toThrow();
+describe("buildAccountHomeNavItems", () => {
+  it("includes profile and Kratos settings links", () => {
+    const ids = buildAccountHomeNavItems().map((item) => item.id);
+    expect(ids).toEqual(["profile", "email", "password", "mfa", "sessions"]);
   });
 });
 
-describe("getProfileLinkProps", () => {
-  it("returns link props for the profile page", () => {
-    const props = getProfileLinkProps();
-    expect(props).toHaveProperty("to");
-    expect((props as { to: string }).to).toBe("/profile");
+describe("resolveAccountHomeNavActiveId", () => {
+  it("matches the current path", () => {
+    const items = buildAccountHomeNavItems();
+    expect(resolveAccountHomeNavActiveId("/mfa", items)).toBe("mfa");
+    expect(resolveAccountHomeNavActiveId("/profile", items)).toBe("profile");
   });
 
-  it("returns an object suitable for v-bind (either to or href)", () => {
-    const props = getProfileLinkProps();
-    const hasTo = "to" in props && typeof props.to === "string";
-    const hasHref = "href" in props && typeof props.href === "string";
-    expect(hasTo || hasHref).toBe(true);
-  });
-});
-
-describe("getPasswordLinkProps", () => {
-  it("returns link props for the password page", () => {
-    const props = getPasswordLinkProps();
-    expect(props).toHaveProperty("to");
-    expect((props as { to: string }).to).toBe("/password");
-  });
-
-  it("returns an object suitable for v-bind (either to or href)", () => {
-    const props = getPasswordLinkProps();
-    const hasTo = "to" in props && typeof props.to === "string";
-    const hasHref = "href" in props && typeof props.href === "string";
-    expect(hasTo || hasHref).toBe(true);
+  it("returns undefined when nothing matches", () => {
+    const items = buildAccountHomeNavItems();
+    expect(resolveAccountHomeNavActiveId("/unknown", items)).toBeUndefined();
   });
 });

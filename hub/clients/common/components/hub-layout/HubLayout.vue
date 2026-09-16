@@ -84,6 +84,7 @@ import {
   appLinks,
   authLinks,
   adminLinks,
+  accountLinks,
 } from "@sderickson/hub-links";
 
 const props = withDefaults(
@@ -92,15 +93,17 @@ const props = withDefaults(
     isAdmin?: boolean;
     /** Passed to {@link ContentWidth} when the layout owns the container. */
     contentWidth?: ContentWidthVariant;
+    /** When true, skip the layout ContentWidth so the page owns its own shell. */
+    disableContainer?: boolean;
   }>(),
-  { contentWidth: "wide" },
+  { contentWidth: "wide", disableContainer: false },
 );
 
 const { t } = useReverseT();
 
 const route = useRoute();
 const disableContainer = computed(() => {
-  return route.meta?.disableContainer ?? false;
+  return props.disableContainer || route.meta?.disableContainer === true;
 });
 
 const drawer = ref(false);
@@ -111,7 +114,7 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: t(hub_layout.nav_app) },
-      { ...authLinks.newSettings, name: t(hub_layout.nav_account) },
+      { ...accountLinks.home, name: t(hub_layout.nav_account) },
       { ...authLinks.logout, name: t(hub_layout.nav_logout) },
       ...(props.isAdmin
         ? [{ ...adminLinks.admin, name: t(hub_layout.nav_admin) }]
@@ -133,8 +136,6 @@ function getNavHref(link: LinkWithName) {
     returnTo = linkToHref(appLinks.home, { domain: getHost() });
   } else if (link.path === "/logout") {
     returnTo = linkToHref(rootLinks.home, { domain: getHost() });
-  } else if (link.path === "/new-settings") {
-    returnTo = typeof window !== "undefined" ? window.location.href : undefined;
   }
   return linkToHrefWithHost(
     link,

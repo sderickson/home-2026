@@ -64,6 +64,7 @@ import {
   authLinks,
   rootLinks,
 } from "@sderickson/recipes-links";
+import { accountLinks as hubAccountLinks } from "@sderickson/hub-links";
 
 const props = defineProps<{
   loggedIn?: boolean;
@@ -87,7 +88,7 @@ const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: "App" },
-      { ...authLinks.newSettings, name: "Account" },
+      { ...hubAccountLinks.home, name: "Account" },
       ...(props.isAdmin ? [{ ...adminLinks.admin, name: "Admin" }] : []),
       {
         ...authLinks.logout,

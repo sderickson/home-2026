@@ -12,8 +12,13 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@saflib/analytics-http": "*",
+    "@saflib/env": "*",
+    "@saflib/errors-http": "*",
     "@saflib/express": "*",
     "@saflib/monorepo": "*",
+    "@saflib/node-log-http": "*",
+    "@saflib/node-metrics-http": "*",
     "@saflib/object-store": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-service-common": "*",

@@ -46,9 +46,18 @@ http://dev.docker.localhost {
 }
 
 # Recipes API
+# /health, /csp-violations, /dev/logs*, and other development observability
+# paths hit the monolith directly (skip forward_auth). Keep in sync with
+# saflib base `isPublicMonolithRoute` / `@public_monolith`.
 
 http://api.recipes.docker.localhost {
 	import cors recipes.docker.localhost
+	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
+	handle @public_monolith {
+		reverse_proxy monolith:3002 {
+			import reverse_proxy_common
+		}
+	}
 	import kratos-api-proxy monolith:3002
 }
 

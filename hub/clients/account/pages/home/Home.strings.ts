@@ -1,6 +1,5 @@
-export const home_page = {
-  title: "Account",
-  subtitle: "Manage your profile and password.",
-  link_profile: "Profile",
-  link_password: "Password",
+export const home = {
+  documentTitle: "Account",
+  title: "Account settings",
+  subtitle: "Manage your profile and sign-in security.",
 };

@@ -25,6 +25,7 @@
     "@saflib/ory-kratos-spa": "*",
     "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",
+    "@sderickson/hub-links": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-spec": "*",
     "@sderickson/recipes-sdk": "*"
