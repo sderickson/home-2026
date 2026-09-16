@@ -1,12 +1,14 @@
 import { recipes_common_strings } from "../common/strings.ts";
+import { home } from "./pages/home/Home.strings.ts";
+import { users } from "./pages/users/Users.strings.ts";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
-import { admin_page } from "./pages/admin/Admin.strings.ts";
 // END WORKFLOW AREA
 
 export const admin_strings = {
   ...recipes_common_strings,
+  home,
+  users,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
-  admin_page,
   // END WORKFLOW AREA
 };

@@ -10,6 +10,7 @@ import {
   recipesServiceStorage,
   type RecipesServiceContextOptions,
 } from "@sderickson/recipes-service-common";
+import { createAdminRouter } from "./routes/admin/index.ts";
 
 // BEGIN SORTED WORKFLOW AREA router-imports FOR express/add-handler
 import { createCollectionsRouter } from "./routes/collections/index.ts";
@@ -45,6 +46,8 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions = {})
     app.use(createDevAnalyticsRouter());
     app.use(createMetricsRouter());
   }
+
+  app.use(createAdminRouter());
 
   // BEGIN WORKFLOW AREA app-use-routes FOR express/add-handler
 

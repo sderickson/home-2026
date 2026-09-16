@@ -18,7 +18,10 @@
   },
   "dependencies": {
     "@saflib/analytics-vue": "*",
+    "@saflib/base-sdk": "*",
+    "@saflib/cron-vue": "*",
     "@saflib/errors-vue": "*",
+    "@saflib/jobs-vue": "*",
     "@saflib/links": "*",
     "@saflib/node-log-vue": "*",
     "@saflib/node-metrics-vue": "*",

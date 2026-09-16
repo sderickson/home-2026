@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@saflib/analytics-http": "*",
+    "@saflib/base-spec": "*",
     "@saflib/env": "*",
     "@saflib/errors-http": "*",
     "@saflib/express": "*",
@@ -23,7 +24,8 @@
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-service-common": "*",
     "@sderickson/recipes-spec": "*",
-    "@sderickson/recipes-unsplash": "*"
+    "@sderickson/recipes-unsplash": "*",
+    "http-errors": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"

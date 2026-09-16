@@ -1,7 +1,19 @@
 <template>
-  <v-container>
+  <ContentWidth>
     <h1>{{ t(strings.title) }}</h1>
-    <p>{{ t(strings.subtitle) }}</p>
+    <p>{{ t(strings.description) }}</p>
+
+    <div class="mt-4 text-body-2">
+      <p class="text-medium-emphasis mb-1">{{ t(strings.gitHashesHeading) }}</p>
+      <p class="mb-0">
+        <span class="text-medium-emphasis">{{ t(strings.gitHashRoot) }}:</span>
+        <code class="ms-1">{{ git_hashes.root }}</code>
+      </p>
+      <p class="mb-0">
+        <span class="text-medium-emphasis">{{ t(strings.gitHashSaflib) }}:</span>
+        <code class="ms-1">{{ git_hashes.saflib }}</code>
+      </p>
+    </div>
 
     <v-card class="mt-6" max-width="600">
       <v-card-title>{{ t(strings.seed_section_title) }}</v-card-title>
@@ -9,7 +21,9 @@
         <p>{{ t(strings.seed_section_description) }}</p>
         <div v-if="seeding" class="mt-3">
           <div class="d-flex align-center gap-2 mb-1">
-            <span class="text-body-2">{{ t(strings.progress_label) }}: {{ seedProgress }}%</span>
+            <span class="text-body-2"
+              >{{ t(strings.progress_label) }}: {{ seedProgress }}%</span
+            >
           </div>
           <v-progress-linear
             :model-value="seedProgress"
@@ -17,7 +31,10 @@
             height="8"
             rounded
           />
-          <p v-if="seedStatusMessage" class="text-body-2 text-medium-emphasis mt-2">
+          <p
+            v-if="seedStatusMessage"
+            class="text-body-2 text-medium-emphasis mt-2"
+          >
             {{ seedStatusMessage }}
           </p>
         </div>
@@ -36,22 +53,14 @@
     </v-card>
 
     <v-card class="mt-6" max-width="600">
-      <v-card-title>{{ t(strings.git_hashes_title) }}</v-card-title>
-      <v-card-text>
-        <p class="text-body-2">
-          Root: <code>{{ gitHashRoot }}</code><br />
-          Saflib: <code>{{ gitHashSaflib }}</code>
-        </p>
-      </v-card-text>
-    </v-card>
-
-    <v-card class="mt-6" max-width="600">
       <v-card-title>{{ t(strings.cleanup_section_title) }}</v-card-title>
       <v-card-text>
         <p>{{ t(strings.cleanup_section_description) }}</p>
         <div v-if="cleaning" class="mt-3">
           <div class="d-flex align-center gap-2 mb-1">
-            <span class="text-body-2">{{ t(strings.progress_label) }}: {{ cleanupProgress }}%</span>
+            <span class="text-body-2"
+              >{{ t(strings.progress_label) }}: {{ cleanupProgress }}%</span
+            >
           </div>
           <v-progress-linear
             :model-value="cleanupProgress"
@@ -59,7 +68,10 @@
             height="8"
             rounded
           />
-          <p v-if="cleanupStatusMessage" class="text-body-2 text-medium-emphasis mt-2">
+          <p
+            v-if="cleanupStatusMessage"
+            class="text-body-2 text-medium-emphasis mt-2"
+          >
             {{ cleanupStatusMessage }}
           </p>
         </div>
@@ -74,22 +86,30 @@
         >
           {{ t(strings.cleanup_button) }}
         </v-btn>
-        <p v-if="cleanupMessage" class="ml-4 text-body-2">{{ cleanupMessage }}</p>
+        <p v-if="cleanupMessage" class="ml-4 text-body-2">
+          {{ cleanupMessage }}
+        </p>
       </v-card-actions>
     </v-card>
-  </v-container>
+
+    <div class="mt-4">
+      <ErrorSmokeWidgets />
+    </div>
+  </ContentWidth>
 </template>
 
 <script setup lang="ts">
-import { admin_page as strings } from "./Admin.strings.ts";
-import { useAdminLoader } from "./Admin.loader.ts";
-import { useReverseT } from "@sderickson/recipes-admin-spa/i18n";
+import ErrorSmokeWidgets from "@saflib/errors-vue/pages/ErrorSmokeWidgets.vue";
 import { getGitHashes } from "@saflib/vue";
+import { ContentWidth } from "@saflib/vue/components";
+import { home as strings } from "./Home.strings.ts";
+import { useHomeLoader } from "./Home.loader.ts";
+import { useReverseT } from "@sderickson/recipes-admin-spa/i18n";
 import { useSeedData } from "@sderickson/recipes-clients-common/seed";
 import { useCleanupSeedData } from "./useCleanupSeedData.ts";
 
 const { t } = useReverseT();
-useAdminLoader();
+useHomeLoader();
 
 const {
   runSeed,
@@ -98,7 +118,7 @@ const {
   progress: seedProgress,
   statusMessage: seedStatusMessage,
 } = useSeedData({
-  getSuccessMessage: () => t(strings.seed_success),
+  getSuccessMessage: () => t(strings.seed_button_success),
 });
 
 const {
@@ -112,5 +132,5 @@ const {
   getNotFoundMessage: () => t(strings.cleanup_not_found),
 });
 
-const { root: gitHashRoot, saflib: gitHashSaflib } = getGitHashes();
+const git_hashes = getGitHashes();
 </script>
