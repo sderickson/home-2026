@@ -5,6 +5,8 @@ export { generateShortId } from "@saflib/drizzle";
 import { recipesDbManager } from "./instances.ts";
 export const recipesDb = recipesDbManager.publicInterface();
 
+export { fixTextTimestamps } from "./startup/fix-text-timestamps.ts";
+
 // BEGIN SORTED WORKFLOW AREA query-exports FOR drizzle/add-query
 export * from "./queries/collection-member/index.ts";
 export * from "./queries/collection/index.ts";
