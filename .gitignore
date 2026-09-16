@@ -22,8 +22,8 @@ Dockerfile
 *.sln
 *.sw?
 
-# Logs
-logs
+# Logs (repo-root only — do not ignore **/pages/logs admin routes)
+/logs
 *.log
 npm-debug.log*
 yarn-debug.log*
