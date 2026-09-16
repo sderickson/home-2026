@@ -9,12 +9,14 @@
   },
   "dependencies": {
     "@saflib/links": "*",
+    "@saflib/sdk": "*",
     "@saflib/vite": "*",
     "@saflib/vitepress": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-links": "*",
     "@sderickson/recipes-clients-common": "*",
     "@sderickson/recipes-links": "*",
+    "@tanstack/vue-query": "*",
     "sass": "^1.93.2"
   }
 }
