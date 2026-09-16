@@ -9,6 +9,8 @@ services:
     build:
       context: ../..
       dockerfile: ./recipes/dev/Dockerfile
+    env_file:
+      - ./env.caddy
     ports:
       - 80:80
     volumes:

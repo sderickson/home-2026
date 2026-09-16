@@ -39,22 +39,60 @@ http://caddy:2020 {
 	}
 }
 
-# CORS: add response headers and handle OPTIONS preflight in Caddy so the backend never sees OPTIONS.
-# args[0]: allowed domain (e.g. recipes.docker.localhost). When provided, call as: import cors {domain}.
-# Origin is reflected when present; restrict to domain in deploy configs if needed.
+# Edge headers for SPAs. Production CSP is stricter than recipes/dev (no unsafe-eval).
+(security-headers) {
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "unsafe-none"
+		Cross-Origin-Resource-Policy "same-site"
+		Content-Security-Policy "default-src 'self'; script-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://static.cloudflareinsights.com {$CSP_SCRIPT_SRC_EXTRA}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' {$CSP_CONNECT_SRC}; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'self' blob:; worker-src 'self' blob:; report-uri {$CSP_REPORT_URI}"
+		-Server
+	}
+}
+
+(security-headers-marketing) {
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://us-assets.i.posthog.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' {$CSP_CONNECT_SRC}; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'self' blob:; worker-src 'self' blob:"
+		-Server
+	}
+}
+
+(transport-security) {
+	header {
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+	@https tls
+	@https_cf header X-Forwarded-Proto https
+	header @https >Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	header @https_cf >Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}
+
+# CORS: args[0] is an RE2 pattern matching allowed Origin values (full origins).
+# Keep DNS `DOMAIN` separate — import as: import cors {$CORS_ORIGIN_ALLOWLIST}.
 (cors) {
-	@has_origin header Origin *
+	@cors_origin_ok header_regexp Origin {args[0]}
 	@options method OPTIONS
 	handle @options {
-		header {
-			Vary Origin
-			Cross-Origin-Resource-Policy "cross-origin"
-			Access-Control-Allow-Origin "{http.request.header.Origin}"
-			Access-Control-Allow-Credentials "true"
-			Access-Control-Expose-Headers "Authorization"
-			Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-			Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept"
-			Access-Control-Max-Age "600"
+		handle @cors_origin_ok {
+			header {
+				Vary Origin
+				Cross-Origin-Resource-Policy "cross-origin"
+				Access-Control-Allow-Origin "{http.request.header.Origin}"
+				Access-Control-Allow-Credentials "true"
+				Access-Control-Expose-Headers "Authorization"
+				Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+				Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Last-Event-ID"
+				Access-Control-Max-Age "600"
+			}
+			respond 204
 		}
 		respond 204
 	}
@@ -64,14 +102,13 @@ http://caddy:2020 {
 		Access-Control-Allow-Credentials "true"
 		Access-Control-Expose-Headers "Authorization"
 	}
-	header @has_origin Access-Control-Allow-Origin "{http.request.header.Origin}"
+	header @cors_origin_ok Access-Control-Allow-Origin "{http.request.header.Origin}"
 }
 
 # Used for static assets accessible only to admins.
 # With "browse" enabled, you can go to the subdomain root path
 # and explore the contents.
 (admin-file-server) {
-	import cors
 	encode gzip
 	root * /srv{args[1]}
 	forward_auth {args[0]} {

@@ -1,7 +1,7 @@
 import { createDevAnalyticsRouter } from "@saflib/analytics-http";
 import { createCronRouter } from "@saflib/cron-http";
 import { isDevelopmentDeployment } from "@saflib/env";
-import { createDevErrorsRouter } from "@saflib/errors-http";
+import { createDevErrorsRouter, createErrorsRouter } from "@saflib/errors-http";
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
 import { createJobsRouter } from "@saflib/jobs-http";
 import { createDevLogsRouter } from "@saflib/node-log-http";
@@ -45,6 +45,9 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions = {})
       next();
     });
   });
+
+  // Always-on error chrome (CSP ingest + admin test-error).
+  app.use(createErrorsRouter());
 
   // Development-only observability routes (gated on DEPLOYMENT_NAME=development).
   if (isDevelopmentDeployment()) {

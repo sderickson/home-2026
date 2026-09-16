@@ -6,7 +6,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
-    "test:e2e": "npm run test:e2e --workspaces --if-present",
+    "test:e2e": "npm run test:e2e -w @sderickson/hub-auth-spa -w @sderickson/recipes-app-spa -w @sderickson/recipes-security --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
