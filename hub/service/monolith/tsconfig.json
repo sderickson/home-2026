@@ -1,4 +1,66 @@
 {
-  "extends": "@saflib/monorepo/tsconfig.json"
+  "extends": "@saflib/monorepo/tsconfig.json",
+  "references": [
+    {
+      "path": "../../../recipes/service/common"
+    },
+    {
+      "path": "../../../recipes/service/recipes-service"
+    },
+    {
+      "path": "../../../saflib/env"
+    },
+    {
+      "path": "../../../saflib/monorepo"
+    },
+    {
+      "path": "../../../saflib/node"
+    },
+    {
+      "path": "../../../saflib/ory-kratos/ory-kratos-http"
+    },
+    {
+      "path": "../../../saflib/vendors/loki"
+    },
+    {
+      "path": "../../../saflib/vendors/sentry-node"
+    },
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../http"
+    },
+    {
+      "path": "../hub-service"
+    },
+    {
+      "path": "../kratos-courier"
+    }
+  ],
+  "exclude": [
+    "node_modules",
+    "dist/types",
+    "e2e",
+    "playwright-report",
+    "test-results",
+    "workflows/template/**",
+    "workflows/templates/**",
+    "**/workflows/template/**",
+    "**/workflows/templates/**"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.json"
+  ],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist/types",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  }
 }
-

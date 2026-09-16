@@ -10,59 +10,77 @@
 }
 
 (api-proxy-kratos) {
+	import transport-security
 	import kratos-api-proxy {args[0]}
 }
 
 # Blog client subdomains
 
 {$PROTOCOL}://blog.{$DOMAIN} {
+	import security-headers-marketing
 	import static-site /blog-client
 }
 
 # Hub client subdomains
 
 {$PROTOCOL}://{$DOMAIN} {
+	import security-headers-marketing
 	import hub-spa /root/index.html
 }
 
 {$PROTOCOL}://auth.{$DOMAIN} {
+	import security-headers
 	import hub-spa /auth/index.html
 }
 
 {$PROTOCOL}://app.{$DOMAIN} {
+	import security-headers
 	import hub-spa /app/index.html
 }
 
 {$PROTOCOL}://admin.{$DOMAIN} {
+	import security-headers
 	import hub-spa /admin/index.html
 }
 
 {$PROTOCOL}://account.{$DOMAIN} {
+	import security-headers
 	import hub-spa /account/index.html
 }
 
 # Recipes client subdomains
 
 {$PROTOCOL}://recipes.{$DOMAIN} {
+	import security-headers-marketing
 	import static-site /recipes-static-root
 }
 
 {$PROTOCOL}://app.recipes.{$DOMAIN} {
+	import security-headers
 	import recipes-spa /app.recipes/index.html
 }
 
 {$PROTOCOL}://admin.recipes.{$DOMAIN} {
+	import security-headers
 	import recipes-spa /admin.recipes/index.html
 }
 
 {$PROTOCOL}://account.recipes.{$DOMAIN} {
+	import security-headers
 	import recipes-spa /account.recipes/index.html
 }
 
 # API subdomains (forward_auth to Kratos whoami, then proxy to product service)
 
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
-	import cors recipes.{$DOMAIN}
+	import transport-security
+	import cors {$CORS_ORIGIN_ALLOWLIST}
+	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
+	handle @public_monolith {
+		reverse_proxy {$RECIPES_SERVICE_HTTP_HOST} {
+			import reverse_proxy_common
+		}
+	}
 	import kratos-api-proxy {$RECIPES_SERVICE_HTTP_HOST}
 }
 
@@ -73,7 +91,8 @@
 # Kratos public API
 
 {$PROTOCOL}://kratos.{$DOMAIN} {
-	import cors {$DOMAIN}
+	import transport-security
+	import cors {$CORS_ORIGIN_ALLOWLIST}
 	reverse_proxy kratos:4433
 }
 

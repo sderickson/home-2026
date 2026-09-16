@@ -6,7 +6,7 @@ const monorepoRoot = path.resolve(import.meta.dirname, "../../..");
 
 export default makeConfig({
   plugins: [htmlHeaderPlugin()],
-  vuetifyOverrides: "../build/overrides.scss",
+  vuetifySettings: "../build/overrides.scss",
   monorepoRoot,
   useSubdomainProxy: false,
   appType: "spa",

@@ -5,7 +5,7 @@ import type {
   RecoveryCodeValidPayload,
   RecoveryValidPayload,
   VerificationCodeValidPayload,
-} from "@saflib/ory-kratos";
+} from "@saflib/ory-kratos-http";
 
 async function onVerificationCodeValid(payload: VerificationCodeValidPayload) {
   const { log } = getSafReporters();

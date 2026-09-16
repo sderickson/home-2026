@@ -1,6 +1,6 @@
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
-import { isDemoMode } from "@sderickson/recipes-clients-common";
+import { isDemoMode, vuetifyConfig } from "@sderickson/recipes-clients-common";
 import "vuetify/styles";
 import Spa from "./AppSpa.vue";
 import { createAppRouter } from "./router.ts";
@@ -41,6 +41,7 @@ export const main = async () => {
   }
   createVueApp(Spa, {
     router,
+    vuetifyConfig,
     i18nMessages: {
       ...app_strings,
     },

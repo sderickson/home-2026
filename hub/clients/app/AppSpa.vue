@@ -5,11 +5,10 @@ import { useKratosSession } from "@saflib/ory-kratos-sdk";
 
 const sessionQuery = useKratosSession();
 const loggedIn = computed(() => !!sessionQuery.data.value?.identity);
-const isAdmin = computed(() => false);
 </script>
 
 <template>
-  <HubLayout :logged-in="loggedIn" :is-admin="isAdmin">
+  <HubLayout :logged-in="loggedIn">
     <router-view />
   </HubLayout>
 </template>

@@ -1,10 +1,16 @@
+name: sderickson-recipes-dev
+
 services:
   caddy:
     depends_on:
       - recipes-clients
+      - site
+    image: sderickson-recipes-dev-caddy:latest
     build:
       context: ../..
       dockerfile: ./recipes/dev/Dockerfile
+    env_file:
+      - ./env.caddy
     ports:
       - 80:80
     volumes:
@@ -24,36 +30,46 @@ services:
       - PROTOCOL=${PROTOCOL}
       - SERVICE_SUBDOMAINS=api.recipes
       - TZ=${TZ}
+      - ADMIN_EMAILS=${ADMIN_EMAILS}
     volumes:
       - ../../recipes/clients/:/app/recipes/clients/
       - ../../saflib/:/app/saflib/
       - ../../recipes/service/sdk/:/app/recipes/service/sdk/
+      - recipes_clients_node_modules:/app/node_modules
     command: npm run dev
 
   monolith:
-    image: ghcr.io/sderickson/sderickson-recipes-monolith:latest
+    image: sderickson-recipes-monolith:latest
     volumes:
       - ../../recipes/service/db/data:/app/recipes/service/db/data
       - ../../recipes/service/cron/data:/app/recipes/service/cron/data
+      - ../../recipes/service/jobs/data:/app/recipes/service/jobs/data
       - ../../recipes/service/common/data/recipe-files:/app/recipes/service/common/data/recipe-files
-      - ../../hub/service/identity/data:/app/hub/service/identity/data
-      - identity_http_cache:/app/saflib/identity/identity-http/data
-
+      - monolith_node_modules:/app/node_modules
     build:
       context: ../..
       dockerfile: recipes/service/monolith/Dockerfile
-
     env_file:
       - ./env.dev
       - ./.env
 
   kratos-migrate:
     image: oryd/kratos:v26.2.0
-    command: migrate sql -e --yes
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /usr/bin/kratos migrate sql -e --yes > /tmp/kratos-migrate.log 2>&1
+        status=$$?
+        if [ $$status -ne 0 ]; then
+          cat /tmp/kratos-migrate.log >&2
+          exit $$status
+        fi
+        echo "kratos-migrate: ok"
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc&_journal_mode=WAL&_busy_timeout=5000
+      - LOG_LEVEL=warn
     volumes:
-      # Persists SQLite (identities, sessions, flows) across container restarts
+      - kratos_home:/home/ory
       - ./kratos/data:/var/lib/sqlite
       - ./kratos:/etc/config/kratos
 
@@ -64,14 +80,43 @@ services:
         condition: service_completed_successfully
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc&_journal_mode=WAL&_busy_timeout=5000
     env_file:
       - ./env.kratos.config
     volumes:
+      - kratos_home:/home/ory
       - ./kratos/data:/var/lib/sqlite
       - ./kratos:/etc/config/kratos
+
+  site:
+    image: saflib-dev-site:latest
+    build:
+      context: ../..
+      dockerfile: saflib/dev-site/dev-site-docker/Dockerfile
+    ports:
+      - "3099:3099"
+    environment:
+      NODE_ENV: production
+      TZ: UTC
+      DEPLOYMENT_NAME: development
+      DOMAIN: localhost
+      PROTOCOL: http
+      CLIENT_SUBDOMAINS: ""
+      ADMIN_EMAILS: "sderickson@gmail.com"
+      ALLOW_DB_CREATION: "true"
+      DEV_SITE_SERVICE_HTTP_HOST: "0.0.0.0:3099"
+      DEV_SITE_REPO_ROOT: /repo
+      DEV_SITE_PRODUCT_ROOT: ${DEV_SITE_PRODUCT_ROOT:-recipes}
+      DEV_SITE_MAIN_REF: main
+      DEV_SITE_DB_PATH: /data/dev-site.sqlite
+      DEV_SITE_GITHUB_REPO: sderickson/home-2026
+    volumes:
+      - ${DEV_SITE_REPO_MOUNT:-../..}:/repo:ro
+      - ./dev-site-data:/data
 
 volumes:
   caddy_data:
   caddy_config:
-  identity_http_cache:
+  recipes_clients_node_modules:
+  monolith_node_modules:
+  kratos_home:

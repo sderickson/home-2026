@@ -11,7 +11,6 @@ import { useKratosSession } from "@saflib/ory-kratos-sdk";
 const queryClient = useQueryClient();
 const kratosSessionQuery = useKratosSession();
 const loggedIn = computed(() => !!kratosSessionQuery.data.value?.identity);
-const isAdmin = computed(() => false);
 const { runSeed } = useSeedData({ getSuccessMessage: () => "Demo data ready" });
 onMounted(async () => {
   if (!isDemoMode()) return;
@@ -24,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DynamicRecipesLayout :logged-in="loggedIn" :is-admin="isAdmin">
+  <DynamicRecipesLayout :logged-in="loggedIn">
     <router-view />
   </DynamicRecipesLayout>
 </template>

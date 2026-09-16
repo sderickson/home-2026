@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@saflib/ory-kratos-sdk": "*",
+    "@saflib/ory-kratos-spa": "*",
     "@saflib/links": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",

@@ -3,55 +3,96 @@ import common.Caddyfile
 # Recipes client subdomains → vite dev server
 
 http://recipes.docker.localhost {
+	import security-headers
 	import spa /recipes-static-root /index.html
 }
 
 http://app.recipes.docker.localhost {
-	reverse_proxy recipes-clients:5173
+	import security-headers
+	reverse_proxy recipes-clients:5173 {
+		import reverse_proxy_common
+	}
 }
 
 http://admin.recipes.docker.localhost {
-	reverse_proxy recipes-clients:5173
+	import security-headers
+	reverse_proxy recipes-clients:5173 {
+		import reverse_proxy_common
+	}
 }
 
 http://account.recipes.docker.localhost {
-	reverse_proxy recipes-clients:5173
+	import security-headers
+	reverse_proxy recipes-clients:5173 {
+		import reverse_proxy_common
+	}
 }
 
 # Hub client subdomains → static builds served by caddy
 
 http://docker.localhost {
+	import security-headers
 	import spa /hub-clients /root/index.html
 }
 
 http://app.docker.localhost {
+	import security-headers
 	import spa /hub-clients /app/index.html
 }
 
 http://auth.docker.localhost {
+	import security-headers
 	import spa /hub-clients /auth/index.html
 }
 
 http://account.docker.localhost {
+	import security-headers
 	import spa /hub-clients /account/index.html
 }
 
 http://admin.docker.localhost {
+	import security-headers
 	import spa /hub-clients /admin/index.html
 }
 
-# Recipes API
+# Built (static) saflib dev-site: Express API + SPA on one port.
+http://dev.docker.localhost {
+	import security-headers
+	reverse_proxy site:3099 {
+		import reverse_proxy_common
+	}
+}
 
-http://api.recipes.docker.localhost {
-	import cors recipes.docker.localhost
+# Recipes API (+ api.docker.localhost alias)
+# Vue DevTools / node-log-sdk call getBaseUrl("api") → api.<root-domain>, while the
+# product SDK uses api.recipes. Serve both. Public paths skip forward_auth (match base).
+
+http://api.recipes.docker.localhost, http://api.docker.localhost {
+	import transport-security
+	import cors {$DOMAIN}
+	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
+	handle @public_monolith {
+		reverse_proxy monolith:3002 {
+			import reverse_proxy_common
+		}
+	}
 	import kratos-api-proxy monolith:3002
 }
 
 # Kratos public API
 
 http://kratos.docker.localhost {
-	import cors docker.localhost
-	reverse_proxy kratos:4433
+	import transport-security
+	import cors {$DOMAIN}
+	reverse_proxy kratos:4433 {
+		import reverse_proxy_common
+	}
+}
+
+# Playwright security suite: probe host outside the product cookie/eTLD+1 surface.
+http://evil.localhost {
+	root * /etc/caddy/evil
+	file_server
 }
 
 # Azurite

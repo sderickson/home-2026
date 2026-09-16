@@ -1,6 +1,6 @@
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeVersionNotFoundError } from "../../errors.ts";
-import type { ReturnsError } from "@saflib/monorepo";
+import type { ReturnsError } from "@saflib/utils";
 
 import { queryWrapper } from "@saflib/drizzle";
 import type { DbKey } from "@saflib/drizzle";
