@@ -21,11 +21,14 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "@saflib/ory-kratos-sdk": "*",
+    "@saflib/ory-kratos-spa": "*",
+    "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",
+    "@sderickson/hub-links": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-spec": "*",
-    "@sderickson/recipes-sdk": "*",
-    "@tanstack/vue-query": "^5.85.9",
-    "@sentry/vue": "^10.21.0"
+    "@sderickson/recipes-sdk": "*"
   }
 }

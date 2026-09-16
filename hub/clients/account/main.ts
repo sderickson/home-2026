@@ -1,5 +1,6 @@
 import { createVueApp } from "@saflib/vue";
 import { setClientName } from "@saflib/links";
+import { vuetifyConfig } from "@sderickson/hub-clients-common";
 import Spa from "./AccountSpa.vue";
 import "vuetify/styles";
 import { createAccountRouter } from "./router.ts";
@@ -10,6 +11,7 @@ export const main = () => {
   const router = createAccountRouter();
   createVueApp(Spa, {
     router,
+    vuetifyConfig,
     i18nMessages: {
       ...account_strings,
     },

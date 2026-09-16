@@ -19,8 +19,7 @@
     "dev-docker": "npm exec saf-docker generate && docker compose up --build"
   },
   "devDependencies": {
-    "@saflib/vitest": "*",
-    "@testing-library/vue": "^8.1.0"
+    "@saflib/vitest": "*"
   },
   "dependencies": {
     "@saflib/ory-kratos-sdk": "*",
@@ -31,7 +30,7 @@
     "@saflib/vue": "*",
     "@sderickson/recipes-spec": "*",
     "marked": "^18.0.0",
-    "msw": "^2.11.3"
+    "msw": "^2.0.0"
   },
   "msw": {
     "workerDirectory": [

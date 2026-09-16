@@ -1,1 +1,5 @@
-// keep stateless functions in this folder, and re-export them from here
+export {
+  getConfiguredAdminEmails,
+  isSiteAdminEmail,
+  parseAdminEmails,
+} from "./site-admin.logic.ts";

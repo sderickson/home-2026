@@ -17,8 +17,15 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@saflib/admin": "*",
+    "@saflib/analytics-vue": "*",
+    "@saflib/base-sdk": "*",
+    "@saflib/cron-vue": "*",
+    "@saflib/errors-vue": "*",
+    "@saflib/jobs-vue": "*",
     "@saflib/links": "*",
+    "@saflib/node-log-vue": "*",
+    "@saflib/node-metrics-vue": "*",
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-clients-common": "*",
     "@sderickson/hub-links": "*",

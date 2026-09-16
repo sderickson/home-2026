@@ -1,1 +1,2 @@
-// re-export assets here
+// placeholder barrel
+export {};

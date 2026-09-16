@@ -35,7 +35,7 @@
       </p>
     </v-alert>
   </v-container>
-  <AsyncPageError v-else :error="error" :message="errorMessage" />
+  <AsyncPageError v-else :error="error" />
 </template>
 
 <script setup lang="ts">
@@ -51,7 +51,7 @@ import {
 
 const props = defineProps<{
   error?: unknown;
-  errorMessage?: string;
+  message?: string;
 }>();
 
 const { t, lookupTKey } = useReverseT();

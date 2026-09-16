@@ -1,4 +1,4 @@
-import type { ReturnsError } from "@saflib/monorepo";
+import type { ReturnsError } from "@saflib/utils";
 import { request } from "../client.ts";
 import type { UnsplashClientError } from "../client.ts";
 import { isMocked } from "../client.ts";

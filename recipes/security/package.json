@@ -1,0 +1,20 @@
+{
+  "name": "@sderickson/recipes-security",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:canary": "playwright test --config test/playwright.canary.config.ts",
+    "test:e2e:ui": "playwright test --ui",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@saflib/ory-kratos-spa": "*",
+    "@saflib/playwright": "*",
+    "@saflib/security": "*"
+  },
+  "devDependencies": {
+    "@saflib/monorepo": "*"
+  },
+  "sideEffects": false
+}

@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "@saflib/env": "*",
-    "@saflib/monorepo": "*"
+    "@saflib/monorepo": "*",
+    "@saflib/secret-store": "*",
+    "@saflib/utils": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"

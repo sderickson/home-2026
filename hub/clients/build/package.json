@@ -15,8 +15,7 @@
     "@sderickson/hub-admin-spa": "*",
     "@sderickson/hub-app-spa": "*",
     "@sderickson/hub-auth-spa": "*",
-    "@sderickson/hub-root-spa": "*",
-    "@vue/tsconfig": "^0.9.0"
+    "@sderickson/hub-root-spa": "*"
   },
   "workspaces": [
     "clients/*"

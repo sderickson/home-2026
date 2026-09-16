@@ -17,9 +17,12 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "@saflib/ory-kratos-sdk": "*",
+    "@saflib/ory-kratos-spa": "*",
+    "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-links": "*",
-    "@sderickson/hub-spec": "*",
-    "@sentry/vue": "^10.21.0"
+    "@sderickson/hub-spec": "*"
   }
 }

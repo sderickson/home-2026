@@ -7,12 +7,17 @@
   "exports": {},
   "dependencies": {
     "@saflib/env": "*",
+    "@saflib/errors-service": "*",
     "@saflib/monorepo": "*",
-    "@saflib/ory-kratos": "*",
-    "@saflib/sentry": "*",
+    "@saflib/node": "*",
+    "@saflib/ory-kratos-http": "*",
+    "@saflib/vendors-loki": "*",
+    "@saflib/vendors-sentry-node": "*",
     "@sderickson/hub-kratos-courier": "*",
+    "@sderickson/recipes-cron": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
+    "@sderickson/recipes-jobs": "*",
     "@sderickson/recipes-service": "*",
     "@sderickson/recipes-service-common": "*"
   }

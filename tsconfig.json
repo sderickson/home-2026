@@ -1,3 +1,92 @@
 {
-  "extends": "./saflib/tsconfig.json"
+  "files": [],
+  "compilerOptions": {
+    "composite": true
+  },
+  "references": [
+    {
+      "path": "./hub/clients/account"
+    },
+    {
+      "path": "./hub/clients/admin"
+    },
+    {
+      "path": "./hub/clients/app"
+    },
+    {
+      "path": "./hub/clients/auth"
+    },
+    {
+      "path": "./hub/clients/common"
+    },
+    {
+      "path": "./hub/clients/root"
+    },
+    {
+      "path": "./hub/service/common"
+    },
+    {
+      "path": "./hub/service/db"
+    },
+    {
+      "path": "./hub/service/http"
+    },
+    {
+      "path": "./hub/service/hub-service"
+    },
+    {
+      "path": "./hub/service/kratos-courier"
+    },
+    {
+      "path": "./hub/service/monolith"
+    },
+    {
+      "path": "./hub/service/sdk"
+    },
+    {
+      "path": "./hub/service/spec"
+    },
+    {
+      "path": "./recipes/clients/account"
+    },
+    {
+      "path": "./recipes/clients/admin"
+    },
+    {
+      "path": "./recipes/clients/app"
+    },
+    {
+      "path": "./recipes/clients/common"
+    },
+    {
+      "path": "./recipes/plans"
+    },
+    {
+      "path": "./recipes/service/common"
+    },
+    {
+      "path": "./recipes/service/db"
+    },
+    {
+      "path": "./recipes/service/http"
+    },
+    {
+      "path": "./recipes/service/integrations/unsplash"
+    },
+    {
+      "path": "./recipes/service/monolith"
+    },
+    {
+      "path": "./recipes/service/recipes-service"
+    },
+    {
+      "path": "./recipes/service/sdk"
+    },
+    {
+      "path": "./recipes/service/spec"
+    },
+    {
+      "path": "./saflib"
+    }
+  ]
 }

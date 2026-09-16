@@ -1,14 +1,18 @@
-// import { accountSdkStrings } from "@saflib/account-sdk/strings";
 import { hub_common_strings } from "../common/strings.ts";
+import { auth_strings as kratos_auth_strings } from "@saflib/ory-kratos-spa/strings";
+import { home } from "./pages/home/Home.strings.ts";
+import { home_nav_list } from "./pages/home/HomeNavList.strings.ts";
+import { account_settings_section } from "./pages/account-settings/AccountSettingsSection.strings.ts";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
-import { home_page } from "./pages/home/Home.strings.ts";
 // END WORKFLOW AREA
 
 export const account_strings = {
   ...hub_common_strings,
-  // ...accountSdkStrings,
+  ...kratos_auth_strings,
+  home,
+  home_nav_list,
+  account_settings_section,
   // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
-  home_page,
   // END WORKFLOW AREA
 };

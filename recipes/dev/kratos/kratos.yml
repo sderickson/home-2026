@@ -47,6 +47,10 @@ selfservice:
   methods:
     password:
       enabled: true
+    totp:
+      enabled: true
+      config:
+        issuer: Recipes (Dev)
 
 session:
   cookie:

@@ -1,3 +1,60 @@
 {
-  "extends": "@saflib/monorepo/tsconfig.json"
+  "extends": "@saflib/monorepo/tsconfig.json",
+  "references": [
+    {
+      "path": "../../../saflib/cron/cron-http"
+    },
+    {
+      "path": "../../../saflib/express"
+    },
+    {
+      "path": "../../../saflib/jobs/jobs-http"
+    },
+    {
+      "path": "../../../saflib/monorepo"
+    },
+    {
+      "path": "../../../saflib/object-store"
+    },
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../cron"
+    },
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../integrations/unsplash"
+    },
+    {
+      "path": "../jobs"
+    },
+    {
+      "path": "../spec"
+    }
+  ],
+  "exclude": [
+    "node_modules",
+    "dist/types",
+    "e2e",
+    "playwright-report",
+    "test-results",
+    "workflows/template/**",
+    "workflows/templates/**",
+    "**/workflows/template/**",
+    "**/workflows/templates/**"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.json"
+  ],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist/types",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  }
 }

@@ -1,11 +1,17 @@
-import { index, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { Expect, Equal } from "@saflib/drizzle";
-import { fileMetadataColumns, generateShortId, type FileMetadataFields } from "@saflib/drizzle";
+import {
+  fileMetadataColumns,
+  generateShortId,
+  type FileMetadataFields,
+} from "@saflib/drizzle";
 import { recipe } from "./recipe.ts";
 
 export interface RecipeFileEntity extends FileMetadataFields {
   id: string;
   recipe_id: string;
+  created_at: Date;
+  updated_at: Date;
   uploaded_by: string | null;
   unsplash_user: Record<string, unknown> | null;
 }
@@ -20,9 +26,16 @@ export const recipeFile = sqliteTable(
       .notNull()
       .references(() => recipe.id),
     ...fileMetadataColumns,
+    created_at: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updated_at: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
     uploaded_by: text("uploaded_by"),
-    unsplash_user: text("unsplash_user", { mode: "json" })
-      .$type<Record<string, unknown>>(),
+    unsplash_user: text("unsplash_user", { mode: "json" }).$type<
+      Record<string, unknown>
+    >(),
   },
   (table) => [index("recipe_file_recipe_id_idx").on(table.recipe_id)],
 );

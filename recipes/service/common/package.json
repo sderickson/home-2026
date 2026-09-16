@@ -18,6 +18,8 @@
     "@saflib/node": "*",
     "@saflib/object-store": "*",
     "@saflib/secret-store": "*",
+    "@saflib/vendors-brevo": "*",
+    "@saflib/vendors-infisical": "*",
     "@sderickson/recipes-unsplash": "*"
   }
 }

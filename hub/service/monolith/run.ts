@@ -1,14 +1,10 @@
 import { startHubService } from "./index.ts";
-import {
-  addLokiTransport,
-  collectSystemMetrics,
-  getGitHashes,
-} from "@saflib/node";
-import { setServiceName } from "@saflib/node";
+import { collectSystemMetrics, getGitHashes, setServiceName } from "@saflib/node";
+import { addLokiTransport } from "@saflib/vendors-loki";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
-import { initSentry } from "@saflib/sentry";
-import { startOryKratosService } from "@saflib/ory-kratos";
+import { initSentry } from "@saflib/vendors-sentry-node";
+import { startOryKratosService } from "@saflib/ory-kratos-http";
 import { callbacks } from "@sderickson/hub-kratos-courier";
 import { startRecipesService } from "@sderickson/recipes-service";
 import { initializeDependencies } from "@sderickson/recipes-service-common";
