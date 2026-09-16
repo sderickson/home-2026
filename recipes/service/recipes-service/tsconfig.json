@@ -5,6 +5,12 @@
       "path": "../../../saflib/env"
     },
     {
+      "path": "../../../saflib/express"
+    },
+    {
+      "path": "../../../saflib/jobs/jobs-http"
+    },
+    {
       "path": "../../../saflib/monorepo"
     },
     {
@@ -17,10 +23,19 @@
       "path": "../common"
     },
     {
+      "path": "../cron"
+    },
+    {
       "path": "../db"
     },
     {
       "path": "../http"
+    },
+    {
+      "path": "../jobs"
+    },
+    {
+      "path": "../spec"
     }
   ],
   "exclude": [

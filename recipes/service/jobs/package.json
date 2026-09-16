@@ -1,0 +1,30 @@
+{
+  "name": "@sderickson/recipes-jobs",
+  "saf": {
+    "kind": "lib"
+  },
+  "description": "Jobs slice for the recipes product",
+  "type": "module",
+  "exports": {
+    ".": "./jobs.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@saflib/drizzle": "*",
+    "@saflib/env": "*",
+    "@saflib/jobs-db": "*",
+    "@saflib/jobs-http": "*",
+    "@sderickson/recipes-cron": "*",
+    "@sderickson/recipes-service-common": "*",
+    "@sderickson/recipes-spec": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
+  },
+  "sideEffects": false
+}

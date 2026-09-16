@@ -2,7 +2,13 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
+      "path": "../../../saflib/cron/cron-http"
+    },
+    {
       "path": "../../../saflib/express"
+    },
+    {
+      "path": "../../../saflib/jobs/jobs-http"
     },
     {
       "path": "../../../saflib/monorepo"
@@ -14,10 +20,16 @@
       "path": "../common"
     },
     {
+      "path": "../cron"
+    },
+    {
       "path": "../db"
     },
     {
       "path": "../integrations/unsplash"
+    },
+    {
+      "path": "../jobs"
     },
     {
       "path": "../spec"

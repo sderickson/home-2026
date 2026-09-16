@@ -40,6 +40,8 @@ services:
     image: sderickson-recipes-monolith:latest
     volumes:
       - ../../recipes/service/db/data:/app/recipes/service/db/data
+      - ../../recipes/service/cron/data:/app/recipes/service/cron/data
+      - ../../recipes/service/jobs/data:/app/recipes/service/jobs/data
       - ../../recipes/service/common/data/recipe-files:/app/recipes/service/common/data/recipe-files
       - monolith_node_modules:/app/node_modules
     build:
