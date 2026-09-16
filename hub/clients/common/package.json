@@ -17,9 +17,9 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
+    "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-links": "*",
-    "@sderickson/hub-spec": "*",
-    "@sentry/vue": "^10.21.0"
+    "@sderickson/hub-spec": "*"
   }
 }

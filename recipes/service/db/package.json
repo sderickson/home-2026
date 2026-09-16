@@ -14,7 +14,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@saflib/drizzle": "*"
+    "@saflib/drizzle": "*",
+    "@saflib/utils": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"

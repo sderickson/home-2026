@@ -19,16 +19,14 @@
     "dev-docker": "npm exec saf-docker generate && docker compose up --build"
   },
   "devDependencies": {
-    "@saflib/vitest": "*",
-    "@testing-library/vue": "^8.1.0"
+    "@saflib/vitest": "*"
   },
   "dependencies": {
     "@saflib/monorepo": "*",
     "@saflib/sdk": "*",
     "@sderickson/hub-spec": "*",
     "@saflib/vite": "*",
-    "@saflib/vue": "*",
-    "msw": "^2.11.3"
+    "@saflib/vue": "*"
   },
   "msw": {
     "workerDirectory": [

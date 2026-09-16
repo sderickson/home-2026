@@ -50,9 +50,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <TopLevelContainer v-if="!disableContainer">
+      <ContentWidth v-if="!disableContainer">
         <slot />
-      </TopLevelContainer>
+      </ContentWidth>
       <slot v-else />
     </v-main>
 
@@ -63,7 +63,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import { TopLevelContainer } from "@saflib/vue/components";
 import { hub_layout } from "./HubLayout.strings.ts";
 import { useReverseT } from "../../i18n.ts";
 import {
@@ -73,8 +72,11 @@ import {
   type Link,
 } from "@saflib/links";
 import { events } from "@saflib/vue";
-import { SnackbarQueue } from "@saflib/vue/components";
-import { SpaLink } from "@saflib/vue/components";
+import {
+  ContentWidth,
+  SnackbarQueue,
+  SpaLink,
+} from "@saflib/vue/components";
 
 import {
   rootLinks,

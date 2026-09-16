@@ -1,9 +1,14 @@
-node_modules
-coverage
+**/node_modules
+**/coverage
+**/data
+**/saf-workflow-status.json
 **/saf-workflow-*
+**/dist/types
+**/.saf-docker
 Dockerfile
 .env
 .env.git-hashes
+.env.sentry-build-plugin
 **/git-hashes.json
 
 # Editor directories and files

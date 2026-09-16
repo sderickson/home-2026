@@ -61,8 +61,8 @@ export function recipeFileToApiRecipeFile(
     fileOriginalName: row.file_original_name,
     mimetype: row.mimetype,
     size: row.size,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
     downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
     ...(row.unsplash_user !== null && {

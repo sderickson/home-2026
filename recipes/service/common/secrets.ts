@@ -1,42 +1,16 @@
-import { createSecretStore, type SecretStore } from "@saflib/secret-store";
-import { typedEnv } from "./env.ts";
-
-let secretStore: SecretStore | undefined;
+import {
+  configureSecretStore as configureInfisicalSecretStore,
+  getSecretStore,
+  resetSecretStoreForTests,
+} from "@saflib/vendors-infisical";
 
 /**
- * Initializes the shared secret store. Idempotent — subsequent calls are no-ops.
+ * Initializes the shared secret store via Infisical (or mock when
+ * `INFISICAL_TOKEN=mock` / test). Idempotent — subsequent calls are no-ops.
  * Must be called before {@link getSecretStore}.
  */
 export function configureSecretStore(): void {
-  if (secretStore) return;
-
-  const apiKey = typedEnv.INFISICAL_TOKEN;
-  const isTest = typedEnv.NODE_ENV === "test";
-
-  if (!apiKey && !isTest) {
-    throw new Error(
-      "INFISICAL_TOKEN is required. Set it in your environment or .env file.",
-    );
-  }
-
-  const isMocked = apiKey === "mock" || isTest;
-  const accessToken = isMocked ? "mock" : (apiKey as string);
-
-  secretStore = createSecretStore({
-    type: "infisical",
-    options: {
-      accessToken,
-      projectId: typedEnv.INFISICAL_PROJECT_ID ?? "",
-      environment: typedEnv.INFISICAL_ENVIRONMENT ?? "",
-    },
-  });
+  configureInfisicalSecretStore();
 }
 
-export function getSecretStore(): SecretStore {
-  if (!secretStore) {
-    throw new Error(
-      "Secret store not initialized. Call configureSecretStore() first.",
-    );
-  }
-  return secretStore;
-}
+export { getSecretStore, resetSecretStoreForTests };

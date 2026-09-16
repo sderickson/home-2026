@@ -16,6 +16,8 @@
   "dependencies": {
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
+    "@saflib/node": "*",
+    "@saflib/vendors-loki": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
     "@sderickson/recipes-service-common": "*"

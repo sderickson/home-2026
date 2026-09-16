@@ -13,8 +13,7 @@
     "@saflib/vite": "*",
     "@sderickson/recipes-account-spa": "*",
     "@sderickson/recipes-admin-spa": "*",
-    "@sderickson/recipes-app-spa": "*",
-    "@vue/tsconfig": "^0.9.0"
+    "@sderickson/recipes-app-spa": "*"
   },
   "workspaces": [
     "clients/*"

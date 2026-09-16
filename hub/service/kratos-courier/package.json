@@ -8,7 +8,7 @@
   "dependencies": {
     "@sderickson/recipes-service-common": "*",
     "@saflib/node": "*",
-    "@saflib/ory-kratos": "*"
+    "@saflib/ory-kratos-http": "*"
   },
   "devDependencies": {
     "@saflib/monorepo": "*"

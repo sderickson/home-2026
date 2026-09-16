@@ -40,6 +40,11 @@ http://admin.docker.localhost {
 	import spa /hub-clients /admin/index.html
 }
 
+# Built (static) saflib dev-site: Express API + SPA on one port.
+http://dev.docker.localhost {
+	reverse_proxy site:3099
+}
+
 # Recipes API
 
 http://api.recipes.docker.localhost {

@@ -1,7 +1,8 @@
-import type { ReturnsError } from "@saflib/monorepo";
+import type { ReturnsError } from "@saflib/utils";
 import type { SecretStore } from "@saflib/secret-store";
 import { UNSPLASH_API_BASE } from "./types.ts";
 import { typedEnv } from "./env.ts";
+import packageSecrets from "./secrets.json" with { type: "json" };
 
 const isTest = typedEnv.NODE_ENV === "test";
 let _isMocked = isTest;
@@ -24,7 +25,10 @@ export async function configureUnsplash(store: SecretStore): Promise<void> {
   if (_configured) return;
   secretStore = store;
 
-  const initial = await store.getSecretByName("UNSPLASH_API_KEY");
+  const initial = await store.getSecretByName(
+    "UNSPLASH_API_KEY",
+    packageSecrets,
+  );
   if (initial.result !== undefined) {
     apiKey = initial.result;
     _isMocked = apiKey === "mock";
@@ -43,7 +47,10 @@ async function ensureApiKey(): Promise<boolean> {
   const now = Date.now();
   if (now - lastFetchAttemptAt < FETCH_COOLDOWN_MS) return false;
   lastFetchAttemptAt = now;
-  const out = await secretStore.getSecretByName("UNSPLASH_API_KEY");
+  const out = await secretStore.getSecretByName(
+    "UNSPLASH_API_KEY",
+    packageSecrets,
+  );
   if (out.result !== undefined) {
     apiKey = out.result;
     return true;

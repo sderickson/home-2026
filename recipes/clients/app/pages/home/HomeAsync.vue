@@ -1,13 +1,7 @@
 <template>
-  <AsyncPage
-    :loader="useHomeLoader"
-    :page-component="Home"
-  >
-    <template #error="{ error, errorMessage }">
-      <AppHomeError
-        :error="error"
-        :error-message="errorMessage"
-      />
+  <AsyncPage :loader="useHomeLoader" :page-component="Home">
+    <template #error="{ error }">
+      <AppHomeError :error="error" />
     </template>
   </AsyncPage>
 </template>

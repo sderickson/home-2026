@@ -1,5 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setClientName } from "@saflib/links";
+import {
+  restoreDocumentLocationStub,
+  stubDocumentLocation,
+} from "@saflib/vitest/document-location-stub";
 import {
   assertProfileLoaded,
   getProfileLinkProps,
@@ -7,14 +11,16 @@ import {
 } from "./Home.logic.ts";
 
 beforeEach(() => {
-  globalThis.document = {
-    location: {
-      hostname: "test.docker.localhost",
-      host: "test.docker.localhost",
-      protocol: "http:",
-    },
-  } as unknown as Document;
+  stubDocumentLocation({
+    hostname: "test.docker.localhost",
+    host: "test.docker.localhost",
+    protocol: "http:",
+  });
   setClientName("account");
+});
+
+afterEach(() => {
+  restoreDocumentLocationStub();
 });
 
 const sessionWithIdentity = {
