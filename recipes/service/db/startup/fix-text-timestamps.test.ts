@@ -4,7 +4,6 @@ import { sql } from "drizzle-orm";
 import { recipesDbManager } from "../instances.ts";
 import { insertTestCollection, makeRecipeRow } from "../test-fixtures.ts";
 import { recipe, recipeVersion } from "../schemas/recipe.ts";
-import { recipeFile } from "../schemas/recipe-file.ts";
 import { listRecipeFile } from "../queries/recipe-file/list.ts";
 import { fixTextTimestamps } from "./fix-text-timestamps.ts";
 
