@@ -1,7 +1,6 @@
 import type { Theme } from "vitepress";
 import { createVuetify } from "vuetify";
 import { vuetifyConfig } from "@sderickson/recipes-clients-common/vuetify-config";
-import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import "./style.css";
 import StaticSiteLayout from "./components/StaticSiteLayout.vue";

@@ -50,7 +50,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <ContentWidth v-if="!disableContainer">
+      <ContentWidth v-if="!disableContainer" :variant="contentWidth">
         <slot />
       </ContentWidth>
       <slot v-else />
@@ -76,6 +76,7 @@ import {
   ContentWidth,
   SnackbarQueue,
   SpaLink,
+  type ContentWidthVariant,
 } from "@saflib/vue/components";
 
 import {
@@ -85,10 +86,15 @@ import {
   adminLinks,
 } from "@sderickson/hub-links";
 
-const props = defineProps<{
-  loggedIn?: boolean;
-  isAdmin?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    loggedIn?: boolean;
+    isAdmin?: boolean;
+    /** Passed to {@link ContentWidth} when the layout owns the container. */
+    contentWidth?: ContentWidthVariant;
+  }>(),
+  { contentWidth: "wide" },
+);
 
 const { t } = useReverseT();
 

@@ -20,7 +20,19 @@ const isAdmin = computed(() => false);
 </script>
 
 <template>
-  <HubLayout :logged-in="loggedIn" :is-admin="isAdmin">
-    <router-view />
+  <HubLayout
+    :logged-in="loggedIn"
+    :is-admin="isAdmin"
+    content-width="narrow"
+  >
+    <div class="auth-spa-container py-8 py-md-12">
+      <router-view />
+    </div>
   </HubLayout>
 </template>
+
+<style scoped>
+.auth-spa-container {
+  min-height: calc(100vh - 90px);
+}
+</style>
