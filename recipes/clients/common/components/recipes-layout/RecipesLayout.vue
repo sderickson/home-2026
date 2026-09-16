@@ -12,7 +12,7 @@
       <v-toolbar-items class="d-none d-md-block">
         <v-btn
           v-for="link in links"
-          :key="link.name"
+          :key="`${link.subdomain}:${link.path}:${link.name}`"
           variant="text"
           class="text-uppercase font-weight-regular"
           :href="toHref(link, link.options)"
@@ -46,6 +46,31 @@
       />
     </v-navigation-drawer>
 
+    <v-navigation-drawer v-if="hasSidebar" permanent width="200">
+      <v-list nav>
+        <v-list-item
+          v-for="link in sidebarLinks"
+          :key="`${link.subdomain}:${link.path}`"
+          :href="toHref(link)"
+          :title="link.name"
+          variant="text"
+        />
+        <template v-if="devSidebarLinks && devSidebarLinks.length > 0">
+          <v-divider class="my-2" />
+          <v-list-subheader>{{
+            recipes_layout.dev_sidebar_title
+          }}</v-list-subheader>
+          <v-list-item
+            v-for="link in devSidebarLinks"
+            :key="`${link.subdomain}:${link.path}`"
+            :href="toHref(link)"
+            :title="link.name"
+            variant="text"
+          />
+        </template>
+      </v-list>
+    </v-navigation-drawer>
+
     <v-main>
       <v-container>
         <slot />
@@ -65,11 +90,24 @@ import {
   rootLinks,
 } from "@sderickson/recipes-links";
 import { accountLinks as hubAccountLinks } from "@sderickson/hub-links";
+import { useSiteAdmin } from "../../composables/useSiteAdmin.ts";
+
+type SidebarLink = Link & { name: string };
 
 const props = defineProps<{
   loggedIn?: boolean;
-  isAdmin?: boolean;
+  sidebarLinks?: SidebarLink[];
+  /** Development-only observability links. */
+  devSidebarLinks?: SidebarLink[];
 }>();
+
+const { isSiteAdmin } = useSiteAdmin();
+
+const hasSidebar = computed(
+  () =>
+    (props.sidebarLinks?.length ?? 0) > 0 ||
+    (props.devSidebarLinks?.length ?? 0) > 0,
+);
 
 const drawer = ref(false);
 
@@ -89,7 +127,9 @@ const links = computed<LinkWithName[]>(() => {
     return [
       { ...appLinks.home, name: "App" },
       { ...hubAccountLinks.home, name: "Account" },
-      ...(props.isAdmin ? [{ ...adminLinks.admin, name: "Admin" }] : []),
+      ...(isSiteAdmin.value
+        ? [{ ...adminLinks.home, name: "Admin" }]
+        : []),
       {
         ...authLinks.logout,
         name: "Logout",

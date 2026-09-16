@@ -9,7 +9,7 @@
         {{ t(mfaHasTotp ? strings.mfa_intro_linked : strings.mfa_intro_setup) }}
       </p>
     </div>
-    <SettingsSectionAsync :section="kratosSection" />
+    <SettingsSectionAsync :section="section" />
   </div>
 </template>
 
@@ -23,7 +23,10 @@ import { sessionHasTotpAuthenticationMethod } from "./AccountSettingsSection.log
 import { account_settings_section as strings } from "./AccountSettingsSection.strings.ts";
 
 const props = defineProps<{
-  section: "profile" | "email" | "password" | "totp" | "sessions";
+  section: Extract<
+    SettingsTabQueryValue,
+    "profile" | "email" | "password" | "totp" | "sessions"
+  >;
 }>();
 
 const { t } = useReverseT();
@@ -32,14 +35,6 @@ const { data: session } = useKratosSession();
 const mfaHasTotp = computed(() =>
   sessionHasTotpAuthenticationMethod(session.value),
 );
-
-/** Profile and email both use the Kratos settings `profile` group. */
-const kratosSection = computed((): SettingsTabQueryValue => {
-  if (props.section === "profile" || props.section === "email") {
-    return "email";
-  }
-  return props.section;
-});
 
 const pageTitle = computed(() => {
   switch (props.section) {

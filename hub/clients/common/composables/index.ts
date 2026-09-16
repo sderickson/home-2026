@@ -1,2 +1,1 @@
-// placeholder barrel
-export {};
+export { useSiteAdmin } from "./useSiteAdmin.ts";

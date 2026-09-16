@@ -28,6 +28,7 @@ services:
       - PROTOCOL=${PROTOCOL}
       - SERVICE_SUBDOMAINS=api.recipes
       - TZ=${TZ}
+      - ADMIN_EMAILS=${ADMIN_EMAILS}
     volumes:
       - ../../recipes/clients/:/app/recipes/clients/
       - ../../saflib/:/app/saflib/

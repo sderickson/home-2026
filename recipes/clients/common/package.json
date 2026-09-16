@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/ory-kratos-spa": "*",
     "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",

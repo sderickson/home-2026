@@ -7,7 +7,6 @@ import { authLinks } from "@sderickson/hub-links";
 
 const { data: session, isPending } = useKratosSession();
 const loggedIn = computed(() => !!session.value?.identity);
-const isAdmin = computed(() => false);
 const loginHref = computed(() => {
   const returnTo =
     typeof window !== "undefined" ? window.location.href : "";
@@ -20,7 +19,6 @@ const loginHref = computed(() => {
 <template>
   <HubLayout
     :logged-in="loggedIn"
-    :is-admin="isAdmin"
     disable-container
   >
     <div v-if="isPending" class="text-center py-12">

@@ -8,4 +8,5 @@ export const recipes_layout = {
   demo_reset_done: "Demo data reset.",
   demo_exit: "Exit demo mode",
   demo_cancel: "Cancel",
+  dev_sidebar_title: "Development",
 } as const;

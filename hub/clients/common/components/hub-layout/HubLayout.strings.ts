@@ -6,4 +6,5 @@ export const hub_layout = {
   nav_account: "Account",
   nav_logout: "Logout",
   nav_admin: "Admin",
+  dev_sidebar_title: "Development",
 } as const;

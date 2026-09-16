@@ -45,12 +45,11 @@ http://dev.docker.localhost {
 	reverse_proxy site:3099
 }
 
-# Recipes API
-# /health, /csp-violations, /dev/logs*, and other development observability
-# paths hit the monolith directly (skip forward_auth). Keep in sync with
-# saflib base `isPublicMonolithRoute` / `@public_monolith`.
+# Recipes API (+ api.docker.localhost alias)
+# Vue DevTools / node-log-sdk call getBaseUrl("api") → api.<root-domain>, while the
+# product SDK uses api.recipes. Serve both. Public paths skip forward_auth (match base).
 
-http://api.recipes.docker.localhost {
+http://api.recipes.docker.localhost, http://api.docker.localhost {
 	import cors recipes.docker.localhost
 	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
 	handle @public_monolith {

@@ -20,13 +20,11 @@ provide(AUTH_ROOT_HOME_FALLBACK_HREF, rootHomeFallbackHref);
 
 const sessionQuery = useKratosSession();
 const loggedIn = computed(() => !!sessionQuery.data.value?.identity);
-const isAdmin = computed(() => false);
 </script>
 
 <template>
   <HubLayout
     :logged-in="loggedIn"
-    :is-admin="isAdmin"
     content-width="narrow"
   >
     <div class="auth-spa-container py-8 py-md-12">

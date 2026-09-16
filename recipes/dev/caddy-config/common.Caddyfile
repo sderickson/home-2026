@@ -53,7 +53,7 @@ http://caddy:2020 {
 			Access-Control-Allow-Credentials "true"
 			Access-Control-Expose-Headers "Authorization"
 			Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-			Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept"
+			Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Last-Event-ID"
 			Access-Control-Max-Age "600"
 		}
 		respond 204

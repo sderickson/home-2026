@@ -2,7 +2,11 @@
   <!-- Events are rendered here for playwright tests to assert on -->
   <pre class="d-none" data-testid="events">{{ events }}</pre>
 
-  <RecipesLayout :logged-in="loggedIn" :is-admin="isAdmin">
+  <RecipesLayout
+    :logged-in="loggedIn"
+    :sidebar-links="sidebarLinks"
+    :dev-sidebar-links="devSidebarLinks"
+  >
     <template #app-bar-append>
       <v-btn
         v-if="demo.isDemoMode.value"
@@ -68,10 +72,14 @@ import { SnackbarQueue } from "@saflib/vue/components";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useDemoMode } from "../../composables/useDemoMode.ts";
 import { useSeedData } from "../../seed/useSeedData.ts";
+import type { Link } from "@saflib/links";
+
+type SidebarLink = Link & { name: string };
 
 defineProps<{
   loggedIn?: boolean;
-  isAdmin?: boolean;
+  sidebarLinks?: SidebarLink[];
+  devSidebarLinks?: SidebarLink[];
 }>();
 
 const { t } = useReverseT();
