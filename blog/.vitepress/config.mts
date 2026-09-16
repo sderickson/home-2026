@@ -1,14 +1,10 @@
 import { defineConfig } from "vitepress";
-import { vitepressLeanJsRolldownCompat } from "@saflib/vitepress/lean-js-plugin";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Scott's Blog",
   srcDir: "./content",
   description: "Scott's Blog",
-  vite: {
-    plugins: [vitepressLeanJsRolldownCompat()],
-  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
