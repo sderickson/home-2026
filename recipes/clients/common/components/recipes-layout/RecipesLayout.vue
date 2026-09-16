@@ -30,8 +30,10 @@
       </template>
     </v-app-bar>
 
-    <!-- Mobile Navigation Drawer -->
+    <!-- Mobile drawer also waits for mount: SSG hrefs are path-only and VitePress
+         treats same-origin /new-login as an in-app route → /new-login.html 404. -->
     <v-navigation-drawer
+      v-if="mounted"
       v-model="drawer"
       disable-resize-watcher
       location="top"
@@ -39,7 +41,7 @@
     >
       <v-list-item
         v-for="link in links"
-        :key="link.name"
+        :key="`${link.subdomain}:${link.path}:${link.name}`"
         :title="link.name"
         class="text-uppercase text-center py-4"
         :href="toHref(link, link.options)"
