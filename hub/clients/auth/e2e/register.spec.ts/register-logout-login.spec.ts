@@ -2,30 +2,25 @@ import { test as base, expect } from "@playwright/test";
 import {
   loginPageFixture,
   registrationPageFixture,
-  verifyWallPageFixture,
   type LoginPageFixture,
   type RegistrationPageFixture,
-  type VerifyWallPageFixture,
 } from "@saflib/ory-kratos-spa/fixtures";
 import { getUniqueEmail } from "@saflib/playwright";
 
 type RegisterFixtures = {
   loginPage: LoginPageFixture;
   registrationPage: RegistrationPageFixture;
-  verifyWallPage: VerifyWallPageFixture;
 };
 
 const test = base.extend<RegisterFixtures>({
   loginPage: loginPageFixture,
   registrationPage: registrationPageFixture,
-  verifyWallPage: verifyWallPageFixture,
 });
 
 test("register, logout, and login", async ({
   page,
   loginPage,
   registrationPage,
-  verifyWallPage,
 }) => {
   const uniqueEmail = getUniqueEmail();
 
@@ -33,8 +28,8 @@ test("register, logout, and login", async ({
   await page.getByRole("link", { name: "Register" }).click();
   await registrationPage.toBeVisible();
   await registrationPage.completeRegistration(uniqueEmail, "packtofu");
-  await verifyWallPage.toBeVisible();
-  await verifyWallPage.clickContinueToApp();
+  // Registration returns a session and navigates to the app (verify-wall is not
+  // mounted on the hub auth SPA; settings/verify live on account).
   await expect(page.getByRole("heading", { name: "App Home" })).toBeVisible();
   await page.getByRole("banner").getByRole("link", { name: "Logout" }).click();
   await page.getByRole("link", { name: "Log in" }).click();
