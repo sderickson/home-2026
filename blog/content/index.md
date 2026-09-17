@@ -1,5 +1,7 @@
 # Blog Posts by Date
 
+<!-- Add a post here to publish it on the home page and in /rss.xml. -->
+
 ### Fall 2026
 
 - [Making a Software Stack Agentic](/blog/2026-09-15-Agentic-Stacks)
