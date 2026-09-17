@@ -12,21 +12,18 @@
       {{ caption }}
     </figcaption>
 
-    <v-dialog v-model="open" max-width="1100" scrim="black">
-      <v-card rounded="lg">
-        <v-card-text class="pa-2 pa-sm-4">
-          <img :src="src" :alt="resolvedAlt" class="captioned-image__full" />
-        </v-card-text>
-        <v-card-text
-          v-if="caption"
-          class="text-center text-medium-emphasis pt-0"
-        >
+    <v-dialog
+      v-model="open"
+      max-width="1100"
+      scrim="black"
+      content-class="captioned-image__dialog"
+    >
+      <div class="captioned-image__lightbox">
+        <img :src="src" :alt="resolvedAlt" class="captioned-image__full" />
+        <p v-if="caption" class="captioned-image__lightbox-caption">
           {{ caption }}
-        </v-card-text>
-        <v-card-actions class="justify-end px-4 pb-4">
-          <v-btn variant="text" @click="open = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
+        </p>
+      </div>
     </v-dialog>
   </figure>
 </template>
@@ -67,7 +64,7 @@ const expandLabel = computed(() =>
   border: none;
   background: transparent;
   cursor: zoom-in;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
 }
 
@@ -80,8 +77,6 @@ const expandLabel = computed(() =>
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 8px;
-  box-shadow: var(--vp-shadow-2);
 }
 
 .captioned-image__caption {
@@ -92,12 +87,50 @@ const expandLabel = computed(() =>
   color: var(--vp-c-text-2);
 }
 
+.captioned-image__lightbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  background: transparent;
+}
+
 .captioned-image__full {
   display: block;
   width: 100%;
   height: auto;
-  max-height: min(80vh, 900px);
+  max-height: min(82vh, 920px);
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 4px;
+}
+
+.captioned-image__lightbox-caption {
+  margin: 0;
+  max-width: min(36rem, 92%);
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+</style>
+
+<!-- Dialog content teleports outside the component; unscoped needed for content-class.
+     pointer-events: none lets clicks pass through the large transparent content box to the
+     scrim so click-off closes; the lightbox itself re-enables pointer events. -->
+<style>
+.captioned-image__dialog.v-overlay__content {
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
+.captioned-image__dialog .captioned-image__lightbox {
+  pointer-events: auto;
 }
 </style>

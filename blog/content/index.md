@@ -1,5 +1,9 @@
 # Blog Posts by Date
 
+### Fall 2026
+
+- [Making a Software Stack Agentic](/blog/2026-09-15-Agentic-Stacks)
+
 ### Winter 2026
 
 - [The Bottom-Up Approach](/blog/2026-02-17-Bottom-Up)

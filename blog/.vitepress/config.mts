@@ -62,11 +62,11 @@ export default defineConfig({
       {
         text: "Highlighted Posts",
         items: [
+          { text: "Making a Software Stack Agentic", link: "/blog/2026-09-15-Agentic-Stacks" },
           { text: "Governing Products", link: "/blog/2025-06-14-Governing-Products" },
           { text: "Accountability and Gaslighting", link: "/blog/2025-05-24-Accountability-and-Gaslighting" },
           { text: "Theory of DX", link: "/blog/2025-04-18-Theory-of-Dx" },
           { text: "Reliability", link: "/blog/2025-04-11-Reliability" },
-
         ],
       },
     ],
