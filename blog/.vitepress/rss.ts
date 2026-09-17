@@ -7,7 +7,7 @@ export const BLOG_HOSTNAME = "https://blog.scotterickson.info";
 
 export type PublishedPost = {
   title: string;
-  /** Site path, e.g. `/blog/2026-09-15-Agentic-Stacks` */
+  /** Site path, e.g. `/2026-09-15-Agentic-Stacks` */
   path: string;
   date: Date;
   description: string;
@@ -16,22 +16,24 @@ export type PublishedPost = {
 /**
  * Published posts = links listed in `content/index.md`.
  * Drafts (present as files but not linked there) stay off the home page and RSS.
+ * Markdown sources stay under `content/blog/`; public URLs are root-level slugs.
  */
 export function loadPublishedPosts(contentDir: string): PublishedPost[] {
   const index = readFileSync(path.join(contentDir, "index.md"), "utf8");
   const posts: PublishedPost[] = [];
-  const linkRe = /^- \[([^\]]+)\]\((\/blog\/[^)#\s]+)\)/gm;
+  const linkRe = /^- \[([^\]]+)\]\((\/(?:blog\/)?[^)#\s]+)\)/gm;
 
   for (const match of index.matchAll(linkRe)) {
     const title = match[1];
-    const urlPath = match[2];
-    const slug = urlPath.slice(urlPath.lastIndexOf("/") + 1);
+    const rawPath = match[2];
+    const slug = rawPath.replace(/^\/(?:blog\/)?/, "");
+    const urlPath = `/${slug}`;
     const dateMatch = /^(\d{4}-\d{2}-\d{2})/.exec(slug);
     const date = dateMatch
       ? new Date(`${dateMatch[1]}T12:00:00.000Z`)
       : new Date(0);
 
-    const mdPath = path.join(contentDir, `${urlPath.slice(1)}.md`);
+    const mdPath = path.join(contentDir, "blog", `${slug}.md`);
     let description = "";
     try {
       description = extractDescription(readFileSync(mdPath, "utf8"));

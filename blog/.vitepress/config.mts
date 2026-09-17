@@ -13,6 +13,14 @@ export default defineConfig({
   title: "Scott's Blog",
   srcDir: "./content",
   description: "Scott's Blog",
+  cleanUrls: true,
+  // Keep files under content/blog/, but publish at /:slug (not /blog/:slug).
+  rewrites(id) {
+    const match = /^blog\/(.+)$/.exec(id);
+    if (match && match[1] !== "index.md") {
+      return match[1];
+    }
+  },
   vite: {
     ssr: {
       noExternal: ["vuetify"],
@@ -78,11 +86,11 @@ export default defineConfig({
       {
         text: "Highlighted Posts",
         items: [
-          { text: "Making a Software Stack Agentic", link: "/blog/2026-09-15-Agentic-Stacks" },
-          { text: "Governing Products", link: "/blog/2025-06-14-Governing-Products" },
-          { text: "Accountability and Gaslighting", link: "/blog/2025-05-24-Accountability-and-Gaslighting" },
-          { text: "Theory of DX", link: "/blog/2025-04-18-Theory-of-Dx" },
-          { text: "Reliability", link: "/blog/2025-04-11-Reliability" },
+          { text: "Making a Software Stack Agentic", link: "/2026-09-15-Agentic-Stacks" },
+          { text: "Governing Products", link: "/2025-06-14-Governing-Products" },
+          { text: "Accountability and Gaslighting", link: "/2025-05-24-Accountability-and-Gaslighting" },
+          { text: "Theory of DX", link: "/2025-04-18-Theory-of-Dx" },
+          { text: "Reliability", link: "/2025-04-11-Reliability" },
         ],
       },
     ],

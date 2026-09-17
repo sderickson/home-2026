@@ -30,10 +30,11 @@ http://caddy:2020 {
 	}
 }
 
-# Used for SPA clients accessible to all users
+# Used for static VitePress sites (supports cleanUrls: /path → /path.html)
 (static-site) {
 	encode gzip
 	root * /srv{args[0]}
+	try_files {path} {path}.html {path}/index.html
 	file_server {
 		pass_thru
 	}
