@@ -10,6 +10,8 @@ import CaptionedImage from "./components/CaptionedImage.vue";
 
 const vuetify = createVuetify();
 
+// `as Theme` (not `satisfies`) — assigning Layout to Theme crashes TS 6's
+// satisfies elaborator when VitePress's nested @vue/* types diverge by path.
 export default {
   extends: DefaultTheme,
   Layout: () => {
@@ -24,4 +26,4 @@ export default {
     app.use(vuetify);
     app.component("CaptionedImage", CaptionedImage);
   },
-} satisfies Theme;
+} as Theme;

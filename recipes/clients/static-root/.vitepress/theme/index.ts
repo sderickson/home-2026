@@ -14,6 +14,8 @@ setClientName("recipes");
 
 const vuetify = createVuetify(vuetifyConfig);
 
+// `as Theme` (not `satisfies`) — assigning Layout to Theme crashes TS 6's
+// satisfies elaborator when VitePress's nested @vue/* types diverge by path.
 export default {
   Layout: StaticSiteLayout,
   enhanceApp({ app }) {
@@ -21,4 +23,4 @@ export default {
     app.use(VueQueryPlugin, { queryClient: createTanstackQueryClient() });
     app.component("RootHomePage", RootHomePage);
   },
-} satisfies Theme;
+} as Theme;
