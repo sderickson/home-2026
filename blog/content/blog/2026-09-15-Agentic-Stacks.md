@@ -22,17 +22,24 @@ Once I had these best practices, the next bottleneck was getting agents to follo
 
 I was able to go fairly far just on best practices and the workflow tool this past year, but now there's a new bottleneck: maintaining my understanding of the codebase. For a while the stack's structure made the parts I wanted to review easy to find, and I could skim large PRs for what I knew to be the key bits. But now the applications and changes I've been making have gotten so big that git and the GitHub UI can't handle them well. Changes can easily be hundreds or thousands of files, thousands or tens of thousands of lines of code, and the largest application I've built has six thousand test cases and a half a million lines of code. That's a lot of forest to keep track of, and with the ease of creating new code, I expect it's a common bottleneck in the industry right now.
 
-<p align="center">
-  <img src="./images/2026-09-15-large-commit.png" alt="GitHub commit page showing 2,664 files changed in a large saflib commit" />
-</p>
-<p align="center"><strong>My commits often have this notification.</strong></p>
+<script setup>
+import largeCommitImg from "./images/2026-09-15-large-commit.png";
+import devSiteImg from "./images/2026-09-15-dev-site.png";
+</script>
+
+<CaptionedImage
+  :src="largeCommitImg"
+  alt="GitHub commit page showing 2,664 files changed in a large saflib commit"
+  caption="My commits often have this notification."
+/>
 
 So, the next thing I'm working on for my agentic stack is a tool to isolate and present only the key information about a codebase, or changes to it, for review. I call it the [dev-site](https://docs.saf-demo.online/dev-site/docs/01-overview.html); it's a web application itself where I can look at a commit, or compare two commits, and see only key bits like database schemas, package dependencies, test specs, API specifications, and frontend components. It also condenses and collates important information, such as frontend consumers and backend dependencies of an API, which would otherwise be scattered across dozens of files.
 
-<p align="center">
-  <img src="./images/2026-09-15-dev-site.png" alt="A route as seen on the dev site, with specs, links, and usages." />
-</p>
-<p align="center"><strong>A route as seen on the dev site, with specs, links, and usages.</strong></p>
+<CaptionedImage
+  :src="devSiteImg"
+  alt="A route as seen on the dev site, with specs, links, and usages."
+  caption="A route as seen on the dev site, with specs, links, and usages."
+/>
 
 Now, one obvious solution to this problem created by AI-driven development is more AI. You could ask an agent to scan changes between two commits and summarize these specific things I care about. Products like [CodeRabbit](https://www.coderabbit.ai/) provide this feature so you don't have to write your own PR descriptions. To me this approach is fine but has some drawbacks:
 

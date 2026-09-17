@@ -1,10 +1,27 @@
 import { defineConfig } from "vitepress";
+import vuetify from "vite-plugin-vuetify";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const monorepoRoot = path.resolve(__dirname, "../..");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Scott's Blog",
   srcDir: "./content",
   description: "Scott's Blog",
+  vite: {
+    ssr: {
+      noExternal: ["vuetify"],
+    },
+    server: {
+      fs: {
+        allow: [monorepoRoot],
+      },
+    },
+    plugins: [vuetify()],
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

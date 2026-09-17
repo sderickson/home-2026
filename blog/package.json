@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@saflib/dev-tools": "*",
-    "@saflib/vitepress": "*"
+    "@saflib/vitepress": "*",
+    "vite-plugin-vuetify": "*",
+    "vuetify": "*"
   }
 }
