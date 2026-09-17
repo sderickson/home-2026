@@ -1,0 +1,9 @@
+/* Vuetify Sass variable overrides (vite-plugin-vuetify `styles.configFile`).
+ *
+ * Without this, VApp defaults to Roboto and overrides VitePress --vp-font-family-base.
+ * Point at the VitePress CSS variable so reading typography stays in sync.
+ */
+
+@use "vuetify/settings" with (
+  $body-font-family: var(--vp-font-family-base)
+);

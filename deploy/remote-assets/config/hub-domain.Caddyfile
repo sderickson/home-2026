@@ -18,6 +18,9 @@
 
 {$PROTOCOL}://blog.{$DOMAIN} {
 	import security-headers-marketing
+	# Legacy /blog/<slug> → /<slug>
+	@legacy_blog path_regexp legacy_blog ^/blog/([^/]+)/?$
+	redir @legacy_blog /{re.legacy_blog.1} permanent
 	import static-site /blog-client
 }
 
