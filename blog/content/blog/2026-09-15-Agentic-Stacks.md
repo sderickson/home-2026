@@ -1,4 +1,4 @@
-# What Makes a Software Stack Agentic
+# Making a Software Stack Agentic
 
 _September 15, 2026_
 

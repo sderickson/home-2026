@@ -85,9 +85,11 @@ const expandLabel = computed(() =>
 }
 
 .captioned-image__caption {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--vp-c-text-1);
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
 }
 
 .captioned-image__full {

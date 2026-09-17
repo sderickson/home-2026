@@ -52,6 +52,6 @@ If you want to try this, start by increasing the odds of having those ingredient
 
 ## Ownership
 
-What I’m really proposing is that every function gets the kind of direct access to their piece of the product that engineers have historically _had_ to own. That includes engineers themselves, which is why I spent the last post on tooling that gives engineers hard facts about what agents are doing in their codebase. Direct access is what lets you own something. Going through an intermediary for every change, whether that intermediary is an engineer or an agent you can’t look behind, is what keeps you from owning it.
+What I’m proposing is that every function gets the kind of direct access to their piece of the product that engineers have historically typically _had_ to own. In this way While I think it's critical for engineers to continue to be able to directly work with the code (no That includes engineers themselves, which is why I spent the last post on tooling that gives engineers hard facts about what agents are doing in their codebase. Direct access is what lets you own something. Going through an intermediary for every change, whether that intermediary is an engineer or an agent you can’t look behind, is what keeps you from owning it.
 
 We now have the ability for each function to build, tune, and own their own piece of the product, as long as they’re set up for success. That’s a democratization of ownership, and it can make building software a lot more collaborative than it has been.

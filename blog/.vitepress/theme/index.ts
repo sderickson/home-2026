@@ -3,6 +3,7 @@ import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import { createVuetify } from "vuetify";
 import { VApp } from "vuetify/components";
+// Intercepted by vite-plugin-vuetify using vuetify-settings.scss
 import "vuetify/styles";
 import "./style.css";
 import CaptionedImage from "./components/CaptionedImage.vue";
