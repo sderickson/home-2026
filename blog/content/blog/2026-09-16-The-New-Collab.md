@@ -1,59 +1,57 @@
-# The New Collab
+# Democratization of Ownership
 
 _September 16, 2026_
 
-One of the things that I enjoy most about work is the collaboration. The sort of work I want to do is solving problems that no single person can solve, where you need multiple perspectives and skillsets involved and they all need to be on point in order to succeed as a group. Whenever I’m on a team like this I know it’s temporary and I try to enjoy it while it lasts, since the only constant is change!
+Imagine being an engineer who is never allowed to see or edit the code. You can only describe what you want to an agent and look at the resulting product. Every tweak, every fix, every “move that two pixels left” goes through an intermediary, and you wait to see whether it came out right. And it can take quite a long time.
 
-So, with the advent of LLMs in all aspects of business, one of the things I’m most keenly interested in is how this changes the nature of our collaborations, especially across functions. Of course how engineers work together with coding agents thrown in the mix is its own whole topic, but for now I want to focus on where non-coding needs are involved: the PMs, designers, analysts, leadership, and everyone else who work directly with engineering to get the thing built.
+That’s the situation product managers, designers, analysts, and everyone else who works alongside engineering has always been in. The intermediary was the engineer. It was necessary because of two axioms: writing code takes a long time, and only engineers can make changes to the codebase. These axioms are now going away, and that changes how cross-functional teams work together.
 
-Here’s how I imagine various collaboration roles changing over time.
+How engineers work with each other now that coding agents are in the mix is its own topic. Here I want to focus on the people who work directly with engineering to get the thing built.
 
-# Engineer / PM / Designer
+## The old process
 
-The big trifecta! PMs and designers are the most common participants in an engineering standup because they are typically the closest collaborators with engineering.
+In the classic mode of product development, product managers and designers think through everything ahead of time. They gather rough estimates, produce a thorough spec and a pixel-perfect design, get sign-off, and hand it to engineering. Engineering builds to the spec. As blockers and edge cases come up, the spec is updated. Once the product is ostensibly built, product, design, and QA use it for the first time and send back a list of fixes. Then it launches.
 
-## The Old Process
+All that up-front articulation existed because the build was a larger investment and the people paying for it wanted to know what they were getting before they committed. It was also the only lever non-engineers had. If you couldn’t touch the code, the spec and iterative feedback was how you steered.
 
-In the classic mode of product development, collaboration would look something like this:
+## The new process
 
-- Product managers explore what sorts of projects the team might do, gathering rough estimates from engineers to get rough ROIs.
-- Once projects are green-lit, product managers and designers build a spec and a design. These (ideally) have light engineering input, to continue providing cost and feasibility guidance.
-- A thorough spec and a pixel-perfect design are produced, reviewed, signed-off, and handed to engineering. They go about building the product according to the spec and design.
-- As things come up (they invariably do), the design or spec are updated based on blockers or unforeseen edge cases.
-- Once the product is ostensibly built, product and design (as well as QA) use it for the first time and give fixes and changes for engineering to do.
-- Finally, the product is launched!
+With agentic coding, the collaboration I’ve been experiencing looks more like this:
 
-This process was designed on two no-longer-so-true axioms: 1. writing the code takes a long time, and 2. only engineers can affect change on the codebase. Designers and PMs had to think through and articulate everything ahead of time because the project was a large investment and it was desirable to know roughly how much of an investment it was and what you were getting for that investment ahead of time.
+- **Estimates are cheap.** Agents do the bulk of the estimation work. Engineers still sign off and own these estimates.
+- **Specs and designs are rougher.** Only the critical aspects of the project are laid out. Nothing needs to be pixel-perfect or specified to every detail.
+- **The engineer builds the first draft.** They follow the spec closely where it’s specific, since those were the details important enough to specify, and defer to the agent on everything else. Their attention goes toward making sure the thing is built well.
+- **Partners take it from there.** Once the feature, data model, and API exist, the PM or designer runs the dev environment and makes their own changes with an agent. Most of what’s left is front-end tweaks and choices the agent made that they’d like to revisit.
+- **Engineering reviews and merges.** PRs from PMs and designers get reworked as needed and merged into the codebase.
 
-## The New Process
+The payoff is that nobody has to hold the whole vision in their head and transfer it losslessly to someone else in an expensive game of telephone. Partners decide what they want by using an early build rather than by imagining it. Engineers aren’t the bottleneck for layout, copy, color, or even the composition of a page. And when a change is small, a PR is a more precise way to communicate it than a conversation about a PR. Let the partner get it looking and behaving how they want, and let the engineer make sure that look and behavior is reliable, performant, and maintainable.
 
-With agentic coding available now, the collaboration I expect will look more like this:
+## How it has gone so far
 
-- Estimations made for projects can take a great deal less time, letting agents do the bulk of the work. Engineers should still sign off on them, though.
-- Once the high-level project is approved, product specs and designs are provided but can be rougher. They don’t need to be pixel-perfect or specified to every detail. Only the critical aspects of the project are laid out.
-- The engineer creates the product according to the spec, deferring to the agent to fill in any details, and focusing on making sure what _is_ specified in the spec is adhered to since those were the details important enough to be specified, as well as making sure it is built well.
-- Once the first draft of the product is built, the PM and designer can run the development server locally and vibe-code their changes. Since the underlying feature, data model, API, etc have been built, the remaining work should be mostly front-end tweaks. They can also decide if any of the decisions the agent made should be changed.
-- Engineering takes PRs provided by PMs and designers and reworks them as needed before merging them into the codebase.
+I’ve worked this way with a couple of PMs, both wearing the designer hat as well on a small team, and it's served us well. The changes they made were small, because I’d gotten the product most of the way there, and that’s the point: the small changes are exactly the ones where an engineer in the middle adds the least and the communication overhead can overwhelm the value. Their PRs told me precisely what they wanted in a way a Slack thread never quite does.
 
-A collaboration like this has the following benefits:
+It was particularly exciting when a small front-end-only feature one of the PMs had added on their own was helpful in the middle of an incident. Nobody had scheduled it, nobody had estimated it, and it was there when it mattered because a customer had asked for it and the PM had been able to just make it happen.
 
-- PMs and designers don’t have to fill in the details in their head. They can work directly with an early build to see the details and one of the options first hand, and decide what they prefer through experience.
-- PMs and designers don’t have to transfer an entire vision to an engineer, and the engineer doesn’t have to understand and transform that entire vision to code. By leaning on agents to fill in the decisions, engineers are also not left with additional responsibilities of having to make the decisions themselves or hunt down the decision-maker to make a decision.
-- Engineers are not the bottleneck for simple changes to the codebase. Making tweaks to the layout or color or copy or even larger things like the composition of pages or overall user experience can be done handily by agents, and it’s simpler to fix issues made by vibe coding small changes than it is to play a game of telephone between the cross-functional partner and the code. Let the partners get it to look and behave they want, and have the engineer focus on making sure that look and behavior is reliable, performant, and maintainable.
+I don’t want to oversell this. It’s a couple of people, on one team, making small changes to a product that was already in good shape. But it worked, and it's pretty promising.
 
-# Other Cross-Functional Partners
+## Beyond PMs and designers
 
-I’m focused on PM/design here, but I think collaborations with a good number of other cross-functional partners will take a similar shift. Analysts submitting PRs to add product events, QA submitting PRs to fix bugs, and copy editors submitting PRs to fix text. These are small enough changes that the cost of communicating the change to an engineer and having them do it is greater than the cost of just making the change and having the engineer manage incorporating the change into the codebase. The mode of communication of what needs to be changed becomes a PR, which is more precise.
+I think the same shift applies to a good number of other partners. Analysts adding product events, QA fixing the bugs they find, copy editors fixing text. These changes are small enough that the cost of getting an engineer's time and describing the change to them is greater than the cost of just making them and having an engineer review the result. The mode of communication becomes the PR.
 
-# Required Ingredients
+## What has to be true
 
-This new mode of collaboration requires a few things to succeed, however:
+This only works if a few things are in place.
 
-- Codebase and infrastructure support. An agent in non-engineering hands needs to do a reasonably good job, spinning up the dev environment with an agent needs to be reasonably accessible to a non-technical user, and the dev environment needs to have all integrations mocked so no sensitive keys are required to develop. What this looks like is a codebase with an agentic stack running on something like GitHub codespaces, made available to any non-technical contributor.
-- Support from all parties involved. Partners need to be willing to dabble in using agents and making PRs, engineers need to be willing to accept changes made from non-technical partners, and leadership need to give both the space and time to explore, figure out, and assess the new possibilities for collaboration.
+**The codebase has to be ready for it.** Someone with no engineering background handing prompts to an agent inside your codebase is a stress test for everything I wrote about in [my last post](./2026-09-15-Agentic-Stacks). If the stack isn’t opinionated, if the patterns aren’t enforced, if the agent can wander, then things get messy quickly. An agentic stack constrains the agent regardless of who is driving it, and that is what makes non-engineer PRs cost-effective to review and safe to accept. It also means the dev environment has to be one-command to start, with every integration mocked so no sensitive keys are needed.
 
-For those looking to explore new modes of working, I would look for and try to increase the odds of having these essential ingredients. Invest in the codebase and shared agentic tooling so that agentic changes are reasonable. Look for people who are curious and want to try out new technologies. Fund and give dev environment access to the folks who are willing to try. Know that it will probably require some trial and error and see what learnings can be gathered. It’s a process to overhaul a process.
+**Engineers have to be willing to review, not just build.** “Rework PRs from PMs and designers before merging” describes a job some engineers will hear as cleaning up after everyone else. The review load is real, and it lands on the same people already struggling to keep a large agent-built codebase in their heads. I think the honest answer is that the engineer’s role shifts toward the platform and the review, which can only work if there's a commensurate investment in those areas so engineers can be set up for success and not drowning in debt and risk.
 
-# Democratization of Ownership
+**Everyone has to want to try.** Partners need to be willing to dabble with agents and PRs. Engineers need to be willing to accept changes from people who don’t write code for a living. Leadership needs to give both the room to figure it out. Not everyone will want to. Some partners are genuinely uncomfortable making direct changes to a codebase, even when the engineer in the middle is doing little more than passing their words along to an agent. That’s a normal reaction to a change in how work gets done, and it’s a reason to start with the people who are curious rather than starting with the ones who aren’t.
 
-One final thought: what I’m proposing here is to enable the sort of experience for cross-functional partners that I think needs to also be kept for engineers themselves, and that is the ability to affect more _direct_ control on their field of responsibility. As I lay out in my previous post, I think engineers need direct information into how a codebase is structured and works, what changes are being affected by agents, and just hard facts to dig into and manage. Having to go _through_ an engineer for every possible change and tweak to the codebase is like being an engineer who can only make changes through an agent and is not allowed to view or edit code themselves, just the resulting product. We now have the ability for each function, through developer environments, to build, tune, and own their own piece of the product, as long as they are set up for success. It’s a democratization of ownership, and can make creating software a more collaborative process.
+If you want to try this, start by increasing the odds of having those ingredients. Invest in the codebase and the shared agentic tooling so that "vibe-coded" changes come out reasonable. Find the people who are curious. Fund and provision dev environments for them. Expect some trial and error. It’s a process to overhaul a process.
+
+## Ownership
+
+What I’m really proposing is that every function gets the kind of direct access to their piece of the product that engineers have historically _had_ to own. That includes engineers themselves, which is why I spent the last post on tooling that gives engineers hard facts about what agents are doing in their codebase. Direct access is what lets you own something. Going through an intermediary for every change, whether that intermediary is an engineer or an agent you can’t look behind, is what keeps you from owning it.
+
+We now have the ability for each function to build, tune, and own their own piece of the product, as long as they’re set up for success. That’s a democratization of ownership, and it can make building software a lot more collaborative than it has been.
