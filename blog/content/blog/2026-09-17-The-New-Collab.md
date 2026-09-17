@@ -1,6 +1,6 @@
 # A Redistribution of Code Ownership
 
-_September 16, 2026_
+_September 17, 2026_
 
 Imagine being an engineer who is never allowed to see or edit the code. You can only describe what you want to an agent and look at the resulting product. Every tweak, every fix, every “move that two pixels left” goes through an intermediary, and you wait to see whether it came out right. Oh and it can take hours, days, or even weeks.
 
@@ -21,10 +21,10 @@ With agentic coding, the collaboration I’ve been trying looks more like this:
 - **Estimates are cheap.** Agents do the bulk of the estimation work. Engineers still sign off and own these estimates.
 - **Specs and designs are rougher.** Only the critical aspects of the project are laid out. Nothing needs to be pixel-perfect or specified to every detail. New products can be very vague.
 - **The engineer builds the first draft.** They follow the details that _are_ in the spec closely, since those were the details important enough to write about, and defer to the agent on everything else. Their attention goes more toward making sure the thing is built well.
-- **Partners polish the product.** Once the feature, data model, API, and rough frontend exist, the PM or designer runs the changes in their dev environment and "vibe-code" their own changes with an agent. Mostly they make front-end tweaks and change minor decisions the agent made.
+- **Partners polish the product.** Once the feature, data model, API, and rough frontend exist, the PM or designer runs the branch in their dev environment and vibe-codes their own tweaks with an agent. Mostly they adjust the front end and change minor decisions the agent made.
 - **Engineering reviews and merges.** PRs from PMs and designers get polished on the technical side as needed and merged into the codebase.
 
-The payoff is that nobody has to hold the whole vision in their head and transfer it losslessly to someone else in an expensive game of telephone. Partners decide many the details of what they want by playing around with an early build rather than by imagining it. Engineers aren’t the bottleneck for layout, copy, color, or even the composition of a page. And when a change is small, a PR is a more precise way to communicate it than a conversation at standup or DM. Let the partner directly get it looking and behaving how they want, and let the engineer ensure the product is reliable, performant, and maintainable.
+The payoff is that nobody has to hold the whole vision in their head and transfer it losslessly to someone else in an expensive game of telephone. Partners decide many of the details of what they want by playing around with an early build rather than by imagining it. Engineers aren’t the bottleneck for layout, copy, color, or even the composition of a page. And when a change is small, a PR is a more precise way to communicate it than a conversation at standup or DM. Let the partner directly get it looking and behaving how they want, and let the engineer ensure the product is reliable, performant, and maintainable.
 
 ## How it has gone so far
 
@@ -32,21 +32,23 @@ I’ve worked this way with a couple of PMs, both wearing the designer hat as we
 
 It was particularly exciting when a small front-end-only feature one of the PMs had added on their own was helpful in the middle of an incident. Nobody had scheduled or estimated it, and it was there when it mattered because a customer had asked for it and the PM had been able to just make it happen.
 
+That's a couple of people on one team making small changes to a product that was already in good shape, so take it for what it is. But in my experience this mode of collaboration can work well.
+
 ## Beyond PMs and designers
 
-I think the same shift applies to a good number of other partners. Analysts adding product events, QA fixing the bugs they find, copy editors fixing text. These changes are small enough that the cost of getting an engineer's time and describing the change to them is greater than the cost of just making the changes directly and checking it works as expected and having an engineer review the result. The mode of communication becomes PR contributions.
+I think the same shift applies to a good number of other partners. Analysts adding product events, QA fixing the bugs they find, copy editors fixing text. These changes are small enough that the cost of getting an engineer's time and describing the change to them is greater than the cost of just making the change, checking it works, and having an engineer review the result. The mode of communication becomes PR contributions.
 
 ## What has to be true
 
-This only works if a couple things are in place.
+This only works if a couple of things are in place.
 
-**The codebase has to be ready for it.** A non-technical contributing prompting an agent inside your codebase is a stress test for everything I wrote about in [my last post](./2026-09-15-Agentic-Stacks). If the stack isn’t opinionated, if the patterns aren’t adhered to, if the agent has to apply band-aids to deliver results, then things get messy quickly. An agentic stack constrains the agent regardless of who is driving it, and that is what makes non-engineer PRs cost-effective to review and safe to accept. It also means the dev environment has to be one-command to start, with every integration mocked so no sensitive keys are needed. Dev environments cannot be able to mess with production.
+**The codebase has to be ready for it.** A non-technical contributor prompting an agent inside your codebase is a stress test for everything I wrote about in [my last post](./2026-09-15-Agentic-Stacks). If the stack isn’t opinionated, if the patterns aren’t adhered to, if the agent has to apply band-aids to deliver results, then things get messy quickly. An agentic stack constrains the agent regardless of who is driving it, and that is what makes non-engineer PRs cost-effective to review and safe to accept. It also means the dev environment has to be one-command to start, with every integration mocked so no sensitive keys are needed. Dev environments must not be able to touch production.
 
-**The people involved need to be amenable to it.** A setup like this can easily rub people the wrong way. Having to clean up code generated by colleages is probably not the greatest developer experience, even if it saves time. And taking on both the power and the responsibility of making direct changes to the product can be exciting for some partners and disconcerting for others. This won't work for everyone, and it won't work if everyone involved isn't on board. It's a big shift in who does what and that can be understandably off-putting.
+**The people involved need to be amenable to it.** A setup like this can easily rub people the wrong way. Having to clean up code generated by colleagues is probably not the greatest developer experience, even if it saves time. It shifts the engineer's job toward the platform and the review, and it makes tooling that keeps review cheap matter more, not less. And taking on both the power and the responsibility of making direct changes to the product can be exciting for some partners and disconcerting for others. This won't work for everyone, and it won't work if everyone involved isn't on board. It's a big shift in who does what and that can be understandably off-putting.
 
 If you want to try this, start by increasing the odds of having those ingredients. Invest in the codebase and the shared agentic tooling so that informally generated changes come out reasonable by making the easy way the right way. Find the people who are curious. Fund and provision dev environments for them. Expect some trial and error. It’s a process to overhaul a process.
 
-## Ownershipa
+## Ownership
 
 What I’m proposing is that every function gets the kind of direct access to their piece of the product that engineers have historically owned out of necessity, not necessarily because it made sense. It feels a bit silly for me as an engineer to take a change request from a partner and then just copy-paste that request into an agent and then pass back the result. I add little if anything to the process, and I don't have as crisp a vision of what the person wants to see from this change. It's just a holdover from when things worked differently.
 
