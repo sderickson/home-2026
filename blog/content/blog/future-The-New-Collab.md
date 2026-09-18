@@ -1,6 +1,6 @@
 # A Redistribution of Code Ownership
 
-_September 17, 2026_
+_tbd_
 
 Imagine being an engineer who is never allowed to see or edit the code. You can only describe what you want to an agent and look at the resulting product. Every tweak, every fix, every “move that two pixels left” goes through an intermediary, and you wait to see whether it came out right. Oh and it can take hours, days, or even weeks.
 
