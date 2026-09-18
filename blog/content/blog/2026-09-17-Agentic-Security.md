@@ -42,6 +42,14 @@ Early in a product's life, ideally before launch, write a threat model. Take an 
 
 The document is only useful if it stays current, and the way to keep it current is to make checking it part of the process rather than a separate exercise. My [project spec workflow](https://docs.saf-demo.online/processes/docs/workflows/spec-project.html) now includes a Security Model Updates section in every spec. The agent reads the product's threat model, works through new public surface, authorization, data handling, integrations and secrets, and file handling for the feature being planned, and either records the changes or writes "None" with a reason. Once the spec is approved, the workflow applies those changes to the threat model before any implementation starts, and the plan is expected to include the security work it implies. Most features don't change the model. Checking anyway is what keeps security top of mind, and the check costs one agent step.
 
+### Elevate review of sensitive files
+
+Some files deserve a human's full attention every time they change, no matter how large the PR they arrive in. The production `docker-compose` file is the obvious one. A one-line change there can expose a server port directly to the internet, and it will sit quietly in a five-hundred-file diff alongside the feature it was made for. The Caddyfile, the CSP allowlist, the auth middleware, the list of routes that skip authentication, anything under `security/`, and CI configuration all belong on the same list.
+
+I have caught this in the wild. An agent, trying to make some testing easier, once proposed exposing the node-exporter metrics endpoint directly. Node-exporter reports process environment variables, and those environment variables held API keys. It wasn't malicious and it wasn't stupid; from the agent's point of view it was the shortest path to the thing it was asked to do. It was just a change that a reviewer skimming a large PR for the feature would have had no reason to look at.
+
+I haven't built the fix yet, but it's next. The [dev-site](https://docs.saf-demo.online/dev-site/docs/01-overview.html) I described in [Agentic Stacks](./2026-09-15-Agentic-Stacks) already exists to pull the key facts out of a large change so they can be reviewed on their own. Sensitive files should be one of those facts, surfaced at the top of every review and requiring an explicit acknowledgment before merge, so that a small security change can't ride in unnoticed on a big product change. Until that's in place, a CODEOWNERS entry or a CI check that fails when those paths change without a matching label gets you most of the way.
+
 ## Agents attacking you
 
 ### Make updating versions trivial
@@ -56,4 +64,4 @@ Do you need to collect all this information about your users? Do you need to sen
 
 ## What changed
 
-Most of security didn't change. MFA on every service, security headers, audits, training, and the rest of the checklist are as necessary as they were two years ago. The items above are the ones agents changed: either because your own agent now has access you need to bound, because the code in your product was written by something that doesn't notice when a tag does nothing, or because the thing probing your perimeter is now tireless and cheap. Even if you're early, write the threat model. And be very deliberate about what capabilities you hand to agents inside your systems, because as OpenAI just demonstrated, they will use them.
+Most of security didn't change. MFA on every service, security headers, audits, training, and the rest of the checklist are as necessary as they were two years ago. The items above are the ones agents changed: either because your own agent now has access you need to bound, because the code in your product was written by something that doesn't notice when a tag does nothing or a port is public, or because the thing probing your perimeter is now tireless and cheap. Even if you're early, write the threat model. And be very deliberate about what capabilities you hand to agents inside your systems, because as OpenAI just demonstrated, they will use them.
