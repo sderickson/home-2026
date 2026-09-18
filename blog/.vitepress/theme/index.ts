@@ -39,7 +39,12 @@ export default {
       return;
     }
 
-    initPostHogIfConfigured();
+    // Pass VITE_* from app source — Vite does not substitute import.meta.env
+    // inside @saflib workspace packages, so reading them in init() alone no-ops.
+    initPostHogIfConfigured({
+      apiKey: import.meta.env.VITE_POSTHOG_PROJECT_API_KEY,
+      apiHost: import.meta.env.VITE_POSTHOG_PROJECT_HOST,
+    });
     capturePageview(window.location.href);
 
     const previous = router.onAfterRouteChange;
