@@ -1,12 +1,21 @@
 import { defineConfig } from "vitepress";
+import { loadEnv } from "vite";
 import vuetify from "vite-plugin-vuetify";
 import path from "path";
 import { fileURLToPath } from "url";
 import { BLOG_HOSTNAME, rssDevPlugin, writeRssFeed } from "./rss.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const monorepoRoot = path.resolve(__dirname, "../..");
-const contentDir = path.resolve(__dirname, "../content");
+const blogRoot = path.resolve(__dirname, "..");
+const monorepoRoot = path.resolve(blogRoot, "..");
+const contentDir = path.resolve(blogRoot, "content");
+
+// VitePress/Vite can leave import.meta.env.VITE_* as undefined in the client
+// bundle unless we define them explicitly from .env* files.
+const mode = process.argv.some((arg) => /(^|\/)build$/.test(arg))
+  ? "production"
+  : "development";
+const env = loadEnv(mode, blogRoot, "VITE_");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -22,6 +31,15 @@ export default defineConfig({
     }
   },
   vite: {
+    envDir: blogRoot,
+    define: {
+      "import.meta.env.VITE_POSTHOG_PROJECT_API_KEY": JSON.stringify(
+        env.VITE_POSTHOG_PROJECT_API_KEY ?? "",
+      ),
+      "import.meta.env.VITE_POSTHOG_PROJECT_HOST": JSON.stringify(
+        env.VITE_POSTHOG_PROJECT_HOST ?? "https://us.i.posthog.com",
+      ),
+    },
     ssr: {
       noExternal: ["vuetify"],
     },
