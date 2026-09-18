@@ -49,7 +49,7 @@ http://caddy:2020 {
 		Cross-Origin-Opener-Policy "same-origin"
 		Cross-Origin-Embedder-Policy "unsafe-none"
 		Cross-Origin-Resource-Policy "same-site"
-		Content-Security-Policy "default-src 'self'; script-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://static.cloudflareinsights.com {$CSP_SCRIPT_SRC_EXTRA}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' {$CSP_CONNECT_SRC}; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'self' blob:; worker-src 'self' blob:; report-uri {$CSP_REPORT_URI}"
+		Content-Security-Policy "default-src 'self'; script-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://static.cloudflareinsights.com {$CSP_SCRIPT_SRC_EXTRA}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: {$CSP_IMG_SRC_EXTRA}; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' {$CSP_CONNECT_SRC}; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'self' blob:; worker-src 'self' blob:; report-uri {$CSP_REPORT_URI}"
 		-Server
 	}
 }
