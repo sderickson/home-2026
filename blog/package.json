@@ -14,6 +14,7 @@
   "dependencies": {
     "@saflib/dev-tools": "*",
     "@saflib/vitepress": "*",
+    "@saflib/vendors-posthog-client": "*",
     "sass-embedded": "*",
     "vite-plugin-vuetify": "*",
     "vuetify": "*"
