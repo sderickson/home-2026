@@ -104,17 +104,27 @@ export default defineConfig({
       {
         text: "Highlighted Posts",
         items: [
-          { text: "Making a Software Stack Agentic", link: "/2026-09-15-Agentic-Stacks" },
-          { text: "Governing Products", link: "/2025-06-14-Governing-Products" },
-          { text: "Accountability and Gaslighting", link: "/2025-05-24-Accountability-and-Gaslighting" },
+          {
+            text: "A Redistribution of Code Ownership",
+            link: "/2026-09-23-Redistributed-Ownership",
+          },
+          {
+            text: "Making a Software Stack Agentic",
+            link: "/2026-09-15-Agentic-Stacks",
+          },
+          {
+            text: "Governing Products",
+            link: "/2025-06-14-Governing-Products",
+          },
+          {
+            text: "Accountability and Gaslighting",
+            link: "/2025-05-24-Accountability-and-Gaslighting",
+          },
           { text: "Theory of DX", link: "/2025-04-18-Theory-of-Dx" },
-          { text: "Reliability", link: "/2025-04-11-Reliability" },
         ],
       },
     ],
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/sderickson" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/sderickson" }],
   },
 });

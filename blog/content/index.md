@@ -4,6 +4,7 @@
 
 ### Fall 2026
 
+- [A Redistribution of Code Ownership](/2026-09-23-Redistributed-Ownership)
 - [Making a Software Stack Agentic](/2026-09-15-Agentic-Stacks)
 
 ### Winter 2026
