@@ -10,7 +10,7 @@ How engineers work with each other now that coding agents are in the mix is its 
 
 ## The old process
 
-In the classic mode of product development, product managers and designers think through everything ahead of time. They gather rough estimates, produce a thorough spec and a pixel-perfect design, get sign-off, and hand it to engineering. Engineering builds to the spec. As blockers and edge cases come up, the spec is updated. Once the product is ostensibly built, product, design, and QA use it for the first time and send back a list of fixes. Then it launches.
+In the classic mode of product development (either agile or waterfall), product managers and designers think through a great deal ahead of time. They gather rough estimates, produce a thorough spec and a pixel-perfect design, get sign-off, and hand it to engineering. Engineering builds to the spec. As blockers and edge cases come up, the spec is updated. Once the product is ostensibly built, product, design, and QA use it for the first time and send back a list of fixes. Then it launches.
 
 All that up-front articulation existed because the build was a larger investment and the people paying for it wanted to know what they were getting before they committed. It was also the main lever non-engineers had. If you couldn’t touch the code, the source-of-truth spec and iterative feedback was how you steered.
 
@@ -24,7 +24,7 @@ With agentic coding, the collaboration I’ve been trying looks more like this:
 - **Partners polish the product.** Once the feature, data model, API, and rough frontend exist, the PM or designer runs the branch in their dev environment and vibe-codes their own tweaks with an agent. Mostly they adjust the front end and change minor decisions the agent made.
 - **Engineering reviews and merges.** PRs from PMs and designers get polished on the technical side as needed and merged into the codebase.
 
-The payoff is that nobody has to hold the whole vision in their head and transfer it losslessly to someone else in an expensive game of telephone. Partners decide many of the details of what they want by playing around with an early build rather than by imagining it. Engineers aren’t the bottleneck for layout, copy, color, or even the composition of a page. And when a change is small, a PR is a more precise way to communicate it than a conversation at standup or DM. Let the partner directly get it looking and behaving how they want, and let the engineer ensure the product is reliable, performant, and maintainable. For both, time is saved.
+The payoff is that nobody has to hold the whole vision in their head and transfer it losslessly to someone else in an expensive game of telephone. Partners decide many of the details of what they want by playing around with an early build rather than by imagining it. Engineers aren’t the bottleneck for layout, copy, color, or even the composition of a page. And when a change is small, a PR is a more precise way to communicate it than a conversation at standup or DM. The partner directly gets it looking and behaving how they want, and the engineer ensures the product is reliable, performant, and maintainable. For both, time is saved through a better distrubution of responsibility.
 
 ## How it has gone so far
 
@@ -36,7 +36,7 @@ That's a couple of people on one team making small changes to a product that was
 
 ## Beyond PMs and designers
 
-I think the same shift applies to a good number of other partners. Analysts adding product events, QA fixing the bugs they find, copy editors fixing text. These changes are small enough that the cost of getting an engineer's time and describing the change to them is greater than the cost of just making the change, checking it works, and having an engineer review the result. The mode of communication becomes PR contributions.
+I think the same shift applies to a good number of other partners. Analysts adding product events, QA fixing the bugs they find, copy editors fixing text. These changes are small enough that the cost of getting an engineer's time and describing the change to them is greater than the cost of just making the change, checking it works, and having an engineer (or an engineer-owned agent) review the result. The mode of communication becomes PR contributions.
 
 ## What has to be true
 
