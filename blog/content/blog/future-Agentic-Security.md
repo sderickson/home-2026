@@ -6,7 +6,7 @@ In July, OpenAI's internal evaluation agents broke out of their sandbox, harvest
 
 This story and others that have been coming out have brought security in the era of agentic development into focus. There are three novel problems software maintainers now need to grapple with:
 
-1. Agents ostensibly under your control can take unintended and undesirable actions.
+1. Agents ostensibly under your control can take unintended and undesirable actions, either on their own or because someone tricked them.
 2. In order to be secure, systems you own need to be able to withstand an agentic swarm attack, not just script kiddies or human hackers.
 3. The increased volume of code changes provided by coding agents makes it easier to introduce vulnerabilities.
 
@@ -20,7 +20,7 @@ At minimum, there should be a wall between the agent and any production deployme
 
 - Add branch protection to your repository, requiring a PR for every merge to main, and making sure the agent's identity can't approve or merge one.
 - Require approval for any production access or pushes to a repository. For example, I use the [1Password SSH agent](https://developer.1password.com/docs/ssh/) configured so that every push and ssh login requires a biometric approval.
-- Never give the agent access to database credentials.
+- Never give the agent access to production database credentials.
 
 To really control what an agent can do, you can also run it inside a container on your machine, or better yet a separate host outside your network if you have the resources. This cleanly separates the agent's capabilities from your own, which is ideal.
 
@@ -54,7 +54,7 @@ The document is only useful if it stays current, and the way to keep it current 
 
 ### Elevate review of sensitive files
 
-Some files deserve a human's full attention every time they change, no matter how large the PR they arrive in. I've personally seen it happen a couple times where an agent updated a docker-compose file which would have lead to a major security issue if I hadn't caught it. Make sure humans review all changes to files that have the potential to break security measures if changed incorrectly, such as:
+Some files deserve a human's full attention every time they change, no matter how large the PR they arrive in. I've personally seen it happen a couple of times where an agent updated a docker-compose file which would have led to a major security issue if I hadn't caught it. Make sure humans review all changes to files that have the potential to break security measures if changed incorrectly, such as:
 
 - Infra-as-code files which specify what resources there are and what they can do
 - Dependency lists and lock files
@@ -67,13 +67,13 @@ Within a larger team, [CODEOWNERS](https://docs.github.com/en/repositories/manag
 
 ### Make updating versions manageable
 
-Automate opening dependency update PRs, especially the ones that address security advisories, so that staying current is (mostly) quick and painless. Use services like [Dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/about-dependabot-alerts) or [Renovate](https://docs.renovatebot.com/) to open these PRs automatically and build a robust CI test suite so changes can be reviewed and merged in quickly and safely.
+Automate opening dependency update PRs, especially the ones that address security advisories, so that staying current is (mostly) quick and painless. Use services like [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart) or [Renovate](https://docs.renovatebot.com/) to open these PRs automatically and build a robust CI test suite so changes can be reviewed and merged in quickly and safely.
 
 Part of making updates easy is keeping the dependency count down. Review your dependencies periodically and ask whether each is still necessary. If a dependency is large and you use a small slice of it, consider replacing it with your own implementation. And of course look twice at every package an agent suggests installing, since each one is a potential attack surface.
 
 ### Treat everything an agent reads as input
 
-Everything an agent reads is a potential instruction. A dependency's README, a GitHub issue, an MCP server response, documentation from a website, really anything that comes from outside your organization can be path for an outsider to try and trick your agent into doing something it shouldn't. This makes building powerful, flexible tools fraught with risk.
+Everything an agent reads is a potential instruction. A dependency's README, a GitHub issue, an MCP server response, documentation from a website, really anything that comes from outside your organization can be a path for an outsider to try and trick your agent into doing something it shouldn't. This makes building powerful, flexible tools fraught with risk.
 
 As a starting measure, when an agent will automatically handle content from outside, give them the least access and information you can. An agent that triages issues submitted by the public automatically could be effective given only the power to read, tag, and close them. For an agent to actually be given the resources to investigate or create a PR, such as read access to the codebase or production logs, there needs to be some mechanism (I'd suggest human review) to ensure nefarious submissions don't get to those more powerful agents. And much like the threat model maintained for securing the product, it's also useful to keep track of what agents there are, what systems they have access to, and how you're protecting them.
 
@@ -85,6 +85,6 @@ If you can, never put user-submitted strings into logs of any kind. If there's a
 
 ## An evolving security model
 
-Regardless the changes brought by coding agents, the fundamentals of security haven't changed. I've been focused on addressing what _has_ changed, but everything that was important before is still important (if not more so) now. Use MFA on every service login, scan for secrets added to code, adopt security HTTP headers, keep audit logs, do security training, keep credentials short-lived... these are some of the many tried-and-true security measures that help protect against longstanding threats.
+Regardless of the changes brought by coding agents, the fundamentals of security haven't changed. I've been focused on addressing what _has_ changed, but everything that was important before is still important (if not more so) now. Use MFA on every service login, scan for secrets added to code, adopt security HTTP headers, keep audit logs, do security training, keep credentials short-lived... these are some of the many tried-and-true security measures that help protect against longstanding threats.
 
 But there are new threats that come along with all the new opportunities brought by agents, in software development, in internal workflows, and in products brought to market. As an industry we're still figuring out how to manage the various risks they bring. As we go about grappling with this new reality, the most important thing is to be aware of and on the lookout for new threats, by having a security mindset throughout your work as an engineer.
