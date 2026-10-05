@@ -1,0 +1,7 @@
+# Built hub SPAs for production (static output only).
+FROM #{ image @sderickson/hub-root-clients }# AS build
+COPY ./deploy/env.hub.prod-local /app/env.hub.prod-local
+RUN export $(grep -v "^#" /app/env.hub.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
+
+FROM busybox:1.37
+COPY --from=build /app/hub/clients/build/dist /dist

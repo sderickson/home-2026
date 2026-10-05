@@ -1,0 +1,6 @@
+# Built recipes marketing site (static output only).
+FROM #{ image @sderickson/recipes-static-root }# AS build
+RUN npm run build
+
+FROM busybox:1.37
+COPY --from=build /app/recipes/clients/static-root/.vitepress/dist /dist

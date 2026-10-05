@@ -1,0 +1,7 @@
+# Built recipes SPAs for production (static output only).
+FROM #{ image @sderickson/recipes-root-clients }# AS build
+COPY ./deploy/env.recipes.prod-local /app/env.recipes.prod-local
+RUN export $(grep -v "^#" /app/env.recipes.prod-local | xargs) && DOMAIN=${DOMAIN} CLIENT_SUBDOMAINS=${CLIENT_SUBDOMAINS} SERVICE_SUBDOMAINS=${SERVICE_SUBDOMAINS} npm run build
+
+FROM busybox:1.37
+COPY --from=build /app/recipes/clients/build/dist /dist
