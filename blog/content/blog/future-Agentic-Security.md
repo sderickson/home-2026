@@ -7,12 +7,12 @@ In July, OpenAI's internal evaluation agents broke out of their sandbox, harvest
 This story and others that have been coming out have brought security in the era of agentic development into focus. There are three novel problems software maintainers now need to grapple with:
 
 1. Agents ostensibly under your control can take unintended and undesirable actions, either on their own or because someone tricked them.
-2. In order to be secure, systems you own need to be able to withstand an agentic swarm attack, not just script kiddies or human hackers.
+2. In order to be secure, systems you own need to be able to withstand an agentic attack, which brings both far more volume than script kiddies or human hackers and, occasionally, vulnerabilities nobody has seen before.
 3. The increased volume of code changes provided by coding agents makes it easier to introduce vulnerabilities.
 
 Taken together, building secure applications and services requires an updated approach. Having spent some time considering how to develop agentic products safely, here are the things I do now for every project going forward, to meet the raised bar.
 
-## Your own coding agent
+## Your own agents
 
 ### Don't let agents push to prod, or take other privileged actions
 
@@ -31,6 +31,12 @@ Regardless where your coding agent is, a quick way to gauge its powers is to ask
 An API key on your dev machine is convenient for testing a new integration, but it is often unnecessary to keep around, and adds risk. Minimize how many keys are present where the agent works. Use a dedicated test account or, if the service offers one, a sandbox key, so there's a ceiling on the damage the agent (or you or anyone working on the codebase) can do.
 
 Better still, once you've tested the live integration, write a mock client and make it the default in tests and development. In my stack every third-party integration has one so a dev environment needs no sensitive keys at all. For integrations with inbound webhooks, go a step further and build a small dev-only UI that fakes activity on the third party's side, so you can exercise all product flows without integrating and using a live service. This is also what makes it safe to provide dev environments to [non-engineers](./2026-09-23-Redistributed-Ownership): they can't leak a key that isn't there. Mocks and test helpers are cheap to generate now, so make them a habit and expectation.
+
+### Treat everything an agent reads as input
+
+Everything an agent reads is a potential instruction. A dependency's README, a GitHub issue, an MCP server response, documentation from a website, really anything that comes from outside your organization can be a path for an outsider to try and trick your agent into doing something it shouldn't. It can even be tricked into running malicious code by [trying to play it safe](https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/). This makes building powerful, flexible tools fraught with risk.
+
+As a starting measure, when an agent will automatically handle content from outside, give them the least access and information you can. An agent that triages issues submitted by the public automatically could be effective given only the power to read, tag, and close them. For an agent to actually be given the resources to investigate or create a PR, such as read access to the codebase or production logs, there needs to be some mechanism (I'd suggest human review, using agentic review only as a supplement) to ensure nefarious submissions don't get to those more powerful agents. And much like the threat model maintained for securing the product, it's also useful to keep track of what agents there are, what systems they have access to, and how you're protecting them.
 
 ## Code the agent writes
 
@@ -67,17 +73,17 @@ Within a larger team, [CODEOWNERS](https://docs.github.com/en/repositories/manag
 
 ## Agents attacking you
 
+Let's be clear about what an agentic attacker actually brings. The Hugging Face breach wasn't zero-days. The entry points were a remote-code dataset loader and a template injection in a config file, bug classes that predate agents by a decade. What the swarm brought was 17,000 actions and four months of patient probing. It doesn't need to be clever. It needs you to have one thing you didn't patch, one key you left lying around, one copy of the data you forgot about, and it has the time and volume to find it.
+
+Sometimes, though, it is clever. On September 21, an AI agent breached the [Dutch Institute for Vulnerability Disclosure](https://csirt.divd.nl/cases/DIVD-2026-00014/) by chaining two previously unknown vulnerabilities in the Zammad helpdesk software, going from a hijacked session to root in seconds. DIVD describes the agent as "loud and very, very messy," and it's not yet known whether it found the bugs itself or was handed them. It got in regardless. So far the data suggests these cases are rare; [VulnCheck found](https://www.infosecurity-magazine.com/news/one-percent-ai-vulnerabilities/) that AI-discovered vulnerabilities are exploited in the wild at the same 1% rate as everything else, and the labs' own disclosure programs are finding most of them first. But rare is not never, and the window between a vulnerability being published and being exploited is [now measured in hours](https://www.techtimes.com/articles/328531/20261005/cve-2026-61500-anthropic-mythos-finds-rejetto-hfs-flaw-exploited-within-one-day.htm).
+
+The first response to agentic attackers is unglamorous: traditional security is now table stakes, and anything that can be exploited will be. MFA on every service login, secret scanning on every commit, security headers, audit logs, rate limiting, short-lived credentials, security training. None of that is new, and all of it matters more than it did, because the cost to exploit security has gone down. But there are a few classic measures worth special mention.
+
 ### Make updating versions manageable
 
 Automate opening dependency update PRs, especially the ones that address security advisories, so that staying current is (mostly) quick and painless. Use services like [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart) or [Renovate](https://docs.renovatebot.com/) to open these PRs automatically and build a robust CI test suite so changes can be reviewed and merged in quickly and safely. Don’t automate merging them in, though, to guard against supply-chain attacks.
 
 Part of making updates easy is keeping the dependency count down. Review your dependencies periodically and ask whether each is still necessary. If a dependency is large and you use a small slice of it, consider replacing it with your own implementation. And of course look twice at every package an agent suggests installing, since each one is a potential attack surface.
-
-### Treat everything an agent reads as input
-
-Everything an agent reads is a potential instruction. A dependency's README, a GitHub issue, an MCP server response, documentation from a website, really anything that comes from outside your organization can be a path for an outsider to try and trick your agent into doing something it shouldn't. It can even be tricked into running malicious code by trying to play it safe. This makes building powerful, flexible tools fraught with risk.
-
-As a starting measure, when an agent will automatically handle content from outside, give them the least access and information you can. An agent that triages issues submitted by the public automatically could be effective given only the power to read, tag, and close them. For an agent to actually be given the resources to investigate or create a PR, such as read access to the codebase or production logs, there needs to be some mechanism (I'd suggest human review, using agentic review only as a supplement) to ensure nefarious submissions don't get to those more powerful agents. And much like the threat model maintained for securing the product, it's also useful to keep track of what agents there are, what systems they have access to, and how you're protecting them.
 
 ### Limit data collection
 
@@ -87,11 +93,17 @@ Do you need to send all the data to your analytics vendor? Does it need to be re
 
 If you can, never put user-submitted strings into logs of any kind. If there's a schema validation error, log the error but not the input that triggered it. Log the user's id, not their name or email. Doing so serves a double purpose: it limits how much sensitive information can leak and how, and keeps logs safe for agents to consume when debugging so you don't even have to worry about it.
 
-### Run regular “agent” drills
+### Layer your defenses
 
-While bad actors have increased capabilities, product owners can also use these same capabilities to shore up their defenses. Have red teams of agents tackle your site defenses to suss out any low-hanging fruit before other actors do, and do so regularly as things continue to evolve. Like when responding to fires and other disasters, it’s important to practice and test your response ahead of time.
+Against a swarm, walls are likely to be breached, so build multiple walls. Keep SSH behind a VPN, the admin UI behind an identity-aware proxy, and the database off the public internet. Segment the network so a compromised service can't see the others, and reaching the data requires a chain of unrelated bugs in unrelated software from unrelated vendors, all at once. The DIVD breach demonstrates the value of this; the attacker needed two zero-days to succeed, not one, and was hampered by network segmentation.
 
-In addition to helping identify issues which can be addressed with classic security measures such as rate limiting and captchas, you may need to adopt more novel defenses such as setting up agentic monitoring systems to detect and respond to suspicious activity. These systems should be handled with care, though, since they can also be targets of attack.
+### Run red team drills
+
+It's important to test your own defenses before attackers do, and this should include attacking them with your own agents. With some regularity take the best models you have access to and have them see if they can break in. Like when responding to fires and other disasters, it's important to practice and improve responses ahead of time.
+
+These drills may uncover unexpected weaknesses or snags that you would not find otherwise ahead of time. For example, Hugging Face's tried to make sense of the swarm's actions by running LLM analysis agents over the full log, but were blocked by safety guardrails. They ended up running the forensics on an open-weight model on their own hardware. This is the sort of discovery a red-team drill should uncover.
+
+The step beyond that is agentic monitoring that doesn't just detect suspicious activity but responds to it, which becomes increasingly important as incident timescales shrink. Approach it carefully, though. A defender with the authority to shut things down is a highly privileged agent that can read attacker-controlled input, which is itself a vulnerability. The more power you give it, the greater the risk.
 
 ## An evolving security model
 
