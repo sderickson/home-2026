@@ -11,5 +11,6 @@
   "dependencies": {
     "@saflib/dev-tools": "*",
     "@sderickson/recipes-root-clients": "*"
-  }
+  },
+  "devDependencies": {}
 }
