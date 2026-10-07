@@ -6,7 +6,10 @@ coverage
 
 # Gitignored paths under this build's COPY sources (local data, dev
 # databases, logs): not part of the input hash, so never shipped.
+clients/resume/.vitepress/cache
+clients/resume/.vitepress/dist
 clients/resume/Dockerfile
+clients/resume/node_modules
 saflib/vitepress/dist
 saflib/vitepress/dist/types
 saflib/vitepress/node_modules
