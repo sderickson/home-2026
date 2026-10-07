@@ -1,0 +1,16 @@
+{
+  "name": "@sderickson/resume-client",
+  "version": "1.0.0",
+  "description": "Static resume site",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@saflib/vitepress": "*"
+  }
+}

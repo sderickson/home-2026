@@ -1,0 +1,12 @@
+# Production reverse proxy. Each site is its own build (deploy/builds/*), so
+# changing one product rebuilds only that site; this image just copies the
+# built output in.
+FROM caddy:2.11.2
+
+COPY --from=#{ image @sderickson/deploy/builds/blog }# /dist /srv/blog-client
+COPY --from=#{ image @sderickson/deploy/builds/resume }# /dist /srv/resume-client
+COPY --from=#{ image @sderickson/deploy/builds/recipes-static-root }# /dist /srv/recipes-static-root
+COPY --from=#{ image @sderickson/deploy/builds/recipes-clients }# /dist /srv/recipes-clients
+COPY --from=#{ image @sderickson/deploy/builds/hub-clients }# /dist /srv/hub-clients
+
+COPY ./deploy/remote-assets/config /etc/caddy/

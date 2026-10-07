@@ -1,9 +1,8 @@
 # syntax=docker/dockerfile:labs
 
-# Requires a local tag first: recipes/dev npm scripts run `docker build` on
-# recipes/clients/static-root before compose (compose builds services in parallel).
+# The image marker names an upstream build; `saf-docker build` builds it first.
 # Logged-out recipes marketing site — same base image as deploy (recipes/clients/static-root).
-FROM sderickson-recipes-static-root:latest AS static-root-builder
+FROM #{ image @sderickson/recipes-static-root }# AS static-root-builder
 RUN npm run build
 
 # Monorepo install once — workspace closure of @sderickson/recipes-dev (hub static builds for this stack).
