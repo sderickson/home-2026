@@ -31,5 +31,13 @@ body {
     padding: 0;
     min-height: 0;
   }
+
+  /* Avoid VitePress chrome / link decorations showing up in print. */
+  .VPLocalNav,
+  .VPNav,
+  .VPSidebar,
+  .VPFooter {
+    display: none !important;
+  }
 }
 </style>

@@ -371,7 +371,7 @@ const roles: Role[] = [
   font-size: 10.5pt;
 }
 
-@media (max-width: 720px) {
+@media screen and (max-width: 720px) {
   .resume-header {
     grid-template-columns: 1fr;
   }
@@ -408,9 +408,122 @@ const roles: Role[] = [
 }
 
 @media print {
+  @page {
+    size: letter;
+    margin: 0.45in 0.5in;
+  }
+
   .resume {
     max-width: none;
     padding: 0;
+    font-size: 10pt;
+    line-height: 1.25;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Keep the two-column header, but outline instead of solid fills.
+     Print preview often reports a narrow viewport, so re-assert the grid. */
+  .resume-header {
+    display: grid !important;
+    grid-template-columns: 1.15fr 0.85fr !important;
+    min-height: 0;
+    border: 1.25pt solid var(--resume-dark);
+  }
+
+  .resume-header__identity {
+    background: transparent;
+    color: var(--resume-ink);
+    border-right: 1.25pt solid var(--resume-dark);
+    padding: 0.4rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .resume-header__name {
+    font-size: 22pt;
+  }
+
+  .resume-header__contact {
+    color: var(--resume-muted);
+    font-size: 9.5pt;
+  }
+
+  .resume-header__title {
+    background: transparent;
+    color: var(--resume-ink);
+    padding: 0.4rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .resume-header__title p {
+    font-size: 16pt;
+  }
+
+  .resume-headline {
+    margin: 0.4rem 0 0.3rem;
+    color: var(--resume-dark);
+    font-size: 9pt;
+  }
+
+  .resume-summary {
+    margin: 0 0 0.35rem;
+  }
+
+  .resume-expertise {
+    background: transparent;
+    border-top: 1pt solid var(--resume-dark);
+    border-bottom: 1pt solid var(--resume-dark);
+    padding: 0.28rem 0;
+    margin-bottom: 0.15rem;
+  }
+
+  .resume-section {
+    background: transparent;
+    color: var(--resume-dark);
+    border-top: 1.25pt solid var(--resume-dark);
+    border-bottom: 1pt solid var(--resume-dark);
+    padding: 0.18rem 0;
+    margin-top: 0.35rem;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .resume-role {
+    padding: 0.35rem 0 0.1rem;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .resume-role + .resume-role {
+    border-top: 0.6pt solid #c8c8c8;
+    padding-top: 0.4rem;
+    margin-top: 0.15rem;
+  }
+
+  .resume-skills,
+  .resume-education {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .resume-skills {
+    padding: 0.35rem 0 0.35rem 1.15rem;
+  }
+
+  .resume-education {
+    padding: 0.4rem 0 0;
+  }
+
+  .resume-role__url {
+    text-decoration: none;
+  }
+
+  a {
+    color: inherit;
   }
 }
 </style>
