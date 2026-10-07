@@ -11,6 +11,7 @@ export default defineConfig({
   description: "Scott Erickson's resume",
   srcDir: "./content",
   cleanUrls: true,
+  appearance: false,
   vite: {
     server: {
       fs: {
@@ -21,6 +22,15 @@ export default defineConfig({
   themeConfig: {
     nav: [],
     sidebar: false,
-    socialLinks: [{ icon: "github", link: "https://github.com/sderickson" }],
+    socialLinks: [],
   },
+  head: [
+    [
+      "link",
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+      },
+    ],
+  ],
 });

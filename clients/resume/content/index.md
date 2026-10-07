@@ -1,3 +1,1 @@
-# Scott Erickson
-
-Resume coming soon.
+<ResumePage />

@@ -1,0 +1,9 @@
+/* Hide VitePress defaults; resume is a custom single page. */
+.VPDoc,
+.vp-doc {
+  padding: 0 !important;
+}
+
+.vp-doc p {
+  margin: 0;
+}
