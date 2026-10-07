@@ -1,0 +1,7 @@
+# Built blog site. Only the static output ships, in a tiny image, so the
+# caddy build just copies it in.
+FROM #{ image @sderickson/blog-client }# AS build
+RUN npm run build
+
+FROM busybox:1.37
+COPY --from=build /app/blog/.vitepress/dist /dist
