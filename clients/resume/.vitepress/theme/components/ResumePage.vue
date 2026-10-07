@@ -19,19 +19,20 @@
     </p>
 
     <p class="resume-summary">
-      Accomplished Software Engineering Manager with extensive experience and
-      expertise delivering innovative software solutions. Proven track record of
-      building and leading high-performing teams by prioritizing operational
-      excellence, top talent acquisition, retention, and career development.
-      Skilled at driving change by aligning strategic roadmaps with internal and
-      external stakeholders.
+      Software engineer and engineering leader with extensive experience
+      building products from the ground up and leading the teams that scale
+      them. Currently hands-on, shipping full-stack products and AI-native
+      developer tooling, with a proven track record managing high-performing
+      teams at Dropbox by prioritizing operational excellence, talent
+      development, and alignment with internal and external stakeholders.
+      Effective as a senior individual contributor or as a manager.
     </p>
 
     <p class="resume-expertise">
-      Areas of Expertise: Software Development • Project Management • Technical
-      Leadership • Strategic Planning • Customer Relations • Process Improvement
-      • Product Management • Team Building • Project Management • AI Development
-      • Platform Infrastructure
+      Areas of Expertise: Software Development • Technical Leadership •
+      Agentic Development • Platform Infrastructure • Reliability &
+      Observability • Product Management • Project Management • Strategic
+      Planning • Process Improvement • Team Building • Customer Relations
     </p>
 
     <h2 class="resume-section">Career Progression</h2>
@@ -60,8 +61,9 @@
         <p class="resume-role__dates">{{ role.dates }}</p>
       </div>
       <p v-if="role.intro" class="resume-role__intro">{{ role.intro }}</p>
+      <!-- Bullets are static, authored strings; v-html lets them carry links. -->
       <ul class="resume-role__bullets">
-        <li v-for="(bullet, i) in role.bullets" :key="i">{{ bullet }}</li>
+        <li v-for="(bullet, i) in role.bullets" :key="i" v-html="bullet" />
       </ul>
     </section>
 
@@ -99,7 +101,26 @@ type Role = {
   bullets: string[];
 };
 
+const link = (href: string, label: string) =>
+  `<a href="${href}" target="_blank" rel="noopener">${label}</a>`;
+
 const roles: Role[] = [
+  {
+    company: "Independent",
+    title: "Cofounder / Consultant",
+    dates: "Jan 2025 – Present",
+    intro:
+      "Building new products end-to-end and advising teams on reliable, agent-assisted software development.",
+    bullets: [
+      `Built and open-sourced a production web framework designed for agentic coding (${link("https://docs.saf-demo.online/", "docs.saf-demo.online")}): self-contained, feature-complete, and structured so coding agents produce consistent results. Used it to build the three products below.`,
+      `Created a workflow harness that drives coding agents through templated, validated steps to generate routine code reliably (${link("https://workflows.saf-demo.online/", "workflows.saf-demo.online")}).`,
+      `Cofounded and built three products from the ground up: ${link("https://familycaller.com", "Family Caller")} (automated check-ins for people in cognitive decline, alerting caregivers), ${link("https://powerassetexchange.com", "Power Asset Exchange")} (gas turbine parts marketplace for utilities), and ${link("https://casedaemon.com", "Case Daemon")} (automated USCIS form filling for immigration lawyers).`,
+      "Proposed, built, and delivered evaluations under paid contract with the UK AI Security Institute (AISI), measuring the ability of agents to escape sandboxes and apply for jobs.",
+      "Brought in by an acquired startup, tasked with modernizing its new parent company's legacy systems, after breakages in a heavily agent-generated codebase had cost it pilot customers. Delivered focused reliability fixes, introduced observability tooling, and established safer practices for working with agentic tools.",
+      "Unblocked a healthcare benefits administration platform's Playwright adoption by decoupling tests from a shared user account on a single instance, enabling a safe product launch.",
+      `Write about these experiences at ${link("https://blog.scotterickson.info/", "blog.scotterickson.info")}.`,
+    ],
+  },
   {
     company: "Dropbox",
     title: "Engineering Manager",
@@ -135,8 +156,9 @@ const roles: Role[] = [
     title: "Cofounder / Engineering Lead",
     dates: "Jan 2013 – Dec 2018",
     intro:
-      "Led initiatives to modernize the codebase, including moving from callbacks to using Promises with yield, and switching from Backbone.js and mediator events to Vue.js and Vuex. Laid and iterated technical foundation, improving developer velocity and reducing bugs.",
+      "CodeCombat teaches students around the world to code by using Python and JavaScript to control fantasy characters in puzzles and battles. I led initiatives to modernize the codebase, including moving from callbacks to Promises with yield and from Backbone.js and mediator events to Vue.js and Vuex, improving developer velocity and reducing bugs.",
     bullets: [
+      "Defined the product by experimenting with different user demographics and game mechanics.",
       "Extended product with classroom edition, adding classroom management, licensing, and professional development features.",
       "Ran product team, managed team members and process.",
       "Owned, maintained, documented and improved AWS infrastructure and MongoDB clusters.",
@@ -151,8 +173,9 @@ const roles: Role[] = [
     title: "Cofounder",
     dates: "Jan 2008 – Dec 2013",
     intro:
-      "Built an educational mobile app teaching Chinese, frontend and backend, with scheduling, study, and vocabulary list management.",
+      "Skritter teaches the roughly two thousand Chinese and Japanese characters needed for literacy, combining stroke recognition with immediate feedback and a spaced repetition system that tracks what a student knows and when to review. I built the site, frontend and backend, including review scheduling, study page, and vocabulary list management.",
     bullets: [
+      "Developed the iOS application, which doubled revenue.",
       "Significantly improved product via iterative processes, including running UX tests, updating and adding features, and setting up subscription payments, making the company self-sustaining.",
       "Filled multiple roles, including sysadmin, customer support, salesperson, accountant, and chef.",
       "Built a product development team of 9, continuing to advise them as they grew the company and expanded the product.",
@@ -176,12 +199,7 @@ const roles: Role[] = [
   color: var(--resume-ink);
   background: var(--resume-page);
   font-family:
-    Carlito,
-    Calibri,
-    "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+    Carlito, Calibri, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5pt;
   line-height: 1.28;
 }
@@ -334,6 +352,12 @@ const roles: Role[] = [
   margin: 0 0 0.18rem;
   padding-left: 0.15rem;
   font-size: 10pt;
+}
+
+.resume-role__bullets a {
+  color: var(--resume-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .resume-role__bullets li::before {
