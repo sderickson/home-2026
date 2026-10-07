@@ -7,7 +7,7 @@ import { BLOG_HOSTNAME, rssDevPlugin, writeRssFeed } from "./rss.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const blogRoot = path.resolve(__dirname, "..");
-const monorepoRoot = path.resolve(blogRoot, "..");
+const monorepoRoot = path.resolve(blogRoot, "../..");
 const contentDir = path.resolve(blogRoot, "content");
 
 // VitePress/Vite can leave import.meta.env.VITE_* as undefined in the client

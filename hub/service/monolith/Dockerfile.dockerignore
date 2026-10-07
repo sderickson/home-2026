@@ -74,6 +74,7 @@ saflib/cron/cron-db/dist
 saflib/cron/cron-db/dist/types
 saflib/cron/cron-db/node_modules
 saflib/cron/cron-http/Dockerfile
+saflib/cron/cron-http/Dockerfile.dockerignore
 saflib/cron/cron-http/dist
 saflib/cron/cron-http/dist/types
 saflib/cron/cron-http/node_modules
