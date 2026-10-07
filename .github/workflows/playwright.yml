@@ -10,8 +10,8 @@ jobs:
       run:
         working-directory: .
     steps:
+      - uses: actions/setup-node@v7
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: "npm"
