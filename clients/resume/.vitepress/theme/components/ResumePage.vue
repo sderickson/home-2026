@@ -114,7 +114,7 @@ const roles: Role[] = [
     bullets: [
       `Built and open-sourced a production web framework designed for agentic coding (${link("https://docs.saf-demo.online/", "docs.saf-demo.online")}): self-contained, feature-complete, and structured so coding agents produce consistent results. Used it to build the three products below.`,
       `Created a workflow harness that drives coding agents through templated, validated steps to generate routine code reliably (${link("https://workflows.saf-demo.online/", "workflows.saf-demo.online")}).`,
-      `Cofounded and built three products from the ground up: ${link("https://familycaller.com", "Family Caller")} (automated check-ins for people in cognitive decline, alerting caregivers), ${link("https://powerassetexchange.com", "Power Asset Exchange")} (gas turbine parts marketplace for utilities), and ${link("https://casedaemon.com", "Case Daemon")} (automated USCIS form filling for immigration lawyers).`,
+      `Cofounded and built three products from the ground up: Family Caller (automated check-ins for people in cognitive decline, alerting caregivers), ${link("https://powerassetexchange.com", "Power Asset Exchange")} (gas turbine parts marketplace for utilities), and ${link("https://casedaemon.com", "Case Daemon")} (automated USCIS form filling for immigration lawyers).`,
       "Proposed, built, and delivered evaluations under paid contract with the UK AI Security Institute (AISI), measuring the ability of agents to escape sandboxes and apply for jobs.",
       "Brought in by an acquired startup, tasked with modernizing its new parent company's legacy systems, after breakages in a heavily agent-generated codebase had cost it pilot customers. Delivered focused reliability fixes, introduced observability tooling, and established safer practices for working with agentic tools.",
       "Unblocked a healthcare benefits administration platform's Playwright adoption by decoupling tests from a shared user account on a single instance, enabling a safe product launch.",
@@ -542,12 +542,11 @@ const roles: Role[] = [
     padding: 0.4rem 0 0;
   }
 
-  .resume-role__url {
-    text-decoration: none;
-  }
-
+  .resume-role__url,
+  .resume-role__bullets a,
   a {
     color: inherit;
+    text-decoration: none;
   }
 }
 </style>
