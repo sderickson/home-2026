@@ -32,7 +32,7 @@
     "vuetify": "4.1.8",
     "vite": "8.0.13",
     "rolldown": "1.0.1",
-    "better-sqlite3": "12.11.1",
+    "better-sqlite3": "13.0.3",
     "vue": "3.5.20",
     "@vue/compiler-core": "3.5.20",
     "@vue/compiler-dom": "3.5.20",
