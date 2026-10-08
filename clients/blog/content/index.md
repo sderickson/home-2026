@@ -4,6 +4,7 @@
 
 ### Fall 2026
 
+- [Agentic Era Security](/2026-10-08-Agentic-Security)
 - [A Redistribution of Code Ownership](/2026-09-23-Redistributed-Ownership)
 - [Making a Software Stack Agentic](/2026-09-15-Agentic-Stacks)
 

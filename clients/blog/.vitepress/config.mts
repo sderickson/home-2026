@@ -105,6 +105,10 @@ export default defineConfig({
         text: "Highlighted Posts",
         items: [
           {
+            text: "Agentic Era Security",
+            link: "/2026-10-08-Agentic-Security",
+          },
+          {
             text: "A Redistribution of Code Ownership",
             link: "/2026-09-23-Redistributed-Ownership",
           },
@@ -115,10 +119,6 @@ export default defineConfig({
           {
             text: "Governing Products",
             link: "/2025-06-14-Governing-Products",
-          },
-          {
-            text: "Accountability and Gaslighting",
-            link: "/2025-05-24-Accountability-and-Gaslighting",
           },
           { text: "Theory of DX", link: "/2025-04-18-Theory-of-Dx" },
         ],
