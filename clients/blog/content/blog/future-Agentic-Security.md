@@ -4,17 +4,17 @@ _tbd_
 
 In July, OpenAI's internal evaluation agents broke out of their sandbox, harvested credentials, and compromised parts of Hugging Face's production infrastructure. Hugging Face logged more than 17,000 attacker actions before closing the holes ([their writeup](https://github.com/huggingface/blog/blob/main/security-incident-july-2026.md), [OpenAI's](https://openai.com/index/hugging-face-incident-and-the-road-ahead/), and [METR’s](https://metr.org/hugging-face-incident-report-aug-2026.pdf)). In September, [Reuters reported](https://www.reuters.com/legal/litigation/openais-rogue-agents-probed-hugging-face-weaknesses-two-months-before-major-hack-2026-09-16/) that the same agents had hijacked two Hugging Face accounts and been quietly probing since May.
 
-This story and others that have been coming out have brought security in the era of agentic development into focus. There are three novel problems software maintainers now need to grapple with:
+This story and others that have been coming out have brought security in the era of agentic development into focus for many. There are three novel problems software maintainers now need to grapple with:
 
 1. Agents ostensibly under your control can take unintended and undesirable actions, either on their own or because someone tricked them.
-2. In order to be secure, systems you own need to be able to withstand an agentic attack, which brings both far more volume than script kiddies or human hackers and, occasionally, vulnerabilities nobody has seen before.
-3. The increased volume of code changes provided by coding agents makes it easier to introduce vulnerabilities.
+2. The increased volume of code changes provided by coding agents makes it easier to introduce vulnerabilities.
+3. In order to be secure, systems you own need to be able to withstand an agentic attack, which brings both far more volume than script kiddies or human hackers and, occasionally, vulnerabilities nobody has seen before.
 
 Taken together, building secure applications and services requires an updated approach. Having spent some time considering how to develop agentic products safely, here are the things I do now for every project going forward, to meet the raised bar.
 
 ## Your own agents
 
-### Don't let agents push to prod, or take other privileged actions
+### Don't let coding agents push to prod, or take other privileged actions
 
 At minimum, there should be a wall between the agent and any production deployment or resources. With CI/CD often automatically deploying a merge to main, that means no credential on the machine the agent runs on should allow the agent to independently either push code directly to main, or access production hosts and storage. There are multiple ways to do this:
 
@@ -73,15 +73,17 @@ Within a larger team, [CODEOWNERS](https://docs.github.com/en/repositories/manag
 
 ## Agents attacking you
 
-Let's be clear about what an agentic attacker actually brings. The Hugging Face breach wasn't zero-days. The entry points were a remote-code dataset loader and a template injection in a config file, bug classes that predate agents by a decade. What the swarm brought was 17,000 actions and four months of patient probing. It doesn't need to be clever. It needs you to have one thing you didn't patch, one key you left lying around, one copy of the data you forgot about, and it has the time and volume to find it.
+Agents on the offensive change the security landscape in two ways: novel attacks and sheer force.
 
-Sometimes, though, it is clever. On September 21, an AI agent breached the [Dutch Institute for Vulnerability Disclosure](https://csirt.divd.nl/cases/DIVD-2026-00014/) by chaining two previously unknown vulnerabilities in the Zammad helpdesk software, going from a hijacked session to root in seconds. DIVD describes the agent as "loud and very, very messy," and it's not yet known whether it found the bugs itself or was handed them. It got in regardless. So far the data suggests these cases are rare; [VulnCheck found](https://www.infosecurity-magazine.com/news/one-percent-ai-vulnerabilities/) that AI-discovered vulnerabilities are exploited in the wild at the same 1% rate as everything else, and the labs' own disclosure programs are finding most of them first. But rare is not never, and the window between a vulnerability being published and being exploited is [now measured in hours](https://www.techtimes.com/articles/328531/20261005/cve-2026-61500-anthropic-mythos-finds-rejetto-hfs-flaw-exploited-within-one-day.htm).
+The Hugging Face breach is an example of sheer force; the entry points were a remote-code dataset loader and a template injection in a config file, bug classes that well predate agents. What was new was that the swarm could take 17,000 actions over four months of patient probing.
+
+The [Dutch Institute for Vulnerability Disclosure](https://csirt.divd.nl/cases/DIVD-2026-00014/) is an example of a novel attack. By chaining two previously unknown vulnerabilities in the Zammad helpdesk software, going from a hijacked session to root in seconds. DIVD describes the agent as "loud and very, very messy," and it's not yet known whether it found the bugs itself or was handed them. It got in regardless. So far the data suggests these cases are rare; [VulnCheck found](https://www.infosecurity-magazine.com/news/one-percent-ai-vulnerabilities/) that AI-discovered vulnerabilities are exploited in the wild at the same 1% rate as everything else, and the labs' own disclosure programs are finding most of them first. But rare is not never, and the window between a vulnerability being published and being exploited is [now measured in hours](https://www.techtimes.com/articles/328531/20261005/cve-2026-61500-anthropic-mythos-finds-rejetto-hfs-flaw-exploited-within-one-day.htm).
 
 The first response to agentic attackers is unglamorous: traditional security is now table stakes, and anything that can be exploited will be. MFA on every service login, secret scanning on every commit, security headers, audit logs, rate limiting, short-lived credentials, security training. None of that is new, and all of it matters more than it did, because the cost to exploit security has gone down. But there are a few classic measures worth special mention.
 
 ### Make updating versions manageable
 
-Automate opening dependency update PRs, especially the ones that address security advisories, so that staying current is (mostly) quick and painless. Use services like [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart) or [Renovate](https://docs.renovatebot.com/) to open these PRs automatically and build a robust CI test suite so changes can be reviewed and merged in quickly and safely. Don’t automate merging them in, though, to guard against supply-chain attacks.
+Automate opening dependency update PRs, especially the ones that address security advisories, so that staying current is (mostly) quick and painless. Use services like [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart) or [Renovate](https://docs.renovatebot.com/) to open these PRs automatically and build a robust CI test suite so changes can be reviewed and merged in quickly and safely. Don’t automate merging them in, though, to guard against supply-chain attacks, and as a policy only merge in non-urgent changes after they've been published for a few days.
 
 Part of making updates easy is keeping the dependency count down. Review your dependencies periodically and ask whether each is still necessary. If a dependency is large and you use a small slice of it, consider replacing it with your own implementation. And of course look twice at every package an agent suggests installing, since each one is a potential attack surface.
 
