@@ -1,6 +1,6 @@
 # Agentic Era Security
 
-_tbd_
+_Oct 8, 2026_
 
 In July, OpenAI's internal evaluation agents broke out of their sandbox, harvested credentials, and compromised parts of Hugging Face's production infrastructure. Hugging Face logged more than 17,000 attacker actions before closing the holes ([their writeup](https://github.com/huggingface/blog/blob/main/security-incident-july-2026.md), [OpenAI's](https://openai.com/index/hugging-face-incident-and-the-road-ahead/), and [METR’s](https://metr.org/hugging-face-incident-report-aug-2026.pdf)). In September, [Reuters reported](https://www.reuters.com/legal/litigation/openais-rogue-agents-probed-hugging-face-weaknesses-two-months-before-major-hack-2026-09-16/) that the same agents had hijacked two Hugging Face accounts and been quietly probing since May.
 
@@ -24,7 +24,7 @@ At minimum, there should be a wall between the agent and any production deployme
 
 To really control what an agent can do, you can also run it inside a container on your machine, or better yet, a separate host outside your network if you have the resources. This cleanly separates the agent's capabilities from your own.
 
-Regardless where your coding agent is, a quick way to gauge its powers is to ask it to figure out for itself what it can do, or to try and do something it shouldn't be able to do. This is a useful smoke test for auditing and reducing powers given to any sort of agent.
+Regardless of where your coding agent is, a quick way to gauge its powers is to ask it to figure out for itself what it can do, or to try and do something it shouldn't be able to do. This is a useful smoke test for auditing and reducing powers given to any sort of agent.
 
 ### Be judicious with agent access to production third-party services
 
@@ -73,13 +73,13 @@ Within a larger team, [CODEOWNERS](https://docs.github.com/en/repositories/manag
 
 ## Agents attacking you
 
-Agents on the offensive change the security landscape in two ways: novel attacks and sheer force.
+Agents on the offensive change the security landscape in two ways: sheer force and novel attacks.
 
 The Hugging Face breach is an example of sheer force; the entry points were a remote-code dataset loader and a template injection in a config file, bug classes that well predate agents. What was new was that the swarm could take 17,000 actions over four months of patient probing.
 
-The [Dutch Institute for Vulnerability Disclosure](https://csirt.divd.nl/cases/DIVD-2026-00014/) is an example of a novel attack. By chaining two previously unknown vulnerabilities in the Zammad helpdesk software, going from a hijacked session to root in seconds. DIVD describes the agent as "loud and very, very messy," and it's not yet known whether it found the bugs itself or was handed them. It got in regardless. So far the data suggests these cases are rare; [VulnCheck found](https://www.infosecurity-magazine.com/news/one-percent-ai-vulnerabilities/) that AI-discovered vulnerabilities are exploited in the wild at the same 1% rate as everything else, and the labs' own disclosure programs are finding most of them first. But rare is not never, and the window between a vulnerability being published and being exploited is [now measured in hours](https://www.techtimes.com/articles/328531/20261005/cve-2026-61500-anthropic-mythos-finds-rejetto-hfs-flaw-exploited-within-one-day.htm).
+The [Dutch Institute for Vulnerability Disclosure](https://csirt.divd.nl/cases/DIVD-2026-00014/) is an example of a novel attack. An agent chained two previously unknown vulnerabilities in the Zammad helpdesk software, going from a hijacked session to root in seconds. DIVD describes the agent as "loud and very, very messy," and it's not yet known whether it found the bugs itself or was handed them. It got in regardless. So far the data suggests these cases are rare; [VulnCheck found](https://www.infosecurity-magazine.com/news/one-percent-ai-vulnerabilities/) that AI-discovered vulnerabilities are exploited in the wild at the same 1% rate as everything else, and the labs' own disclosure programs are finding most of them first. But rare is not never, and the window between a vulnerability being published and being exploited is [now measured in hours](https://www.techtimes.com/articles/328531/20261005/cve-2026-61500-anthropic-mythos-finds-rejetto-hfs-flaw-exploited-within-one-day.htm).
 
-The first response to agentic attackers is unglamorous: traditional security is now table stakes, and anything that can be exploited will be. MFA on every service login, secret scanning on every commit, security headers, audit logs, rate limiting, short-lived credentials, security training. None of that is new, and all of it matters more than it did, because the cost to exploit security has gone down. But there are a few classic measures worth special mention.
+The first response to agentic attackers is unglamorous: traditional security is now table stakes, and anything that can be exploited will be. MFA on every service login, secret scanning on every commit, security headers, audit logs, rate limiting, short-lived credentials, security training. None of that is new, and all of it matters more than it did, because the cost of finding and exploiting a gap has gone down. A few classic measures deserve special mention, though.
 
 ### Make updating versions manageable
 
@@ -97,15 +97,19 @@ If you can, never put user-submitted strings into logs of any kind. If there's a
 
 ### Layer your defenses
 
-Against a swarm, walls are likely to be breached, so build multiple walls. Keep SSH behind a VPN, the admin UI behind an identity-aware proxy, and the database off the public internet. Segment the network so a compromised service can't see the others, and reaching the data requires a chain of unrelated bugs in unrelated software from unrelated vendors, all at once. The DIVD breach demonstrates the value of this; the attacker needed two zero-days to succeed, not one, and was hampered by network segmentation.
+Against a swarm, any single wall is likely to be breached eventually, so the question isn't whether attackers will find a vulnerability but how many independent ones they need at the same time. Keep SSH behind a VPN, the admin UI behind an identity-aware proxy, and the database off the public internet, so that reaching the data requires a chain of unrelated bugs in unrelated software, all at once.
+
+The DIVD breach shows both sides of this. The attacker needed two zero-days, not one, which sounds like layering at work. But both bugs were in Zammad: the first gave remote code execution as the service user, and the second, present in every Zammad version, escalated that user to root. The boundary between a service user and root is supposed to belong to the operating system, and a bug in the application crossed it, so the attacker defeated one vendor twice rather than two layers. The layer that held was network segmentation, which had nothing to do with Zammad, and it's the reason the agent got root on one box and was limited beyond that.
+
+Some services, like a helpdesk, have to be internet-facing, so the layers can't all go in front. They go behind: run the service as an unprivileged user with no path to root, in a container, with network policy that lets it reach only what it needs and database credentials scoped to its own tables. It's the same least-privilege principle as the first section of this post, applied to services instead of agents. Layers also buy time. The DIVD agent was loud, and segmentation meant it was noticed before it got deeper. That time is only useful if someone, or something, is watching.
 
 ### Run red team drills
 
-It's important to test your own defenses before attackers do, and this should include attacking them with your own agents. With some regularity take the best models you have access to and have them see if they can break in. Like when responding to fires and other disasters, it's important to practice and improve responses ahead of time.
+It's important to test your own defenses before attackers do, and this should include attacking them with your own agents. With some regularity, take the best models you have access to and have them see if they can break in. Like when responding to fires and other disasters, it's important to practice and improve responses ahead of time.
 
-These drills may uncover unexpected weaknesses or snags that you would not find otherwise ahead of time. For example, Hugging Face's tried to make sense of the swarm's actions by running LLM analysis agents over the full log, but were blocked by safety guardrails. They ended up running the forensics on an open-weight model on their own hardware. This is the sort of discovery a red-team drill should uncover.
+These drills may uncover weaknesses or snags that you would not otherwise find until it's too late. For example, Hugging Face tried to make sense of the swarm's actions by running LLM analysis agents over the full log, but the commercial APIs blocked them: the safety guardrails couldn't tell an incident responder submitting exploit payloads from an attacker. They ended up running the forensics on an open-weight model on their own hardware. That is the sort of discovery a drill that rehearses the response, not just the attack, should surface.
 
-The step beyond that is agentic monitoring that doesn't just detect suspicious activity but responds to it, which becomes increasingly important as incident timescales shrink. Approach it carefully, though. A defender with the authority to shut things down is a highly privileged agent that can read attacker-controlled input, which is itself a vulnerability. The more power you give it, the greater the risk.
+The step beyond that is agentic monitoring that doesn't just detect suspicious activity but responds to it, which becomes increasingly important as incident timescales shrink. Approach it carefully, though. A defender with the authority to shut things down is a highly privileged agent that reads attacker-controlled input by design, which is exactly the situation the first section of this post warns about. The more power you give it, the greater the risk.
 
 ## An evolving security model
 
