@@ -5,7 +5,7 @@ services:
     depends_on:
       - recipes-clients
       - site
-    image: sderickson-recipes-dev-caddy:latest
+    image: sderickson-recipes-dev:latest
     build:
       context: ../..
       dockerfile: ./recipes/dev/Dockerfile

@@ -1,0 +1,7 @@
+# Built resume site. Only the static output ships, in a tiny image, so the
+# caddy build just copies it in.
+FROM #{ image @sderickson/resume-client }# AS build
+RUN npm run build
+
+FROM busybox:1.37
+COPY --from=build /app/clients/resume/.vitepress/dist /dist

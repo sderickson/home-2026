@@ -14,7 +14,7 @@
 	import kratos-api-proxy {args[0]}
 }
 
-# Blog client subdomains
+# Blog / resume client subdomains
 
 {$PROTOCOL}://blog.{$DOMAIN} {
 	import security-headers-marketing
@@ -22,6 +22,11 @@
 	@legacy_blog path_regexp legacy_blog ^/blog/([^/]+)/?$
 	redir @legacy_blog /{re.legacy_blog.1} permanent
 	import static-site /blog-client
+}
+
+{$PROTOCOL}://resume.{$DOMAIN} {
+	import security-headers-marketing
+	import static-site /resume-client
 }
 
 # Hub client subdomains

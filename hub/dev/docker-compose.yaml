@@ -1,5 +1,6 @@
 services:
   caddy:
+    image: sderickson-hub-dev:latest
     build:
       context: ../..
       dockerfile: ./hub/dev/Dockerfile

@@ -1,5 +1,6 @@
 import { startHubService } from "./index.ts";
-import { collectSystemMetrics, getGitHashes, setServiceName } from "@saflib/node";
+import { collectSystemMetrics, setServiceName } from "@saflib/node";
+import { getGitHashes } from "@saflib/node/git-hashes";
 import { addLokiTransport } from "@saflib/vendors-loki";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
