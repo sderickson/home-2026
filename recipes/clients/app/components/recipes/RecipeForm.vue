@@ -24,7 +24,7 @@
           :disabled="!isValid"
           :loading="editSaveLoading"
           :title="t(strings.toolbar_save)"
-          @click="handleEditCreatesNewVersion"
+          @click="handleEditSave"
         />
         <v-btn
           v-else
@@ -122,12 +122,16 @@ import type {
 } from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
-import { isRecipeFormValid } from "./RecipeForm.logic.ts";
+import {
+  isRecipeFormValid,
+  shouldSaveRecipeVersionInPlace,
+} from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   useCreateRecipeMutation,
   useCreateRecipeVersionMutation,
   useUpdateRecipeMutation,
+  useUpdateRecipeVersionLatestMutation,
 } from "@sderickson/recipes-sdk";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 
@@ -165,6 +169,7 @@ const showPreviewDialog = ref(false);
 const createMutation = useCreateRecipeMutation();
 const updateMutation = useUpdateRecipeMutation();
 const createVersionMutation = useCreateRecipeVersionMutation();
+const updateLatestVersionMutation = useUpdateRecipeVersionLatestMutation();
 
 const isValid = computed(() => isRecipeFormValid(model.value));
 
@@ -200,7 +205,9 @@ const previewVersion = computed((): RecipeVersion =>
 
 const editSaveLoading = computed(
   () =>
-    updateMutation.isPending.value || createVersionMutation.isPending.value,
+    updateMutation.isPending.value ||
+    createVersionMutation.isPending.value ||
+    updateLatestVersionMutation.isPending.value,
 );
 
 function content() {
@@ -224,20 +231,29 @@ async function handleCreate() {
   props.onSuccess?.(data.recipe.id);
 }
 
-async function handleEditCreatesNewVersion() {
+async function handleEditSave() {
   if (!props.recipe || !isValid.value) return;
-  const { recipe } = props.recipe;
+  const { recipe, currentVersion } = props.recipe;
   await updateMutation.mutateAsync({
     id: recipe.id,
     title: model.value.title,
     subtitle: model.value.subtitle,
     description: model.value.description ?? undefined,
   });
-  const version = await createVersionMutation.mutateAsync({
-    id: recipe.id,
-    ...content(),
-  });
-  void version;
+  const versionBody = content();
+  if (
+    shouldSaveRecipeVersionInPlace(currentVersion.createdAt)
+  ) {
+    await updateLatestVersionMutation.mutateAsync({
+      id: recipe.id,
+      ...versionBody,
+    });
+  } else {
+    await createVersionMutation.mutateAsync({
+      id: recipe.id,
+      ...versionBody,
+    });
+  }
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
 }

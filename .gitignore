@@ -8,6 +8,11 @@
 Dockerfile
 .env
 .env.git-hashes
+
+# saf-dev-site prepare (OAuth copies — never commit)
+**/.claude-credentials.json
+**/.cursor-auth.json
+**/dev-site.env
 .env.sentry-build-plugin
 **/git-hashes.json
 

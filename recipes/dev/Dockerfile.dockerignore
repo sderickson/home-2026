@@ -68,6 +68,8 @@ recipes/dev/.env.git-hashes
 recipes/dev/Dockerfile
 recipes/dev/dev-site-data
 recipes/dev/dev-site.env
+recipes/dev/.claude-credentials.json
+recipes/dev/.cursor-auth.json
 recipes/dev/kratos/data/db.sqlite
 recipes/dev/kratos/data/db.sqlite-shm
 recipes/dev/kratos/data/db.sqlite-wal
