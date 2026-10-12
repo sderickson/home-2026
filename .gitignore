@@ -6,6 +6,7 @@
 **/dist/types
 **/.saf-docker
 Dockerfile
+Dockerfile.dockerignore
 .env
 .env.git-hashes
 
