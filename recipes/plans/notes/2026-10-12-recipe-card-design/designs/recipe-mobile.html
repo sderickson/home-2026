@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipe Box — Recipe (phone)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Phone overrides of the desktop recipe card: one column, everything stacked. */
+  .m-recipe { margin: 12px; background: var(--card); border-radius: 3px; box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 16px 30px -24px rgba(40,30,10,.6); overflow: hidden; }
+  .m-recipe__photo { display: block; width: 100%; height: 200px; object-fit: cover; background: var(--photo); }
+  .m-recipe__head { padding: 18px 18px 12px; border-bottom: 2px solid var(--red-line); }
+  .m-recipe__title { margin: 0; font-family: var(--font-title); font-weight: 600; font-size: 32px; line-height: 1.05; }
+  .m-recipe__subtitle { margin: 6px 0 0; font-size: 17px; color: var(--ink-2); }
+  .m-recipe__section { padding: 0 18px; }
+  .m-recipe__section + .m-recipe__section { padding-top: var(--rule); }
+  .m-recipe .ing-list li { font-size: 18px; }
+  .m-recipe .qty { font-size: 16px; }
+  .m-recipe .step-list li { grid-template-columns: 32px 1fr; gap: 6px; font-size: 18px; }
+  .m-recipe .step-list li:last-child { margin-bottom: 0; }
+  .m-recipe__notes p { margin: 0; line-height: var(--rule); font-size: 17px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Compact app bar: back to collection, collection name, overflow with the existing actions
+       (version history, edit, add image, delete — same permissions as desktop). -->
+  <header style="height:56px;display:flex;align-items:center;gap:4px;padding:0 4px;background:var(--card);border-bottom:1px solid var(--outline-soft)">
+    <a href="collection-mobile.html" class="icon-btn" aria-label="Back to Seed Kitchen" style="color:var(--ink)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <span style="flex-grow:1;font-family:var(--font-mono);font-size:13px;color:var(--muted)">Seed Kitchen</span>
+    <button type="button" class="icon-btn" aria-label="Recipe actions"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
+  </header>
+
+  <!-- One card, everything rendered together, in this order:
+       photo → title/subtitle → ingredients → method → notes. -->
+  <article class="m-recipe">
+    <!-- First image, full card width. Omit when the recipe has no images. -->
+    <span class="m-recipe__photo" role="img" aria-label="Recipe photo"></span>
+
+    <div class="m-recipe__head">
+      <h1 class="m-recipe__title">Butternut Squash Soup</h1>
+      <p class="m-recipe__subtitle">Creamy and warming</p>
+    </div>
+
+    <div class="ruled-32" style="padding:0 0 var(--rule)">
+      <section class="m-recipe__section" aria-labelledby="m-ing-h">
+        <h2 id="m-ing-h" class="label-red">Ingredients</h2>
+        <ul class="ing-list">
+          <li><span class="qty">1</span><span>Butternut squash</span></li>
+          <li><span class="qty">1</span><span>Onion</span></li>
+          <li><span class="qty">500 ml</span><span>Vegetable stock</span></li>
+          <li><span class="qty">2 tbsp</span><span>Cream</span></li>
+        </ul>
+      </section>
+
+      <section class="m-recipe__section" aria-labelledby="m-method-h">
+        <h2 id="m-method-h" class="label-red">Method</h2>
+        <ol class="step-list">
+          <li><span class="step-num" aria-hidden="true">01</span><span>Heat the oven to 200°C. Halve the squash, scoop out the seeds, and roast cut-side down for about 40 minutes, until soft.</span></li>
+          <li><span class="step-num" aria-hidden="true">02</span><span>Meanwhile, sauté the chopped onion in a little oil over medium heat until soft and golden, about 10 minutes.</span></li>
+          <li><span class="step-num" aria-hidden="true">03</span><span>Scoop the squash into the pot, add the stock, and simmer for 5 minutes.</span></li>
+          <li><span class="step-num" aria-hidden="true">04</span><span>Blend until smooth. Stir in the cream and season to taste.</span></li>
+        </ol>
+      </section>
+
+      <!-- recipe.description. Omit when empty. -->
+      <section class="m-recipe__section m-recipe__notes" aria-labelledby="m-notes-h">
+        <h2 id="m-notes-h" class="label-red">Notes</h2>
+        <p>Roasting the squash first gives it a deeper, nuttier flavor than boiling. Freezes well — make a double batch.</p>
+      </section>
+    </div>
+  </article>
+</div>
+</body>
+</html>
