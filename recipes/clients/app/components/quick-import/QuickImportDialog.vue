@@ -44,6 +44,7 @@
               class="quick-import-dialog__preview rounded border pa-3 overflow-auto"
             >
               <RecipeContentPreview
+                compact
                 :recipe="previewRecipe"
                 :current-version="previewVersion"
               />
@@ -102,32 +103,28 @@ const createMutation = useCreateRecipeMutation();
 
 const parsed = computed(() => parseRecipePaste(pasteText.value));
 
-const previewRecipe = computed(
-  (): Recipe => ({
-    id: "",
-    title: title.value || "(Untitled)",
-    subtitle: "",
-    description: null,
-    createdBy: "",
-    createdAt: "",
-    updatedBy: "",
-    updatedAt: "",
-  }),
-);
+const previewRecipe = computed((): Recipe => ({
+  id: "",
+  title: title.value || "(Untitled)",
+  subtitle: "",
+  description: null,
+  createdBy: "",
+  createdAt: "",
+  updatedBy: "",
+  updatedAt: "",
+}));
 
-const previewVersion = computed(
-  (): RecipeVersion => ({
-    id: "",
-    recipeId: "",
-    content: {
-      ingredients: parsed.value.ingredients,
-      instructionsMarkdown: parsed.value.instructionsMarkdown,
-    },
-    isLatest: true,
-    createdBy: "",
-    createdAt: "",
-  }),
-);
+const previewVersion = computed((): RecipeVersion => ({
+  id: "",
+  recipeId: "",
+  content: {
+    ingredients: parsed.value.ingredients,
+    instructionsMarkdown: parsed.value.instructionsMarkdown,
+  },
+  isLatest: true,
+  createdBy: "",
+  createdAt: "",
+}));
 
 const canSave = computed(
   () =>

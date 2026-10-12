@@ -10,10 +10,10 @@
     <template #app-bar-append>
       <v-btn
         v-if="demo.isDemoMode.value"
-        color="warning"
-        variant="flat"
-        prepend-icon="mdi-exclamation"
-        class="text-uppercase font-weight-regular mr-2"
+        color="demo"
+        size="small"
+        rounded="xs"
+        class="demo-badge font-mono text-uppercase ml-2 mr-2 mr-md-0"
         @click="demoDialogOpen = true"
       >
         {{ t(recipes_layout.demo_mode) }}
@@ -98,3 +98,10 @@ async function onResetDemo() {
   queryClient.invalidateQueries();
 }
 </script>
+
+<style scoped>
+.demo-badge {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+</style>

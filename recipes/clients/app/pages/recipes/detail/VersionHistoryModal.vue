@@ -26,8 +26,13 @@
             <v-expansion-panel-title>
               <div class="d-flex flex-column py-1">
                 <span class="text-body-1">
-                  <i18n-t scope="global" :keypath="lookupTKey(strings.version_from_date)">
-                    <template #date>{{ formatVersionDate(ver.createdAt) }}</template>
+                  <i18n-t
+                    scope="global"
+                    :keypath="lookupTKey(strings.version_from_date)"
+                  >
+                    <template #date>{{
+                      formatVersionDate(ver.createdAt)
+                    }}</template>
                   </i18n-t>
                 </span>
                 <span class="text-caption text-medium-emphasis mt-1">
@@ -41,7 +46,11 @@
               </div>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <RecipeContentPreview :recipe="recipe" :current-version="ver" />
+              <RecipeContentPreview
+                compact
+                :recipe="recipe"
+                :current-version="ver"
+              />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -57,10 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  RecipeVersion,
-  Recipe,
-} from "@sderickson/recipes-spec";
+import type { RecipeVersion, Recipe } from "@sderickson/recipes-spec";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { version_history_modal as strings } from "./VersionHistoryModal.strings.ts";

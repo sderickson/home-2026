@@ -20,7 +20,10 @@
 import { computed } from "vue";
 import { useQueries } from "@tanstack/vue-query";
 import type { Recipe } from "@sderickson/recipes-spec";
-import { filesListRecipesQuery, getRecipeQuery } from "../../requests/recipes/index.ts";
+import {
+  filesListRecipesQuery,
+  getRecipeQuery,
+} from "../../requests/recipes/index.ts";
 import { useReverseT } from "../../i18n.ts";
 import { recipe_list_strings as strings } from "./RecipeList.strings.ts";
 import RecipeCard from "./RecipeCard.vue";
@@ -36,9 +39,7 @@ const props = defineProps<{
 const { t } = useReverseT();
 
 const detailQueries = useQueries({
-  queries: computed(() =>
-    props.recipes.map((r) => getRecipeQuery(r.id)),
-  ),
+  queries: computed(() => props.recipes.map((r) => getRecipeQuery(r.id))),
 });
 
 const filesQueries = useQueries({
@@ -58,27 +59,10 @@ const enrichedByIndex = computed(() =>
 </script>
 
 <style scoped>
-/* Masonry layout: Pinterest-style flowing columns (no rigid grid). */
+/* Index-card grid: as many 300px+ columns as fit. */
 .recipe-list-grid {
-  column-count: 1;
-  column-gap: 1rem;
-}
-
-@media (min-width: 600px) {
-  .recipe-list-grid {
-    column-count: 2;
-  }
-}
-
-@media (min-width: 960px) {
-  .recipe-list-grid {
-    column-count: 3;
-  }
-}
-
-@media (min-width: 1280px) {
-  .recipe-list-grid {
-    column-count: 4;
-  }
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
 }
 </style>

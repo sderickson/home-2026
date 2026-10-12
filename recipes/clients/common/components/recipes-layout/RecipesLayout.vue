@@ -1,29 +1,34 @@
 <template>
   <v-app>
-    <v-app-bar height="90" class="px-4" v-if="mounted">
-      <!-- Logo -->
+    <v-app-bar v-if="mounted" class="px-md-4">
       <v-app-bar-title>
-        <a :href="toHref(rootLinks.home)" class="logo-link">
+        <a :href="toHref(rootLinks.home)" class="brand font-title">
+          <span class="brand__mark" aria-hidden="true" />
           {{ recipes_layout.nav_title }}
         </a>
       </v-app-bar-title>
 
       <!-- Desktop Navigation Links (hidden on mobile) -->
-      <v-toolbar-items class="d-none d-md-block">
+      <nav
+        class="d-none d-md-flex align-center"
+        :aria-label="recipes_layout.nav_label"
+      >
         <v-btn
           v-for="link in links"
           :key="`${link.subdomain}:${link.path}:${link.name}`"
           variant="text"
-          class="text-uppercase font-weight-regular"
+          :color="isCurrent(link) ? undefined : 'muted'"
+          :class="{ 'font-weight-semibold': isCurrent(link) }"
+          :aria-current="isCurrent(link) ? 'page' : undefined"
           :href="toHref(link, link.options)"
         >
           {{ link.name }}
         </v-btn>
-      </v-toolbar-items>
+      </nav>
 
       <template #append>
         <slot name="app-bar-append" />
-        <v-app-bar-nav-icon class="d-md-none mr-4" @click="drawer = !drawer">
+        <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer">
           <v-icon v-if="!drawer">mdi-menu</v-icon>
           <v-icon v-else>mdi-close</v-icon>
         </v-app-bar-nav-icon>
@@ -124,14 +129,20 @@ const toHref = (link: Link, options?: LinkOptions) => {
   void mounted.value;
   return linkToHrefWithHost(link, options);
 };
+/** The nav link for the app this page is in (same origin), e.g. "App". */
+const isCurrent = (link: Link) => {
+  if (!mounted.value) return false;
+  return (
+    new URL(toHref(link), window.location.href).origin ===
+    window.location.origin
+  );
+};
 const links = computed<LinkWithName[]>(() => {
   if (props.loggedIn) {
     return [
       { ...appLinks.home, name: "App" },
       { ...hubAccountLinks.home, name: "Account" },
-      ...(isSiteAdmin.value
-        ? [{ ...adminLinks.home, name: "Admin" }]
-        : []),
+      ...(isSiteAdmin.value ? [{ ...adminLinks.home, name: "Admin" }] : []),
       {
         ...authLinks.logout,
         name: "Logout",
@@ -149,3 +160,36 @@ const links = computed<LinkWithName[]>(() => {
   ];
 });
 </script>
+
+<style scoped>
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 20px;
+  color: rgb(var(--v-theme-on-surface));
+  text-decoration: none;
+}
+
+/* Index-card mark: outlined rectangle with a red top line. */
+.brand__mark {
+  width: 22px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  border: 1.5px solid currentColor;
+  box-shadow: inset 0 4px 0 -2.5px rgb(var(--v-theme-demo));
+}
+
+@media (max-width: 959.98px) {
+  .brand {
+    gap: 8px;
+    font-size: 17px;
+  }
+  .brand__mark {
+    width: 18px;
+    height: 13px;
+  }
+}
+</style>

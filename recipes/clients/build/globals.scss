@@ -1,0 +1,91 @@
+/* App-wide utility / layout classes that are not Vuetify component restyles
+ * (imported once via style-imports.ts — SPAs and VitePress).
+ *
+ * Prefer this file over <style> in Vue SFCs when a class should be reused
+ * product-wide. Restyling .v-* components belongs in vuetify-overrides.scss; Sass
+ * variables belong in vuetify-settings.scss (see those files for where
+ * Vuetify sources live under node_modules/vuetify/lib/…).
+ *
+ * Colors come from the Vuetify theme (recipes/clients/common/vuetify-config.ts)
+ * as `rgb(var(--v-theme-<name>))`.
+ */
+
+:root {
+  --font-title: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /* Shadow for paper on the kraft background (index cards, recipe card, rows). */
+  --paper-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.05), 0 10px 22px -18px rgba(40, 30, 10, 0.55);
+  --paper-shadow-raised:
+    0 2px 0 rgba(0, 0, 0, 0.04), 0 18px 30px -18px rgba(40, 30, 10, 0.5);
+}
+
+/* ---------- Type ---------- */
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Small uppercase mono heading above a group (e.g. "MENUS"). */
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-muted));
+}
+
+/* Red mono section label on a ruled card (INGREDIENTS / METHOD / NOTES).
+ * Exactly one ruled line tall; set --rule on the ruled container. */
+.section-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: var(--rule, 32px);
+  color: rgb(var(--v-theme-error));
+}
+
+/* ---------- Paper ---------- */
+
+.paper {
+  background: rgb(var(--v-theme-surface));
+  box-shadow: var(--paper-shadow);
+}
+
+/* Ruled-paper background. Text inside must use `line-height: var(--rule)` and
+ * vertical margins in multiples of it, or it drifts off the lines. */
+.ruled-26,
+.ruled-32 {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--rule) - 1px),
+    rgb(var(--v-theme-card-rule)) calc(var(--rule) - 1px) var(--rule)
+  );
+}
+
+.ruled-26 {
+  --rule: 26px;
+}
+
+.ruled-32 {
+  --rule: 32px;
+}
+
+/* A photo framed like a print: white border and a small shadow. */
+.photo-print {
+  display: block;
+  padding: 0;
+  border: 3px solid #fff;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}

@@ -8,6 +8,7 @@
     "./components": "./components/index.ts",
     "./components/recipes-layout": "./components/recipes-layout/RecipesLayout.vue",
     "./vuetify-config": "./vuetify-config.ts",
+    "./style-imports": "./style-imports.ts",
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
     "./fixtures": "./fixtures/index.ts",
@@ -30,5 +31,10 @@
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-spec": "*",
     "@sderickson/recipes-sdk": "*"
-  }
+  },
+  "sideEffects": [
+    "./style-imports.ts",
+    "**/*.scss",
+    "**/*.css"
+  ]
 }

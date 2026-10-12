@@ -31,6 +31,49 @@ const mdi: IconSet = {
     }),
 };
 
+/**
+ * "Recipe Box" palette: index-card white on a kraft-paper background.
+ * Custom colors become `--v-theme-<name>` CSS variables (`r,g,b`) and
+ * `text-<name>` / `bg-<name>` classes. All text pairs meet WCAG AA (4.5:1);
+ * recheck contrast if you change one.
+ */
+const recipesLightTheme = {
+  dark: false,
+  colors: {
+    background: "#E8E3D9",
+    surface: "#FFFEFA",
+    "on-background": "#22252A",
+    "on-surface": "#22252A",
+    primary: "#2C4A75",
+    secondary: "#1C3356",
+    error: "#B4432E",
+    outline: "#C9C1B1",
+    /** Menu divider tabs, search field on white. */
+    "surface-tab": "#F4EFE4",
+    "on-surface-tab": "#22252A",
+    /** Selected toggle, hover. */
+    "primary-tint": "#E3EAF4",
+    /** Subtitles, notes. */
+    "ink-2": "#4A4E56",
+    /** Breadcrumbs, counts, meta text. */
+    muted: "#5C6068",
+    /** App bar bottom border. */
+    "outline-soft": "#D6CFC1",
+    /** The index card's red header line. */
+    "card-red-line": "#E2A293",
+    /** Vertical line between ingredients and method. */
+    "card-red-line-soft": "#EBC5BB",
+    /** Ruled lines on cards. */
+    "card-rule": "#D3DEEC",
+    /** DEMO badge background. */
+    demo: "#C2513B",
+  },
+  variables: {
+    /** Body text is full ink (contrast is checked against the solid colors). */
+    "high-emphasis-opacity": 1,
+  },
+} as const;
+
 export const vuetifyConfig: VuetifyOptions = {
   icons: {
     defaultSet: "mdi",
@@ -40,20 +83,35 @@ export const vuetifyConfig: VuetifyOptions = {
     },
   },
   defaults: {
-    // VAppBar: {
-    //   style: `border-bottom: 1px solid black;`,
-    // },
+    VAppBar: {
+      flat: true,
+      color: "surface",
+      height: 64,
+    },
+    VBtn: {
+      rounded: "sm",
+      variant: "flat",
+    },
+    VBtnToggle: {
+      rounded: "sm",
+    },
+    VCard: {
+      rounded: "xs",
+      flat: true,
+    },
+    VChip: {
+      rounded: "sm",
+    },
+    VTextField: {
+      variant: "outlined",
+      density: "comfortable",
+      bgColor: "surface",
+    },
   },
   theme: {
     defaultTheme: "light",
     themes: {
-      light: {
-        colors: {
-          // primary: "rgb(211, 31, 51)",
-          // secondary: "blue",
-          // background: "light-gray",
-        },
-      },
+      light: recipesLightTheme,
     },
   },
 };

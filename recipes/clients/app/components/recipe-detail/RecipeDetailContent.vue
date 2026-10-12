@@ -1,129 +1,187 @@
 <template>
   <div>
-    <v-container fluid class="pa-0">
-      <v-row>
-        <v-col cols="12">
-          <v-card class="mb-4">
-            <v-toolbar density="comfortable">
-              <v-toolbar-title class="text-h6">{{
-                props.recipe.title
-              }}</v-toolbar-title>
-              <v-spacer />
-              <template v-if="showVersionHistory">
-                <v-tooltip
-                  location="bottom"
-                  :text="t(strings.toolbar_version_history)"
+    <!-- Phone: back to the collection (or menu) and the recipe actions -->
+    <div class="recipe-phone-bar d-flex d-md-none align-center">
+      <v-btn
+        :to="backTo"
+        icon="mdi-chevron-left"
+        variant="text"
+        :aria-label="t(strings.back_to, { name: backLabel })"
+      />
+      <span class="flex-grow-1 font-mono text-muted text-truncate">
+        {{ backLabel }}
+      </span>
+      <v-menu location="bottom end">
+        <template #activator="{ props: menuProps }">
+          <v-btn
+            v-bind="menuProps"
+            icon="mdi-dots-vertical"
+            variant="text"
+            :aria-label="t(strings.recipe_actions)"
+          />
+        </template>
+        <v-list density="comfortable">
+          <v-list-item
+            v-if="showVersionHistory"
+            prepend-icon="mdi-history"
+            :title="t(strings.toolbar_version_history)"
+            @click="versionHistoryModalOpen = true"
+          >
+            <template v-if="props.versions.length > 0" #append>
+              <v-badge
+                :content="props.versions.length"
+                color="primary"
+                inline
+              />
+            </template>
+          </v-list-item>
+          <v-list-item
+            v-if="showEdit"
+            prepend-icon="mdi-pencil"
+            :title="t(strings.toolbar_edit)"
+            :to="recipeEditPath"
+          />
+          <template v-if="showFilesEdit">
+            <v-list-item
+              prepend-icon="mdi-upload"
+              :title="t(strings.toolbar_upload_image)"
+              :disabled="filesFlow.uploadFileMutation.isPending.value"
+              @click="imageFileInputRef?.click()"
+            />
+            <v-list-item
+              prepend-icon="mdi-image-search"
+              :title="t(strings.toolbar_choose_unsplash)"
+              @click="unsplashPickerOpen = true"
+            />
+          </template>
+          <v-list-item
+            v-if="showEdit && showFilesEdit"
+            prepend-icon="mdi-delete"
+            base-color="error"
+            :title="t(strings.toolbar_delete)"
+            :disabled="deleteRecipeMutation.isPending.value"
+            @click="deleteRecipeDialogOpen = true"
+          />
+        </v-list>
+      </v-menu>
+    </div>
+
+    <v-card class="recipe-card paper">
+      <RecipeContentPreview
+        :recipe="props.recipe"
+        :current-version="props.currentVersion"
+        :files="props.files"
+        :show-image-actions="showFilesEdit"
+        :image-delete-disabled="filesFlow.deleteFileMutation.isPending.value"
+        @click-image="expandedImageFile = $event"
+        @delete-image="filesFlow.confirmDeleteFile($event)"
+      >
+        <!-- Desktop: icon buttons in the card's top-right corner -->
+        <template #tools>
+          <div class="d-none d-md-flex">
+            <v-tooltip
+              v-if="showVersionHistory"
+              location="bottom"
+              :text="t(strings.toolbar_version_history)"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="tooltipProps"
+                  icon
+                  variant="text"
+                  :aria-label="t(strings.toolbar_version_history)"
+                  @click="versionHistoryModalOpen = true"
                 >
-                  <template #activator="{ props: tooltipProps }">
-                    <v-btn
-                      v-bind="tooltipProps"
-                      icon
-                      variant="text"
-                      @click="versionHistoryModalOpen = true"
-                    >
-                      <v-badge
-                        :model-value="props.versions.length > 0"
-                        :content="props.versions.length"
-                        color="primary"
-                      >
-                        <v-icon>mdi-history</v-icon>
-                      </v-badge>
-                    </v-btn>
-                  </template>
-                </v-tooltip>
-              </template>
-              <v-tooltip
-                v-if="showEdit"
-                location="bottom"
-                :text="t(strings.toolbar_edit)"
-              >
-                <template #activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="tooltipProps"
-                    icon
-                    variant="text"
-                    :to="recipeEditPath"
+                  <v-badge
+                    :model-value="props.versions.length > 0"
+                    :content="props.versions.length"
+                    color="primary"
                   >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                </template>
-              </v-tooltip>
-              <template v-if="showFilesEdit">
-                <v-tooltip location="bottom" :text="t(strings.toolbar_images)">
-                  <template #activator="{ props: tooltipProps }">
-                    <v-menu location="bottom">
-                      <template #activator="{ props: menuProps }">
-                        <v-btn
-                          v-bind="{ ...tooltipProps, ...menuProps }"
-                          icon
-                          variant="text"
-                          :disabled="
-                            filesFlow.uploadFileMutation.isPending.value
-                          "
-                        >
-                          <v-icon>mdi-image-plus</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list density="compact">
-                        <v-list-item
-                          :title="t(strings.toolbar_upload_image)"
-                          prepend-icon="mdi-upload"
-                          @click="imageFileInputRef?.click()"
-                        />
-                        <v-list-item
-                          :title="t(strings.toolbar_choose_unsplash)"
-                          prepend-icon="mdi-image-search"
-                          @click="unsplashPickerOpen = true"
-                        />
-                      </v-list>
-                    </v-menu>
-                  </template>
-                </v-tooltip>
-                <input
-                  :ref="
-                    (el) => {
-                      imageFileInputRef = el as HTMLInputElement | null;
-                    }
-                  "
-                  type="file"
-                  accept="image/*"
-                  class="d-none"
-                  @change="filesFlow.onFileInputChangeAndUpload"
+                    <v-icon>mdi-history</v-icon>
+                  </v-badge>
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip
+              v-if="showEdit"
+              location="bottom"
+              :text="t(strings.toolbar_edit)"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="tooltipProps"
+                  icon="mdi-pencil"
+                  variant="text"
+                  :aria-label="t(strings.toolbar_edit)"
+                  :to="recipeEditPath"
                 />
               </template>
-              <template v-if="showEdit && showFilesEdit">
-                <v-tooltip location="bottom" :text="t(strings.toolbar_delete)">
-                  <template #activator="{ props: tooltipProps }">
+            </v-tooltip>
+            <v-tooltip
+              v-if="showFilesEdit"
+              location="bottom"
+              :text="t(strings.toolbar_images)"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-menu location="bottom">
+                  <template #activator="{ props: menuProps }">
                     <v-btn
-                      v-bind="tooltipProps"
-                      icon
+                      v-bind="{ ...tooltipProps, ...menuProps }"
+                      icon="mdi-image-plus"
                       variant="text"
-                      color="error"
-                      :disabled="deleteRecipeMutation.isPending.value"
-                      @click="deleteRecipeDialogOpen = true"
-                    >
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
+                      :aria-label="t(strings.toolbar_images)"
+                      :disabled="filesFlow.uploadFileMutation.isPending.value"
+                    />
                   </template>
-                </v-tooltip>
+                  <v-list density="compact">
+                    <v-list-item
+                      :title="t(strings.toolbar_upload_image)"
+                      prepend-icon="mdi-upload"
+                      @click="imageFileInputRef?.click()"
+                    />
+                    <v-list-item
+                      :title="t(strings.toolbar_choose_unsplash)"
+                      prepend-icon="mdi-image-search"
+                      @click="unsplashPickerOpen = true"
+                    />
+                  </v-list>
+                </v-menu>
               </template>
-            </v-toolbar>
+            </v-tooltip>
+            <v-tooltip
+              v-if="showEdit && showFilesEdit"
+              location="bottom"
+              :text="t(strings.toolbar_delete)"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="tooltipProps"
+                  icon="mdi-delete"
+                  variant="text"
+                  color="error"
+                  :aria-label="t(strings.toolbar_delete)"
+                  :disabled="deleteRecipeMutation.isPending.value"
+                  @click="deleteRecipeDialogOpen = true"
+                />
+              </template>
+            </v-tooltip>
+          </div>
+        </template>
+      </RecipeContentPreview>
+    </v-card>
 
-            <RecipeContentPreview
-              :recipe="props.recipe"
-              :current-version="props.currentVersion"
-              :files="props.files"
-              :show-image-actions="showFilesEdit"
-              :image-delete-disabled="
-                filesFlow.deleteFileMutation.isPending.value
-              "
-              @click-image="expandedImageFile = $event"
-              @delete-image="filesFlow.confirmDeleteFile($event)"
-            />
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <input
+      v-if="showFilesEdit"
+      :ref="
+        (el) => {
+          imageFileInputRef = el as HTMLInputElement | null;
+        }
+      "
+      type="file"
+      accept="image/*"
+      class="d-none"
+      @change="filesFlow.onFileInputChangeAndUpload"
+    />
 
     <v-dialog
       v-model="expandedImageDialogOpen"
@@ -237,6 +295,9 @@ export interface RecipeDetailContentProps {
   userEmail: string;
   versions: RecipeVersion[];
   files: RecipeFileInfo[];
+  /** Phone back link: the collection, or the menu when reached from a menu. */
+  backTo: string;
+  backLabel: string;
 }
 
 const props = defineProps<RecipeDetailContentProps>();
@@ -300,3 +361,19 @@ watch(
   },
 );
 </script>
+
+<style scoped>
+.recipe-phone-bar {
+  height: 56px;
+  margin: -16px -16px 12px;
+  padding: 0 4px;
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-outline-soft));
+}
+
+.recipe-card {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.05),
+    0 24px 44px -30px rgba(40, 30, 10, 0.6);
+}
+</style>

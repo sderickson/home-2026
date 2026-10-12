@@ -102,13 +102,13 @@
         </v-card-title>
         <v-card-text>
           <RecipeContentPreview
+            compact
             :recipe="previewRecipe"
             :current-version="previewVersion"
           />
         </v-card-text>
       </v-card>
     </v-dialog>
-
   </form>
 </template>
 
@@ -177,30 +177,38 @@ const isValid = computed(() => isRecipeFormValid(model.value));
 const previewRecipe = computed((): Recipe => {
   const m = model.value;
   const base = props.recipe?.recipe;
-  return (base
-    ? { ...base, title: m.title, subtitle: m.subtitle, description: m.description ?? null }
-    : {
-        id: "",
-        title: m.title,
-        subtitle: m.subtitle,
-        description: m.description ?? null,
-        createdBy: "",
-        createdAt: "",
-        updatedBy: "",
-        updatedAt: "",
-      }) as Recipe;
+  return (
+    base
+      ? {
+          ...base,
+          title: m.title,
+          subtitle: m.subtitle,
+          description: m.description ?? null,
+        }
+      : {
+          id: "",
+          title: m.title,
+          subtitle: m.subtitle,
+          description: m.description ?? null,
+          createdBy: "",
+          createdAt: "",
+          updatedBy: "",
+          updatedAt: "",
+        }
+  ) as Recipe;
 });
 
 /** Version shape for preview (form content). */
-const previewVersion = computed((): RecipeVersion =>
-  ({
-    id: "",
-    recipeId: props.recipe?.recipe.id ?? "",
-    content: content(),
-    isLatest: true,
-    createdBy: "",
-    createdAt: "",
-  }) as RecipeVersion,
+const previewVersion = computed(
+  (): RecipeVersion =>
+    ({
+      id: "",
+      recipeId: props.recipe?.recipe.id ?? "",
+      content: content(),
+      isLatest: true,
+      createdBy: "",
+      createdAt: "",
+    }) as RecipeVersion,
 );
 
 const editSaveLoading = computed(
@@ -241,9 +249,7 @@ async function handleEditSave() {
     description: model.value.description ?? undefined,
   });
   const versionBody = content();
-  if (
-    shouldSaveRecipeVersionInPlace(currentVersion.createdAt)
-  ) {
+  if (shouldSaveRecipeVersionInPlace(currentVersion.createdAt)) {
     await updateLatestVersionMutation.mutateAsync({
       id: recipe.id,
       ...versionBody,

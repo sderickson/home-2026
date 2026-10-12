@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-container fluid class="pa-0">
-      <v-breadcrumbs class="pl-0 mb-2">
+    <v-container fluid class="pa-0" max-width="1040">
+      <v-breadcrumbs class="d-none d-md-flex mb-5">
         <v-breadcrumbs-item :to="appLinks.home.path">
           {{ t(strings.breadcrumb_home) }}
         </v-breadcrumbs-item>
@@ -27,6 +27,8 @@
         :user-email="userEmail"
         :versions="versions"
         :files="files"
+        :back-to="menuDetailPath"
+        :back-label="menu.name"
       />
     </v-container>
   </div>

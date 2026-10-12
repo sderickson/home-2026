@@ -1,5 +1,6 @@
 export const recipes_layout = {
   nav_title: "Scott's Recipe List",
+  nav_label: "Main",
   demo_mode: "Demo",
   demo_dialog_title: "Demo mode",
   demo_banner_message:
