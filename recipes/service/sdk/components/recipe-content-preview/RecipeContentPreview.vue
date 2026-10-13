@@ -194,7 +194,10 @@ const ingredientRows = computed(() =>
 
 const renderedInstructions = computed(() =>
   content.value.instructionsMarkdown
-    ? (marked(content.value.instructionsMarkdown, { async: false }) as string)
+    ? // role="list": Safari drops list semantics when list-style is none.
+      (
+        marked(content.value.instructionsMarkdown, { async: false }) as string
+      ).replace(/<ol(?=[ >])/g, '<ol role="list"')
     : "",
 );
 </script>
@@ -368,6 +371,18 @@ const renderedInstructions = computed(() =>
   font-weight: 600;
 }
 
+/* A thematic break (---) takes exactly one rule, with its line in the middle. */
+.rcp__instructions :deep(hr) {
+  height: var(--rule);
+  margin: 0;
+  border: 0;
+  background: linear-gradient(
+      rgb(var(--v-theme-on-surface), 0.35),
+      rgb(var(--v-theme-on-surface), 0.35)
+    )
+    center / 100% 1px no-repeat;
+}
+
 .rcp__instructions > :deep(:last-child) {
   margin-bottom: 0;
 }
@@ -384,15 +399,27 @@ const renderedInstructions = computed(() =>
   padding-inline-start: 1.25em;
 }
 
-/* Ordered lists keep native list semantics; the marker is styled as a mono
- * zero-padded step number ("01") in its own column. */
+/* Step numbers ("01") are drawn with an absolutely positioned ::before, not
+ * ::marker: Firefox and Safari put an outside marker in the first line box, and
+ * its different font makes every item ~1px taller than the rule. */
 .rcp__instructions :deep(ol) {
-  padding-inline-start: 48px;
-  list-style: decimal-leading-zero;
-  list-style: rcp-step;
+  --step-indent: 48px;
+  padding-inline-start: var(--step-indent);
+  list-style: none;
 }
 
-.rcp__instructions :deep(ol li::marker) {
+.rcp__instructions :deep(ol > li) {
+  position: relative;
+}
+
+.rcp__instructions :deep(ol > li)::before {
+  content: counter(list-item, decimal-leading-zero);
+  position: absolute;
+  right: 100%;
+  box-sizing: border-box;
+  width: var(--step-indent);
+  padding-right: 14px;
+  text-align: right;
   font-family: var(--font-mono);
   font-size: 14px;
   color: rgb(var(--v-theme-primary));
@@ -400,7 +427,10 @@ const renderedInstructions = computed(() =>
 
 .rcp__instructions :deep(ol ol) {
   margin: 0;
-  list-style: lower-alpha;
+}
+
+.rcp__instructions :deep(ol ol > li)::before {
+  content: counter(list-item, lower-alpha) ".";
 }
 
 .rcp__instructions :deep(ol ol li) {
@@ -476,7 +506,7 @@ const renderedInstructions = computed(() =>
 }
 
 .recipe-content-preview--narrow .rcp__instructions :deep(ol) {
-  padding-inline-start: 38px;
+  --step-indent: 38px;
 }
 
 .recipe-content-preview--narrow .rcp__notes {
@@ -509,13 +539,5 @@ const renderedInstructions = computed(() =>
 .recipe-content-preview--compact .rcp__print--small {
   position: static;
   transform: none;
-}
-</style>
-
-<style>
-/* Mono step numbers without the trailing "." (falls back to decimal-leading-zero). */
-@counter-style rcp-step {
-  system: extends decimal-leading-zero;
-  suffix: "  ";
 }
 </style>

@@ -10,14 +10,25 @@
       <span class="index-card__title font-title">{{ recipe.title }}</span>
     </div>
     <div class="index-card__body ruled-26">
-      <div v-if="recipe.subtitle" class="index-card__line index-card__subtitle">
-        {{ recipe.subtitle }}
-      </div>
-      <div
-        v-if="keyIngredientsDisplay"
-        class="index-card__line index-card__keys font-mono"
-      >
-        {{ keyIngredientsDisplay }}
+      <div class="index-card__text">
+        <!-- Keeps the first line clear of the photo, which hangs below the head -->
+        <span
+          v-if="firstImageUrl"
+          class="index-card__photo-gap"
+          aria-hidden="true"
+        />
+        <div
+          v-if="recipe.subtitle"
+          class="index-card__line index-card__subtitle"
+        >
+          {{ recipe.subtitle }}
+        </div>
+        <div
+          v-if="keyIngredientsDisplay"
+          class="index-card__line index-card__keys font-mono"
+        >
+          {{ keyIngredientsDisplay }}
+        </div>
       </div>
     </div>
     <v-img
@@ -94,14 +105,23 @@ const keyIngredientsDisplay = computed(() =>
 .index-card__body {
   height: calc(100% - 58px);
   padding: 0 20px;
+}
+
+/* Text wraps onto the ruled lines and is cut at the last whole line. */
+.index-card__text {
+  height: round(down, 100%, var(--rule));
   overflow: hidden;
+}
+
+.index-card__photo-gap {
+  float: right;
+  width: 64px;
+  height: var(--rule);
 }
 
 .index-card__line {
   line-height: var(--rule);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
 }
 
 .index-card__subtitle {

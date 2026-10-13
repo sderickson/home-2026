@@ -62,14 +62,20 @@
 }
 
 /* Ruled-paper background. Text inside must use `line-height: var(--rule)` and
- * vertical margins in multiples of it, or it drifts off the lines. */
+ * vertical margins in multiples of it, or it drifts off the lines.
+ * One rule-tall tile repeated with background-size, not one long
+ * repeating-linear-gradient: some browsers (WebKit) accumulate rounding error
+ * along a repeating gradient, so the lines slowly creep away from the text. */
 .ruled-26,
 .ruled-32 {
-  background-image: repeating-linear-gradient(
+  background-image: linear-gradient(
     to bottom,
-    transparent 0 calc(var(--rule) - 1px),
-    rgb(var(--v-theme-card-rule)) calc(var(--rule) - 1px) var(--rule)
+    transparent calc(var(--rule) - 1px),
+    rgb(var(--v-theme-card-rule)) calc(var(--rule) - 1px)
   );
+  background-size: 100% var(--rule);
+  /* Vuetify's reset sets background-repeat: no-repeat on every element. */
+  background-repeat: repeat-y;
 }
 
 .ruled-26 {
