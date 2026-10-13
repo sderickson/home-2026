@@ -1,6 +1,75 @@
 <template>
   <v-app>
-    <v-app-bar v-if="mounted" class="px-md-4">
+    <!-- Breadcrumb bar (app SPA): trail on the left, everything else in a menu -->
+    <v-app-bar v-if="mounted && breadcrumbBar" class="px-1 px-md-4">
+      <nav
+        class="breadcrumb-bar d-none d-md-flex"
+        :aria-label="recipes_layout.breadcrumb_label"
+      >
+        <v-breadcrumbs class="breadcrumb-bar__trail">
+          <template v-for="(crumb, i) in crumbs" :key="i">
+            <v-breadcrumbs-divider v-if="i > 0" />
+            <v-breadcrumbs-item
+              :to="i < crumbs.length - 1 ? crumb.to : undefined"
+              :disabled="i === crumbs.length - 1"
+              :aria-current="i === crumbs.length - 1 ? 'page' : undefined"
+              :class="{ 'breadcrumb-bar__root font-title': i === 0 }"
+            >
+              {{ crumb.title }}
+            </v-breadcrumbs-item>
+          </template>
+        </v-breadcrumbs>
+      </nav>
+
+      <!-- Phones: back to the parent page -->
+      <div class="breadcrumb-bar d-flex d-md-none align-center">
+        <template v-if="parentCrumb">
+          <v-btn
+            :to="parentCrumb.to"
+            exact
+            icon="mdi-chevron-left"
+            variant="text"
+            :aria-label="`${recipes_layout.back_to} ${parentCrumb.title}`"
+          />
+          <span
+            class="breadcrumb-bar__parent font-mono text-muted text-truncate"
+          >
+            {{ parentCrumb.title }}
+          </span>
+        </template>
+        <router-link
+          v-else
+          :to="crumbs[0]!.to!"
+          class="breadcrumb-bar__root font-title ml-3"
+        >
+          {{ crumbs[0]!.title }}
+        </router-link>
+      </div>
+
+      <template #append>
+        <slot name="app-bar-append" />
+        <v-menu location="bottom end">
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              icon="mdi-menu"
+              variant="text"
+              :aria-label="recipes_layout.open_menu"
+            />
+          </template>
+          <v-list density="comfortable" min-width="200">
+            <v-list-item
+              v-for="link in links"
+              :key="`${link.subdomain}:${link.path}:${link.name}`"
+              :title="link.name"
+              :href="toHref(link, link.options)"
+            />
+          </v-list>
+        </v-menu>
+      </template>
+    </v-app-bar>
+
+    <v-app-bar v-else-if="mounted" class="px-md-4">
       <v-app-bar-title>
         <a :href="toHref(rootLinks.home)" class="brand font-title">
           <span class="brand__mark" aria-hidden="true" />
@@ -38,7 +107,7 @@
     <!-- Mobile drawer also waits for mount: SSG hrefs are path-only and VitePress
          treats same-origin /new-login as an in-app route → /new-login.html 404. -->
     <v-navigation-drawer
-      v-if="mounted"
+      v-if="mounted && !breadcrumbBar"
       v-model="drawer"
       disable-resize-watcher
       location="top"
@@ -79,7 +148,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container>
+      <!-- Fluid up to a cap, so the width grows smoothly instead of stepping
+           at each breakpoint. Pages narrow it further with max-width. -->
+      <v-container fluid max-width="1200">
         <slot />
       </v-container>
     </v-main>
@@ -98,6 +169,10 @@ import {
 } from "@sderickson/recipes-links";
 import { accountLinks as hubAccountLinks } from "@sderickson/hub-links";
 import { useSiteAdmin } from "../../composables/useSiteAdmin.ts";
+import {
+  type Breadcrumb,
+  useCurrentBreadcrumbs,
+} from "../../composables/useBreadcrumbs.ts";
 
 type SidebarLink = Link & { name: string };
 
@@ -106,7 +181,18 @@ const props = defineProps<{
   sidebarLinks?: SidebarLink[];
   /** Development-only observability links. */
   devSidebarLinks?: SidebarLink[];
+  /** Replace the logo and nav links with the page's breadcrumbs (see useBreadcrumbs) and a menu. */
+  breadcrumbBar?: boolean;
 }>();
+
+const pageCrumbs = useCurrentBreadcrumbs();
+const crumbs = computed<Breadcrumb[]>(() => [
+  { title: recipes_layout.breadcrumb_root, to: appLinks.home.path },
+  ...pageCrumbs.value,
+]);
+const parentCrumb = computed(() =>
+  crumbs.value.length > 1 ? crumbs.value[crumbs.value.length - 2] : undefined,
+);
 
 const { isSiteAdmin } = useSiteAdmin();
 
@@ -182,7 +268,37 @@ const links = computed<LinkWithName[]>(() => {
   box-shadow: inset 0 4px 0 -2.5px rgb(var(--v-theme-demo));
 }
 
-@media (max-width: 959.98px) {
+.breadcrumb-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.breadcrumb-bar__trail {
+  flex-wrap: nowrap;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.breadcrumb-bar__root {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 20px;
+  color: rgb(var(--v-theme-on-surface));
+  text-decoration: none;
+}
+
+.breadcrumb-bar__root :deep(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb-bar__parent {
+  font-size: 13px;
+}
+
+/* Below Vuetify md (matches the d-md-* classes above). */
+@media (max-width: 839.98px) {
   .brand {
     gap: 8px;
     font-size: 17px;

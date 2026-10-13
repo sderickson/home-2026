@@ -1,94 +1,85 @@
 <template>
-  <div class="collection-page">
+  <v-container
+    fluid
+    max-width="1160"
+    class="collection-page pa-0"
+    :class="{ 'collection-page--phone': !mdAndUp }"
+  >
     <header class="collection-header">
-      <v-breadcrumbs class="mb-3">
-        <v-breadcrumbs-item :to="appLinks.home.path">
-          {{ t(strings.breadcrumb_home) }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item disabled>
-          {{ collectionName }}
-        </v-breadcrumbs-item>
-      </v-breadcrumbs>
+      <v-row align="center" dense class="mb-md-5">
+        <v-col>
+          <h1 class="collection-title font-title">
+            {{ collectionName }}
+          </h1>
+        </v-col>
+        <v-col cols="auto" class="d-flex align-center ga-2">
+          <v-btn
+            variant="outlined"
+            prepend-icon="mdi-account-group"
+            :aria-label="
+              t(strings.members_button_label, { count: memberCount })
+            "
+            @click="membersDialogOpen = true"
+          >
+            {{ memberCount }}
+          </v-btn>
 
-      <div class="d-flex align-center flex-wrap ga-3 mb-md-7">
-        <h1 class="collection-title font-title flex-grow-1">
-          {{ collectionName }}
-        </h1>
-        <v-btn
-          variant="outlined"
-          prepend-icon="mdi-account-group"
-          :height="mdAndUp ? 40 : 36"
-          :aria-label="
-            mdAndUp
-              ? undefined
-              : t(strings.members_button_label, { count: memberCount })
-          "
-          @click="membersDialogOpen = true"
-        >
-          {{ mdAndUp ? membersPillLabel : memberCount }}
-        </v-btn>
+          <!-- Desktop: delete collection (owner only) -->
+          <v-tooltip
+            v-if="isOwner && mdAndUp"
+            :text="deleteCollectionTooltip"
+            location="bottom"
+          >
+            <template #activator="{ props: tooltipProps }">
+              <span v-bind="tooltipProps" class="d-inline-block">
+                <v-btn
+                  icon="mdi-delete-outline"
+                  variant="outlined"
+                  size="44"
+                  color="muted"
+                  :aria-label="t(strings.delete_collection)"
+                  :disabled="!canDeleteCollection"
+                  :loading="deleteMutation.isPending.value"
+                  @click="onDeleteCollection"
+                />
+              </span>
+            </template>
+          </v-tooltip>
 
-        <!-- Desktop: delete collection (owner only) -->
-        <v-tooltip
-          v-if="isOwner && mdAndUp"
-          :text="deleteCollectionTooltip"
-          location="bottom"
-        >
-          <template #activator="{ props: tooltipProps }">
-            <span v-bind="tooltipProps" class="d-inline-block">
+          <!-- Phone: authoring actions live in an overflow menu -->
+          <v-menu v-if="!mdAndUp && (canEdit || isOwner)" location="bottom end">
+            <template #activator="{ props: menuProps }">
               <v-btn
-                icon="mdi-delete-outline"
-                variant="outlined"
-                rounded="sm"
-                size="40"
-                color="muted"
-                :aria-label="t(strings.delete_collection)"
-                :disabled="!canDeleteCollection"
-                :loading="deleteMutation.isPending.value"
+                v-bind="menuProps"
+                icon="mdi-dots-vertical"
+                variant="text"
+                :aria-label="t(strings.more_actions)"
+              />
+            </template>
+            <v-list density="comfortable">
+              <v-list-item
+                v-if="canEdit"
+                v-bind="createRecipeLinkProps"
+                prepend-icon="mdi-plus"
+                :title="t(strings.create_recipe)"
+              />
+              <v-list-item
+                v-if="isOwner"
+                prepend-icon="mdi-delete-outline"
+                base-color="error"
+                :title="t(strings.delete_collection)"
+                :subtitle="
+                  canDeleteCollection ? undefined : deleteCollectionTooltip
+                "
+                :disabled="
+                  !canDeleteCollection || deleteMutation.isPending.value
+                "
                 @click="onDeleteCollection"
               />
-            </span>
-          </template>
-        </v-tooltip>
-
-        <!-- Phone: authoring actions live in an overflow menu -->
-        <v-menu v-if="!mdAndUp && (canEdit || isOwner)" location="bottom end">
-          <template #activator="{ props: menuProps }">
-            <v-btn
-              v-bind="menuProps"
-              icon="mdi-dots-vertical"
-              variant="text"
-              :aria-label="t(strings.more_actions)"
-            />
-          </template>
-          <v-list density="comfortable">
-            <v-list-item
-              v-if="canEdit"
-              prepend-icon="mdi-import"
-              :title="t(strings.quick_import)"
-              @click="quickImportOpen = true"
-            />
-            <v-list-item
-              v-if="canEdit"
-              v-bind="createRecipeLinkProps"
-              prepend-icon="mdi-plus"
-              :title="t(strings.create_recipe)"
-            />
-            <v-list-item
-              v-if="isOwner"
-              prepend-icon="mdi-delete-outline"
-              base-color="error"
-              :title="t(strings.delete_collection)"
-              :subtitle="
-                canDeleteCollection ? undefined : deleteCollectionTooltip
-              "
-              :disabled="!canDeleteCollection || deleteMutation.isPending.value"
-              @click="onDeleteCollection"
-            />
-          </v-list>
-        </v-menu>
-      </div>
+            </v-list>
+          </v-menu>
+        </v-col>
+      </v-row>
 
       <v-text-field
         v-if="!mdAndUp && recipes.length > 0"
@@ -110,11 +101,7 @@
       aria-labelledby="menus-heading"
       class="menus-section"
     >
-      <h2
-        id="menus-heading"
-        class="eyebrow mb-2"
-        :class="{ 'd-sr-only': !mdAndUp }"
-      >
+      <h2 id="menus-heading" class="d-sr-only">
         {{ t(strings.menus_heading) }}
       </h2>
       <nav class="menu-tabs" aria-labelledby="menus-heading">
@@ -147,68 +134,68 @@
     </section>
 
     <section aria-labelledby="recipes-heading">
-      <div
-        class="d-flex align-center flex-wrap ga-3 mb-4"
+      <v-row
+        align="center"
+        dense
+        class="mb-3"
         :class="{ 'd-sr-only': !mdAndUp }"
       >
-        <h2 id="recipes-heading" class="recipes-heading font-title">
-          {{ t(strings.recipes_heading) }}
-          <span class="recipes-count font-mono text-muted">
-            ({{ recipes.length }})
-          </span>
-        </h2>
+        <v-col cols="auto" class="pe-4">
+          <h2 id="recipes-heading" class="recipes-heading font-title">
+            {{ t(strings.recipes_heading) }}
+            <span class="recipes-count font-mono text-muted">
+              ({{ recipes.length }})
+            </span>
+          </h2>
+        </v-col>
         <template v-if="mdAndUp">
-          <v-text-field
-            v-if="recipes.length > 0"
-            v-model="recipeSearchQuery"
-            :placeholder="t(strings.recipes_search_placeholder)"
-            :aria-label="t(strings.recipes_search_label)"
-            prepend-inner-icon="mdi-magnify"
-            hide-details
-            clearable
-            class="recipes-search mx-2"
-          />
-          <v-spacer v-else />
-          <v-btn
-            v-if="canEdit"
-            variant="outlined"
-            prepend-icon="mdi-import"
-            @click="quickImportOpen = true"
-          >
-            {{ t(strings.quick_import) }}
-          </v-btn>
-          <v-btn
-            v-if="canEdit"
-            v-bind="createRecipeLinkProps"
-            color="primary"
-            prepend-icon="mdi-plus"
-          >
-            {{ t(strings.create_recipe) }}
-          </v-btn>
-          <v-btn-toggle
-            v-model="recipesView"
-            mandatory
-            variant="outlined"
-            divided
-            density="comfortable"
-            :aria-label="t(strings.recipes_view_label)"
-            role="group"
-          >
-            <v-btn
-              value="grid"
-              icon="mdi-view-grid-outline"
-              :aria-label="t(strings.recipes_view_switch_grid)"
-              :aria-pressed="recipesView === 'grid'"
+          <v-col>
+            <v-text-field
+              v-if="recipes.length > 0"
+              v-model="recipeSearchQuery"
+              :placeholder="t(strings.recipes_search_placeholder)"
+              :aria-label="t(strings.recipes_search_label)"
+              prepend-inner-icon="mdi-magnify"
+              hide-details
+              clearable
             />
-            <v-btn
-              value="list"
-              icon="mdi-format-list-bulleted"
-              :aria-label="t(strings.recipes_view_switch_list)"
-              :aria-pressed="recipesView === 'list'"
-            />
-          </v-btn-toggle>
+          </v-col>
+          <v-col cols="auto" class="d-flex ga-2">
+            <!-- Shows the current layout; click to switch to the other -->
+            <v-tooltip :text="recipesViewToggleLabel" location="bottom">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="tooltipProps"
+                  :icon="
+                    recipesView === 'grid'
+                      ? 'mdi-view-grid-outline'
+                      : 'mdi-format-list-bulleted'
+                  "
+                  variant="outlined"
+                  size="44"
+                  :aria-label="recipesViewToggleLabel"
+                  @click="toggleRecipesView"
+                />
+              </template>
+            </v-tooltip>
+            <v-tooltip
+              v-if="canEdit"
+              :text="t(strings.create_recipe)"
+              location="bottom"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="{ ...tooltipProps, ...createRecipeLinkProps }"
+                  icon="mdi-plus"
+                  color="primary"
+                  size="44"
+                  :aria-label="t(strings.create_recipe)"
+                />
+              </template>
+            </v-tooltip>
+          </v-col>
         </template>
-      </div>
+      </v-row>
 
       <div
         v-if="recipes.length > 0 && filteredRecipes.length === 0"
@@ -227,24 +214,20 @@
         v-else
         :recipes="filteredRecipes"
         :get-recipe-link-props="getRecipeLinkProps"
-        :grouped="!mdAndUp && !isSearching"
+        :grouped="!isSearching"
       />
     </section>
 
-    <QuickImportDialog
-      v-model="quickImportOpen"
-      :collection-id="collectionId"
-      @success="onQuickImportSuccess"
-    />
     <MembersManagementDialog
       v-model="membersDialogOpen"
       :collection-id="collectionId"
       :collection-name="collectionName"
     />
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
@@ -269,7 +252,6 @@ import {
 import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MembersManagementDialog from "../../../components/collections/MembersManagementDialog.vue";
-import QuickImportDialog from "../../../components/quick-import/QuickImportDialog.vue";
 import RecipeListListView from "../../../components/recipes/RecipeListListView.vue";
 
 const { t } = useReverseT();
@@ -348,17 +330,20 @@ const filteredRecipes = computed(() => {
   });
 });
 
-const quickImportOpen = ref(false);
 const membersDialogOpen = ref(false);
 /** Desktop only; phones always show rows. */
 const recipesView = ref<"grid" | "list">("grid");
+const recipesViewToggleLabel = computed(() =>
+  recipesView.value === "grid"
+    ? t(strings.recipes_view_switch_to_list)
+    : t(strings.recipes_view_switch_to_grid),
+);
+
+function toggleRecipesView() {
+  recipesView.value = recipesView.value === "grid" ? "list" : "grid";
+}
 
 const memberCount = computed(() => members.value.length);
-const membersPillLabel = computed(() =>
-  memberCount.value === 1
-    ? t(strings.members_pill_one)
-    : `${memberCount.value} ${t(strings.members_pill_plural)}`,
-);
 
 const deleteCollectionTooltip = computed(() =>
   canDeleteCollection.value
@@ -376,14 +361,6 @@ function getRecipeLinkProps(recipeId: string) {
   });
 }
 
-function onQuickImportSuccess(recipeId: string) {
-  router.push(
-    constructPath(appLinks.recipesDetail, {
-      params: { collectionId, id: recipeId },
-    }),
-  );
-}
-
 async function onDeleteCollection() {
   if (!canDeleteCollection.value) return;
   try {
@@ -393,13 +370,13 @@ async function onDeleteCollection() {
     // Error handled by mutation / global snackbar if configured
   }
 }
+
+useBreadcrumbs(() => [{ title: collectionName.value }]);
 </script>
 
 <style scoped>
 .collection-page {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding-bottom: 48px;
+  padding-bottom: 48px !important;
 }
 
 .collection-title {
@@ -410,7 +387,7 @@ async function onDeleteCollection() {
 }
 
 .menus-section {
-  margin-bottom: 36px;
+  margin-bottom: 28px;
 }
 
 /* Divider tabs with rounded tops, sitting on a 2px baseline. */
@@ -454,38 +431,33 @@ async function onDeleteCollection() {
   font-weight: 400;
 }
 
-.recipes-search {
-  flex: 1 1 280px;
+/* Phones (below Vuetify's md, via useDisplay so it switches with the app bar):
+ * header block on white, tabs scroll sideways on one row. */
+.collection-page--phone .collection-header {
+  margin: -16px -16px 0;
+  padding: 12px 16px 12px;
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-outline-soft));
 }
 
-/* Phones: header block on white, tabs scroll sideways on one row. */
-@media (max-width: 959.98px) {
-  .collection-header {
-    margin: -16px -16px 0;
-    padding: 12px 16px 12px;
-    background: rgb(var(--v-theme-surface));
-    border-bottom: 1px solid rgb(var(--v-theme-outline-soft));
-  }
+.collection-page--phone .collection-title {
+  font-size: 32px;
+  line-height: 1.1;
+}
 
-  .collection-title {
-    font-size: 32px;
-    line-height: 1.1;
-  }
+.collection-page--phone .menus-section {
+  margin: 0 -16px 8px;
+  padding: 14px 16px 0;
+}
 
-  .menus-section {
-    margin: 0 -16px 8px;
-    padding: 14px 16px 0;
-  }
+.collection-page--phone .menu-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-left: 0;
+}
 
-  .menu-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-left: 0;
-  }
-
-  .menu-tab.v-btn {
-    flex-shrink: 0;
-    height: 44px;
-  }
+.collection-page--phone .menu-tab.v-btn {
+  flex-shrink: 0;
+  height: 44px;
 }
 </style>

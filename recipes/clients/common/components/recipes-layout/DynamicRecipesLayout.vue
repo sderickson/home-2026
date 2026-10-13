@@ -6,6 +6,7 @@
     :logged-in="loggedIn"
     :sidebar-links="sidebarLinks"
     :dev-sidebar-links="devSidebarLinks"
+    :breadcrumb-bar="breadcrumbBar"
   >
     <template #app-bar-append>
       <v-btn
@@ -80,6 +81,7 @@ defineProps<{
   loggedIn?: boolean;
   sidebarLinks?: SidebarLink[];
   devSidebarLinks?: SidebarLink[];
+  breadcrumbBar?: boolean;
 }>();
 
 const { t } = useReverseT();

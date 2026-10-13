@@ -1,24 +1,6 @@
 <template>
   <div>
-    <v-container fluid class="pa-0" max-width="1040">
-      <v-breadcrumbs class="d-none d-md-flex mb-5">
-        <v-breadcrumbs-item :to="appLinks.home.path">
-          {{ t(strings.breadcrumb_home) }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="collectionDetailPath">
-          {{ collectionName }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="menuDetailPath">
-          {{ menu.name }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="recipeDetailPath">
-          {{ recipe.title }}
-        </v-breadcrumbs-item>
-      </v-breadcrumbs>
-
+    <v-container fluid class="pa-0 pt-md-4" max-width="1040">
       <RecipeDetailContent
         :recipe="recipe"
         :current-version="currentVersion"
@@ -27,20 +9,18 @@
         :user-email="userEmail"
         :versions="versions"
         :files="files"
-        :back-to="menuDetailPath"
-        :back-label="menu.name"
       />
     </v-container>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
-import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import {
   assertFilesLoaded,
@@ -49,9 +29,7 @@ import {
   assertVersionsLoaded,
 } from "../../../components/recipe-detail/recipeDetailLogic.ts";
 import { useMenuRecipeDetailLoader } from "./RecipeDetail.loader.ts";
-import { menus_recipe_detail as strings } from "./RecipeDetail.strings.ts";
 
-const { t } = useReverseT();
 const route = useRoute();
 const collectionId = route.params.collectionId as string;
 const menuId = route.params.menuId as string;
@@ -91,9 +69,10 @@ const collectionDetailPath = computed(() =>
 const menuDetailPath = computed(() =>
   constructPath(appLinks.menusDetail, { params: { collectionId, id: menuId } }),
 );
-const recipeDetailPath = computed(() =>
-  constructPath(appLinks.menuRecipeDetail, {
-    params: { collectionId, menuId, recipeId: recipe.value.id },
-  }),
-);
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: menu.value.name, to: menuDetailPath.value },
+  { title: recipe.value.title },
+]);
 </script>

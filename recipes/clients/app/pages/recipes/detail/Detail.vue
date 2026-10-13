@@ -1,20 +1,6 @@
 <template>
   <div>
-    <v-container fluid class="pa-0" max-width="1040">
-      <v-breadcrumbs class="d-none d-md-flex mb-5">
-        <v-breadcrumbs-item :to="appLinks.home.path">
-          {{ t(strings.breadcrumb_home) }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="collectionDetailPath">
-          {{ collectionName }}
-        </v-breadcrumbs-item>
-        <v-breadcrumbs-divider />
-        <v-breadcrumbs-item :to="recipeDetailPath">
-          {{ recipe.title }}
-        </v-breadcrumbs-item>
-      </v-breadcrumbs>
-
+    <v-container fluid class="pa-0 pt-md-4" max-width="1040">
       <RecipeDetailContent
         :recipe="recipe"
         :current-version="currentVersion"
@@ -23,20 +9,18 @@
         :user-email="userEmail"
         :versions="versions"
         :files="files"
-        :back-to="collectionDetailPath"
-        :back-label="collectionName"
       />
     </v-container>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
-import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertFilesLoaded,
@@ -46,11 +30,9 @@ import {
 } from "./Detail.logic.ts";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
 import { useScreenWakeLock } from "../../../composables/useScreenWakeLock.ts";
-import { recipes_detail_page as strings } from "./Detail.strings.ts";
 
 useScreenWakeLock();
 
-const { t } = useReverseT();
 const route = useRoute();
 const collectionId = route.params.collectionId as string;
 
@@ -79,9 +61,9 @@ const files = computed(() => queries.filesQuery.data.value ?? []);
 const collectionDetailPath = computed(() =>
   constructPath(appLinks.collectionsDetail, { params: { collectionId } }),
 );
-const recipeDetailPath = computed(() =>
-  constructPath(appLinks.recipesDetail, {
-    params: { collectionId, id: recipe.value.id },
-  }),
-);
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: recipe.value.title },
+]);
 </script>

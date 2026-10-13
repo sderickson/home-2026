@@ -1,13 +1,15 @@
 /** Strings for the shared recipe detail content (toolbar, dialogs). */
 export const recipe_detail_content = {
-  back_to: "Back to {name}",
   recipe_actions: "Recipe actions",
   toolbar_version_history: "Version history",
   toolbar_edit: "Edit",
-  toolbar_images: "Add image",
   toolbar_upload_image: "Upload from computer",
   toolbar_choose_unsplash: "Choose from Unsplash",
   toolbar_delete: "Delete recipe",
+  remove_image: "Remove image",
+  previous_image: "Previous image",
+  next_image: "Next image",
+  close: "Close",
   delete_file: "Remove file",
   delete_file_confirm: "Remove this file from the recipe?",
   delete_recipe: "Delete recipe",

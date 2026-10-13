@@ -1,8 +1,6 @@
 export const collections_detail = {
   breadcrumb_home: "Home",
   breadcrumb_collections: "Collections",
-  members_pill_one: "1 member",
-  members_pill_plural: "members",
   members_button_label: "Members: {count}",
   menus_heading: "Menus",
   menus_private: "Private",
@@ -11,12 +9,10 @@ export const collections_detail = {
   recipes_search_label: "Search recipes",
   recipes_search_placeholder: "Find a recipe…",
   recipes_search_no_match: "No recipes match your search.",
-  recipes_view_label: "View",
-  recipes_view_switch_list: "List view",
-  recipes_view_switch_grid: "Card view",
+  recipes_view_switch_to_list: "Showing cards — switch to list",
+  recipes_view_switch_to_grid: "Showing list — switch to cards",
   create_menu: "Create menu",
   create_recipe: "New recipe",
-  quick_import: "Import",
   more_actions: "More collection actions",
   delete_collection: "Delete collection",
   delete_collection_tooltip_empty:

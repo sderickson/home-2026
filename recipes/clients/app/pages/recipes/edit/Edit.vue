@@ -1,23 +1,5 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="pl-0 mb-2">
-      <v-breadcrumbs-item :to="appLinks.home.path">
-        {{ t(strings.breadcrumb_home) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ collectionName }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="recipeDetailPath">
-        {{ data.recipe.title }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item>
-        {{ t(strings.breadcrumb_edit) }}
-      </v-breadcrumbs-item>
-    </v-breadcrumbs>
-
     <RecipeForm
       v-model="formModel"
       :recipe="recipeQuery.data.value ?? null"
@@ -27,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { recipes_edit_page as strings } from "./Edit.strings.ts";
@@ -67,4 +50,10 @@ function handleSuccess(recipeId: string) {
     }),
   );
 }
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: data.recipe.title, to: recipeDetailPath.value },
+  { title: t(strings.breadcrumb_edit) },
+]);
 </script>

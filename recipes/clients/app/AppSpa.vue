@@ -23,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DynamicRecipesLayout :logged-in="loggedIn">
+  <DynamicRecipesLayout :logged-in="loggedIn" breadcrumb-bar>
     <router-view />
   </DynamicRecipesLayout>
 </template>

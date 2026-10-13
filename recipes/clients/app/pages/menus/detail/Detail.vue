@@ -1,19 +1,5 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="pl-0 mb-2">
-      <v-breadcrumbs-item :to="appLinks.home.path">
-        {{ t(strings.breadcrumb_home) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ collectionName }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item disabled>
-        {{ menu.name }}
-      </v-breadcrumbs-item>
-    </v-breadcrumbs>
-
     <v-toolbar v-if="!isEditing" density="comfortable" class="mb-4">
       <v-toolbar-title class="text-h6 text-truncate">
         {{ menu.name }}
@@ -119,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
@@ -232,4 +219,9 @@ function cancelEdit() {
   syncEditFormFromMenu();
   isEditing.value = false;
 }
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: menu.value.name },
+]);
 </script>

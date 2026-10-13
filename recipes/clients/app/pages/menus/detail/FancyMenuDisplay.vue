@@ -5,11 +5,7 @@
       :key="cIndex"
       class="fancy-menu-column"
     >
-      <section
-        v-for="gIndex in col"
-        :key="gIndex"
-        class="fancy-menu-grouping"
-      >
+      <section v-for="gIndex in col" :key="gIndex" class="fancy-menu-grouping">
         <h2 class="fancy-menu-section-title">
           {{ groupings[gIndex].name }}
         </h2>
@@ -44,32 +40,23 @@
 import { computed } from "vue";
 import { useDisplay } from "vuetify";
 
-/** Same breakpoints as recipes/service/sdk/.../RecipeList.vue */
-const RECIPE_LIST_BREAKPOINT_SM = 600;
-const RECIPE_LIST_BREAKPOINT_MD = 960;
-const RECIPE_LIST_BREAKPOINT_LG = 1280;
-
 const props = defineProps<{
   groupings: { name: string; recipeIds: string[] }[];
-  recipeById: Map<
-    string,
-    { id: string; title: string; subtitle?: string }
-  >;
+  recipeById: Map<string, { id: string; title: string; subtitle?: string }>;
   subtextByRecipeId: Map<string, string>;
   recipeLink: (recipeId: string) => string;
 }>();
 
 const display = useDisplay();
 
-/** Cap column count at the number of sections (RecipeList caps at 4 by width only). */
+/** Columns by Vuetify breakpoint, capped at the number of sections. */
 const columnCount = computed(() => {
   const sectionCount = props.groupings.length;
   if (sectionCount <= 0) return 1;
-  const w = display.width.value;
   let maxByWidth = 1;
-  if (w >= RECIPE_LIST_BREAKPOINT_LG) maxByWidth = 4;
-  else if (w >= RECIPE_LIST_BREAKPOINT_MD) maxByWidth = 3;
-  else if (w >= RECIPE_LIST_BREAKPOINT_SM) maxByWidth = 2;
+  if (display.lgAndUp.value) maxByWidth = 4;
+  else if (display.mdAndUp.value) maxByWidth = 3;
+  else if (display.smAndUp.value) maxByWidth = 2;
   return Math.min(maxByWidth, sectionCount);
 });
 

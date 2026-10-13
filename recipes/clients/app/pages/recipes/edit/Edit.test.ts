@@ -1,3 +1,4 @@
+import { useCurrentBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { afterEach, describe, it, expect, vi } from "vitest";
 import { stubGlobals, mountWithPlugins } from "@saflib/vue/testing";
 import RecipesEditAsync from "./EditAsync.vue";
@@ -33,8 +34,13 @@ describe("RecipesEdit", () => {
     );
 
     await vi.waitFor(() =>
-      expect(wrapper.text()).toContain("EditClassic Chocolate Chip Cookies"),
+      expect(wrapper.text()).toContain("Classic Chocolate Chip Cookies"),
     );
+    expect(useCurrentBreadcrumbs().value.map((crumb) => crumb.title)).toEqual([
+      "My Kitchen",
+      "Classic Chocolate Chip Cookies",
+      "Edit",
+    ]);
     wrapper.unmount();
   });
 });

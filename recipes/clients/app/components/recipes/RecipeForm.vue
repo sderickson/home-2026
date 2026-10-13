@@ -270,7 +270,8 @@ async function handleEditSave() {
   min-height: 50vh;
 }
 
-@media (min-width: 960px) {
+/* Vuetify md */
+@media (min-width: 840px) {
   .recipe-form__col-min {
     min-width: 400px;
   }

@@ -4,16 +4,23 @@
       {{ t(strings.empty) }}
     </v-alert>
   </div>
-  <div v-else class="recipe-list-grid">
-    <RecipeCard
+  <!-- Index-card grid: one column on phones, two from md, three from lg. -->
+  <v-row v-else>
+    <v-col
       v-for="(recipe, i) in recipes"
       :key="recipe.id"
-      :recipe="recipe"
-      :first-image-url="enrichedByIndex[i]?.firstImageUrl ?? null"
-      :key-ingredients="enrichedByIndex[i]?.keyIngredients ?? []"
-      :link-props="getRecipeLinkProps(recipe.id)"
-    />
-  </div>
+      cols="12"
+      md="6"
+      lg="4"
+    >
+      <RecipeCard
+        :recipe="recipe"
+        :first-image-url="enrichedByIndex[i]?.firstImageUrl ?? null"
+        :key-ingredients="enrichedByIndex[i]?.keyIngredients ?? []"
+        :link-props="getRecipeLinkProps(recipe.id)"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script setup lang="ts">
@@ -57,12 +64,3 @@ const enrichedByIndex = computed(() =>
   }),
 );
 </script>
-
-<style scoped>
-/* Index-card grid: as many 300px+ columns as fit. */
-.recipe-list-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 22px;
-}
-</style>

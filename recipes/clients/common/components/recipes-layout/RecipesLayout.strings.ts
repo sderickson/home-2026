@@ -1,6 +1,10 @@
 export const recipes_layout = {
   nav_title: "Scott's Recipe List",
   nav_label: "Main",
+  breadcrumb_label: "Breadcrumb",
+  breadcrumb_root: "Recipes",
+  back_to: "Back to",
+  open_menu: "Open menu",
   demo_mode: "Demo",
   demo_dialog_title: "Demo mode",
   demo_banner_message:
