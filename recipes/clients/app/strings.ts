@@ -19,6 +19,7 @@ import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_edit_page } from "./pages/recipes/edit/Edit.strings.ts";
 import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
+import { share_recipes } from "./pages/share/recipes/Recipes.strings.ts";
 // END WORKFLOW AREA
 
 export const app_strings = {
@@ -42,5 +43,6 @@ export const app_strings = {
   recipes_detail_page,
   recipes_edit_page,
   unsplash_picker_dialog,
+  share_recipes,
   // END WORKFLOW AREA
 };

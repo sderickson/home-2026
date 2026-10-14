@@ -38,5 +38,9 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/c/:collectionId",
   },
+  shareRecipes: {
+    subdomain,
+    path: "/share/recipes/:id",
+  },
   // END WORKFLOW AREA
 };

@@ -12,6 +12,7 @@ import MenusDetailAsync from "./pages/menus/detail/DetailAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesEditAsync from "./pages/recipes/edit/EditAsync.vue";
+import ShareRecipesAsync from "./pages/share/recipes/RecipesAsync.vue";
 // END WORKFLOW AREA
 
 export const createAppRouter = (options?: { history?: RouterHistory }) => {
@@ -55,6 +56,10 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
           component: MenusDetailAsync,
         },
       ],
+    },
+    {
+      path: appLinks.shareRecipes.path,
+      component: ShareRecipesAsync,
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },
