@@ -7,13 +7,15 @@ import type {
   VerificationCodeValidPayload,
 } from "@saflib/ory-kratos-http";
 
+const NO_REPLY_EMAIL = `scotterickson.info <noreply@scotterickson.info>`;
+
 async function onVerificationCodeValid(payload: VerificationCodeValidPayload) {
   const { log } = getSafReporters();
   const { user, verificationUrl } = payload;
   log.info(`Verification code email for ${user.id}: ${verificationUrl}`);
   await getEmailClient().sendEmail({
     to: user.email,
-    from: `noreply@scotterickson.info`,
+    from: NO_REPLY_EMAIL,
     subject: "Verification code",
     text: `To verify your email, go to ${verificationUrl}`,
   });
@@ -25,7 +27,7 @@ async function onRecoveryCodeValid(payload: RecoveryCodeValidPayload) {
   log.info(`Recovery code email for ${user.id}: ${recoveryCode}`);
   await getEmailClient().sendEmail({
     to: user.email,
-    from: `noreply@scotterickson.info`,
+    from: NO_REPLY_EMAIL,
     subject: "Recovery code",
     text: `Your recovery code is ${recoveryCode}`,
   });
@@ -37,7 +39,7 @@ async function onRecoveryValid(payload: RecoveryValidPayload) {
   log.info(`Recovery email for ${user.id}: ${recoveryUrl}`);
   await getEmailClient().sendEmail({
     to: user.email,
-    from: `noreply@scotterickson.info`,
+    from: NO_REPLY_EMAIL,
     subject: "Recovery",
     text: `To recover your account, go to ${recoveryUrl}`,
   });
