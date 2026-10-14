@@ -126,12 +126,11 @@ export function recipeVersionToApiRecipeVersion(
 export function getByIdResultToGetRecipeResponse(
   recipe: RecipeEntity,
   currentVersion: RecipeVersionEntity,
-  options?: { notes?: GetRecipe200["notes"]; files?: GetRecipe200["files"] },
+  options?: { files?: GetRecipe200["files"] },
 ): GetRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe, currentVersion.id),
     currentVersion: recipeVersionToApiRecipeVersion(currentVersion),
-    ...(options?.notes !== undefined && { notes: options.notes }),
     ...(options?.files !== undefined && { files: options.files }),
   };
 }

@@ -1,46 +1,50 @@
-// @ts-nocheck — scaffold placeholders until express/add-handler copies this file.
-// TODO: remove @ts-nocheck and @ts-expect-error lines as part of workflow
+import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import type {
-  RequestBody as sharedGetRecipesRequestBody,
-  ResponseBody as sharedGetRecipesResponseBody,
-} from "@sderickson/recipes-spec/operations/sharedGetRecipes";
-import { getSafContextWithAuth } from "@saflib/node";
-// TODO: Import neccessary db functions and error classes, as well as any other deps
-// import { recipesDb } from "@sderickson/recipes-db/instances";
+import type { ResponseBody as sharedGetRecipesResponseBody } from "@sderickson/recipes-spec/operations/sharedGetRecipes";
+import {
+  recipeFileQueries,
+  recipeQueries,
+  RecipeNotFoundError,
+} from "@sderickson/recipes-db";
+import { recipesServiceStorage } from "@sderickson/recipes-service-common";
+import { getByIdResultToSharedGetRecipesResponse } from "./_helpers.ts";
 
-export const sharedGetRecipesHandler = createHandler(
-  async (req, res) => {
-    // @ts-expect-error
-    const { auth } = getSafContextWithAuth();
-    
-    // @ts-expect-error
-    const data: sharedGetRecipesRequestBody["sharedGetRecipes"] =
-      req.body || {};
-    
-    // TODO: Call your service/DB function here
-    // const { result, error } = await recipesDb.someFunction(ctx.dbKey, {
-    //   // Map request data to service parameters
-    // });
+type SharedGetRecipeError = RecipeNotFoundError;
 
-    // TODO: Handle expected errors
-    // if (error) {
-    //   switch (true) {
-    //     case error instanceof SomeError:
-    //       throw createError(400, "Error message");
-    //     default:
-    //       throw error satisfies never;
-    //   }
-    // }
+export const sharedGetRecipesHandler = createHandler(async (req, res) => {
+  const { recipesDbKey } = recipesServiceStorage.getStore()!;
+  const id = req.params.id as string;
 
+  const recipeOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
+  if (recipeOut.error) {
+    const error: SharedGetRecipeError = recipeOut.error;
+    switch (true) {
+      case error instanceof RecipeNotFoundError:
+        throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
+      default:
+        throw error satisfies never;
+    }
+  }
 
-    // TODO: Map result to API response
-    // @ts-expect-error - TODO: remove ts-expect-error as part of workflow
-    const response: sharedGetRecipesResponseBody["sharedGetRecipes"][201] =
-      {
-        // Map service result to API response, using _helpers.ts mapper function
-      };
-    // TODO: Set appropriate status code
-    res.status(201).json(response);
-  },
-);
+  const filesOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    recipeId: id,
+  });
+  if (filesOut.error) {
+    const error: SharedGetRecipeError = filesOut.error;
+    switch (true) {
+      case error instanceof RecipeNotFoundError:
+        throw createError(404, error.message, { code: "RECIPE_NOT_FOUND" });
+      default:
+        throw error satisfies never;
+    }
+  }
+
+  const response: sharedGetRecipesResponseBody["sharedGetRecipes"][200] =
+    getByIdResultToSharedGetRecipesResponse(
+      recipeOut.result.recipe,
+      recipeOut.result.latestVersion,
+      filesOut.result,
+    );
+
+  res.status(200).json(response);
+});
