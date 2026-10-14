@@ -75,13 +75,11 @@
             <div
               class="d-flex flex-column flex-grow-1 recipe-form__instructions-wrap"
             >
-              <v-textarea
+              <MarkdownEditor
                 v-model="content().instructionsMarkdown"
                 :label="t(strings.instructions_label)"
                 :placeholder="t(strings.instructions_placeholder)"
-                variant="outlined"
-                rows="6"
-                class="flex-grow-1 recipe-form__instructions-field"
+                class="flex-grow-1"
               />
             </div>
           </v-col>
@@ -121,6 +119,7 @@ import type {
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
+import MarkdownEditor from "./MarkdownEditor.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
 import {
   isRecipeFormValid,
@@ -279,10 +278,5 @@ async function handleEditSave() {
 
 .recipe-form__instructions-wrap {
   min-height: 0;
-}
-
-.recipe-form__instructions-field :deep(textarea) {
-  min-height: 100%;
-  height: 100% !important;
 }
 </style>
