@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Breadcrumb bar (app SPA): trail on the left, everything else in a menu -->
-    <v-app-bar v-if="mounted && breadcrumbBar" class="px-1 px-md-4">
+    <v-app-bar v-if="mounted && !bare && breadcrumbBar" class="px-1 px-md-4">
       <nav
         class="breadcrumb-bar d-none d-md-flex"
         :aria-label="recipes_layout.breadcrumb_label"
@@ -69,7 +69,7 @@
       </template>
     </v-app-bar>
 
-    <v-app-bar v-else-if="mounted" class="px-md-4">
+    <v-app-bar v-else-if="mounted && !bare" class="px-md-4">
       <v-app-bar-title>
         <a :href="toHref(rootLinks.home)" class="brand font-title">
           <span class="brand__mark" aria-hidden="true" />
@@ -107,7 +107,7 @@
     <!-- Mobile drawer also waits for mount: SSG hrefs are path-only and VitePress
          treats same-origin /new-login as an in-app route → /new-login.html 404. -->
     <v-navigation-drawer
-      v-if="mounted && !breadcrumbBar"
+      v-if="mounted && !bare && !breadcrumbBar"
       v-model="drawer"
       disable-resize-watcher
       location="top"
@@ -183,6 +183,8 @@ const props = defineProps<{
   devSidebarLinks?: SidebarLink[];
   /** Replace the logo and nav links with the page's breadcrumbs (see useBreadcrumbs) and a menu. */
   breadcrumbBar?: boolean;
+  /** Skip app bars and nav drawer chrome (e.g. public share page). */
+  bare?: boolean;
 }>();
 
 const pageCrumbs = useCurrentBreadcrumbs();

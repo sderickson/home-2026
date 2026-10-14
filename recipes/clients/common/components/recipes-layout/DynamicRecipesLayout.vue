@@ -7,6 +7,7 @@
     :sidebar-links="sidebarLinks"
     :dev-sidebar-links="devSidebarLinks"
     :breadcrumb-bar="breadcrumbBar"
+    :bare="bare"
   >
     <template #app-bar-append>
       <v-btn
@@ -82,6 +83,7 @@ defineProps<{
   sidebarLinks?: SidebarLink[];
   devSidebarLinks?: SidebarLink[];
   breadcrumbBar?: boolean;
+  bare?: boolean;
 }>();
 
 const { t } = useReverseT();
