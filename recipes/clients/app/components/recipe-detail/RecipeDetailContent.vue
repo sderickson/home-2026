@@ -35,6 +35,11 @@
                 </template>
               </v-list-item>
               <v-list-item
+                prepend-icon="mdi-link-variant"
+                :title="t(strings.toolbar_get_share_link)"
+                @click="copyShareLink"
+              />
+              <v-list-item
                 v-if="showEdit"
                 prepend-icon="mdi-pencil"
                 :title="t(strings.toolbar_edit)"
@@ -207,7 +212,8 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { recipe_detail_content as strings } from "./RecipeDetailContent.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
-import { constructPath } from "@saflib/links";
+import { constructPath, linkToHrefWithHost } from "@saflib/links";
+import { showInfo } from "@saflib/vue";
 import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
 import {
   RecipeContentPreview,
@@ -291,6 +297,14 @@ function removeExpandedImage() {
   if (!file) return;
   expandedImageFile.value = null;
   filesFlow.confirmDeleteFile(file);
+}
+
+async function copyShareLink() {
+  const href = linkToHrefWithHost(appLinks.shareRecipes, {
+    params: { id: props.recipe.id },
+  });
+  await navigator.clipboard.writeText(href);
+  showInfo(t(strings.link_copied));
 }
 
 async function doDeleteRecipe() {

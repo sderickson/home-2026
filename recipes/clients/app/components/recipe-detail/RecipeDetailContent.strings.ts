@@ -2,10 +2,12 @@
 export const recipe_detail_content = {
   recipe_actions: "Recipe actions",
   toolbar_version_history: "Version history",
+  toolbar_get_share_link: "Get share link",
   toolbar_edit: "Edit",
   toolbar_upload_image: "Upload from computer",
   toolbar_choose_unsplash: "Choose from Unsplash",
   toolbar_delete: "Delete recipe",
+  link_copied: "Link copied",
   remove_image: "Remove image",
   previous_image: "Previous image",
   next_image: "Next image",
