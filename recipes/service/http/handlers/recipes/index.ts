@@ -4,6 +4,7 @@ import { operationJsonSpec as sharedGetRecipesOperationJsonSpec } from "@sderick
 
 // BEGIN WORKFLOW AREA handler-imports FOR express/add-handler
 import { sharedGetRecipesHandler } from "./shared-get.ts";
+import { sharedFilesDownloadRecipesHandler } from "./shared-files-download.ts";
 // END WORKFLOW AREA
 
 /**
@@ -21,6 +22,14 @@ export function createRecipesRouter(): IRouter {
       enforceAuth: false,
     }),
     sharedGetRecipesHandler,
+  );
+  // TODO: set method and path from openapi/route (match urlPath in the spec).
+  router.post(
+    "/recipes/shared-files-download",
+    ...createOperationScopedMiddleware(
+      sharedFilesDownloadRecipesOperationJsonSpec,
+    ),
+    sharedFilesDownloadRecipesHandler,
   );
   // END WORKFLOW AREA
 
