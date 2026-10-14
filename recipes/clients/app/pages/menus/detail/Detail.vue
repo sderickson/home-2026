@@ -1,79 +1,72 @@
 <template>
-  <v-container>
-    <v-toolbar v-if="!isEditing" density="comfortable" class="mb-4">
-      <v-toolbar-title class="text-h6 text-truncate">
-        {{ menu.name }}
-      </v-toolbar-title>
-      <v-spacer />
-      <div class="d-flex align-center flex-shrink-0 ga-1">
-        <v-tooltip location="bottom" :text="t(strings.tooltip_menu_view)">
-          <template #activator="{ props: tooltipProps }">
-            <v-btn
-              v-bind="tooltipProps"
-              icon
-              variant="text"
-              :class="{ 'v-btn--active': viewMode === 'menu' }"
-              @click="viewMode = 'menu'"
-            >
-              <v-icon>mdi-format-list-bulleted</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-        <v-tooltip location="bottom" :text="t(strings.tooltip_diner_view)">
-          <template #activator="{ props: tooltipProps }">
-            <v-btn
-              v-bind="tooltipProps"
-              icon
-              variant="text"
-              :class="{ 'v-btn--active': viewMode === 'diner' }"
-              @click="viewMode = 'diner'"
-            >
-              <v-icon>mdi-view-module</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-      </div>
+  <v-container max-width="1240" class="menu-page pa-0">
+    <div v-if="!isEditing" class="menu-page__bar">
+      <v-btn-toggle
+        v-model="viewMode"
+        mandatory
+        variant="outlined"
+        divided
+        density="comfortable"
+        selected-class="menu-page__view--active"
+        class="menu-page__views"
+        :class="{ 'menu-page__views--block': !mdAndUp }"
+      >
+        <v-btn value="menu" prepend-icon="mdi-format-align-center">
+          {{ t(strings.view_mode_menu) }}
+        </v-btn>
+        <v-btn value="diner" prepend-icon="mdi-view-grid-outline">
+          {{ t(strings.view_mode_diner) }}
+        </v-btn>
+      </v-btn-toggle>
+
       <template v-if="showEdit">
-        <v-tooltip v-if="!isEditing" location="bottom" :text="t(strings.edit)">
-          <template #activator="{ props: tooltipProps }">
-            <v-btn v-bind="tooltipProps" icon variant="text" @click="startEdit">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-        <template v-else>
-          <v-tooltip location="bottom" :text="t(strings.cancel)">
-            <template #activator="{ props: tooltipProps }">
+        <div v-if="mdAndUp" class="d-flex ga-2">
+          <v-btn
+            variant="outlined"
+            prepend-icon="mdi-pencil-outline"
+            class="bg-surface"
+            @click="startEdit"
+          >
+            {{ t(strings.edit) }}
+          </v-btn>
+          <v-btn
+            variant="outlined"
+            icon="mdi-delete-outline"
+            color="error"
+            size="40"
+            rounded="sm"
+            :aria-label="t(strings.delete)"
+            @click="deleteDialogOpen = true"
+          />
+        </div>
+        <!-- Phones: actions live in an overflow menu in the app bar. -->
+        <Teleport v-else defer to="#app-bar-page-actions">
+          <v-menu location="bottom end">
+            <template #activator="{ props: menuProps }">
               <v-btn
-                v-bind="tooltipProps"
-                icon
+                v-bind="menuProps"
+                icon="mdi-dots-vertical"
                 variant="text"
-                @click="cancelEdit"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
+                :aria-label="t(strings.more_actions)"
+              />
             </template>
-          </v-tooltip>
-        </template>
-        <v-tooltip
-          v-if="!isEditing"
-          location="bottom"
-          :text="t(strings.delete)"
-        >
-          <template #activator="{ props: tooltipProps }">
-            <v-btn
-              v-bind="tooltipProps"
-              icon
-              variant="text"
-              color="error"
-              @click="deleteDialogOpen = true"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
+            <v-list density="comfortable">
+              <v-list-item
+                prepend-icon="mdi-pencil-outline"
+                :title="t(strings.edit)"
+                @click="startEdit"
+              />
+              <v-list-item
+                prepend-icon="mdi-delete-outline"
+                base-color="error"
+                :title="t(strings.delete)"
+                @click="deleteDialogOpen = true"
+              />
+            </v-list>
+          </v-menu>
+        </Teleport>
       </template>
-    </v-toolbar>
+    </div>
 
     <MenuGroupingsDisplay
       v-if="!isEditing"
@@ -82,7 +75,8 @@
       :menu-id="menuId"
       :collection-id="collectionId"
       :view-mode="viewMode"
-      :menu-title="viewMode === 'diner' ? menu.name : undefined"
+      :menu-title="menu.name"
+      :collection-name="collectionName"
     />
     <MenuEditForm
       v-else
@@ -108,6 +102,7 @@
 import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useDisplay } from "vuetify";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import { menus_detail as strings } from "./Detail.strings.ts";
@@ -125,6 +120,7 @@ import DeleteMenuDialog from "./DeleteMenuDialog.vue";
 
 const { t } = useReverseT();
 const route = useRoute();
+const { mdAndUp } = useDisplay();
 const collectionId = route.params.collectionId as string;
 const menuId = route.params.id as string;
 const { sessionQuery, collectionQuery, membersQuery, menuQuery, recipesQuery } =
@@ -225,3 +221,36 @@ useBreadcrumbs(() => [
   { title: menu.value.name },
 ]);
 </script>
+
+<style scoped>
+.menu-page {
+  padding-bottom: 48px !important;
+}
+
+.menu-page__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.menu-page__views {
+  background: rgb(var(--v-theme-surface));
+  border-color: rgb(var(--v-theme-outline));
+}
+
+.menu-page__views--block {
+  flex: 1 1 auto;
+}
+
+.menu-page__views--block .v-btn {
+  flex: 1 1 0;
+}
+
+.menu-page__view--active {
+  background: rgb(var(--v-theme-primary-tint));
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
+}
+</style>

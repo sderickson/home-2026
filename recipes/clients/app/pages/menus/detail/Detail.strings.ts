@@ -12,4 +12,5 @@ export const menus_detail = {
   cancel: "Cancel",
   delete: "Delete",
   delete_confirm: "Delete this menu?",
+  more_actions: "More actions",
 };

@@ -6,6 +6,8 @@
       :recipe-by-id="recipeById"
       :subtext-by-recipe-id="subtextByRecipeId"
       :recipe-link="recipeLink"
+      :menu-title="menuTitle"
+      :collection-name="collectionName"
     />
     <DinerMenuDisplay
       v-else
@@ -39,7 +41,8 @@ const props = defineProps<{
   menuId: string;
   collectionId: string;
   viewMode: "menu" | "diner";
-  menuTitle?: string;
+  menuTitle: string;
+  collectionName: string;
 }>();
 
 const uniqueRecipeIds = computed(() => {

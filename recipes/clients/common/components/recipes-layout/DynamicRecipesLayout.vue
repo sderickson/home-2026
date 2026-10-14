@@ -20,6 +20,8 @@
       >
         {{ t(recipes_layout.demo_mode) }}
       </v-btn>
+      <!-- Pages teleport phone-only actions (e.g. an overflow menu) here. -->
+      <div id="app-bar-page-actions" class="d-flex align-center" />
     </template>
 
     <slot />
