@@ -76,10 +76,15 @@
             {{ t(strings.ingredients) }}
           </component>
           <ul class="rcp__ingredient-list">
-            <li v-for="(ing, i) in ingredientRows" :key="i">
-              <span class="rcp__qty font-mono">{{ ing.amount }}</span>
-              <span>{{ ing.name }}</span>
-            </li>
+            <template v-for="(ing, i) in ingredientRows" :key="i">
+              <li v-if="ing.header" class="rcp__ingredient-header">
+                {{ ing.header }}
+              </li>
+              <li v-else>
+                <span class="rcp__qty font-mono">{{ ing.amount }}</span>
+                <span>{{ ing.name }}</span>
+              </li>
+            </template>
           </ul>
         </v-col>
         <v-col
@@ -129,6 +134,7 @@ import { marked } from "marked";
 import { useDisplay } from "vuetify";
 import { recipe_content_preview_strings as strings } from "./RecipeContentPreview.strings.ts";
 import { useReverseT } from "../../i18n.ts";
+import { getIngredientHeaderText, isIngredientHeader } from "../../ingredient.ts";
 
 const { t } = useReverseT();
 const uid = useId();
@@ -184,12 +190,17 @@ const hasInstructions = computed(() => {
   return md.length > 0;
 });
 
-/** Quantity + unit (mono column) and name for each ingredient. */
+/** Quantity + unit (mono column) and name for each ingredient, or header text for group headers. */
 const ingredientRows = computed(() =>
-  content.value.ingredients.map((ing) => ({
-    amount: [ing.quantity, ing.unit].filter(Boolean).join(" ").trim(),
-    name: ing.name,
-  })),
+  content.value.ingredients.map((ing) =>
+    isIngredientHeader(ing)
+      ? { header: getIngredientHeaderText(ing), amount: "", name: "" }
+      : {
+          header: "",
+          amount: [ing.quantity, ing.unit].filter(Boolean).join(" ").trim(),
+          name: ing.name,
+        },
+  ),
 );
 
 const renderedInstructions = computed(() =>
@@ -346,6 +357,19 @@ const renderedInstructions = computed(() =>
   grid-template-columns: subgrid;
   font-size: var(--body-size);
   line-height: var(--rule);
+}
+
+/* Group header ("# Dough"): spans both columns; one size regardless of "#" count. */
+.rcp__ingredient-list li.rcp__ingredient-header {
+  display: block;
+  font-weight: 600;
+  font-size: calc(var(--body-size) - 1px);
+  letter-spacing: 0.02em;
+  color: rgb(var(--v-theme-primary));
+}
+
+.rcp__ingredient-list li.rcp__ingredient-header:not(:first-child) {
+  margin-top: var(--rule);
 }
 
 .rcp__qty {

@@ -80,3 +80,20 @@ export function formatIngredient(ing: RecipeIngredient): string {
   const parts = [ing.quantity, ing.unit, ing.name].filter(Boolean);
   return parts.join(" ");
 }
+
+/** "# Dough", "## Sauce" — one or more "#" then whitespace then text. */
+const HEADER_LINE = /^#+\s+(\S.*)$/u;
+
+/**
+ * Whether an ingredient row is a group header (e.g. "# Dough") rather than
+ * an ingredient. Headers are stored as name-only ingredients so the API shape
+ * stays the same; any number of "#" renders as the same single header level.
+ */
+export function isIngredientHeader(ing: RecipeIngredient): boolean {
+  return !ing.quantity && !ing.unit && HEADER_LINE.test(ing.name.trim());
+}
+
+/** Display text for a header row ("# Dough" → "Dough"). */
+export function getIngredientHeaderText(ing: RecipeIngredient): string {
+  return ing.name.trim().match(HEADER_LINE)?.[1]?.trim() ?? "";
+}

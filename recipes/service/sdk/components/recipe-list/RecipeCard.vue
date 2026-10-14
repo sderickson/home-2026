@@ -7,7 +7,13 @@
     link
   >
     <div class="index-card__head">
-      <span class="index-card__title font-title">{{ recipe.title }}</span>
+      <span
+        ref="titleRef"
+        class="index-card__title font-title"
+        :class="{ 'index-card__title--wrapped': titleWraps }"
+      >
+        {{ recipe.title }}
+      </span>
     </div>
     <div class="index-card__body ruled-26">
       <div class="index-card__text">
@@ -42,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import type { Recipe } from "@sderickson/recipes-spec";
 import type { KeyIngredient } from "./RecipeList.logic.ts";
 import { formatKeyIngredientsDisplay } from "./RecipeList.logic.ts";
@@ -57,6 +63,43 @@ const props = defineProps<{
 const keyIngredientsDisplay = computed(() =>
   formatKeyIngredientsDisplay(props.keyIngredients),
 );
+
+/* Titles that wrap at full size drop to a smaller size so two lines fit the head. */
+const titleRef = ref<HTMLElement | null>(null);
+const titleWraps = ref(false);
+
+function fitTitle() {
+  const el = titleRef.value;
+  if (!el) return;
+  // Measure at full size: drop the small class for one synchronous layout.
+  el.classList.remove("index-card__title--wrapped");
+  const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+  const wraps = el.scrollHeight > lineHeight * 1.5;
+  if (wraps) el.classList.add("index-card__title--wrapped");
+  titleWraps.value = wraps;
+}
+
+let resizeObserver: ResizeObserver | null = null;
+
+onMounted(() => {
+  fitTitle();
+  // The title font can arrive after mount and change where the text wraps.
+  document.fonts?.ready.then(fitTitle);
+  if (titleRef.value?.parentElement) {
+    resizeObserver = new ResizeObserver(() => fitTitle());
+    resizeObserver.observe(titleRef.value.parentElement);
+  }
+});
+
+watch(
+  () => [props.recipe.title, props.firstImageUrl],
+  () => nextTick(fitTitle),
+);
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
 </script>
 
 <style scoped>
@@ -96,6 +139,10 @@ const keyIngredientsDisplay = computed(() =>
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.index-card__title--wrapped {
+  font-size: 17px;
 }
 
 .index-card--photo .index-card__title {
