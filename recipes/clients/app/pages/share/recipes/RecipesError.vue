@@ -10,10 +10,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { TanstackError } from "@saflib/sdk";
 import { AsyncPageError } from "@saflib/vue/components";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import { share_recipes as strings } from "./Recipes.strings.ts";
+import { isSharedRecipeNotFound } from "./Recipes.logic.ts";
+import { share_recipes_error as strings } from "./RecipesError.strings.ts";
 
 const props = defineProps<{
   error?: unknown;
@@ -22,10 +22,5 @@ const props = defineProps<{
 
 const { t } = useReverseT();
 
-/** Unknown id: real API returns 404; MSW fakes may yield "No data returned". */
-const isNotFound = computed(() => {
-  const err = props.error;
-  if (!(err instanceof TanstackError)) return false;
-  return err.status === 404 || err.code === "No data returned";
-});
+const isNotFound = computed(() => isSharedRecipeNotFound(props.error));
 </script>

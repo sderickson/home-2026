@@ -3,7 +3,7 @@ import { stubGlobals, mountWithPlugins } from "@saflib/vue/testing";
 import ShareRecipesAsync from "./RecipesAsync.vue";
 import { createTestRouter } from "../../../test-app.ts";
 import { app_strings } from "../../../strings.ts";
-import { share_recipes as strings } from "./Recipes.strings.ts";
+import { share_recipes_error as strings } from "./RecipesError.strings.ts";
 import { setupMockServer } from "@saflib/sdk/testing/mock";
 import {
   recipesServiceFakeHandlers,

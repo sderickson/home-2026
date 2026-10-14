@@ -19,7 +19,9 @@ import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_edit_page } from "./pages/recipes/edit/Edit.strings.ts";
 import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
+import { expanded_image_dialog } from "./pages/share/recipes/ExpandedImageDialog.strings.ts";
 import { share_recipes } from "./pages/share/recipes/Recipes.strings.ts";
+import { share_recipes_error } from "./pages/share/recipes/RecipesError.strings.ts";
 // END WORKFLOW AREA
 
 export const app_strings = {
@@ -43,6 +45,8 @@ export const app_strings = {
   recipes_detail_page,
   recipes_edit_page,
   unsplash_picker_dialog,
+  expanded_image_dialog,
   share_recipes,
+  share_recipes_error,
   // END WORKFLOW AREA
 };

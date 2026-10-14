@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { getByString } from "@saflib/playwright";
-import { share_recipes as strings } from "./Recipes.strings.ts";
+import { share_recipes_error as strings } from "./RecipesError.strings.ts";
 
 export class ShareRecipesPageFixture {
   constructor(private page: Page) {}
