@@ -1,6 +1,7 @@
 import express, { type IRouter } from "express";
 import { createOperationScopedMiddleware } from "@saflib/express";
 import { operationJsonSpec as sharedGetRecipesOperationJsonSpec } from "@sderickson/recipes-spec/operations/sharedGetRecipes";
+import { operationJsonSpec as sharedFilesDownloadRecipesOperationJsonSpec } from "@sderickson/recipes-spec/operations/sharedFilesDownloadRecipes";
 
 // BEGIN WORKFLOW AREA handler-imports FOR express/add-handler
 import { sharedGetRecipesHandler } from "./shared-get.ts";
@@ -23,11 +24,11 @@ export function createRecipesRouter(): IRouter {
     }),
     sharedGetRecipesHandler,
   );
-  // TODO: set method and path from openapi/route (match urlPath in the spec).
-  router.post(
-    "/recipes/shared-files-download",
+  router.get(
+    "/recipes/:id/shared/files/:fileId/blob",
     ...createOperationScopedMiddleware(
       sharedFilesDownloadRecipesOperationJsonSpec,
+      { enforceAuth: false },
     ),
     sharedFilesDownloadRecipesHandler,
   );
