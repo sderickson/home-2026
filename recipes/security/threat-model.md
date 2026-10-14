@@ -42,6 +42,7 @@ Authenticated product routes (`/recipes`, `/collections`, `/menus`, …) require
 | Spec | Probes |
 | --- | --- |
 | `authz.spec.ts` | Unauthenticated `/recipes` + `/admin/users/by-id`; non-admin admin route |
+| `share-public.spec.ts` | Unauthenticated share GET 200/404 + shared blob 200; authenticated `/recipes/{id}` + blob still 401 |
 | `csrf.spec.ts` | Double-submit on `POST /recipes`; public CSP ingest; evil-origin leak |
 | `cors.spec.ts` | Allowlist for `app.recipes`; deny `evil.localhost` |
 | `info-disclosure.spec.ts` | `/health` body; JSON error hygiene; SPA root |
