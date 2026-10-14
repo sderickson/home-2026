@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
-// BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+// BEGIN WORKFLOW AREA page-imports FOR vue/add-view
 import CollectionLayout from "./layouts/CollectionLayout.vue";
 import CollectionsDetailAsync from "./pages/collections/detail/DetailAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";

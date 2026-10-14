@@ -1,0 +1,34 @@
+name: Phase 6 — Get share link menu action
+description: >
+  Add Get share link to the recipe actions overflow menu; copy the absolute
+  share URL to the clipboard with brief success feedback.
+steps:
+  - kind: cd
+    path: recipes/clients/app
+
+  - kind: prompt
+    prompt: >
+      Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+      (Frontend Pages #1 and User Stories).
+
+      In components/recipe-detail/RecipeDetailContent.vue, add a Recipe actions
+      list item "Get share link" that is always available to anyone who can open
+      the detail page — place it with always-visible actions (near Version
+      history), not behind showEdit.
+
+      On click: write the absolute shared-page URL to the clipboard using
+      appLinks share link + recipe id (linkToHref / linkToHrefWithHost from
+      @saflib/links — same absolute-URL style as other cross-subdomain links).
+      Show brief success feedback (e.g. SnackbarQueue / existing snackbar helper
+      with "Link copied"). Do not navigate away.
+
+      Add string keys to RecipeDetailContent.strings.ts and use useReverseT.
+      Extend existing RecipeDetailContent tests if present.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]
+
+  - kind: command
+    command: npm
+    args: ["run", "test"]

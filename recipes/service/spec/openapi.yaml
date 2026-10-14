@@ -5,7 +5,7 @@ info:
   description: API specification for the recipes service
 
 paths:
-  # BEGIN WORKFLOW AREA route-paths FOR openapi/add-route
+  # BEGIN WORKFLOW AREA route-paths FOR openapi/route
   /recipes:
     get:
       $ref: "./routes/recipes/list.yaml#/listRecipes"

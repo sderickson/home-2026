@@ -1,0 +1,53 @@
+name: Phase 1 — OpenAPI share routes
+description: >
+  Add public GET /recipes/{id}/shared and GET /recipes/{id}/shared/files/{fileId}/blob
+  to the recipes OpenAPI package. Reuse existing Recipe, RecipeVersion, and RecipeFileInfo
+  schemas. No new business objects.
+steps:
+  - kind: cd
+    path: recipes/service/spec
+
+  - kind: call-workflow
+    workflowId: openapi/route
+    input:
+      path: ./routes/recipes/shared-get.yaml
+      urlPath: /recipes/{id}/shared
+      method: get
+      prompt: >
+        Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+        (API Endpoints #1). Define GET /recipes/{id}/shared for the public share page.
+
+        Path param: id (recipe id). No request body. No auth.
+
+        200 response body must be a top-level object (never a bare Recipe):
+          { recipe: Recipe, currentVersion: RecipeVersion, files: RecipeFileInfo[] }
+        Reuse existing schemas (recipe.yaml, recipe-version.yaml, recipe-file-info.yaml
+        or equivalent). `files` is always required (empty array when none). Each file's
+        downloadUrl will be set by the handler to the shared blob path — document that
+        in the summary/description.
+
+        404 with existing Error schema when the recipe id is unknown.
+        Do not require 401/403 for this public route.
+        Do not overload GET /recipes/{id}.
+
+  - kind: call-workflow
+    workflowId: openapi/route
+    input:
+      path: ./routes/recipes/shared-files-download.yaml
+      urlPath: /recipes/{id}/shared/files/{fileId}/blob
+      method: get
+      download: true
+      prompt: >
+        Read the share-links spec (API Endpoints #2). Define GET
+        /recipes/{id}/shared/files/{fileId}/blob — public binary download for share-page
+        images. Distinct from authenticated GET /recipes/{id}/files/{fileId}/blob.
+
+        Path params: id (recipe id), fileId. No request body. No auth.
+        200: binary body (application/octet-stream or appropriate Content-Type), same
+        spirit as routes/recipes/files-download.yaml.
+        404 with Error schema if recipe or file missing, or file does not belong to
+        that recipe. No 401/403 on this public route.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]

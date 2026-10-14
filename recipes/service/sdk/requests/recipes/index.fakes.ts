@@ -1,11 +1,11 @@
-// BEGIN SORTED WORKFLOW AREA fake-handler-imports FOR sdk/add-query
+// BEGIN WORKFLOW AREA fake-handler-imports FOR sdk/add-query
 import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
 // END WORKFLOW AREA
 
-// BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
+// BEGIN WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
 import { createRecipesHandler } from "./create.fake.ts";
 import { deleteRecipesHandler } from "./delete.fake.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.fake.ts";
@@ -18,14 +18,14 @@ import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.fak
 
 // export all fake handlers for this group
 export const recipesFakeHandlers = [
-  // BEGIN SORTED WORKFLOW AREA fake-handler-array FOR sdk/add-query
+  // BEGIN WORKFLOW AREA fake-handler-array FOR sdk/add-query
   filesListRecipesHandler,
   getRecipeHandler,
   listRecipesHandler,
   versionsListRecipesHandler,
   // END WORKFLOW AREA
 
-  // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
+  // BEGIN WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
   createRecipesHandler,
   deleteRecipesHandler,
   filesDeleteRecipesHandler,
