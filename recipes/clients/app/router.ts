@@ -60,6 +60,7 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
     {
       path: appLinks.shareRecipes.path,
       component: ShareRecipesAsync,
+      meta: { bare: true },
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

@@ -1,19 +1,12 @@
 export const share_recipes = {
-  // TODO: Replace strings with strings from the actual design
-  // Use descriptive keys that work well with translation systems
   /** Browser tab title (set by the Async component via useAsyncPageDocumentTitle). */
-  documentTitle: "ShareRecipes",
-  title: "Hello, ShareRecipes!",
-  subtitle: "This is a subtitle",
-  description: "This is a description of what this page does",
-
-  // For inputs that have multiple properties, use an object where props are keys. Use v-bind:... to bind the whole object.
-  example_input: {
-    placeholder: "Name",
-    label: "Enter your name",
-  },
-
-  // Interpolation: single braces `{name}` (vue-i18n). Do not use `{{name}}` in strings passed to t() — breaks prod message compilation.
-  logged_in_with_email: "Logged in with {email}",
-  not_logged_in: "Not logged in",
+  documentTitle: "Shared Recipe",
+  not_found_title: "Recipe not found",
+  not_found_message:
+    "This recipe does not exist or is no longer available.",
+  unsplash_photo_by: "Photo by {name}",
+  unsplash_on_unsplash: "on Unsplash",
+  close: "Close",
+  previous_image: "Previous image",
+  next_image: "Next image",
 };

@@ -1,9 +1,12 @@
-// TODO: replace with actual queries this page will need on load
-import { useKratosSession } from "@saflib/ory-kratos-sdk";
+import { sharedGetRecipesQuery } from "@sderickson/recipes-sdk";
+import { useQuery } from "@tanstack/vue-query";
+import { useRoute } from "vue-router";
 
 export function useRecipesLoader() {
-  // TODO: Add tanstack query calls here and return each query result in the array
+  const route = useRoute();
+  const recipeId = route.params.id as string;
+
   return {
-    sessionQuery: useKratosSession(),
+    sharedRecipeQuery: useQuery(sharedGetRecipesQuery(recipeId)),
   };
 }

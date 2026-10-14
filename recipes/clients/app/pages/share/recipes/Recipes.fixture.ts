@@ -1,15 +1,15 @@
 import type { Page } from "@playwright/test";
-// import { getByString } from "@saflib/playwright";
-// TODO: Import strings from the page's strings file
-// import { share_recipes as strings } from "./Recipes.strings.ts";
+import { getByString } from "@saflib/playwright";
+import { share_recipes as strings } from "./Recipes.strings.ts";
 
 export class ShareRecipesPageFixture {
-  //@ts-ignore - TODO: Implement this fixture
   constructor(private page: Page) {}
 
-  // TODO: Add helper methods for interacting with this page
-  // Example:
-  // async clickSomeButton(): Promise<void> {
-  //   await getByString(this.page, strings.someButton).click();
-  // }
+  async expectRecipeTitle(title: string): Promise<void> {
+    await this.page.getByRole("heading", { name: title }).waitFor();
+  }
+
+  async expectNotFound(): Promise<void> {
+    await getByString(this.page, strings.not_found_title).waitFor();
+  }
 }
