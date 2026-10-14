@@ -1,0 +1,241 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "filesFromUnsplashRecipes",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/recipes/{id}/files/from-unsplash": {
+      "post": {
+        "summary": "Add a recipe file from an Unsplash photo. Backend fetches photo, tracks download, stores file and Unsplash user; returns RecipeFileInfo with unsplashAttribution when applicable.",
+        "operationId": "filesFromUnsplashRecipes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add-recipe-file-from-unsplash-request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created recipe file metadata (includes unsplashAttribution when from Unsplash).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recipe-file-info"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - recipe not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Unsplash API rate limit exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "example": {
+                  "code": "UNSPLASH_RATE_LIMIT",
+                  "message": "Unsplash rate limit exceeded."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "add-recipe-file-from-unsplash-request": {
+        "type": "object",
+        "description": "Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage.",
+        "properties": {
+          "unsplashPhotoId": {
+            "type": "string",
+            "description": "Unsplash photo id (short id) of the chosen photo",
+            "example": "K3m9_xR2"
+          },
+          "downloadLocation": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unsplash download tracking URL; backend calls trackDownload with this",
+            "example": "https://api.unsplash.com/photos/abc123/download"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to fetch image bytes (e.g. regular or full size from search result)",
+            "example": "https://images.unsplash.com/photo-123/regular"
+          }
+        },
+        "required": [
+          "unsplashPhotoId",
+          "downloadLocation",
+          "imageUrl"
+        ]
+      },
+      "recipe-file-info": {
+        "type": "object",
+        "description": "Metadata for one file attached to a recipe. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the file record",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "recipeId": {
+            "type": "string",
+            "description": "Id of the recipe this file is attached to",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "blobName": {
+            "type": "string",
+            "description": "Storage blob name (Azure) for the file",
+            "example": "recipes/a1b2c3d4-e89b-12d3-a456-426614174001/123e4567-e89b-12d3-a456-426614174000.pdf"
+          },
+          "fileOriginalName": {
+            "type": "string",
+            "description": "Original filename as provided on upload",
+            "example": "grandmas-cookies.pdf"
+          },
+          "mimetype": {
+            "type": "string",
+            "description": "MIME type of the file",
+            "example": "application/pdf"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "File size in bytes",
+            "example": 102400
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the file was uploaded",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the file metadata was last updated",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "uploadedBy": {
+            "type": "string",
+            "nullable": true,
+            "description": "User id of the uploader (optional)",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Full URL to download or view the file (API base + /recipes/:id/files/:fileId/blob)",
+            "example": "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob"
+          },
+          "unsplashAttribution": {
+            "$ref": "#/components/schemas/unsplash-attribution",
+            "description": "When present, the file was sourced from Unsplash; frontend must show attribution (e.g. full-size view). Omitted when file is from upload."
+          }
+        },
+        "required": [
+          "id",
+          "recipeId",
+          "blobName",
+          "fileOriginalName",
+          "mimetype",
+          "size",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "unsplash-attribution": {
+        "type": "object",
+        "description": "Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view).",
+        "properties": {
+          "photographerName": {
+            "type": "string",
+            "description": "Display name of the photographer",
+            "example": "Jane Doe"
+          },
+          "photographerProfileUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unsplash profile URL with UTM params (utm_source, utm_medium=referral)",
+            "example": "https://unsplash.com/@janedoe?utm_source=your_app_name&utm_medium=referral"
+          },
+          "unsplashSourceUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unsplash source link with UTM params for \"on Unsplash\" attribution",
+            "example": "https://unsplash.com?utm_source=your_app_name&utm_medium=referral"
+          }
+        },
+        "required": [
+          "photographerName",
+          "photographerProfileUrl",
+          "unsplashSourceUrl"
+        ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
+      }
+    }
+  }
+}

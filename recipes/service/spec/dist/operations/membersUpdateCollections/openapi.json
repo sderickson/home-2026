@@ -1,0 +1,189 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "membersUpdateCollections",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/collections/{id}/members/{memberId}": {
+      "put": {
+        "summary": "Update a member's role. Owner only. Cannot demote the creator (permanent owner).",
+        "operationId": "membersUpdateCollections",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Collection id"
+          },
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Member record id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role"
+                ],
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "owner",
+                      "editor",
+                      "viewer"
+                    ],
+                    "description": "New role for the member (creator's role cannot be changed from owner)",
+                    "example": "viewer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated member.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "member"
+                  ],
+                  "properties": {
+                    "member": {
+                      "$ref": "#/components/schemas/collection-member",
+                      "description": "The updated collection member."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - cannot demote the creator (permanent owner).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller must be an owner of the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - collection or member does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "collection-member": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the member record (short id)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this member belongs to",
+            "example": "my-kitchen"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Member's email address; must be validated for access (except creator)",
+            "example": "alice@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "editor",
+              "viewer"
+            ],
+            "description": "Member's role in the collection; creator is always owner and cannot be demoted",
+            "example": "editor"
+          },
+          "isCreator": {
+            "type": "boolean",
+            "description": "True if this member created the collection; permanent owner, cannot be removed or demoted",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the member was added to the collection",
+            "example": "2023-01-15T14:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "email",
+          "role",
+          "isCreator",
+          "createdAt"
+        ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,7 +6,8 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "generate": "npm exec saf-specs generate"
   },
   "dependencies": {
     "@saflib/openapi": "*"
