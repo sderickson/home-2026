@@ -30,6 +30,10 @@ Keep in sync with Caddy `@public_monolith` in `recipes/dev/caddy-config/Caddyfil
 - `POST /errors/record`, `POST /product-events/record`
 - `GET /dev/logs`, `GET /dev/logs/stream` (development only)
 - `GET /admin/metrics/snapshot`, `GET /admin/product-events`, `GET /admin/errors` (dev observability chrome)
+- `GET /recipes/{id}/shared`
+- `GET /recipes/{id}/shared/files/{fileId}/blob`
+
+Share endpoints are intentionally unauthenticated: possession of the opaque recipe id (and file id for blobs) is the access check. Authenticated recipe/file routes (`GET /recipes/{id}`, `GET /recipes/{id}/files`, `GET /recipes/{id}/files/{fileId}/blob`, …) stay collection-authorized (+ email verification). CSRF is not required for these GETs. No new secrets or share-token table.
 
 Authenticated product routes (`/recipes`, `/collections`, `/menus`, …) require a Kratos session; mutating routes also require CSRF. Recipes routers enforce email verification in scoped middleware.
 
