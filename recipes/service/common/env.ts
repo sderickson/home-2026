@@ -29,6 +29,14 @@ export interface RecipesServiceCommonEnvSchema {
    */
   DOMAIN_REDIRECTS?: string;
   /**
+   * Infisical machine identity Universal Auth client id. With INFISICAL_CLIENT_SECRET, used instead of INFISICAL_TOKEN.
+   */
+  INFISICAL_CLIENT_ID?: string;
+  /**
+   * Infisical machine identity Universal Auth client secret. Used with INFISICAL_CLIENT_ID.
+   */
+  INFISICAL_CLIENT_SECRET?: string;
+  /**
    * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. getSecret); not needed when using the mock client.
    */
   INFISICAL_ENVIRONMENT?: string;
@@ -37,7 +45,7 @@ export interface RecipesServiceCommonEnvSchema {
    */
   INFISICAL_PROJECT_ID?: string;
   /**
-   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
+   * Infisical static access token (machine identity Token Auth). Omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled). Not needed when INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET are set.
    */
   INFISICAL_TOKEN?: string;
   /**
