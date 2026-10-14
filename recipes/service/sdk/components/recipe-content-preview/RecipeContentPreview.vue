@@ -37,6 +37,10 @@
         <div v-if="$slots.tools" class="rcp__tools">
           <slot name="tools" />
         </div>
+        <!-- Date stamp (and any version controls) in the header's bottom-right corner. -->
+        <div v-if="$slots.stamp" class="rcp__stamp">
+          <slot name="stamp" />
+        </div>
       </header>
 
       <div v-if="extraImages.length > 0" class="rcp__prints">
@@ -235,6 +239,24 @@ const renderedInstructions = computed(() =>
   gap: 24px;
   padding: 28px 16px 18px var(--pad);
   border-bottom: 2px solid rgb(var(--v-theme-card-red-line));
+}
+
+/* Room under the titles for the bottom-right stamp. */
+.rcp__head:has(.rcp__stamp) {
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.rcp__stamp {
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgb(var(--v-theme-ink-2));
 }
 
 .rcp__titles {
@@ -485,6 +507,10 @@ const renderedInstructions = computed(() =>
   gap: 14px;
   padding-top: 16px;
   padding-bottom: 12px;
+}
+
+.recipe-content-preview--narrow .rcp__head:has(.rcp__stamp) {
+  padding-bottom: 36px;
 }
 
 .recipe-content-preview--narrow .rcp__tools {

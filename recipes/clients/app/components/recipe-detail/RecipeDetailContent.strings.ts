@@ -1,7 +1,6 @@
 /** Strings for the shared recipe detail content (toolbar, dialogs). */
 export const recipe_detail_content = {
   recipe_actions: "Recipe actions",
-  toolbar_version_history: "Version history",
   toolbar_get_share_link: "Get share link",
   toolbar_edit: "Edit",
   toolbar_upload_image: "Upload from computer",
@@ -11,6 +10,9 @@ export const recipe_detail_content = {
   remove_image: "Remove image",
   previous_image: "Previous image",
   next_image: "Next image",
+  version_stamp: "Version: {date}",
+  older_version: "Older version",
+  newer_version: "Newer version",
   close: "Close",
   delete_file: "Remove file",
   delete_file_confirm: "Remove this file from the recipe?",

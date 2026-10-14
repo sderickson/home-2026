@@ -3,6 +3,7 @@ import { TanstackError } from "@saflib/sdk";
 import {
   assertSharedRecipeLoaded,
   isSharedRecipeNotFound,
+  sharedRecipeLastUpdated,
 } from "./Recipes.logic.ts";
 
 describe("assertSharedRecipeLoaded", () => {
@@ -37,5 +38,22 @@ describe("isSharedRecipeNotFound", () => {
     expect(isSharedRecipeNotFound(new TanstackError(500))).toBe(false);
     expect(isSharedRecipeNotFound(new Error("boom"))).toBe(false);
     expect(isSharedRecipeNotFound(undefined)).toBe(false);
+  });
+});
+
+describe("sharedRecipeLastUpdated", () => {
+  it("returns the later of recipe update and version creation", () => {
+    expect(
+      sharedRecipeLastUpdated("2026-01-01T00:00:00Z", "2026-02-01T00:00:00Z"),
+    ).toBe("2026-02-01T00:00:00Z");
+    expect(
+      sharedRecipeLastUpdated("2026-03-01T00:00:00Z", "2026-02-01T00:00:00Z"),
+    ).toBe("2026-03-01T00:00:00Z");
+  });
+
+  it("falls back to the recipe update when there is no version", () => {
+    expect(sharedRecipeLastUpdated("2026-01-01T00:00:00Z", undefined)).toBe(
+      "2026-01-01T00:00:00Z",
+    );
   });
 });

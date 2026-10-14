@@ -3,13 +3,13 @@
     <v-card class="recipe-card paper">
       <RecipeContentPreview
         :recipe="props.recipe"
-        :current-version="props.currentVersion"
+        :current-version="displayedVersion"
         :files="props.files"
         @click-image="expandedImageFile = $event"
       >
         <!-- Every recipe action lives in one overflow menu, so the header is
-             only as tall as the title. -->
-        <template #tools>
+             only as tall as the title. Older versions are read-only: no menu. -->
+        <template v-if="isViewingLatest" #tools>
           <v-menu location="bottom end">
             <template #activator="{ props: menuProps }">
               <v-btn
@@ -20,20 +20,6 @@
               />
             </template>
             <v-list density="comfortable">
-              <v-list-item
-                v-if="showVersionHistory"
-                prepend-icon="mdi-history"
-                :title="t(strings.toolbar_version_history)"
-                @click="versionHistoryModalOpen = true"
-              >
-                <template v-if="props.versions.length > 0" #append>
-                  <v-badge
-                    :content="props.versions.length"
-                    color="primary"
-                    inline
-                  />
-                </template>
-              </v-list-item>
               <v-list-item
                 prepend-icon="mdi-link-variant"
                 :title="t(strings.toolbar_get_share_link)"
@@ -68,6 +54,33 @@
               />
             </v-list>
           </v-menu>
+        </template>
+        <template v-if="displayedVersion" #stamp>
+          <v-btn
+            v-if="versionsNewestFirst.length > 1"
+            icon="mdi-chevron-left"
+            variant="text"
+            size="x-small"
+            :disabled="!canStepOlder"
+            :aria-label="t(strings.older_version)"
+            @click="stepVersion(1)"
+          />
+          <span>
+            {{
+              t(strings.version_stamp, {
+                date: formatVersionDate(displayedVersion.createdAt),
+              })
+            }}
+          </span>
+          <v-btn
+            v-if="versionsNewestFirst.length > 1"
+            icon="mdi-chevron-right"
+            variant="text"
+            size="x-small"
+            :disabled="isViewingLatest"
+            :aria-label="t(strings.newer_version)"
+            @click="stepVersion(-1)"
+          />
         </template>
       </RecipeContentPreview>
     </v-card>
@@ -172,12 +185,6 @@
       :recipe-title="props.recipe.title"
     />
 
-    <VersionHistoryModal
-      v-model="versionHistoryModalOpen"
-      :recipe="props.recipe"
-      :versions="versionsNewestFirst"
-    />
-
     <ConfirmDialog
       :model-value="deleteFileDialogOpen"
       :title="t(strings.delete_file)"
@@ -220,7 +227,7 @@ import {
   useDeleteRecipeMutation,
 } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import VersionHistoryModal from "../../pages/recipes/detail/VersionHistoryModal.vue";
+import { formatVersionDate } from "../../pages/recipes/detail/Detail.logic.ts";
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
 import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
 
@@ -243,7 +250,6 @@ const showEdit = computed(() => {
   const currentMember = props.members.find((m) => m.email === props.userEmail);
   return currentMember?.role === "editor" || currentMember?.role === "owner";
 });
-const showVersionHistory = true;
 const showFilesEdit = computed(() => showEdit.value);
 
 const recipeEditPath = computed(() =>
@@ -255,7 +261,6 @@ const recipeEditPath = computed(() =>
 const filesFlow = useDetailFilesFlow(computed(() => props.recipe.id));
 const deleteRecipeMutation = useDeleteRecipeMutation();
 
-const versionHistoryModalOpen = ref(false);
 const deleteRecipeDialogOpen = ref(false);
 const unsplashPickerOpen = ref(false);
 const imageFileInputRef = ref<HTMLInputElement | null>(null);
@@ -285,6 +290,32 @@ function stepExpandedImage(delta: number) {
 }
 
 const versionsNewestFirst = computed(() => [...props.versions].reverse());
+
+/** Which version is shown: 0 is the latest, higher numbers are older. */
+const versionIndex = ref(0);
+const isViewingLatest = computed(() => versionIndex.value === 0);
+const canStepOlder = computed(
+  () => versionIndex.value < versionsNewestFirst.value.length - 1,
+);
+const displayedVersion = computed(() =>
+  isViewingLatest.value
+    ? props.currentVersion
+    : (versionsNewestFirst.value[versionIndex.value] ?? props.currentVersion),
+);
+
+/** +1 steps to an older version, -1 to a newer one. */
+function stepVersion(delta: number) {
+  const max = versionsNewestFirst.value.length - 1;
+  versionIndex.value = Math.min(max, Math.max(0, versionIndex.value + delta));
+}
+
+// Back to the latest whenever the recipe or its version list changes.
+watch(
+  () => [props.recipe.id, props.versions.length],
+  () => {
+    versionIndex.value = 0;
+  },
+);
 
 const deleteFileDialogOpen = filesFlow.deleteFileDialogOpen;
 

@@ -19,3 +19,17 @@ export function isSharedRecipeNotFound(error: unknown): boolean {
   if (!(error instanceof TanstackError)) return false;
   return error.status === 404 || error.code === "No data returned";
 }
+
+/**
+ * When the shared recipe last changed: the later of the recipe's metadata
+ * update and its current version's creation.
+ */
+export function sharedRecipeLastUpdated(
+  recipeUpdatedAt: string,
+  versionCreatedAt: string | undefined,
+): string {
+  if (!versionCreatedAt) return recipeUpdatedAt;
+  return Date.parse(versionCreatedAt) > Date.parse(recipeUpdatedAt)
+    ? versionCreatedAt
+    : recipeUpdatedAt;
+}
