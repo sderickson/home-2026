@@ -77,6 +77,9 @@ paths:
       $ref: "./routes/menus/update.yaml#/updateMenus"
     delete:
       $ref: "./routes/menus/delete.yaml#/deleteMenus"
+  /recipes/{id}/shared:
+    get:
+      $ref: "./routes/recipes/shared-get.yaml#/sharedGetRecipes"
   # END WORKFLOW AREA
 
 components:
