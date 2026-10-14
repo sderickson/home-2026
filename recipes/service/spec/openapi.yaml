@@ -80,6 +80,9 @@ paths:
   /recipes/{id}/shared:
     get:
       $ref: "./routes/recipes/shared-get.yaml#/sharedGetRecipes"
+  /recipes/{id}/shared/files/{fileId}/blob:
+    get:
+      $ref: "./routes/recipes/shared-files-download.yaml#/sharedFilesDownloadRecipes"
   # END WORKFLOW AREA
 
 components:
