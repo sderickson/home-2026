@@ -33,12 +33,12 @@ describe("deleteRecipe", () => {
     const id = mockRecipes[mockRecipes.length - 1].id;
 
     await listQuery.refetch();
-    expect(listQuery.data.value?.some((r) => r.id === id)).toBe(true);
+    expect(listQuery.data.value?.recipes?.some((r) => r.id === id)).toBe(true);
 
     await mutation.mutateAsync(id);
 
     await listQuery.refetch();
-    expect(listQuery.data.value?.some((r) => r.id === id)).toBe(false);
+    expect(listQuery.data.value?.recipes?.some((r) => r.id === id)).toBe(false);
 
     app.unmount();
   });

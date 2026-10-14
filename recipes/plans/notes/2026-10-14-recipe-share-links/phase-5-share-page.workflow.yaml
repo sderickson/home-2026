@@ -1,0 +1,47 @@
+name: Phase 5 — Shared recipe page
+description: >
+  Add the public /share/recipes/:id SPA page (app link + view) that loads via
+  the shared GET query and renders RecipeContentPreview with no edit tooling
+  and bare layout (no app bar / breadcrumbs).
+steps:
+  - kind: cd
+    path: recipes/clients/app
+
+  - kind: call-workflow
+    workflowId: vue/add-view
+    input:
+      path: ./pages/share/recipes
+      urlPath: /share/recipes/:id
+      prompt: >
+        Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+        (Frontend Pages #2). Create the public shared-recipe page.
+
+        Route: /share/recipes/:id via appLinks (recipe id only — no collectionId).
+        Register as a top-level route outside /c/:collectionId/... .
+
+        Data: use the public shared-get SDK query only. Do not use useKratosSession,
+        collection loaders, or authenticated getRecipeQuery.
+
+        UI: render with RecipeContentPreview (from @sderickson/recipes-sdk) for
+        title, subtitle, description, ingredients, instructions, and images
+        (downloadUrl from the shared response). Show Unsplash attribution when
+        present (same rule as authenticated detail). Optional expand-image if
+        preview already supports it.
+
+        Must NOT include: recipe actions overflow menu, edit / upload / Unsplash /
+        delete / version-history entry points, breadcrumbs, or app bar.
+
+        Wire bare layout: in AppSpa.vue (or equivalent), pass the new bare/no-chrome
+        prop on DynamicRecipesLayout when the current route is this share page
+        (route meta or path). Other routes keep breadcrumb-bar as today.
+
+        404 / not-found UI when the id is unknown. Strings via useReverseT + page
+        strings file. Cover happy path and missing-id with package tests/fakes.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]
+
+  - kind: command
+    command: npm
+    args: ["run", "test"]

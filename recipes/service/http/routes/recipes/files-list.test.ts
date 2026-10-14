@@ -51,8 +51,8 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body).toHaveLength(0);
+    expect(Array.isArray(response.body.files)).toBe(true);
+    expect(response.body.files).toHaveLength(0);
   });
 
   it("should return 200 with files when recipe has files", async () => {
@@ -71,9 +71,9 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body).toHaveLength(1);
-    expect(response.body[0]).toMatchObject({
+    expect(Array.isArray(response.body.files)).toBe(true);
+    expect(response.body.files).toHaveLength(1);
+    expect(response.body.files[0]).toMatchObject({
       id: file.id,
       recipeId,
       blobName: "recipes/recipe-id/file-id.pdf",
@@ -82,8 +82,8 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
       size: 1024,
       uploadedBy: SEED_USER_ID,
     });
-    expect(response.body[0].createdAt).toBeDefined();
-    expect(response.body[0].updatedAt).toBeDefined();
+    expect(response.body.files[0].createdAt).toBeDefined();
+    expect(response.body.files[0].updatedAt).toBeDefined();
   });
 
   it("should return 401 when not authenticated", async () => {

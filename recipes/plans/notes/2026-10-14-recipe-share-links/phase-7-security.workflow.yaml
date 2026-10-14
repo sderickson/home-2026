@@ -1,0 +1,59 @@
+name: Phase 7 — Public surface, threat model, security tests
+description: >
+  Allowlist the share API paths in Caddy, update threat-model.md, and add
+  Playwright coverage that public share GETs work while authenticated recipe
+  routes still require a session.
+steps:
+  - kind: cd
+    path: recipes/dev
+
+  - kind: prompt
+    prompt: >
+      Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+      (Security Model Updates). Update caddy-config/Caddyfile @public_monolith so
+      these skip Kratos forward_auth:
+        - GET /recipes/{id}/shared
+        - GET /recipes/{id}/shared/files/{fileId}/blob
+      Use Caddy path matchers that cover parameterized ids (e.g. path wildcards
+      or path_regexp — exact static path entries will not match real ids).
+      Keep existing public paths. Do not allowlist authenticated
+      /recipes/{id} or /recipes/{id}/files/{fileId}/blob.
+
+  - kind: cd
+    path: recipes/security
+
+  - kind: prompt
+    prompt: >
+      Update threat-model.md public API list to include the two share endpoints
+      (keep in sync with Caddy). Note that possession of the opaque recipe id
+      (and file id for blobs) is the access check; authenticated recipe/file
+      routes stay collection-authorized; CSRF not required for these GETs; no
+      new secrets or share-token table.
+
+  - kind: prompt
+    prompt: >
+      Add Playwright (or HTTP) coverage in this package for:
+      1. Unauthenticated GET /recipes/{id}/shared → 200 for an existing recipe,
+         404 for unknown id.
+      2. Unauthenticated GET /recipes/{id}/shared/files/{fileId}/blob → 200 for
+         a file on that recipe.
+      3. Unauthenticated GET /recipes/{id} and
+         GET /recipes/{id}/files/{fileId}/blob still fail auth (401) — public
+         access must not bleed onto authenticated routes.
+      Follow patterns in test/authz.spec.ts and fixtures (recipesApiOrigin, etc.).
+      Seed or create a recipe+file as existing security/http tests do. Update the
+      Spec map table in threat-model.md if you add a new spec file.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]
+
+  - kind: prompt
+    prompt: >
+      With recipes/dev running on the host, run
+      npm run test:e2e -w @sderickson/recipes-security and fix failures related
+      to the new share surface. Stop here for a human gate before merge if e2e
+      cannot be run in this environment.
+    pauseAfter: true
+    pauseMessage: >
+      Run security e2e against a live recipes/dev stack, then continue or merge.

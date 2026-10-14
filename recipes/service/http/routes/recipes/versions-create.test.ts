@@ -53,12 +53,14 @@ describe("POST /recipes/:id/versions", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      recipeId,
-      content: versionContent,
-      isLatest: true,
-      createdBy: SEED_USER_ID,
-      id: expect.any(String),
-      createdAt: expect.any(String),
+      recipeVersion: {
+        recipeId,
+        content: versionContent,
+        isLatest: true,
+        createdBy: SEED_USER_ID,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+      },
     } satisfies Partial<RecipesServiceResponseBody["createRecipeVersion"][200]>);
   });
 

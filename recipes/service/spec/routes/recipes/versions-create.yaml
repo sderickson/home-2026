@@ -24,7 +24,12 @@ createRecipeVersion:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/recipe-version.yaml"
+            type: object
+            required:
+              - recipeVersion
+            properties:
+              recipeVersion:
+                $ref: "../../schemas/recipe-version.yaml"
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

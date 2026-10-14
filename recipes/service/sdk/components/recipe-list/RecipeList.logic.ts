@@ -1,3 +1,5 @@
+import { isIngredientHeader } from "../../ingredient.ts";
+
 /**
  * Logic for recipe list card enrichment: key ingredients filter and
  * first-image + key ingredients from detail + files data.
@@ -15,12 +17,13 @@ const COMMON_INGREDIENT_SUBSTRINGS = ["oil", "garlic", "salt", "water"];
 
 /**
  * Returns ingredients with common/pantry items filtered out for list card preview.
- * Excludes any ingredient whose name (case-insensitive) contains "oil", "garlic", or "salt".
+ * Excludes group headers and any ingredient whose name (case-insensitive) contains "oil", "garlic", or "salt".
  */
 export function filterKeyIngredients(
   ingredients: { name: string; quantity: string; unit: string }[],
 ): KeyIngredient[] {
   return ingredients.filter((ing) => {
+    if (isIngredientHeader(ing)) return false;
     const nameLower = ing.name.trim().toLowerCase();
     if (!nameLower) return false;
     return !COMMON_INGREDIENT_SUBSTRINGS.some((sub) => nameLower.includes(sub));

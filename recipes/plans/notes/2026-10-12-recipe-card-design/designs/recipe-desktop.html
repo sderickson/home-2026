@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipe Box — Recipe (desktop)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar__inner">
+    <a href="#" class="brand"><span class="brand__mark" aria-hidden="true"></span>Scott's Recipe List</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#" aria-current="page">App</a>
+      <a href="#">Account</a>
+      <a href="#">Logout</a>
+      <span class="demo-badge">DEMO</span>
+    </nav>
+  </div>
+</header>
+
+<main class="page page--narrow">
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:20px"><a href="#">Home</a><span aria-hidden="true">/</span><a href="collection-desktop.html">Seed Kitchen</a><span aria-hidden="true">/</span>Butternut Squash Soup</nav>
+
+  <!-- The whole recipe is one index card. Order inside: header (title, subtitle, photo) → ingredients | method → notes → meta. -->
+  <article class="recipe">
+    <!-- Existing toolbar actions, same permissions as today: history (badge = version count), edit, add image menu, delete -->
+    <div class="recipe__tools">
+      <button type="button" class="icon-btn" aria-label="Version history, 1 earlier version">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>
+        <span class="icon-btn__badge" aria-hidden="true">1</span>
+      </button>
+      <button type="button" class="icon-btn" aria-label="Edit recipe"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button type="button" class="icon-btn" aria-label="Add image"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M20.5 16l-5-5-8 8"/></svg></button>
+      <button type="button" class="icon-btn icon-btn--danger" aria-label="Delete recipe"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l1 13h9l1-13"/></svg></button>
+    </div>
+
+    <div class="recipe__head">
+      <div class="recipe__titles">
+        <h1 class="recipe__title">Butternut Squash Soup</h1>
+        <p class="recipe__subtitle">Creamy and warming</p>
+      </div>
+      <!-- First image as a framed print; click opens the existing expanded-image dialog.
+           Additional images: a row of smaller framed prints (same frame style) under the header.
+           No images: omit entirely; the title takes the full width. -->
+      <span class="recipe__photo" role="img" aria-label="Recipe photo"></span>
+    </div>
+
+    <div class="recipe__body ruled-32">
+      <section class="recipe__ingredients" aria-labelledby="ing-h">
+        <h2 id="ing-h" class="label-red">Ingredients</h2>
+        <ul class="ing-list">
+          <li><span class="qty">1</span><span>Butternut squash</span></li>
+          <li><span class="qty">1</span><span>Onion</span></li>
+          <li><span class="qty">500 ml</span><span>Vegetable stock</span></li>
+          <li><span class="qty">2 tbsp</span><span>Cream</span></li>
+        </ul>
+      </section>
+      <section class="recipe__method" aria-labelledby="method-h">
+        <h2 id="method-h" class="label-red">Method</h2>
+        <!-- instructionsMarkdown rendered; ordered lists get mono "01" numbers. Paragraphs also sit on the ruled lines. -->
+        <ol class="step-list">
+          <li><span class="step-num" aria-hidden="true">01</span><span>Heat the oven to 200°C. Halve the squash, scoop out the seeds, and roast cut-side down for about 40 minutes, until soft.</span></li>
+          <li><span class="step-num" aria-hidden="true">02</span><span>Meanwhile, sauté the chopped onion in a little oil over medium heat until soft and golden, about 10 minutes.</span></li>
+          <li><span class="step-num" aria-hidden="true">03</span><span>Scoop the squash into the pot, add the stock, and simmer for 5 minutes.</span></li>
+          <li><span class="step-num" aria-hidden="true">04</span><span>Blend until smooth. Stir in the cream and season to taste.</span></li>
+        </ol>
+      </section>
+    </div>
+
+    <!-- recipe.description. Omit section when empty. -->
+    <section class="recipe__notes ruled-32" aria-labelledby="notes-h">
+      <h2 id="notes-h" class="label-red">Notes</h2>
+      <p>Roasting the squash first gives it a deeper, nuttier flavor than boiling. Freezes well — make a double batch.</p>
+    </section>
+  </article>
+</main>
+</body>
+</html>

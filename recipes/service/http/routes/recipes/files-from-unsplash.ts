@@ -15,7 +15,7 @@ import { getPhoto, trackDownload } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { throwOnUnsplashError } from "../../unsplash-errors.ts";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
-import { recipeFileToApiRecipeFile } from "./_helpers.ts";
+import { recipeFileToFilesFromUnsplashRecipesResponse } from "./_helpers.ts";
 
 type FilesFromUnsplashRecipeError = RecipeNotFoundError;
 
@@ -104,7 +104,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     }
 
     const response: RecipesServiceResponseBody["filesFromUnsplashRecipes"][200] =
-      recipeFileToApiRecipeFile(insertOut.result);
+      recipeFileToFilesFromUnsplashRecipesResponse(insertOut.result);
 
     res.status(200).json(response);
   },

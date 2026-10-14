@@ -30,12 +30,12 @@ describe("filesUploadRecipes", () => {
     const result = await mutation.mutateAsync({ recipeId, file: mockFile });
 
     expect(result).toBeDefined();
-    expect(result.recipeId).toBe(recipeId);
-    expect(result.fileOriginalName).toBe("uploaded-image.jpg");
+    expect(result.file.recipeId).toBe(recipeId);
+    expect(result.file.fileOriginalName).toBe("uploaded-image.jpg");
     expect(mockRecipeFiles.filter((f) => f.recipeId === recipeId)).toHaveLength(
       initialCount + 1,
     );
-    expect(mockRecipeFiles.some((f) => f.id === result.id)).toBe(true);
+    expect(mockRecipeFiles.some((f) => f.id === result.file.id)).toBe(true);
 
     app.unmount();
   });
@@ -48,7 +48,7 @@ describe("filesUploadRecipes", () => {
     const [mutation] = withVueQuery(() => useFilesUploadRecipesMutation());
 
     await filesQuery.refetch();
-    const countBefore = filesQuery.data.value?.length ?? 0;
+    const countBefore = filesQuery.data.value?.files?.length ?? 0;
 
     const mockFile = new File(["cache test"], "cache-test.pdf", {
       type: "application/pdf",
@@ -56,9 +56,11 @@ describe("filesUploadRecipes", () => {
     const result = await mutation.mutateAsync({ recipeId, file: mockFile });
 
     await filesQuery.refetch();
-    const countAfter = filesQuery.data.value?.length ?? 0;
+    const countAfter = filesQuery.data.value?.files?.length ?? 0;
     expect(countAfter).toBe(countBefore + 1);
-    expect(filesQuery.data.value?.some((f) => f.id === result.id)).toBe(true);
+    expect(
+      filesQuery.data.value?.files?.some((f) => f.id === result.file.id),
+    ).toBe(true);
 
     app.unmount();
   });

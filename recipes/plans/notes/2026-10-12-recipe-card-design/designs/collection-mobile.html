@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipe Box — Collection (phone)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .m-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; background: var(--card); border-radius: 3px; border-top: 2px solid var(--red-line); box-shadow: 0 1px 0 rgba(0,0,0,.06); text-decoration: none; color: var(--ink); }
+  .m-row:hover { color: var(--ink); }
+  .m-row__text { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .m-row__title { font-family: var(--font-title); font-weight: 600; font-size: 19px; line-height: 1.2; }
+  .m-row__sub { font-size: 14px; color: var(--ink-2); }
+  .m-row__photo { flex-shrink: 0; width: 48px; height: 48px; object-fit: cover; background: var(--photo); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+  .m-letter { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--label-red); padding: 14px 6px 6px; }
+  .m-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <header style="background:var(--card);border-bottom:1px solid var(--outline-soft);padding:0 4px 12px 16px">
+    <div style="height:52px;display:flex;align-items:center;gap:8px">
+      <a href="#" class="brand" style="font-size:17px;gap:8px"><span class="brand__mark" aria-hidden="true" style="width:18px;height:13px"></span>Scott's Recipe List</a>
+      <span class="demo-badge" style="font-size:11px;padding:3px 8px">DEMO</span>
+      <!-- Existing nav drawer (d-md-none) — App / Account / Logout live here on phones -->
+      <button type="button" class="icon-btn" aria-label="Open menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+    <nav class="breadcrumb" aria-label="Breadcrumb" style="margin:2px 0 0"><a href="#">Home</a><span aria-hidden="true">/</span>Seed Kitchen</nav>
+    <div style="display:flex;align-items:center;gap:8px;padding-right:12px;margin:2px 0 12px">
+      <h1 style="margin:0;font-family:var(--font-title);font-weight:600;font-size:32px;line-height:1.1;flex-grow:1">Seed Kitchen</h1>
+      <!-- Members pill, compact. Collection-authoring actions (Import, New recipe, view toggle, delete collection)
+           go in this overflow menu on phones; desktop is where recipes get entered. -->
+      <button type="button" class="btn" style="height:36px;padding:0 10px" aria-label="Members: 1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/></svg>1
+      </button>
+      <button type="button" class="icon-btn" aria-label="More collection actions"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button>
+    </div>
+    <label class="search" style="height:48px;margin-right:12px;background:var(--tab)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span class="sr-only">Search recipes</span>
+      <input type="search" placeholder="Find a recipe…" style="font-size:16px">
+    </label>
+  </header>
+
+  <!-- Menu tabs: one row, scrolls horizontally on phones -->
+  <nav aria-label="Menus" class="tabs" style="flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding:14px 16px 0">
+    <a href="#" class="tab" style="flex-shrink:0;height:44px">Weeknight Dinners</a>
+    <a href="#" class="tab" style="flex-shrink:0;height:44px">Brunch</a>
+    <a href="#" class="tab" style="flex-shrink:0;height:44px">Soups &amp; Sides</a>
+    <a href="#" class="tab" style="flex-shrink:0;height:44px">Holiday Feast</a>
+  </nav>
+
+  <!-- Recipes: compact card rows, alphabetical, grouped under the first letter (card-catalog style).
+       When a search is active, drop the letter headings and show matches in one list. -->
+  <div style="padding:8px 12px 24px">
+    <section aria-label="B"><div class="m-letter" aria-hidden="true">B</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Butternut Squash Soup</span><span class="m-row__sub">Creamy and warming</span></span></a></li>
+    </ul></section>
+    <section aria-label="L"><div class="m-letter" aria-hidden="true">L</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Lasagna</span><span class="m-row__sub">Feeds a crowd</span></span></a></li>
+    </ul></section>
+    <section aria-label="R"><div class="m-letter" aria-hidden="true">R</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Roast Chicken</span><span class="m-row__sub">The Sunday classic</span></span><span class="m-row__photo" role="img" aria-label="Photo"></span></a></li>
+    </ul></section>
+    <section aria-label="S"><div class="m-letter" aria-hidden="true">S</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Shakshuka</span><span class="m-row__sub">Eggs in spiced tomato</span></span><span class="m-row__photo" role="img" aria-label="Photo"></span></a></li>
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Simple Pasta</span><span class="m-row__sub">Weeknight staple</span></span><span class="m-row__photo" role="img" aria-label="Photo"></span></a></li>
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Spaghetti Carbonara</span><span class="m-row__sub">Silky, no cream</span></span><span class="m-row__photo" role="img" aria-label="Photo"></span></a></li>
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Sweet Potato Fries</span><span class="m-row__sub">Oven-baked, crisp</span></span></a></li>
+    </ul></section>
+    <section aria-label="T"><div class="m-letter" aria-hidden="true">T</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Tomato Soup</span><span class="m-row__sub">Pairs with grilled cheese</span></span></a></li>
+    </ul></section>
+    <section aria-label="W"><div class="m-letter" aria-hidden="true">W</div><ul class="m-list">
+      <li><a href="recipe-mobile.html" class="m-row"><span class="m-row__text"><span class="m-row__title">Waffles</span><span class="m-row__sub">Crisp, for brunch</span></span></a></li>
+    </ul></section>
+  </div>
+</div>
+</body>
+</html>

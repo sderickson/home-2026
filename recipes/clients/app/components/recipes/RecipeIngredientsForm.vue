@@ -3,6 +3,7 @@
     <v-table density="compact" class="ingredients-table">
       <thead>
         <tr>
+          <th class="pa-0" style="width: 2rem" />
           <th class="text-left text-caption font-weight-bold pa-2" style="width: 5rem">
             {{ t(strings.col_quantity) }}
           </th>
@@ -14,13 +15,21 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody ref="rowsBodyRef">
         <tr
           v-for="(ing, i) in list"
           :key="i"
           class="ingredient-row"
-          :class="{ 'is-editing': editingIndex === i }"
+          :class="{ 'is-editing': editingIndex === i, 'is-header': isIngredientHeader(ing) }"
         >
+          <td class="ingredient-drag-handle pa-0 text-center" style="width: 2rem">
+            <v-icon
+              icon="mdi-drag"
+              size="small"
+              class="text-medium-emphasis"
+              :aria-label="t(strings.drag_handle_label)"
+            />
+          </td>
           <template v-if="editingIndex === i">
             <td colspan="3" class="pa-0">
               <v-text-field
@@ -31,14 +40,26 @@
                 hide-details
                 class="w-100"
                 :placeholder="t(strings.row_placeholder)"
-                enterkeyhint="done"
+                enterkeyhint="enter"
                 @blur="commitEdit"
                 @keydown.tab="onRowTab($event, i)"
                 @keydown.shift.tab="onRowTab($event, i, true)"
-                @keydown.enter="onRowEnter($event, i)"
-                @keydown.shift.enter="onRowEnter($event, i, true)"
+                @keydown.enter.exact="onRowEnter($event, i)"
+                @keydown.shift.enter="onRowTab($event, i, true)"
                 @keydown.escape="cancelEdit"
               />
+            </td>
+          </template>
+          <template v-else-if="isIngredientHeader(ing)">
+            <td
+              colspan="3"
+              class="focus-target ingredient-header text-left pa-2"
+              tabindex="0"
+              :data-index="i"
+              @focus="startEdit(i)"
+              @click="startEdit(i)"
+            >
+              {{ getIngredientHeaderText(ing) }}
             </td>
           </template>
           <template v-else>
@@ -68,7 +89,7 @@
           </template>
         </tr>
         <tr class="new-row">
-          <td colspan="3" class="pa-2">
+          <td colspan="4" class="pa-2">
             <v-text-field
               ref="newRowInputRef"
               v-model="newRowValue"
@@ -77,7 +98,7 @@
               hide-details
               class="w-100"
               :placeholder="t(strings.row_placeholder)"
-              enterkeyhint="done"
+              enterkeyhint="enter"
               @keydown.tab="onNewRowTab"
               @keydown.shift.tab="onNewRowShiftTab"
               @keydown.enter="onNewRowEnter"
@@ -94,11 +115,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch } from "vue";
+import { ref, nextTick, watch, onMounted, onBeforeUnmount } from "vue";
+import Sortable, { type SortableEvent } from "sortablejs";
 import { recipe_ingredients_form as strings } from "./RecipeIngredientsForm.strings.ts";
 import {
   parseIngredientLine,
   formatIngredient,
+  isIngredientHeader,
+  getIngredientHeaderText,
   type RecipeIngredient,
 } from "./RecipeIngredientsForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
@@ -224,15 +248,67 @@ function moveFromRowEdit(e: KeyboardEvent, i: number, shift?: boolean) {
   });
 }
 
-/** On mobile Chrome, keyboard "Next" may map to Tab. Treat Tab the same as Enter. */
+/** Tab/Shift+Tab (and Shift+Enter) commit the row and move to the next/previous row. */
 function onRowTab(e: KeyboardEvent, i: number, shift?: boolean) {
   moveFromRowEdit(e, i, shift);
 }
 
-/** Enter should commit current row and move to next/previous row target. */
-function onRowEnter(e: KeyboardEvent, i: number, shift?: boolean) {
-  moveFromRowEdit(e, i, shift);
+/**
+ * Enter commits the current row and inserts a blank row below it to edit.
+ * Enter on an empty row removes it and jumps to the add-ingredient input.
+ */
+function onRowEnter(e: KeyboardEvent, i: number) {
+  e.preventDefault();
+  if (!editingValue.value.trim()) {
+    commitEdit();
+    nextTick(() => newRowInputRef.value?.focus?.());
+    return;
+  }
+  commitEdit();
+  const next = [...list.value];
+  next.splice(i + 1, 0, { quantity: "", unit: "", name: "" });
+  list.value = next;
+  emitList(next);
+  // Wait for the committed row's input to unmount before focusing the new one,
+  // so a late blur from it can't commit (and delete) the blank row.
+  nextTick(() => startEdit(i + 1));
 }
+
+const rowsBodyRef = ref<HTMLElement | null>(null);
+let sortable: Sortable | null = null;
+
+onMounted(() => {
+  if (!rowsBodyRef.value) return;
+  sortable = Sortable.create(rowsBodyRef.value, {
+    handle: ".ingredient-drag-handle",
+    draggable: ".ingredient-row",
+    ghostClass: "ingredient-drag-ghost",
+    dragClass: "ingredient-drag-dragging",
+    onEnd(evt: SortableEvent) {
+      const { oldIndex, newIndex, item, from } = evt;
+      if (
+        oldIndex === undefined ||
+        newIndex === undefined ||
+        oldIndex === newIndex
+      )
+        return;
+      // Undo Sortable's DOM move and let Vue re-render from the reordered list,
+      // since rows are keyed by index.
+      from.removeChild(item);
+      from.insertBefore(item, from.children[oldIndex] ?? null);
+      const next = [...list.value];
+      const [moved] = next.splice(oldIndex, 1);
+      next.splice(newIndex, 0, moved);
+      list.value = next;
+      emitList(next);
+    },
+  });
+});
+
+onBeforeUnmount(() => {
+  sortable?.destroy();
+  sortable = null;
+});
 
 function addNewRowFromInput() {
   const value = newRowValue.value.trim();
@@ -270,6 +346,21 @@ watch(
 </script>
 
 <style scoped>
+.ingredient-drag-handle {
+  cursor: grab;
+}
+.ingredient-drag-handle:active,
+.ingredient-drag-dragging {
+  cursor: grabbing;
+}
+.ingredient-drag-ghost {
+  opacity: 0.5;
+}
+/* Group header ("# Dough"): one size regardless of how many "#". */
+.ingredient-header {
+  font-weight: 600;
+  color: rgb(var(--v-theme-primary));
+}
 .ingredient-row:not(.is-editing) .focus-target {
   cursor: pointer;
   outline: none;

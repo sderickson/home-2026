@@ -55,12 +55,14 @@ describe("PUT /recipes/:id/versions/latest", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      id: versionId,
-      recipeId,
-      content: updateBody,
-      isLatest: true,
-      createdBy: SEED_USER_ID,
-      createdAt: expect.any(String),
+      recipeVersion: {
+        id: versionId,
+        recipeId,
+        content: updateBody,
+        isLatest: true,
+        createdBy: SEED_USER_ID,
+        createdAt: expect.any(String),
+      },
     } satisfies Partial<RecipesServiceResponseBody["updateRecipeVersionLatest"][200]>);
   });
 

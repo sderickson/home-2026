@@ -1,6 +1,6 @@
 import { recipes_common_strings } from "../common/strings.ts";
 
-// BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
+// BEGIN WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { collections_detail } from "./pages/collections/detail/Detail.strings.ts";
 import { create_collection_dialog } from "./components/collections/CreateCollectionDialog.strings.ts";
 import { create_menu_form } from "./pages/menus/create/CreateMenuForm.strings.ts";
@@ -12,7 +12,6 @@ import { menu_groupings_display } from "./pages/menus/detail/MenuGroupingsDispla
 import { menus_create } from "./pages/menus/create/Create.strings.ts";
 import { menus_detail } from "./pages/menus/detail/Detail.strings.ts";
 import { menus_recipe_detail } from "./pages/menus/detail/RecipeDetail.strings.ts";
-import { quick_import } from "./components/quick-import/QuickImport.strings.ts";
 import { recipe_detail_content } from "./components/recipe-detail/RecipeDetailContent.strings.ts";
 import { recipe_form } from "./components/recipes/RecipeForm.strings.ts";
 import { recipes_create_page } from "./pages/recipes/create/Create.strings.ts";
@@ -20,11 +19,16 @@ import { recipes_detail } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_detail_page } from "./pages/recipes/detail/Detail.strings.ts";
 import { recipes_edit_page } from "./pages/recipes/edit/Edit.strings.ts";
 import { unsplash_picker_dialog } from "./pages/recipes/detail/UnsplashPickerDialog.strings.ts";
+import { expanded_image_dialog } from "./pages/share/recipes/ExpandedImageDialog.strings.ts";
+import { share_menus } from "./pages/share/menus/Menus.strings.ts";
+import { share_menus_error } from "./pages/share/menus/MenusError.strings.ts";
+import { share_recipes } from "./pages/share/recipes/Recipes.strings.ts";
+import { share_recipes_error } from "./pages/share/recipes/RecipesError.strings.ts";
 // END WORKFLOW AREA
 
 export const app_strings = {
   ...recipes_common_strings,
-  // BEGIN SORTED WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
+  // BEGIN WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   collections_detail,
   create_collection_dialog,
   create_menu_form,
@@ -36,7 +40,6 @@ export const app_strings = {
   menus_create,
   menus_detail,
   menus_recipe_detail,
-  quick_import,
   recipe_detail_content,
   recipe_form,
   recipes_create_page,
@@ -44,5 +47,10 @@ export const app_strings = {
   recipes_detail_page,
   recipes_edit_page,
   unsplash_picker_dialog,
+  expanded_image_dialog,
+  share_menus,
+  share_menus_error,
+  share_recipes,
+  share_recipes_error,
   // END WORKFLOW AREA
 };

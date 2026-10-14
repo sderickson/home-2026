@@ -30,6 +30,6 @@ export const versionsCreateRecipesHandler = recipesHandler({
     mockRecipeVersions.push(newVersion);
     recipe.currentVersionId = versionId;
     recipe.updatedAt = now;
-    return newVersion;
+    return { recipeVersion: newVersion };
   },
 });

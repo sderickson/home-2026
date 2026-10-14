@@ -1,0 +1,128 @@
+/*
+ * "Recipe Box" design — reference CSS for the static mockups in this folder.
+ * Not production code: the implementation should express these tokens through
+ * the Vuetify theme (see ../README.md) and use Vuetify components.
+ */
+
+:root {
+  /* Surfaces */
+  --table: #e8e3d9;      /* page background (kraft / tabletop) */
+  --card: #fffefa;       /* index-card white: cards, app bar, inputs on cards */
+  --tab: #f4efe4;        /* menu divider tabs, search field on white */
+  --photo: #cdbb98;      /* image placeholder only */
+
+  /* Ink */
+  --ink: #22252a;        /* primary text */
+  --ink-2: #4a4e56;      /* subtitles */
+  --muted: #5c6068;      /* meta text, breadcrumbs, counts */
+
+  /* Lines */
+  --outline: #c9c1b1;    /* input / button borders, tab baseline */
+  --outline-soft: #d6cfc1;
+  --divider: #e5dfd3;
+  --rule-blue: #d3deec;  /* ruled lines on cards */
+  --red-line: #e2a293;   /* the index card's red header line */
+  --red-line-soft: #ebc5bb; /* vertical margin line between columns */
+
+  /* Accents */
+  --primary: #2c4a75;    /* ink blue: primary buttons, quantities, links */
+  --primary-dark: #1c3356;
+  --primary-tint: #e3eaf4; /* selected toggle, hover */
+  --label-red: #b4432e;  /* section labels (INGREDIENTS / METHOD), delete */
+  --demo: #c2513b;       /* demo badge background */
+
+  /* Type */
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-title: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Ruled-line rhythm: text on ruled areas uses this line-height */
+  --rule: 32px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--table); color: var(--ink); font-family: var(--font-body); font-size: 16px; }
+a { color: var(--primary); }
+a:hover { color: var(--primary-dark); }
+button, input { font: inherit; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- App bar ---------- */
+.appbar { background: var(--card); border-bottom: 1px solid var(--outline-soft); }
+.appbar__inner { max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; gap: 20px; }
+.brand { flex-grow: 1; display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-title); font-weight: 600; font-size: 20px; color: var(--ink); text-decoration: none; }
+.brand__mark { width: 22px; height: 16px; border-radius: 2px; border: 1.5px solid var(--ink); background: var(--card); box-shadow: inset 0 4px 0 -2.5px var(--demo); }
+.nav { display: flex; align-items: center; gap: 4px; font-size: 14px; }
+.nav a { padding: 10px 12px; color: var(--muted); text-decoration: none; }
+.nav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.demo-badge { margin-left: 8px; padding: 4px 10px; background: var(--demo); color: var(--card); border-radius: 4px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
+.icon-btn { width: 44px; height: 44px; border: 0; border-radius: 6px; background: transparent; color: #3a3e46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+.icon-btn:hover { background: #eef2f8; }
+.icon-btn--danger { color: var(--label-red); }
+.icon-btn__badge { position: absolute; top: 6px; right: 5px; min-width: 16px; height: 16px; border-radius: 3px; background: var(--primary); color: var(--card); font-family: var(--font-mono); font-size: 10px; line-height: 16px; text-align: center; }
+
+/* ---------- Page ---------- */
+.page { max-width: 1160px; margin: 0 auto; padding: 32px 32px 80px; }
+.page--narrow { max-width: 1040px; }
+.breadcrumb { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.breadcrumb a { color: var(--muted); }
+.breadcrumb span[aria-hidden] { margin: 0 8px; }
+.eyebrow { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.label-red { font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--label-red); margin: 0; line-height: var(--rule); }
+.count { font-family: var(--font-mono); font-size: 15px; font-weight: 400; color: var(--muted); }
+
+/* ---------- Buttons & inputs ---------- */
+.btn { height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--outline); background: var(--card); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; }
+.btn--primary { border: 0; background: var(--primary); color: var(--card); font-weight: 600; padding: 0 16px; }
+.btn--square { width: 40px; height: 40px; padding: 0; justify-content: center; border-color: var(--outline-soft); background: transparent; color: #8c8a86; }
+.toggle { display: inline-flex; border: 1px solid var(--outline); border-radius: 6px; overflow: hidden; background: var(--card); }
+.toggle button { width: 44px; height: 42px; border: 0; background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.toggle button + button { border-left: 1px solid var(--outline); }
+.toggle button[aria-pressed="true"] { background: var(--primary-tint); color: var(--primary); }
+.search { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; background: var(--card); border: 1px solid var(--outline); border-radius: 6px; color: var(--muted); }
+.search input { flex-grow: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 15px; color: var(--ink); }
+
+/* ---------- Menu divider tabs ---------- */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-end; border-bottom: 2px solid var(--outline); padding-left: 12px; }
+.tab { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; background: var(--tab); border: 1px solid var(--outline); border-bottom: 0; border-radius: 8px 8px 0 0; color: var(--ink); text-decoration: none; font-size: 15px; font-weight: 500; margin-bottom: -2px; box-shadow: inset 0 -2px 0 var(--outline); }
+.tab:hover { background: var(--card); color: var(--ink); }
+.tab--add { width: 44px; padding: 0; justify-content: center; background: transparent; border-style: dashed; border-color: #a8a091; color: var(--primary); box-shadow: none; }
+
+/* ---------- Index card (collection grid item) ---------- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; }
+.index-card { position: relative; display: block; aspect-ratio: 5 / 3; background: var(--card); border-radius: 3px; text-decoration: none; color: var(--ink); overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 10px 22px -18px rgba(40,30,10,.55); transition: transform .15s ease, box-shadow .15s ease; }
+.index-card:hover { transform: translateY(-3px); box-shadow: 0 2px 0 rgba(0,0,0,.04), 0 18px 30px -18px rgba(40,30,10,.5); color: var(--ink); }
+.index-card__head { height: 58px; padding: 0 20px 8px; display: flex; align-items: flex-end; border-bottom: 1.5px solid var(--red-line); }
+.index-card__title { font-family: var(--font-title); font-weight: 600; font-size: 22px; line-height: 1.1; }
+.index-card--photo .index-card__title { padding-right: 72px; }
+.index-card__body { height: calc(100% - 58px); padding: 0 20px; }
+.index-card__subtitle { font-size: 15px; line-height: 26px; }
+.index-card__keys { font-family: var(--font-mono); font-size: 13px; line-height: 26px; color: var(--primary); }
+.index-card__photo { position: absolute; top: 12px; right: 14px; width: 62px; height: 62px; object-fit: cover; background: var(--photo); border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+
+/* Ruled-paper background. Pair with a line-height equal to the rule spacing. */
+.ruled-26 { background-image: repeating-linear-gradient(to bottom, transparent 0 25px, var(--rule-blue) 25px 26px); }
+.ruled-32 { background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule-blue) 31px 32px); }
+
+/* ---------- Recipe card (detail page) ---------- */
+.recipe { position: relative; background: var(--card); border-radius: 4px; box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 24px 44px -30px rgba(40,30,10,.6); }
+.recipe__tools { position: absolute; top: 12px; right: 12px; display: flex; gap: 2px; }
+.recipe__head { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; padding: 56px 56px 18px; border-bottom: 2px solid var(--red-line); }
+.recipe__titles { flex: 999 1 380px; min-width: 0; }
+.recipe__title { margin: 0; font-family: var(--font-title); font-weight: 600; font-size: 52px; line-height: 1.02; }
+.recipe__subtitle { margin: 10px 0 0; font-size: 20px; color: var(--ink-2); }
+.recipe__photo { flex: 0 0 220px; height: 160px; object-fit: cover; background: var(--photo); border: 6px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,.18); transform: rotate(-1.2deg); margin-bottom: 4px; }
+.recipe__body { display: flex; flex-wrap: wrap; background-position: 0 14px; padding: 14px 0 46px; }
+.recipe__ingredients { flex: 1 1 380px; padding: 0 32px 0 56px; border-right: 1.5px solid var(--red-line-soft); }
+.recipe__method { flex: 999 1 440px; min-width: 0; padding: 0 56px 0 32px; }
+.ing-list, .step-list { list-style: none; margin: 0; padding: 0; }
+.ing-list li { display: grid; grid-template-columns: 72px 1fr; gap: 10px; line-height: var(--rule); font-size: 16px; }
+.qty { font-family: var(--font-mono); font-size: 15px; color: var(--primary); }
+.step-list li { display: grid; grid-template-columns: 40px 1fr; gap: 8px; line-height: var(--rule); font-size: 17px; margin-bottom: var(--rule); }
+.step-num { font-family: var(--font-mono); font-size: 14px; color: var(--primary); }
+.recipe__notes { padding: 0 56px 28px; }
+.recipe__notes p { margin: 0; line-height: var(--rule); font-size: 16px; color: var(--ink-2); }
+.recipe__foot { padding: 14px 56px 18px; border-top: 1px solid var(--divider); display: flex; gap: 16px; flex-wrap: wrap; justify-content: flex-end; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+/* ---------- Phone frame helper (mockups only) ---------- */
+.phone { width: 390px; min-height: 844px; margin: 24px auto; background: var(--table); box-shadow: 0 0 0 1px var(--outline-soft); overflow: hidden; }

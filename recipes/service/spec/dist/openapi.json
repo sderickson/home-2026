@@ -27,9 +27,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipes"
+                  ],
+                  "properties": {
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    }
                   }
                 }
               }
@@ -206,7 +214,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Recipe with current version; optionally includes recent notes and file list.",
+            "description": "Recipe with current version; may include recipe file list.",
             "content": {
               "application/json": {
                 "schema": {
@@ -221,13 +229,6 @@
                     },
                     "currentVersion": {
                       "$ref": "#/components/schemas/recipe-version"
-                    },
-                    "notes": {
-                      "type": "array",
-                      "description": "Optional list of recent recipe notes.",
-                      "items": {
-                        "type": "object"
-                      }
                     },
                     "files": {
                       "type": "array",
@@ -319,7 +320,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipe"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    }
+                  }
                 }
               }
             }
@@ -357,7 +366,7 @@
         }
       },
       "delete": {
-        "summary": "Delete recipe (and handle versions/notes/files per policy). Admin only.",
+        "summary": "Delete recipe and related versions/files. Admin only.",
         "operationId": "deleteRecipe",
         "parameters": [
           {
@@ -431,9 +440,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersions"
+                  ],
+                  "properties": {
+                    "recipeVersions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-version"
+                      }
+                    }
                   }
                 }
               }
@@ -502,7 +519,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersion"
+                  ],
+                  "properties": {
+                    "recipeVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    }
+                  }
                 }
               }
             }
@@ -572,303 +597,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-version"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges (admin only).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/recipes/{id}/notes": {
-      "get": {
-        "summary": "List notes for a recipe (e.g. chronological).",
-        "operationId": "notesListRecipes",
-        "tags": [
-          "no-auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Notes for the recipe (e.g. chronological).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-note"
+                  "type": "object",
+                  "required": [
+                    "recipeVersion"
+                  ],
+                  "properties": {
+                    "recipeVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    }
                   }
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized - authentication required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - not a member of the recipe's collection, or insufficient role.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a note; optionally link to a recipe version. Admin only.",
-        "operationId": "notesCreateRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Note body and optional recipe version link.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "body"
-                ],
-                "properties": {
-                  "body": {
-                    "$ref": "#/components/schemas/body"
-                  },
-                  "recipeVersionId": {
-                    "$ref": "#/components/schemas/recipeVersionId"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Created RecipeNote.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/recipe-note"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges (admin only).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/recipes/{id}/notes/{noteId}": {
-      "put": {
-        "summary": "Edit note; server sets everEdited. Admin only.",
-        "operationId": "notesUpdateRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Note id"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Note body and optional recipe version link.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "body"
-                ],
-                "properties": {
-                  "body": {
-                    "$ref": "#/components/schemas/body"
-                  },
-                  "recipeVersionId": {
-                    "$ref": "#/components/schemas/recipeVersionId"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Updated RecipeNote (everEdited set by server when applicable).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/recipe-note"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges (admin only).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a note on a recipe. Admin only.",
-        "operationId": "notesDeleteRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Note id"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Note deleted."
           },
           "401": {
             "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
@@ -927,9 +667,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "files"
+                  ],
+                  "properties": {
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-file-info"
+                      }
+                    }
                   }
                 }
               }
@@ -1007,7 +755,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/recipe-file-info"
+                    }
+                  }
                 }
               }
             }
@@ -1175,379 +931,6 @@
         }
       }
     },
-    "/recipes/{id}/note-files": {
-      "get": {
-        "summary": "List all note files for a recipe (one request for the detail page).",
-        "operationId": "recipeNoteFilesGetByNoteId",
-        "tags": [
-          "no-auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All note files for the recipe (each item has recipeNoteId).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-note-file-info"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - authentication required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - not a member of the recipe's collection, or insufficient role.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/recipes/{id}/notes/{noteId}/files": {
-      "get": {
-        "summary": "List all files for a recipe note.",
-        "operationId": "notesFilesListRecipes",
-        "tags": [
-          "no-auth"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All files for the note.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-note-file-info"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - authentication required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - not a member of the recipe's collection, or insufficient role.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Upload a new file for a recipe note (multiple files allowed). Admin only.",
-        "operationId": "notesFilesUploadRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note id"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "file"
-                ],
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "The file to upload (stored in Azure)."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Created recipe note file metadata.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/recipe-note-file-info"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges (admin only).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/recipes/{id}/notes/{noteId}/files/{fileId}": {
-      "delete": {
-        "summary": "Remove one file from a recipe note. Admin only.",
-        "operationId": "notesFilesDeleteRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note id"
-          },
-          {
-            "name": "fileId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note file id to remove"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "File removed from recipe note."
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges (admin only).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/recipes/{id}/notes/{noteId}/files/{fileId}/blob": {
-      "get": {
-        "summary": "Serve recipe note file binary (blob).",
-        "operationId": "notesFilesDownloadRecipes",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe id"
-          },
-          {
-            "name": "noteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note id"
-          },
-          {
-            "name": "fileId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Recipe note file id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File binary content.",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user does not have required privileges.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/unsplash-photos/search": {
       "get": {
         "summary": "Search Unsplash for photos by query (e.g. recipe title). Not recipe-scoped; general Unsplash search. Used by the Unsplash picker modal.",
@@ -1663,7 +1046,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/recipe-file-info"
+                    }
+                  }
                 }
               }
             }
@@ -2848,6 +2239,197 @@
           }
         }
       }
+    },
+    "/menus/{id}/shared": {
+      "get": {
+        "summary": "Load a menu for the public share page by id (no auth).",
+        "description": "Returns the menu, every recipe in its groupings, those recipes' current versions, and their files, so the public share page can render both the menu and diner layouts in one request. Each file's downloadUrl is set by the handler to the shared recipe blob path (/recipes/{recipeId}/shared/files/{fileId}/blob), not the authenticated blob path. Groupings only list recipes that still exist.\n",
+        "operationId": "sharedGetMenus",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Menu id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu with its recipes, their current versions, and files for the public share page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menu",
+                    "recipes",
+                    "currentVersions",
+                    "files"
+                  ],
+                  "properties": {
+                    "menu": {
+                      "$ref": "#/components/schemas/menu"
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "description": "Every recipe referenced in the menu's groupings.",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    },
+                    "currentVersions": {
+                      "type": "array",
+                      "description": "Current version of each recipe in `recipes` (match on recipeId).",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-version"
+                      }
+                    },
+                    "files": {
+                      "type": "array",
+                      "description": "Files for every recipe in `recipes` (match on recipeId); empty array when none. downloadUrl points at the shared recipe blob path.",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-file-info"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - no menu with that id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}/shared": {
+      "get": {
+        "summary": "Load a recipe for the public share page by id (no auth).",
+        "description": "Returns the recipe, its current version, and file metadata for the unauthenticated share page. Each file's downloadUrl is set by the handler to the shared blob path (/recipes/{id}/shared/files/{fileId}/blob), not the authenticated blob path.\n",
+        "operationId": "sharedGetRecipes",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe, current version, and files for the public share page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "recipe",
+                    "currentVersion",
+                    "files"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    },
+                    "currentVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    },
+                    "files": {
+                      "type": "array",
+                      "description": "Always present; empty array when the recipe has no files. downloadUrl points at the shared blob path.",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-file-info"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - no recipe with that id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}/shared/files/{fileId}/blob": {
+      "get": {
+        "summary": "Serve recipe file binary for the public share page (no auth).",
+        "description": "Public binary download for images and other attachments shown on the unauthenticated share page. Distinct from the authenticated GET /recipes/{id}/files/{fileId}/blob so the public surface stays explicit.\n",
+        "operationId": "sharedFilesDownloadRecipes",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe file id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File binary content.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - recipe or file missing, or file does not belong to that recipe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2864,14 +2446,8 @@
       "RecipeVersion": {
         "$ref": "#/components/schemas/recipe-version"
       },
-      "RecipeNote": {
-        "$ref": "#/components/schemas/recipe-note"
-      },
       "RecipeFileInfo": {
         "$ref": "#/components/schemas/recipe-file-info"
-      },
-      "RecipeNoteFileInfo": {
-        "$ref": "#/components/schemas/recipe-note-file-info"
       },
       "UnsplashPhotoSearchItem": {
         "$ref": "#/components/schemas/unsplash-photo-search-item"
@@ -3138,80 +2714,6 @@
           "createdAt"
         ]
       },
-      "recipe-note": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the note",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "recipeId": {
-            "type": "string",
-            "description": "Id of the recipe this note belongs to",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "recipeVersionId": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
-            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
-          },
-          "body": {
-            "type": "string",
-            "description": "Note content (how it went, what to try next)",
-            "example": "Reduced sugar by 1/4 cup; next time try brown butter."
-          },
-          "everEdited": {
-            "type": "boolean",
-            "description": "Whether the note has ever been edited after creation (set to true on first update)",
-            "example": false
-          },
-          "createdBy": {
-            "type": "string",
-            "description": "User id of the creator",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the note was created",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedBy": {
-            "type": "string",
-            "description": "User id of the last updater",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the note was last updated",
-            "example": "2023-02-01T09:00:00Z"
-          }
-        },
-        "required": [
-          "id",
-          "recipeId",
-          "body",
-          "everEdited",
-          "createdBy",
-          "createdAt",
-          "updatedBy",
-          "updatedAt"
-        ]
-      },
-      "body": {
-        "type": "string",
-        "description": "Note content (how it went, what to try next)",
-        "example": "Reduced sugar by 1/4 cup; next time try brown butter."
-      },
-      "recipeVersionId": {
-        "type": "string",
-        "nullable": true,
-        "description": "Optional id of the recipe version this note is linked to (e.g. when written with a change)",
-        "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
-      },
       "unsplash-attribution": {
         "type": "object",
         "description": "Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view).",
@@ -3313,78 +2815,6 @@
           "size",
           "createdAt",
           "updatedAt"
-        ]
-      },
-      "recipe-note-file-info": {
-        "type": "object",
-        "description": "Metadata for one file attached to a recipe note. Uses SAF file metadata (blob_name, file_original_name, mimetype, size, created_at, updated_at).",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the file record",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
-          },
-          "recipeNoteId": {
-            "type": "string",
-            "description": "Id of the recipe note this file is attached to",
-            "example": "b2c3d4e5-f90c-23e4-b567-537725285002"
-          },
-          "blobName": {
-            "type": "string",
-            "description": "Storage blob name (Azure) for the file",
-            "example": "recipe-notes/b2c3d4e5-f90c-23e4-b567-537725285002/123e4567-e89b-12d3-a456-426614174000.pdf"
-          },
-          "fileOriginalName": {
-            "type": "string",
-            "description": "Original filename as provided on upload",
-            "example": "attempt-photo.pdf"
-          },
-          "mimetype": {
-            "type": "string",
-            "description": "MIME type of the file",
-            "example": "application/pdf"
-          },
-          "size": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "File size in bytes",
-            "example": 102400
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the file was uploaded",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the file metadata was last updated",
-            "example": "2023-01-15T14:30:00Z"
-          },
-          "uploadedBy": {
-            "type": "string",
-            "nullable": true,
-            "description": "User id of the uploader (optional)",
-            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
-          },
-          "downloadUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Full URL to download or view the file (API base + /recipes/:id/notes/:noteId/files/:fileId/blob)",
-            "example": "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/notes/b2c3d4e5-f90c-23e4-b567-537725285002/files/123e4567-e89b-12d3-a456-426614174000/blob"
-          }
-        },
-        "required": [
-          "id",
-          "recipeNoteId",
-          "blobName",
-          "fileOriginalName",
-          "mimetype",
-          "size",
-          "createdAt",
-          "updatedAt",
-          "downloadUrl"
         ]
       },
       "unsplash-photo-search-item": {

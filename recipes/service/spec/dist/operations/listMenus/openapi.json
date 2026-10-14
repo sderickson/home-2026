@@ -1,0 +1,218 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "listMenus",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/menus": {
+      "get": {
+        "summary": "List menus in a collection. Auth required; caller must be at least viewer on the collection.",
+        "operationId": "listMenus",
+        "parameters": [
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection to list menus from."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menus in the collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menus"
+                  ],
+                  "properties": {
+                    "menus": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/menu"
+                      },
+                      "description": "List of menus."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - collectionId is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - collection listing requires authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member of the collection or insufficient role (at least viewer required).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable - collection does not exist (validation).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "menu": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the menu (short id from generateShortId)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this menu belongs to",
+            "example": "my-kitchen"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the menu",
+            "example": "Weeknight Dinners",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the menu creator (short id)",
+            "example": "a1b2c3d4"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "User id of the last updater (short id)",
+            "example": "a1b2c3d4"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "editedByUserIds": {
+            "type": "array",
+            "description": "User ids of everyone who has edited this menu (append on each edit)",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "a1b2c3d4",
+              "e5f6g7h8"
+            ]
+          },
+          "groupings": {
+            "type": "array",
+            "description": "Ordered categories; each has a name and ordered recipe ids (display order)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the grouping (e.g. appetizers, mains, desserts)",
+                  "example": "Mains",
+                  "minLength": 1
+                },
+                "recipeIds": {
+                  "type": "array",
+                  "description": "Recipe ids in this grouping, in display order",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "r1abc",
+                    "r2def"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "recipeIds"
+              ]
+            },
+            "example": [
+              {
+                "name": "Starters",
+                "recipeIds": [
+                  "r1abc"
+                ]
+              },
+              {
+                "name": "Mains",
+                "recipeIds": [
+                  "r2def",
+                  "r3ghi"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "name",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt",
+          "editedByUserIds",
+          "groupings"
+        ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
+import { useRoute } from "vue-router";
 import {
   DynamicRecipesLayout,
   isDemoMode,
@@ -11,6 +12,8 @@ import { useKratosSession } from "@saflib/ory-kratos-sdk";
 const queryClient = useQueryClient();
 const kratosSessionQuery = useKratosSession();
 const loggedIn = computed(() => !!kratosSessionQuery.data.value?.identity);
+const route = useRoute();
+const bare = computed(() => route.meta.bare === true);
 const { runSeed } = useSeedData({ getSuccessMessage: () => "Demo data ready" });
 onMounted(async () => {
   if (!isDemoMode()) return;
@@ -23,7 +26,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DynamicRecipesLayout :logged-in="loggedIn">
+  <DynamicRecipesLayout
+    :logged-in="loggedIn"
+    :breadcrumb-bar="!bare"
+    :bare="bare"
+  >
     <router-view />
   </DynamicRecipesLayout>
 </template>

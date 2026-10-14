@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   parseIngredientLine,
   formatIngredient,
+  isIngredientHeader,
+  getIngredientHeaderText,
   type RecipeIngredient,
 } from "./ingredient.ts";
 
@@ -149,5 +151,34 @@ describe("formatIngredient", () => {
       const parsed = parseIngredientLine(line);
       expect(formatIngredient(parsed)).toBe(line);
     }
+  });
+});
+
+describe("ingredient headers", () => {
+  it("treats '# Text' lines as headers", () => {
+    const ing = parseIngredientLine("# Dough");
+    expect(isIngredientHeader(ing)).toBe(true);
+    expect(getIngredientHeaderText(ing)).toBe("Dough");
+    expect(formatIngredient(ing)).toBe("# Dough");
+  });
+
+  it("treats any number of '#' as the same header", () => {
+    const ing = parseIngredientLine("### For the sauce");
+    expect(isIngredientHeader(ing)).toBe(true);
+    expect(getIngredientHeaderText(ing)).toBe("For the sauce");
+  });
+
+  it("does not treat '#' without a following space as a header", () => {
+    expect(isIngredientHeader(parseIngredientLine("#10 can tomatoes"))).toBe(
+      false,
+    );
+    expect(isIngredientHeader(parseIngredientLine("#"))).toBe(false);
+    expect(isIngredientHeader(parseIngredientLine("# "))).toBe(false);
+  });
+
+  it("does not treat regular ingredients as headers", () => {
+    expect(isIngredientHeader(parseIngredientLine("2 cups flour"))).toBe(
+      false,
+    );
   });
 });

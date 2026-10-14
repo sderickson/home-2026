@@ -1,0 +1,47 @@
+sharedGetRecipes:
+  summary: "Load a recipe for the public share page by id (no auth)."
+  description: >
+    Returns the recipe, its current version, and file metadata for the
+    unauthenticated share page. Each file's downloadUrl is set by the handler
+    to the shared blob path
+    (/recipes/{id}/shared/files/{fileId}/blob), not the authenticated blob path.
+  operationId: "sharedGetRecipes"
+  tags:
+    - "no-auth"
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+      description: "Recipe id"
+
+  responses:
+    "200":
+      description: "Recipe, current version, and files for the public share page."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - recipe
+              - currentVersion
+              - files
+            properties:
+              recipe:
+                $ref: "../../schemas/recipe.yaml"
+              currentVersion:
+                $ref: "../../schemas/recipe-version.yaml"
+              files:
+                type: array
+                description: "Always present; empty array when the recipe has no files. downloadUrl points at the shared blob path."
+                items:
+                  $ref: "../../schemas/recipe-file-info.yaml"
+
+    "404":
+      description: "Not Found - no recipe with that id."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

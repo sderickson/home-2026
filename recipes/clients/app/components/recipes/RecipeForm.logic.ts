@@ -24,6 +24,30 @@ export function isRecipeFormValid(model: {
   return model.title.trim() !== "";
 }
 
+/** Same local calendar day as `referenceDate` (browser timezone). */
+export function isSameLocalCalendarDay(
+  isoTimestamp: string,
+  referenceDate: Date = new Date(),
+): boolean {
+  const created = new Date(isoTimestamp);
+  return (
+    created.getFullYear() === referenceDate.getFullYear() &&
+    created.getMonth() === referenceDate.getMonth() &&
+    created.getDate() === referenceDate.getDate()
+  );
+}
+
+/**
+ * When saving recipe content, update the latest version in place if the latest
+ * version was created on the same local day; otherwise create a new version.
+ */
+export function shouldSaveRecipeVersionInPlace(
+  latestVersionCreatedAt: string,
+  referenceDate: Date = new Date(),
+): boolean {
+  return isSameLocalCalendarDay(latestVersionCreatedAt, referenceDate);
+}
+
 const FIELD_LABELS: Record<string, string> = {
   title: "title",
   subtitle: "subtitle",

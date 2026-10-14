@@ -18,9 +18,14 @@ listRecipeVersions:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../../schemas/recipe-version.yaml"
+            type: object
+            required:
+              - recipeVersions
+            properties:
+              recipeVersions:
+                type: array
+                items:
+                  $ref: "../../schemas/recipe-version.yaml"
 
     "401":
       description: "Unauthorized - authentication required."

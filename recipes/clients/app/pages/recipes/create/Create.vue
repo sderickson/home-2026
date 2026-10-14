@@ -1,19 +1,5 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="pl-0 mb-2">
-      <v-breadcrumbs-item :to="appLinks.home.path">
-        {{ t(strings.breadcrumb_home) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ collectionName }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item>
-        {{ t(strings.breadcrumb_new) }}
-      </v-breadcrumbs-item>
-    </v-breadcrumbs>
-
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
     <RecipeForm v-model="formModel" @success="handleSuccess" />
@@ -21,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { recipes_create_page as strings } from "./Create.strings.ts";
@@ -66,4 +53,9 @@ function handleSuccess(recipeId: string) {
     }),
   );
 }
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: t(strings.breadcrumb_new) },
+]);
 </script>

@@ -51,22 +51,24 @@ describe("POST /recipes/:id/files (filesUploadRecipes)", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      recipeId,
-      fileOriginalName: filename,
-      mimetype: "text/plain",
-      size: fileContent.length,
-      uploadedBy: SEED_USER_ID,
+      file: {
+        recipeId,
+        fileOriginalName: filename,
+        mimetype: "text/plain",
+        size: fileContent.length,
+        uploadedBy: SEED_USER_ID,
+      },
     });
-    expect(response.body.id).toBeDefined();
-    expect(response.body.blobName).toBeDefined();
-    expect(response.body.createdAt).toBeDefined();
-    expect(response.body.updatedAt).toBeDefined();
+    expect(response.body.file.id).toBeDefined();
+    expect(response.body.file.blobName).toBeDefined();
+    expect(response.body.file.createdAt).toBeDefined();
+    expect(response.body.file.updatedAt).toBeDefined();
 
     const listOut = await recipeFileQueries.listRecipeFile(dbKey, {
       recipeId,
     });
     expect(listOut.result).toHaveLength(1);
-    expect(listOut.result![0].id).toBe(response.body.id);
+    expect(listOut.result![0].id).toBe(response.body.file.id);
   });
 
   it("should return 401 when not authenticated", async () => {

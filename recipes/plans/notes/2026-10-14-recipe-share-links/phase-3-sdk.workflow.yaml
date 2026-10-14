@@ -1,0 +1,36 @@
+name: Phase 3 — SDK shared-recipe query
+description: >
+  Add a TanStack query for GET /recipes/{id}/shared so the share page can load
+  without a Kratos session. Blob bytes use downloadUrl from the response (no
+  separate SDK blob query).
+steps:
+  - kind: cd
+    path: recipes/service/sdk
+
+  - kind: call-workflow
+    workflowId: sdk/add-query
+    input:
+      path: ./requests/recipes/shared-get.ts
+      urlPath: /recipes/{id}/shared
+      method: get
+      prompt: >
+        Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+        (SDK + shared page). Add getSharedRecipeQuery (or sharedGetRecipesQuery —
+        match operationId naming) for GET /recipes/{id}/shared.
+
+        Takes recipe id; returns { recipe, currentVersion, files }. Query key should
+        distinguish from the authenticated getRecipeQuery (e.g. include "shared").
+        No auth headers beyond what the shared client already sends for public GETs.
+
+        Export from requests/recipes/index.ts if the copy step does not. Wire the
+        fake handler into index.fakes.ts / mocks so unauthenticated share-page tests
+        can run. Fake downloadUrl values should use the shared blob path pattern
+        /recipes/{id}/shared/files/{fileId}/blob.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]
+
+  - kind: command
+    command: npm
+    args: ["run", "test"]

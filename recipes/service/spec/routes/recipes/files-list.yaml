@@ -18,9 +18,14 @@ filesListRecipes:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../../schemas/recipe-file-info.yaml"
+            type: object
+            required:
+              - files
+            properties:
+              files:
+                type: array
+                items:
+                  $ref: "../../schemas/recipe-file-info.yaml"
 
     "401":
       description: "Unauthorized - authentication required."

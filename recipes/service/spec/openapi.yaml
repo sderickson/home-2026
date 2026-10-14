@@ -5,7 +5,7 @@ info:
   description: API specification for the recipes service
 
 paths:
-  # BEGIN WORKFLOW AREA route-paths FOR openapi/add-route
+  # BEGIN WORKFLOW AREA route-paths FOR openapi/route
   /recipes:
     get:
       $ref: "./routes/recipes/list.yaml#/listRecipes"
@@ -77,6 +77,15 @@ paths:
       $ref: "./routes/menus/update.yaml#/updateMenus"
     delete:
       $ref: "./routes/menus/delete.yaml#/deleteMenus"
+  /menus/{id}/shared:
+    get:
+      $ref: "./routes/menus/shared-get.yaml#/sharedGetMenus"
+  /recipes/{id}/shared:
+    get:
+      $ref: "./routes/recipes/shared-get.yaml#/sharedGetRecipes"
+  /recipes/{id}/shared/files/{fileId}/blob:
+    get:
+      $ref: "./routes/recipes/shared-files-download.yaml#/sharedFilesDownloadRecipes"
   # END WORKFLOW AREA
 
 components:

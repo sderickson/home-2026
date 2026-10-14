@@ -13,7 +13,7 @@ export default mergeConfig(
   makeConfig({
     plugins: [htmlHeaderPlugin()],
 
-    vuetifySettings: "./overrides.scss",
+    vuetifySettings: "./vuetify-settings.scss",
     monorepoRoot,
   }),
   defineConfig({

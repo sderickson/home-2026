@@ -1,0 +1,31 @@
+name: Phase 4 — Bare layout for share page
+description: >
+  Add a layout mode with no app bar and no breadcrumbs so the public share page
+  can render outside the normal app chrome. Today AppSpa always passes
+  breadcrumb-bar on DynamicRecipesLayout.
+steps:
+  - kind: cd
+    path: recipes/clients/common
+
+  - kind: prompt
+    prompt: >
+      Read recipes/plans/notes/2026-10-14-recipe-share-links/recipe-share-links.spec.md
+      (Frontend Pages #2 and Packages — clients/common).
+
+      RecipesLayout / DynamicRecipesLayout currently always show an app bar
+      (brand bar when breadcrumbBar is false, breadcrumb bar when true). Add a
+      layout mode for the share page with no app bar and no breadcrumbs — e.g. a
+      `bare` (or equivalent) boolean prop that skips both v-app-bar blocks and
+      related nav drawer chrome while still rendering v-main / the default slot.
+
+      Keep existing callers working: default remains the current chrome. Export
+      the prop through DynamicRecipesLayout. Add or extend a focused unit test if
+      the package already tests the layout; otherwise keep the change minimal.
+
+  - kind: command
+    command: npm
+    args: ["run", "typecheck"]
+
+  - kind: command
+    command: npm
+    args: ["run", "test"]

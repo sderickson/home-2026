@@ -30,6 +30,13 @@ Keep in sync with Caddy `@public_monolith` in `recipes/dev/caddy-config/Caddyfil
 - `POST /errors/record`, `POST /product-events/record`
 - `GET /dev/logs`, `GET /dev/logs/stream` (development only)
 - `GET /admin/metrics/snapshot`, `GET /admin/product-events`, `GET /admin/errors` (dev observability chrome)
+- `GET /recipes/{id}/shared`
+- `GET /recipes/{id}/shared/files/{fileId}/blob`
+- `GET /menus/{id}/shared`
+
+Production allowlists the same share paths in `deploy/remote-assets/config/hub-domain.Caddyfile` (`api.recipes`).
+
+Share endpoints are intentionally unauthenticated: possession of the opaque recipe id (and file id for blobs) is the access check. A shared menu returns its recipes (only those in the menu's own collection), their current versions, and file metadata whose `downloadUrl`s point at the recipe share blob route — so knowing a menu id also grants read access to every recipe in it, which is the point of sharing a menu. Authenticated recipe/file routes (`GET /recipes/{id}`, `GET /recipes/{id}/files`, `GET /recipes/{id}/files/{fileId}/blob`, …) stay collection-authorized (+ email verification). CSRF is not required for these GETs. No new secrets or share-token table.
 
 Authenticated product routes (`/recipes`, `/collections`, `/menus`, …) require a Kratos session; mutating routes also require CSRF. Recipes routers enforce email verification in scoped middleware.
 
@@ -38,6 +45,7 @@ Authenticated product routes (`/recipes`, `/collections`, `/menus`, …) require
 | Spec | Probes |
 | --- | --- |
 | `authz.spec.ts` | Unauthenticated `/recipes` + `/admin/users/by-id`; non-admin admin route |
+| `share-public.spec.ts` | Unauthenticated recipe + menu share GET 200/404 + shared blob 200; authenticated `/recipes/{id}`, blob, and `/menus/{id}` still 401 |
 | `csrf.spec.ts` | Double-submit on `POST /recipes`; public CSP ingest; evil-origin leak |
 | `cors.spec.ts` | Allowlist for `app.recipes`; deny `evil.localhost` |
 | `info-disclosure.spec.ts` | `/health` body; JSON error hygiene; SPA root |

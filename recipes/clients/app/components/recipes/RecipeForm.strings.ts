@@ -6,7 +6,7 @@ export const recipe_form = {
   description_placeholder: "Longer description for recipe detail",
   ingredients_label: "Ingredients",
   instructions_label: "Instructions (markdown)",
-  instructions_placeholder: "1. Preheat oven...\n2. Mix ingredients...",
+  instructions_placeholder: "Type \"1. \" to start steps, or \"/\" for headings and lists",
   submit_create: "Create recipe",
   toolbar_preview: "Preview",
   toolbar_save: "Save",

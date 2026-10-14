@@ -3,7 +3,14 @@
   "description": "HTTP server for the recipes service",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./test/slim-route-test": "./test/slim-route-test.ts",
+    "./handlers/*": "./handlers/*.ts"
+  },
+  "imports": {
+    "#handlers/*": "./handlers/*",
+    "#http.ts": "./http.ts",
+    "#test/*": "./test/*"
   },
   "scripts": {
     "test": "vitest run",

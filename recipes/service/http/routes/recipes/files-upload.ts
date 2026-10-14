@@ -12,7 +12,7 @@ import {
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
-import { recipeFileToApiRecipeFile } from "./_helpers.ts";
+import { recipeFileToFilesUploadRecipesResponse } from "./_helpers.ts";
 
 type FilesUploadRecipeError = RecipeNotFoundError;
 
@@ -81,7 +81,7 @@ export const filesUploadRecipesHandler = createHandler(
     }
 
     const response: RecipesServiceResponseBody["filesUploadRecipes"][200] =
-      recipeFileToApiRecipeFile(insertOut.result);
+      recipeFileToFilesUploadRecipesResponse(insertOut.result);
 
     res.status(200).json(response);
   },

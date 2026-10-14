@@ -1,0 +1,16 @@
+name: Plan recipe-share-links
+description: Write the spec, pause for review, then write phase workflow files.
+steps:
+  - kind: cd
+    path: recipes/plans/notes/2026-10-14-recipe-share-links
+  - kind: call-workflow
+    workflowId: processes/spec-project
+    input:
+      name: recipe-share-links
+      prompt: hey I want to add share links to this site. If you go to the recipe
+        page, click the menu button, there should be a "get share link" there
+        too. Clicking it should put the link in the clipboard. Let's just use
+        the recipe id; these aren't huge secrets so don't need like secret
+        strings, just the ID. The shared link page itself should use components
+        from the recipe page, but without the app bar, the breadcrumbs, and any
+        sort of edit buttons.

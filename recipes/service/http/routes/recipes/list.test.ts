@@ -32,14 +32,14 @@ describe("GET /recipes", () => {
     expect(response.body.message).toContain("collectionId");
   });
 
-  it("should return 200 and empty array when no recipes exist", async () => {
+  it("should return 200 and empty recipes list when no recipes exist", async () => {
     const response = await request(app)
       .get("/recipes")
       .query({ collectionId })
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+    expect(response.body).toEqual({ recipes: [] });
   });
 
   it("should return 401 or 500 when not authenticated (no auth context)", async () => {

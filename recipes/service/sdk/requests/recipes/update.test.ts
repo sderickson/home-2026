@@ -21,8 +21,8 @@ describe("updateRecipe", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.id).toBe(id);
-    expect(result.title).toBe("Updated Title");
+    expect(result.recipe.id).toBe(id);
+    expect(result.recipe.title).toBe("Updated Title");
     expect(mockRecipes[0].title).toBe("Updated Title");
 
     app.unmount();

@@ -1,6 +1,7 @@
 // BEGIN SORTED WORKFLOW AREA fake-handler-imports FOR sdk/add-query
 import { getMenuHandler } from "./get.fake.ts";
 import { listMenusHandler } from "./list.fake.ts";
+import { sharedGetMenusHandler } from "./shared-get.fake.ts";
 // END WORKFLOW AREA
 
 // BEGIN SORTED WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
@@ -14,6 +15,7 @@ export const menusFakeHandlers = [
   // BEGIN SORTED WORKFLOW AREA fake-handler-array FOR sdk/add-query
   getMenuHandler,
   listMenusHandler,
+  sharedGetMenusHandler,
   // END WORKFLOW AREA
 
   // BEGIN SORTED WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation

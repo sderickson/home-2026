@@ -33,6 +33,6 @@ export const filesFromUnsplashRecipesHandler = recipesHandler({
       },
     };
     mockRecipeFiles.push(fileInfo);
-    return fileInfo;
+    return { file: fileInfo };
   },
 });

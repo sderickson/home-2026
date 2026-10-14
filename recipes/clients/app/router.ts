@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
 
-// BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
+// BEGIN WORKFLOW AREA page-imports FOR vue/add-view
 import CollectionLayout from "./layouts/CollectionLayout.vue";
 import CollectionsDetailAsync from "./pages/collections/detail/DetailAsync.vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
@@ -12,6 +12,8 @@ import MenusDetailAsync from "./pages/menus/detail/DetailAsync.vue";
 import RecipesCreateAsync from "./pages/recipes/create/CreateAsync.vue";
 import RecipesDetailAsync from "./pages/recipes/detail/DetailAsync.vue";
 import RecipesEditAsync from "./pages/recipes/edit/EditAsync.vue";
+import ShareRecipesAsync from "./pages/share/recipes/RecipesAsync.vue";
+import ShareMenusAsync from "./pages/share/menus/MenusAsync.vue";
 // END WORKFLOW AREA
 
 export const createAppRouter = (options?: { history?: RouterHistory }) => {
@@ -55,6 +57,16 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
           component: MenusDetailAsync,
         },
       ],
+    },
+    {
+      path: appLinks.shareRecipes.path,
+      component: ShareRecipesAsync,
+      meta: { bare: true },
+    },
+    {
+      path: appLinks.shareMenus.path,
+      component: ShareMenusAsync,
+      meta: { bare: true },
     },
     // END WORKFLOW AREA
     { path: "/:pathMatch(.*)*", component: PageNotFound },

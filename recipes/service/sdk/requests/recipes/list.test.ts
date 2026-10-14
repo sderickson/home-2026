@@ -17,9 +17,9 @@ describe("listRecipes", () => {
 
     await query.refetch();
     expect(query.data.value).toBeDefined();
-    expect(Array.isArray(query.data.value)).toBe(true);
-    expect(query.data.value).toHaveLength(mockRecipes.length);
-    expect(query.data.value?.[0]?.title).toBe(mockRecipes[0].title);
+    expect(Array.isArray(query.data.value?.recipes)).toBe(true);
+    expect(query.data.value?.recipes).toHaveLength(mockRecipes.length);
+    expect(query.data.value?.recipes?.[0]?.title).toBe(mockRecipes[0].title);
 
     app.unmount();
   });
@@ -30,9 +30,9 @@ describe("listRecipes", () => {
     );
 
     await query.refetch();
-    const data = query.data.value;
-    expect(data?.length).toBeGreaterThan(0);
-    expect(data?.[0]).toMatchObject({
+    const recipes = query.data.value?.recipes;
+    expect(recipes?.length).toBeGreaterThan(0);
+    expect(recipes?.[0]).toMatchObject({
       id: expect.any(String),
       title: expect.any(String),
     });

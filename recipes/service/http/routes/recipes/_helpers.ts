@@ -36,7 +36,7 @@ function unsplashUserToAttribution(
 }
 
 type RecipeListResponseItem =
-  RecipesServiceResponseBody["listRecipes"][200][number];
+  RecipesServiceResponseBody["listRecipes"][200]["recipes"][number];
 
 type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
 type RecipeVersionApi = GetRecipe200["currentVersion"];
@@ -49,7 +49,11 @@ type UpdateRecipeVersionLatest200 =
 type CreateRecipeVersion200 =
   RecipesServiceResponseBody["createRecipeVersion"][200];
 type FilesListRecipes200 = RecipesServiceResponseBody["filesListRecipes"][200];
-type RecipeFileInfoApi = FilesListRecipes200[number];
+type FilesUploadRecipes200 =
+  RecipesServiceResponseBody["filesUploadRecipes"][200];
+type FilesFromUnsplashRecipes200 =
+  RecipesServiceResponseBody["filesFromUnsplashRecipes"][200];
+type RecipeFileInfoApi = FilesListRecipes200["files"][number];
 
 export function recipeFileToApiRecipeFile(
   row: RecipeFileEntity,
@@ -74,7 +78,19 @@ export function recipeFileToApiRecipeFile(
 export function filesListResultToFilesListRecipesResponse(
   files: RecipeFileEntity[],
 ): FilesListRecipes200 {
-  return files.map(recipeFileToApiRecipeFile);
+  return { files: files.map(recipeFileToApiRecipeFile) };
+}
+
+export function recipeFileToFilesUploadRecipesResponse(
+  row: RecipeFileEntity,
+): FilesUploadRecipes200 {
+  return { file: recipeFileToApiRecipeFile(row) };
+}
+
+export function recipeFileToFilesFromUnsplashRecipesResponse(
+  row: RecipeFileEntity,
+): FilesFromUnsplashRecipes200 {
+  return { file: recipeFileToApiRecipeFile(row) };
 }
 
 export function recipeToApiRecipe(
@@ -110,12 +126,11 @@ export function recipeVersionToApiRecipeVersion(
 export function getByIdResultToGetRecipeResponse(
   recipe: RecipeEntity,
   currentVersion: RecipeVersionEntity,
-  options?: { notes?: GetRecipe200["notes"]; files?: GetRecipe200["files"] },
+  options?: { files?: GetRecipe200["files"] },
 ): GetRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe, currentVersion.id),
     currentVersion: recipeVersionToApiRecipeVersion(currentVersion),
-    ...(options?.notes !== undefined && { notes: options.notes }),
     ...(options?.files !== undefined && { files: options.files }),
   };
 }
@@ -141,25 +156,25 @@ export function createRecipeResultToCreateRecipeResponse(
 export function updateMetadataResultToUpdateRecipeResponse(
   row: RecipeEntity,
 ): UpdateRecipe200 {
-  return recipeToApiRecipe(row);
+  return { recipe: recipeToApiRecipe(row) };
 }
 
 export function versionsListResultToListRecipeVersionsResponse(
   versions: RecipeVersionEntity[],
 ): ListRecipeVersions200 {
-  return versions.map(recipeVersionToApiRecipeVersion);
+  return { recipeVersions: versions.map(recipeVersionToApiRecipeVersion) };
 }
 
 export function updateLatestVersionResultToUpdateRecipeVersionLatestResponse(
   row: RecipeVersionEntity,
 ): UpdateRecipeVersionLatest200 {
-  return recipeVersionToApiRecipeVersion(row);
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
 }
 
 export function createVersionResultToCreateRecipeVersionResponse(
   row: RecipeVersionEntity,
 ): CreateRecipeVersion200 {
-  return recipeVersionToApiRecipeVersion(row);
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */

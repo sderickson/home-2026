@@ -13,10 +13,12 @@ export const listRecipesHandler = recipesHandler({
       query.collectionId !== ""
     ) {
       const id = query.collectionId;
-      return list.filter(
-        (r) => (r as { collectionId?: string }).collectionId === id,
-      );
+      return {
+        recipes: list.filter(
+          (r) => (r as { collectionId?: string }).collectionId === id,
+        ),
+      };
     }
-    return [];
+    return { recipes: [] };
   },
 });

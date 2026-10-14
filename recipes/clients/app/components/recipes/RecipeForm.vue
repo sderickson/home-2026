@@ -24,7 +24,7 @@
           :disabled="!isValid"
           :loading="editSaveLoading"
           :title="t(strings.toolbar_save)"
-          @click="handleEditCreatesNewVersion"
+          @click="handleEditSave"
         />
         <v-btn
           v-else
@@ -75,13 +75,11 @@
             <div
               class="d-flex flex-column flex-grow-1 recipe-form__instructions-wrap"
             >
-              <v-textarea
+              <MarkdownEditor
                 v-model="content().instructionsMarkdown"
                 :label="t(strings.instructions_label)"
                 :placeholder="t(strings.instructions_placeholder)"
-                variant="outlined"
-                rows="6"
-                class="flex-grow-1 recipe-form__instructions-field"
+                class="flex-grow-1"
               />
             </div>
           </v-col>
@@ -102,13 +100,13 @@
         </v-card-title>
         <v-card-text>
           <RecipeContentPreview
+            compact
             :recipe="previewRecipe"
             :current-version="previewVersion"
           />
         </v-card-text>
       </v-card>
     </v-dialog>
-
   </form>
 </template>
 
@@ -121,13 +119,18 @@ import type {
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
+import MarkdownEditor from "./MarkdownEditor.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
-import { isRecipeFormValid } from "./RecipeForm.logic.ts";
+import {
+  isRecipeFormValid,
+  shouldSaveRecipeVersionInPlace,
+} from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   useCreateRecipeMutation,
   useCreateRecipeVersionMutation,
   useUpdateRecipeMutation,
+  useUpdateRecipeVersionLatestMutation,
 } from "@sderickson/recipes-sdk";
 import { RecipeContentPreview } from "@sderickson/recipes-sdk";
 
@@ -165,6 +168,7 @@ const showPreviewDialog = ref(false);
 const createMutation = useCreateRecipeMutation();
 const updateMutation = useUpdateRecipeMutation();
 const createVersionMutation = useCreateRecipeVersionMutation();
+const updateLatestVersionMutation = useUpdateRecipeVersionLatestMutation();
 
 const isValid = computed(() => isRecipeFormValid(model.value));
 
@@ -172,35 +176,45 @@ const isValid = computed(() => isRecipeFormValid(model.value));
 const previewRecipe = computed((): Recipe => {
   const m = model.value;
   const base = props.recipe?.recipe;
-  return (base
-    ? { ...base, title: m.title, subtitle: m.subtitle, description: m.description ?? null }
-    : {
-        id: "",
-        title: m.title,
-        subtitle: m.subtitle,
-        description: m.description ?? null,
-        createdBy: "",
-        createdAt: "",
-        updatedBy: "",
-        updatedAt: "",
-      }) as Recipe;
+  return (
+    base
+      ? {
+          ...base,
+          title: m.title,
+          subtitle: m.subtitle,
+          description: m.description ?? null,
+        }
+      : {
+          id: "",
+          title: m.title,
+          subtitle: m.subtitle,
+          description: m.description ?? null,
+          createdBy: "",
+          createdAt: "",
+          updatedBy: "",
+          updatedAt: "",
+        }
+  ) as Recipe;
 });
 
 /** Version shape for preview (form content). */
-const previewVersion = computed((): RecipeVersion =>
-  ({
-    id: "",
-    recipeId: props.recipe?.recipe.id ?? "",
-    content: content(),
-    isLatest: true,
-    createdBy: "",
-    createdAt: "",
-  }) as RecipeVersion,
+const previewVersion = computed(
+  (): RecipeVersion =>
+    ({
+      id: "",
+      recipeId: props.recipe?.recipe.id ?? "",
+      content: content(),
+      isLatest: true,
+      createdBy: "",
+      createdAt: "",
+    }) as RecipeVersion,
 );
 
 const editSaveLoading = computed(
   () =>
-    updateMutation.isPending.value || createVersionMutation.isPending.value,
+    updateMutation.isPending.value ||
+    createVersionMutation.isPending.value ||
+    updateLatestVersionMutation.isPending.value,
 );
 
 function content() {
@@ -224,20 +238,27 @@ async function handleCreate() {
   props.onSuccess?.(data.recipe.id);
 }
 
-async function handleEditCreatesNewVersion() {
+async function handleEditSave() {
   if (!props.recipe || !isValid.value) return;
-  const { recipe } = props.recipe;
+  const { recipe, currentVersion } = props.recipe;
   await updateMutation.mutateAsync({
     id: recipe.id,
     title: model.value.title,
     subtitle: model.value.subtitle,
     description: model.value.description ?? undefined,
   });
-  const version = await createVersionMutation.mutateAsync({
-    id: recipe.id,
-    ...content(),
-  });
-  void version;
+  const versionBody = content();
+  if (shouldSaveRecipeVersionInPlace(currentVersion.createdAt)) {
+    await updateLatestVersionMutation.mutateAsync({
+      id: recipe.id,
+      ...versionBody,
+    });
+  } else {
+    await createVersionMutation.mutateAsync({
+      id: recipe.id,
+      ...versionBody,
+    });
+  }
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
 }
@@ -248,7 +269,8 @@ async function handleEditCreatesNewVersion() {
   min-height: 50vh;
 }
 
-@media (min-width: 960px) {
+/* Vuetify md */
+@media (min-width: 840px) {
   .recipe-form__col-min {
     min-width: 400px;
   }
@@ -256,10 +278,5 @@ async function handleEditCreatesNewVersion() {
 
 .recipe-form__instructions-wrap {
   min-height: 0;
-}
-
-.recipe-form__instructions-field :deep(textarea) {
-  min-height: 100%;
-  height: 100% !important;
 }
 </style>

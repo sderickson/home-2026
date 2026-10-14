@@ -1,19 +1,5 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="pl-0 mb-2">
-      <v-breadcrumbs-item :to="appLinks.home.path">
-        {{ t(strings.breadcrumb_home) }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item :to="collectionDetailPath">
-        {{ collectionName }}
-      </v-breadcrumbs-item>
-      <v-breadcrumbs-divider />
-      <v-breadcrumbs-item disabled>
-        {{ t(strings.breadcrumb_new) }}
-      </v-breadcrumbs-item>
-    </v-breadcrumbs>
-
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
     <template v-if="!showForm">
@@ -33,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
@@ -69,7 +56,7 @@ const currentMember = computed(() =>
 const showForm = computed(() => canEditMenuForRole(currentMember.value?.role));
 
 const recipes = computed(() =>
-  (recipesQuery.data.value ?? []).map((r) => ({
+  (recipesQuery.data.value?.recipes ?? []).map((r) => ({
     id: r.id,
     title: r.title,
   })),
@@ -78,4 +65,9 @@ const recipes = computed(() =>
 const collectionDetailPath = computed(() =>
   constructPath(appLinks.collectionsDetail, { params: { collectionId } }),
 );
+
+useBreadcrumbs(() => [
+  { title: collectionName.value, to: collectionDetailPath.value },
+  { title: t(strings.breadcrumb_new) },
+]);
 </script>

@@ -1,0 +1,226 @@
+/* App-wide utility / layout classes that are not Vuetify component restyles
+ * (imported once via style-imports.ts — SPAs and VitePress).
+ *
+ * Prefer this file over <style> in Vue SFCs when a class should be reused
+ * product-wide. Restyling .v-* components belongs in vuetify-overrides.scss; Sass
+ * variables belong in vuetify-settings.scss (see those files for where
+ * Vuetify sources live under node_modules/vuetify/lib/…).
+ *
+ * Colors come from the Vuetify theme (recipes/clients/common/vuetify-config.ts)
+ * as `rgb(var(--v-theme-<name>))`.
+ */
+
+:root {
+  --font-title: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /* Shadow for paper on the kraft background (index cards, recipe card, rows). */
+  --paper-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.05), 0 10px 22px -18px rgba(40, 30, 10, 0.55);
+  --paper-shadow-raised:
+    0 2px 0 rgba(0, 0, 0, 0.04), 0 18px 30px -18px rgba(40, 30, 10, 0.5);
+}
+
+/* ---------- Type ---------- */
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Small uppercase mono heading above a group (e.g. "MENUS"). */
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-muted));
+}
+
+/* Red mono section label on a ruled card (INGREDIENTS / METHOD / NOTES).
+ * Exactly one ruled line tall; set --rule on the ruled container. */
+.section-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: var(--rule, 32px);
+  color: rgb(var(--v-theme-error));
+}
+
+/* ---------- Paper ---------- */
+
+.paper {
+  background: rgb(var(--v-theme-surface));
+  box-shadow: var(--paper-shadow);
+}
+
+/* Ruled-paper background. Text inside must use `line-height: var(--rule)` and
+ * vertical margins in multiples of it, or it drifts off the lines.
+ * One rule-tall tile repeated with background-size, not one long
+ * repeating-linear-gradient: some browsers (WebKit) accumulate rounding error
+ * along a repeating gradient, so the lines slowly creep away from the text. */
+.ruled-26,
+.ruled-32 {
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--rule) - 1px),
+    rgb(var(--v-theme-card-rule)) calc(var(--rule) - 1px)
+  );
+  background-size: 100% var(--rule);
+  /* Vuetify's reset sets background-repeat: no-repeat on every element. */
+  background-repeat: repeat-y;
+}
+
+.ruled-26 {
+  --rule: 26px;
+}
+
+.ruled-32 {
+  --rule: 32px;
+}
+
+/* A photo framed like a print: white border and a small shadow. */
+.photo-print {
+  display: block;
+  padding: 0;
+  border: 3px solid #fff;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+/* ---------- Print: repeating section headers ----------
+ * Browsers reprint a real <table>'s <thead> at the top of every page the table
+ * spans (CSS `display: table` on other elements does not get this). Markup:
+ *
+ *   <table class="print-repeat">
+ *     <caption class="print-repeat-title"><h2>Sides</h2></caption>
+ *     <thead class="print-cont-head" aria-hidden="true">
+ *       <tr><th><div>Sides (cont.)</div></th></tr>
+ *     </thead>
+ *     <tbody><tr><td>…</td></tr></tbody>
+ *   </table>
+ *
+ * On screen every part is a plain block and the "(cont.)" header is hidden, so
+ * it lays out like divs. In print it is a real table: the "(cont.)" header
+ * repeats on each page, and the caption (the real heading) covers the first
+ * copy, so page one reads "Sides" and later pages "Sides (cont.)". Style both
+ * headings with the same classes so they are the same height, and give the
+ * caption the background behind the section. */
+.print-repeat,
+.print-repeat > caption,
+.print-repeat > tbody,
+.print-repeat > tbody > tr,
+.print-repeat > tbody > tr > td {
+  display: block;
+}
+
+.print-repeat {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.print-repeat > caption,
+.print-repeat > tbody > tr > td,
+.print-repeat > thead > tr > th {
+  padding: 0;
+  text-align: inherit;
+  font-weight: inherit;
+}
+
+.print-repeat > .print-cont-head {
+  display: none;
+}
+
+@media print {
+  .print-repeat {
+    display: table;
+    position: relative;
+  }
+
+  .print-repeat > tbody {
+    display: table-row-group;
+  }
+
+  .print-repeat > tbody > tr {
+    display: table-row;
+    break-inside: avoid;
+  }
+
+  .print-repeat > tbody > tr > td,
+  .print-repeat > thead > tr > th {
+    display: table-cell;
+  }
+
+  .print-repeat > .print-cont-head {
+    display: table-header-group;
+  }
+
+  .print-repeat > .print-repeat-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background: #fff;
+  }
+}
+
+/* ---------- Print ---------- */
+/* Print just the page content: no app bar, drawers, dialogs or kraft background.
+ * Hide page-level controls with Vuetify's `d-print-none`. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body,
+  .v-application {
+    background: #fff !important;
+    /* Keep the red/blue rules and section colors instead of dropping backgrounds. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .v-app-bar,
+  .v-navigation-drawer,
+  .v-overlay-container,
+  .v-btn,
+  .v-btn-toggle {
+    display: none !important;
+  }
+
+  /* The app bar is gone, so drop the space Vuetify reserves for it. */
+  .v-main {
+    padding: 0 !important;
+  }
+
+  .v-main > .v-container {
+    padding: 0 !important;
+  }
+
+  /* Ruled paper that runs onto another page restarts its padding and rules at
+   * the top of that page. Otherwise the rules continue from page one while the
+   * text skips the unused space at the bottom of the page, and the text no
+   * longer sits on the lines. */
+  .ruled-26,
+  .ruled-32 {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Paper on white: shadows read as smudges in print. */
+  .paper,
+  .recipe-card {
+    box-shadow: none !important;
+  }
+}

@@ -62,7 +62,7 @@ describe("requireCollectionMembership (via list/create recipes)", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
+    expect(Array.isArray(response.body.recipes)).toBe(true);
   });
 
   it("returns 422 on create when collection does not exist", async () => {

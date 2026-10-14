@@ -26,6 +26,6 @@ export const filesUploadRecipesHandler = recipesHandler({
       downloadUrl: `https://picsum.photos/seed/${id}/800/600`,
     };
     mockRecipeFiles.push(fileInfo);
-    return fileInfo;
+    return { file: fileInfo };
   },
 });

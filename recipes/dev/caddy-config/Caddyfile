@@ -70,7 +70,7 @@ http://dev.docker.localhost {
 http://api.recipes.docker.localhost, http://api.docker.localhost {
 	import transport-security
 	import cors {$DOMAIN}
-	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
+	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors /recipes/*/shared /recipes/*/shared/files/*/blob /menus/*/shared
 	handle @public_monolith {
 		reverse_proxy monolith:3002 {
 			import reverse_proxy_common

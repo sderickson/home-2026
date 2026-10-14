@@ -39,6 +39,11 @@ listRecipes:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../../schemas/recipe.yaml"
+            type: object
+            required:
+              - recipes
+            properties:
+              recipes:
+                type: array
+                items:
+                  $ref: "../../schemas/recipe.yaml"

@@ -1,4 +1,18 @@
-// Keep in sync with recipes/clients/build/overrides.scss
+// Keep in sync with recipes/clients/build/vuetify-settings.scss
 @use "vuetify/settings" with (
-  $body-font-family: "Roboto"
+  $body-font-family: (
+    "IBM Plex Sans",
+    system-ui,
+    sans-serif,
+  ),
+  $heading-font-family: (
+    "IBM Plex Sans Condensed",
+    "IBM Plex Sans",
+    sans-serif,
+  ),
+  $rounded: (
+    "xs": 3px,
+    "sm": 6px,
+  ),
+  $button-height: 44px
 );

@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "getMenu",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/menus/{id}": {
+      "get": {
+        "summary": "Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required.",
+        "operationId": "getMenu",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Menu id."
+          },
+          {
+            "name": "collectionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Id of the collection (required for access)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu with groupings and flat array of full Recipe objects for every recipe in the menu's groupings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menu",
+                    "recipes"
+                  ],
+                  "properties": {
+                    "menu": {
+                      "$ref": "#/components/schemas/menu"
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      },
+                      "description": "Full Recipe objects for every recipe referenced in the menu's groupings (enough to render the menu)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - not a member of the collection or insufficient role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - menu does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "menu": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the menu (short id from generateShortId)",
+            "example": "K3m9_xR2"
+          },
+          "collectionId": {
+            "type": "string",
+            "description": "Id of the collection this menu belongs to",
+            "example": "my-kitchen"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the menu",
+            "example": "Weeknight Dinners",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the menu creator (short id)",
+            "example": "a1b2c3d4"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "User id of the last updater (short id)",
+            "example": "a1b2c3d4"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the menu was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "editedByUserIds": {
+            "type": "array",
+            "description": "User ids of everyone who has edited this menu (append on each edit)",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "a1b2c3d4",
+              "e5f6g7h8"
+            ]
+          },
+          "groupings": {
+            "type": "array",
+            "description": "Ordered categories; each has a name and ordered recipe ids (display order)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the grouping (e.g. appetizers, mains, desserts)",
+                  "example": "Mains",
+                  "minLength": 1
+                },
+                "recipeIds": {
+                  "type": "array",
+                  "description": "Recipe ids in this grouping, in display order",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "r1abc",
+                    "r2def"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "recipeIds"
+              ]
+            },
+            "example": [
+              {
+                "name": "Starters",
+                "recipeIds": [
+                  "r1abc"
+                ]
+              },
+              {
+                "name": "Mains",
+                "recipeIds": [
+                  "r2def",
+                  "r3ghi"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "name",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt",
+          "editedByUserIds",
+          "groupings"
+        ]
+      },
+      "recipe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the recipe",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Recipe title",
+            "example": "Classic Chocolate Chip Cookies"
+          },
+          "subtitle": {
+            "type": "string",
+            "description": "Subtitle shown on menus and list views",
+            "example": "Crispy edges, chewy centers"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional longer description shown on recipe detail (not on menu)",
+            "example": "A crowd-pleasing recipe that works every time. Best with room-temperature butter."
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User id of the creator",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was created",
+            "example": "2023-01-15T14:30:00Z"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "User id of the last updater",
+            "example": "a1b2c3d4-e89b-12d3-a456-426614174001"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recipe was last updated",
+            "example": "2023-02-01T09:00:00Z"
+          },
+          "currentVersionId": {
+            "type": "string",
+            "description": "Optional id of the current/latest version for display",
+            "example": "b2c3d4e5-e89b-12d3-a456-426614174002"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "createdBy",
+          "createdAt",
+          "updatedBy",
+          "updatedAt"
+        ]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A short, machine-readable error code, for when HTTP status codes are not sufficient."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error.",
+            "example": "The requested resource could not be found."
+          }
+        }
+      }
+    }
+  }
+}
