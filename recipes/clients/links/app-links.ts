@@ -42,5 +42,9 @@ export const appLinks: LinkMap = {
     subdomain,
     path: "/share/recipes/:id",
   },
+  shareMenus: {
+    subdomain,
+    path: "/share/menus/:id",
+  },
   // END WORKFLOW AREA
 };

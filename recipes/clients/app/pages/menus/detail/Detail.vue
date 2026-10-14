@@ -1,26 +1,18 @@
 <template>
   <v-container max-width="1240" class="menu-page pa-0">
     <div v-if="!isEditing" class="menu-page__bar d-print-none">
-      <v-btn-toggle
-        v-model="viewMode"
-        mandatory
-        variant="outlined"
-        divided
-        density="comfortable"
-        selected-class="menu-page__view--active"
-        class="menu-page__views"
-        :class="{ 'menu-page__views--block': !mdAndUp }"
-      >
-        <v-btn value="menu" prepend-icon="mdi-format-align-center">
-          {{ t(strings.view_mode_menu) }}
-        </v-btn>
-        <v-btn value="diner" prepend-icon="mdi-view-grid-outline">
-          {{ t(strings.view_mode_diner) }}
-        </v-btn>
-      </v-btn-toggle>
+      <MenuViewToggle v-model="viewMode" :block="!mdAndUp" />
 
-      <template v-if="showEdit">
-        <div v-if="mdAndUp" class="d-flex ga-2">
+      <div v-if="mdAndUp" class="d-flex ga-2">
+        <v-btn
+          variant="outlined"
+          prepend-icon="mdi-link-variant"
+          class="bg-surface"
+          @click="copyShareLink"
+        >
+          {{ t(strings.get_share_link) }}
+        </v-btn>
+        <template v-if="showEdit">
           <v-btn
             variant="outlined"
             prepend-icon="mdi-pencil-outline"
@@ -38,19 +30,26 @@
             :aria-label="t(strings.delete)"
             @click="deleteDialogOpen = true"
           />
-        </div>
-        <!-- Phones: actions live in an overflow menu in the app bar. -->
-        <Teleport v-else defer to="#app-bar-page-actions">
-          <v-menu location="bottom end">
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                icon="mdi-dots-vertical"
-                variant="text"
-                :aria-label="t(strings.more_actions)"
-              />
-            </template>
-            <v-list density="comfortable">
+        </template>
+      </div>
+      <!-- Phones: actions live in an overflow menu in the app bar. -->
+      <Teleport v-else defer to="#app-bar-page-actions">
+        <v-menu location="bottom end">
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              icon="mdi-dots-vertical"
+              variant="text"
+              :aria-label="t(strings.more_actions)"
+            />
+          </template>
+          <v-list density="comfortable">
+            <v-list-item
+              prepend-icon="mdi-link-variant"
+              :title="t(strings.get_share_link)"
+              @click="copyShareLink"
+            />
+            <template v-if="showEdit">
               <v-list-item
                 prepend-icon="mdi-pencil-outline"
                 :title="t(strings.edit)"
@@ -62,10 +61,10 @@
                 :title="t(strings.delete)"
                 @click="deleteDialogOpen = true"
               />
-            </v-list>
-          </v-menu>
-        </Teleport>
-      </template>
+            </template>
+          </v-list>
+        </v-menu>
+      </Teleport>
     </div>
 
     <MenuGroupingsDisplay
@@ -104,7 +103,8 @@ import { computed, ref, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useDisplay } from "vuetify";
 import { appLinks } from "@sderickson/recipes-links";
-import { constructPath } from "@saflib/links";
+import { constructPath, linkToHrefWithHost } from "@saflib/links";
+import { showInfo } from "@saflib/vue";
 import { menus_detail as strings } from "./Detail.strings.ts";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
@@ -115,6 +115,7 @@ import {
 import { kratosEmailFromSession } from "@saflib/ory-kratos-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import MenuGroupingsDisplay from "./MenuGroupingsDisplay.vue";
+import MenuViewToggle from "./MenuViewToggle.vue";
 import MenuEditForm from "./MenuEditForm.vue";
 import DeleteMenuDialog from "./DeleteMenuDialog.vue";
 
@@ -211,6 +212,14 @@ function removeGrouping(index: number) {
   editForm.groupings.splice(index, 1);
 }
 
+async function copyShareLink() {
+  const href = linkToHrefWithHost(appLinks.shareMenus, {
+    params: { id: menuId },
+  });
+  await navigator.clipboard.writeText(href);
+  showInfo(t(strings.link_copied));
+}
+
 function cancelEdit() {
   syncEditFormFromMenu();
   isEditing.value = false;
@@ -239,24 +248,5 @@ useBreadcrumbs(() => [
   .menu-page__bar {
     display: none !important;
   }
-}
-
-.menu-page__views {
-  background: rgb(var(--v-theme-surface));
-  border-color: rgb(var(--v-theme-outline));
-}
-
-.menu-page__views--block {
-  flex: 1 1 auto;
-}
-
-.menu-page__views--block .v-btn {
-  flex: 1 1 0;
-}
-
-.menu-page__view--active {
-  background: rgb(var(--v-theme-primary-tint));
-  color: rgb(var(--v-theme-primary));
-  font-weight: 600;
 }
 </style>

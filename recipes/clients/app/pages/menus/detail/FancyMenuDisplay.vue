@@ -5,7 +5,9 @@
   >
     <div class="fancy-menu__frame">
       <header class="fancy-menu__head">
-        <p class="fancy-menu__eyebrow font-mono">{{ collectionName }}</p>
+        <p v-if="collectionName" class="fancy-menu__eyebrow font-mono">
+          {{ collectionName }}
+        </p>
         <h1 class="fancy-menu__title font-title">{{ menuTitle }}</h1>
         <div class="fancy-menu__flourish" aria-hidden="true">
           <span class="fancy-menu__flourish-line" />
@@ -85,7 +87,8 @@ const props = defineProps<{
   subtextByRecipeId: Map<string, string>;
   recipeLink: (recipeId: string) => string;
   menuTitle: string;
-  collectionName: string;
+  /** Small caps line above the title; omitted on the public share page. */
+  collectionName?: string;
 }>();
 
 const { t } = useReverseT();

@@ -153,11 +153,14 @@ export async function sessionAsVerifiedAdmin(
 export type SharedRecipeSeed = {
   recipeId: string;
   fileId: string;
+  /** Menu in the same collection containing the recipe. */
+  menuId: string;
 };
 
 /**
- * Create a collection + recipe + file as a verified admin. Returns ids for
- * unauthenticated share-route probes (use Playwright `request`, not `page.request`).
+ * Create a collection + recipe + file + menu (with that recipe) as a verified
+ * admin. Returns ids for unauthenticated share-route probes (use Playwright
+ * `request`, not `page.request`).
  */
 export async function seedSharedRecipeWithFile(
   page: Page,
@@ -234,5 +237,19 @@ export async function seedSharedRecipeWithFile(
   ).toBe(200);
   const fileBody = (await fileRes.json()) as { file: { id: string } };
 
-  return { recipeId, fileId: fileBody.file.id };
+  const menuRes = await page.request.post(`${api}/menus`, {
+    data: {
+      collectionId,
+      name: `share probe menu ${stamp}`,
+      groupings: [{ name: "Mains", recipeIds: [recipeId] }],
+    },
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": csrf,
+    },
+  });
+  expect(menuRes.status(), `POST /menus: ${await menuRes.text()}`).toBe(200);
+  const menuBody = (await menuRes.json()) as { menu: { id: string } };
+
+  return { recipeId, fileId: fileBody.file.id, menuId: menuBody.menu.id };
 }

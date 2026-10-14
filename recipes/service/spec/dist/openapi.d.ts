@@ -272,6 +272,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/menus/{id}/shared": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Load a menu for the public share page by id (no auth).
+         * @description Returns the menu, every recipe in its groupings, those recipes' current versions, and their files, so the public share page can render both the menu and diner layouts in one request. Each file's downloadUrl is set by the handler to the shared recipe blob path (/recipes/{recipeId}/shared/files/{fileId}/blob), not the authenticated blob path. Groupings only list recipes that still exist.
+         */
+        get: operations["sharedGetMenus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes/{id}/shared": {
         parameters: {
             query?: never;
@@ -2518,6 +2538,46 @@ export interface operations {
                 };
             };
             /** @description Not found - menu or collection does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    sharedGetMenus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Menu id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Menu with its recipes, their current versions, and files for the public share page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        menu: components["schemas"]["menu"];
+                        /** @description Every recipe referenced in the menu's groupings. */
+                        recipes: components["schemas"]["recipe"][];
+                        /** @description Current version of each recipe in `recipes` (match on recipeId). */
+                        currentVersions: components["schemas"]["recipe-version"][];
+                        /** @description Files for every recipe in `recipes` (match on recipeId); empty array when none. downloadUrl points at the shared recipe blob path. */
+                        files: components["schemas"]["recipe-file-info"][];
+                    };
+                };
+            };
+            /** @description Not Found - no menu with that id. */
             404: {
                 headers: {
                     [name: string]: unknown;

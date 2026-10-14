@@ -13,4 +13,6 @@ export const menus_detail = {
   delete: "Delete",
   delete_confirm: "Delete this menu?",
   more_actions: "More actions",
+  get_share_link: "Get share link",
+  link_copied: "Link copied",
 };

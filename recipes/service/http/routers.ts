@@ -2,6 +2,7 @@ import type { Router } from "express";
 
 // BEGIN WORKFLOW AREA router-imports FOR express/add-handler
 import { createRecipesRouter } from "./handlers/recipes/index.ts";
+import { createMenusShareRouter } from "./handlers/menus/index.ts";
 
 
 // END WORKFLOW AREA
@@ -20,6 +21,7 @@ export function groupRouterMounts(): GroupRouterMount[] {
   return [
     // BEGIN WORKFLOW AREA router-mounts FOR express/add-handler
     { kind: "router", createRouter: createRecipesRouter },
+    { kind: "router", createRouter: createMenusShareRouter },
 
 
     // END WORKFLOW AREA

@@ -83,7 +83,7 @@
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
 	import transport-security
 	import cors {$CORS_ORIGIN_ALLOWLIST}
-	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors
+	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors /recipes/*/shared /recipes/*/shared/files/*/blob /menus/*/shared
 	handle @public_monolith {
 		reverse_proxy {$RECIPES_SERVICE_HTTP_HOST} {
 			import reverse_proxy_common

@@ -77,6 +77,9 @@ paths:
       $ref: "./routes/menus/update.yaml#/updateMenus"
     delete:
       $ref: "./routes/menus/delete.yaml#/deleteMenus"
+  /menus/{id}/shared:
+    get:
+      $ref: "./routes/menus/shared-get.yaml#/sharedGetMenus"
   /recipes/{id}/shared:
     get:
       $ref: "./routes/recipes/shared-get.yaml#/sharedGetRecipes"

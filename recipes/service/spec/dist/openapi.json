@@ -2240,6 +2240,81 @@
         }
       }
     },
+    "/menus/{id}/shared": {
+      "get": {
+        "summary": "Load a menu for the public share page by id (no auth).",
+        "description": "Returns the menu, every recipe in its groupings, those recipes' current versions, and their files, so the public share page can render both the menu and diner layouts in one request. Each file's downloadUrl is set by the handler to the shared recipe blob path (/recipes/{recipeId}/shared/files/{fileId}/blob), not the authenticated blob path. Groupings only list recipes that still exist.\n",
+        "operationId": "sharedGetMenus",
+        "tags": [
+          "no-auth"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Menu id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu with its recipes, their current versions, and files for the public share page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "menu",
+                    "recipes",
+                    "currentVersions",
+                    "files"
+                  ],
+                  "properties": {
+                    "menu": {
+                      "$ref": "#/components/schemas/menu"
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "description": "Every recipe referenced in the menu's groupings.",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    },
+                    "currentVersions": {
+                      "type": "array",
+                      "description": "Current version of each recipe in `recipes` (match on recipeId).",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-version"
+                      }
+                    },
+                    "files": {
+                      "type": "array",
+                      "description": "Files for every recipe in `recipes` (match on recipeId); empty array when none. downloadUrl points at the shared recipe blob path.",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-file-info"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - no menu with that id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recipes/{id}/shared": {
       "get": {
         "summary": "Load a recipe for the public share page by id (no auth).",
