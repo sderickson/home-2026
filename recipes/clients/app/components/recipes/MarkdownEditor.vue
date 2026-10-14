@@ -59,6 +59,8 @@ onMounted(async () => {
     .addFeature(blockEdit, {
       listGroup: { taskList: null },
       advancedGroup: null,
+      // The form card clips overflow; fixed positioning lets the menu escape it.
+      slashMenu: { floatingUIOptions: { strategy: "fixed" } },
     })
     .addFeature(listItem)
     .addFeature(linkTooltip)
@@ -146,6 +148,11 @@ onBeforeUnmount(() => {
   --crepe-shadow-2:
     0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
   height: 100%;
+}
+
+/* Pairs with the slash menu's floating-ui "fixed" strategy (see blockEdit config). */
+.markdown-editor__root :deep(.milkdown .milkdown-slash-menu) {
+  position: fixed;
 }
 
 /* Crepe's default page-style padding is too roomy for a form field;

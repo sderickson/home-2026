@@ -1,12 +1,12 @@
 import type { EmailService } from "@saflib/email-service";
 import type { SecretStore } from "@saflib/secret-store";
-import { resolveEmailServiceFromEnv } from "@saflib/vendors-brevo";
+import { configureEmail, createEmailService } from "@saflib/vendors-brevo";
 import { configureUnsplash } from "@sderickson/recipes-unsplash";
 import { configureSecretStore, getSecretStore } from "./secrets.ts";
 
 let initialized = false;
 
-/** Set in {@link initializeDependencies}. */
+/** Set in {@link initializeDependencies} using the `BREVO_API_KEY` secret. */
 let emailClient: EmailService | undefined;
 
 /**
@@ -14,8 +14,14 @@ let emailClient: EmailService | undefined;
  * {@link initializeDependencies} completes.
  */
 export function getEmailClient(): EmailService {
+  if (process.env.NODE_ENV === "test") {
+    return createEmailService("mock");
+  }
+
   if (!emailClient) {
-    emailClient = resolveEmailServiceFromEnv();
+    throw new Error(
+      "Email client not initialized. Call initializeDependencies() first.",
+    );
   }
   return emailClient;
 }
@@ -32,7 +38,7 @@ export async function initializeDependencies(): Promise<void> {
 
   configureSecretStore();
   const store: SecretStore = getSecretStore();
-  emailClient = resolveEmailServiceFromEnv();
+  emailClient = await configureEmail(store);
   await configureUnsplash(store);
 
   initialized = true;
