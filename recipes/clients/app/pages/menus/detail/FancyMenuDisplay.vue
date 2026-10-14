@@ -1,5 +1,8 @@
 <template>
-  <article class="fancy-menu paper" :class="{ 'fancy-menu--narrow': !smAndUp }">
+  <article
+    class="fancy-menu paper"
+    :class="{ 'fancy-menu--narrow': !smAndUp && !isPrinting }"
+  >
     <div class="fancy-menu__frame">
       <header class="fancy-menu__head">
         <p class="fancy-menu__eyebrow font-mono">{{ collectionName }}</p>
@@ -17,30 +20,53 @@
           :key="cIndex"
           class="fancy-menu__column"
         >
-          <section
+          <table
             v-for="gIndex in col"
             :key="gIndex"
-            class="fancy-menu__section"
+            class="fancy-menu__section print-repeat"
           >
-            <h2 class="fancy-menu__section-title font-mono">
-              {{ groupings[gIndex].name }}
-            </h2>
-            <ul class="fancy-menu__dishes">
-              <li v-for="recipeId in groupings[gIndex].recipeIds" :key="recipeId">
-                <router-link :to="recipeLink(recipeId)" class="fancy-menu__dish">
-                  <span class="fancy-menu__dish-name font-title">
-                    {{ recipeById.get(recipeId)?.title ?? recipeId }}
-                  </span>
-                  <span
-                    v-if="subtextByRecipeId.get(recipeId)"
-                    class="fancy-menu__dish-desc text-ink-2"
+            <caption class="print-repeat-title">
+              <h2 class="fancy-menu__section-title font-mono">
+                {{ groupings[gIndex].name }}
+              </h2>
+            </caption>
+            <thead class="print-cont-head" aria-hidden="true">
+              <tr>
+                <th>
+                  <div class="fancy-menu__section-title font-mono">
+                    {{
+                      t(strings.section_continued, {
+                        name: groupings[gIndex].name,
+                      })
+                    }}
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="fancy-menu__dishes">
+              <tr
+                v-for="recipeId in groupings[gIndex].recipeIds"
+                :key="recipeId"
+              >
+                <td>
+                  <router-link
+                    :to="recipeLink(recipeId)"
+                    class="fancy-menu__dish"
                   >
-                    {{ subtextByRecipeId.get(recipeId) }}
-                  </span>
-                </router-link>
-              </li>
-            </ul>
-          </section>
+                    <span class="fancy-menu__dish-name font-title">
+                      {{ recipeById.get(recipeId)?.title ?? recipeId }}
+                    </span>
+                    <span
+                      v-if="subtextByRecipeId.get(recipeId)"
+                      class="fancy-menu__dish-desc text-ink-2"
+                    >
+                      {{ subtextByRecipeId.get(recipeId) }}
+                    </span>
+                  </router-link>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -48,8 +74,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useDisplay } from "vuetify";
+import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
+import { menu_groupings_display as strings } from "./MenuGroupingsDisplay.strings.ts";
 
 const props = defineProps<{
   groupings: { name: string; recipeIds: string[] }[];
@@ -60,14 +88,28 @@ const props = defineProps<{
   collectionName: string;
 }>();
 
+const { t } = useReverseT();
 const { mdAndUp, smAndUp } = useDisplay();
 
-/** Columns by Vuetify breakpoint, capped at the number of sections. */
+/* Printed menus always use three columns, whatever the window width. */
+const isPrinting = ref(false);
+const startPrinting = () => (isPrinting.value = true);
+const stopPrinting = () => (isPrinting.value = false);
+onMounted(() => {
+  window.addEventListener("beforeprint", startPrinting);
+  window.addEventListener("afterprint", stopPrinting);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("beforeprint", startPrinting);
+  window.removeEventListener("afterprint", stopPrinting);
+});
+
+/** Columns by Vuetify breakpoint (three in print), capped at the number of sections. */
 const columnCount = computed(() => {
   const sectionCount = props.groupings.length;
   if (sectionCount <= 0) return 1;
   let maxByWidth = 1;
-  if (mdAndUp.value) maxByWidth = 3;
+  if (mdAndUp.value || isPrinting.value) maxByWidth = 3;
   else if (smAndUp.value) maxByWidth = 2;
   return Math.min(maxByWidth, sectionCount);
 });
@@ -194,13 +236,9 @@ const masonryColumns = computed(() =>
   color: rgb(var(--v-theme-error));
 }
 
-.fancy-menu__dishes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+/* Dish rows are table rows in print, so space them with cell padding, not gap. */
+.fancy-menu__dishes > tr + tr > td {
+  padding-top: 18px;
 }
 
 .fancy-menu__dish {
@@ -234,12 +272,15 @@ const masonryColumns = computed(() =>
     padding: 0;
   }
 
-  .fancy-menu__dishes li {
-    break-inside: avoid;
+  /* Draw the frame on every page the menu spans. */
+  .fancy-menu__frame {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
-  .fancy-menu__section-title {
-    break-after: avoid;
+  /* The heading's cover matches the paper. */
+  .fancy-menu__section > .print-repeat-title {
+    background: rgb(var(--v-theme-surface));
   }
 }
 
@@ -274,8 +315,8 @@ const masonryColumns = computed(() =>
   font-size: 13px;
 }
 
-.fancy-menu--narrow .fancy-menu__dishes {
-  gap: 14px;
+.fancy-menu--narrow .fancy-menu__dishes > tr + tr > td {
+  padding-top: 14px;
 }
 
 .fancy-menu--narrow .fancy-menu__dish-name {

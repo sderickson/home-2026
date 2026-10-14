@@ -12,52 +12,70 @@
       </p>
     </header>
 
-    <section
+    <table
       v-for="(grouping, gIndex) in groupings"
       :key="gIndex"
-      class="diner-menu__section"
+      class="diner-menu__section print-repeat"
     >
-      <h2 class="diner-menu__section-title font-title">
-        {{ grouping.name }}
-        <span class="diner-menu__count font-mono text-muted">
-          ({{ grouping.recipeIds.length }})
-        </span>
-      </h2>
-      <ul class="diner-menu__cards">
-        <li v-for="recipeId in grouping.recipeIds" :key="recipeId">
-          <v-card
-            :to="recipeLink(recipeId)"
-            :ripple="false"
-            class="diner-card paper"
-            link
-          >
-            <v-img
-              v-if="enrichmentByRecipeId.get(recipeId)?.firstImageUrl"
-              :src="enrichmentByRecipeId.get(recipeId)!.firstImageUrl!"
-              :alt="recipeById.get(recipeId)?.title ?? ''"
-              cover
-              class="diner-card__photo photo-print"
-            />
-            <span
-              v-else
-              class="diner-card__photo diner-card__photo--empty photo-print"
-              aria-hidden="true"
-            />
-            <span class="diner-card__text">
-              <span class="diner-card__title font-title">
-                {{ recipeById.get(recipeId)?.title ?? recipeId }}
-              </span>
-              <span
-                v-if="subtextByRecipeId.get(recipeId)"
-                class="diner-card__sub text-ink-2"
-              >
-                {{ subtextByRecipeId.get(recipeId) }}
-              </span>
-            </span>
-          </v-card>
-        </li>
-      </ul>
-    </section>
+      <caption class="print-repeat-title">
+        <h2 class="diner-menu__section-title font-title">
+          {{ grouping.name }}
+          <span class="diner-menu__count font-mono text-muted">
+            ({{ grouping.recipeIds.length }})
+          </span>
+        </h2>
+      </caption>
+      <thead class="print-cont-head" aria-hidden="true">
+        <tr>
+          <th>
+            <div class="diner-menu__section-title font-title">
+              {{ t(strings.section_continued, { name: grouping.name }) }}
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <ul class="diner-menu__cards">
+              <li v-for="recipeId in grouping.recipeIds" :key="recipeId">
+                <v-card
+                  :to="recipeLink(recipeId)"
+                  :ripple="false"
+                  class="diner-card paper"
+                  link
+                >
+                  <v-img
+                    v-if="enrichmentByRecipeId.get(recipeId)?.firstImageUrl"
+                    :src="enrichmentByRecipeId.get(recipeId)!.firstImageUrl!"
+                    :alt="recipeById.get(recipeId)?.title ?? ''"
+                    cover
+                    eager
+                    class="diner-card__photo photo-print"
+                  />
+                  <span
+                    v-else
+                    class="diner-card__photo diner-card__photo--empty photo-print"
+                    aria-hidden="true"
+                  />
+                  <span class="diner-card__text">
+                    <span class="diner-card__title font-title">
+                      {{ recipeById.get(recipeId)?.title ?? recipeId }}
+                    </span>
+                    <span
+                      v-if="subtextByRecipeId.get(recipeId)"
+                      class="diner-card__sub text-ink-2"
+                    >
+                      {{ subtextByRecipeId.get(recipeId) }}
+                    </span>
+                  </span>
+                </v-card>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -195,6 +213,12 @@ const recipeCount = computed(() =>
 }
 
 @media print {
+  /* The whole card grid is one table row; let it split across pages
+   * (cards themselves still stay whole). */
+  .diner-menu__section > tbody > tr {
+    break-inside: auto;
+  }
+
   .diner-card {
     break-inside: avoid;
     border: 1px solid rgb(var(--v-theme-outline-soft));

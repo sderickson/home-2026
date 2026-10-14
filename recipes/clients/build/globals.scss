@@ -96,6 +96,84 @@
   overflow: hidden;
 }
 
+/* ---------- Print: repeating section headers ----------
+ * Browsers reprint a real <table>'s <thead> at the top of every page the table
+ * spans (CSS `display: table` on other elements does not get this). Markup:
+ *
+ *   <table class="print-repeat">
+ *     <caption class="print-repeat-title"><h2>Sides</h2></caption>
+ *     <thead class="print-cont-head" aria-hidden="true">
+ *       <tr><th><div>Sides (cont.)</div></th></tr>
+ *     </thead>
+ *     <tbody><tr><td>…</td></tr></tbody>
+ *   </table>
+ *
+ * On screen every part is a plain block and the "(cont.)" header is hidden, so
+ * it lays out like divs. In print it is a real table: the "(cont.)" header
+ * repeats on each page, and the caption (the real heading) covers the first
+ * copy, so page one reads "Sides" and later pages "Sides (cont.)". Style both
+ * headings with the same classes so they are the same height, and give the
+ * caption the background behind the section. */
+.print-repeat,
+.print-repeat > caption,
+.print-repeat > tbody,
+.print-repeat > tbody > tr,
+.print-repeat > tbody > tr > td {
+  display: block;
+}
+
+.print-repeat {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.print-repeat > caption,
+.print-repeat > tbody > tr > td,
+.print-repeat > thead > tr > th {
+  padding: 0;
+  text-align: inherit;
+  font-weight: inherit;
+}
+
+.print-repeat > .print-cont-head {
+  display: none;
+}
+
+@media print {
+  .print-repeat {
+    display: table;
+    position: relative;
+  }
+
+  .print-repeat > tbody {
+    display: table-row-group;
+  }
+
+  .print-repeat > tbody > tr {
+    display: table-row;
+    break-inside: avoid;
+  }
+
+  .print-repeat > tbody > tr > td,
+  .print-repeat > thead > tr > th {
+    display: table-cell;
+  }
+
+  .print-repeat > .print-cont-head {
+    display: table-header-group;
+  }
+
+  .print-repeat > .print-repeat-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background: #fff;
+  }
+}
+
 /* ---------- Print ---------- */
 /* Print just the page content: no app bar, drawers, dialogs or kraft background.
  * Hide page-level controls with Vuetify's `d-print-none`. */
@@ -128,6 +206,16 @@
 
   .v-main > .v-container {
     padding: 0 !important;
+  }
+
+  /* Ruled paper that runs onto another page restarts its padding and rules at
+   * the top of that page. Otherwise the rules continue from page one while the
+   * text skips the unused space at the bottom of the page, and the text no
+   * longer sits on the lines. */
+  .ruled-26,
+  .ruled-32 {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 
   /* Paper on white: shadows read as smudges in print. */
