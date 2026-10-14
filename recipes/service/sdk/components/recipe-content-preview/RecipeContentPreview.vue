@@ -590,4 +590,20 @@ const renderedInstructions = computed(() =>
   position: static;
   transform: none;
 }
+
+@media print {
+  .rcp__ingredient-list li,
+  .rcp__instructions :deep(li),
+  .rcp__instructions :deep(p) {
+    break-inside: avoid;
+  }
+
+  .section-label {
+    break-after: avoid;
+  }
+
+  .rcp__print {
+    cursor: default;
+  }
+}
 </style>

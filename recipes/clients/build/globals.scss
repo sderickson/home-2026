@@ -95,3 +95,44 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   overflow: hidden;
 }
+
+/* ---------- Print ---------- */
+/* Print just the page content: no app bar, drawers, dialogs or kraft background.
+ * Hide page-level controls with Vuetify's `d-print-none`. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body,
+  .v-application {
+    background: #fff !important;
+    /* Keep the red/blue rules and section colors instead of dropping backgrounds. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .v-app-bar,
+  .v-navigation-drawer,
+  .v-overlay-container,
+  .v-btn,
+  .v-btn-toggle {
+    display: none !important;
+  }
+
+  /* The app bar is gone, so drop the space Vuetify reserves for it. */
+  .v-main {
+    padding: 0 !important;
+  }
+
+  .v-main > .v-container {
+    padding: 0 !important;
+  }
+
+  /* Paper on white: shadows read as smudges in print. */
+  .paper,
+  .recipe-card {
+    box-shadow: none !important;
+  }
+}

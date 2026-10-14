@@ -229,6 +229,20 @@ const masonryColumns = computed(() =>
   line-height: 1.4;
 }
 
+@media print {
+  .fancy-menu {
+    padding: 0;
+  }
+
+  .fancy-menu__dishes li {
+    break-inside: avoid;
+  }
+
+  .fancy-menu__section-title {
+    break-after: avoid;
+  }
+}
+
 /* Phones: one column, tighter frame and type. */
 .fancy-menu--narrow {
   padding: 10px;

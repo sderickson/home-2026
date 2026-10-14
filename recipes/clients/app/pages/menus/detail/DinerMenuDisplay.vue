@@ -194,6 +194,18 @@ const recipeCount = computed(() =>
   overflow: hidden;
 }
 
+@media print {
+  .diner-card {
+    break-inside: avoid;
+    border: 1px solid rgb(var(--v-theme-outline-soft));
+    border-top: 2px solid rgb(var(--v-theme-card-red-line));
+  }
+
+  .diner-menu__section-title {
+    break-after: avoid;
+  }
+}
+
 /* Phones: one card per row, a little larger. */
 .diner-menu--narrow .diner-menu__title {
   font-size: 32px;

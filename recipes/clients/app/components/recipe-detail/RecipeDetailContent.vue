@@ -16,6 +16,7 @@
                 v-bind="menuProps"
                 icon="mdi-dots-vertical"
                 variant="text"
+                class="d-print-none"
                 :aria-label="t(strings.recipe_actions)"
               />
             </template>
@@ -61,6 +62,7 @@
             icon="mdi-chevron-left"
             variant="text"
             size="x-small"
+            class="d-print-none"
             :disabled="!canStepOlder"
             :aria-label="t(strings.older_version)"
             @click="stepVersion(1)"
@@ -77,6 +79,7 @@
             icon="mdi-chevron-right"
             variant="text"
             size="x-small"
+            class="d-print-none"
             :disabled="isViewingLatest"
             :aria-label="t(strings.newer_version)"
             @click="stepVersion(-1)"

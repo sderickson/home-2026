@@ -1,6 +1,6 @@
 <template>
   <v-container max-width="1240" class="menu-page pa-0">
-    <div v-if="!isEditing" class="menu-page__bar">
+    <div v-if="!isEditing" class="menu-page__bar d-print-none">
       <v-btn-toggle
         v-model="viewMode"
         mandatory
@@ -233,6 +233,12 @@ useBreadcrumbs(() => [
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 24px;
+}
+
+@media print {
+  .menu-page__bar {
+    display: none !important;
+  }
 }
 
 .menu-page__views {
