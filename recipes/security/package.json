@@ -6,7 +6,7 @@
     "test:e2e": "playwright test",
     "test:e2e:canary": "playwright test --config test/playwright.canary.config.ts",
     "test:e2e:ui": "playwright test --ui",
-    "typecheck": "tsc -b"
+    "typecheck": "vue-tsc -b"
   },
   "dependencies": {
     "@saflib/ory-kratos-spa": "*",
