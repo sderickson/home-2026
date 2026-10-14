@@ -27,9 +27,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipes"
+                  ],
+                  "properties": {
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    }
                   }
                 }
               }
@@ -312,7 +320,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipe"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    }
+                  }
                 }
               }
             }
@@ -424,9 +440,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersions"
+                  ],
+                  "properties": {
+                    "recipeVersions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-version"
+                      }
+                    }
                   }
                 }
               }
@@ -495,7 +519,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersion"
+                  ],
+                  "properties": {
+                    "recipeVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    }
+                  }
                 }
               }
             }
@@ -565,7 +597,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersion"
+                  ],
+                  "properties": {
+                    "recipeVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    }
+                  }
                 }
               }
             }
@@ -627,9 +667,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "files"
+                  ],
+                  "properties": {
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe-file-info"
+                      }
+                    }
                   }
                 }
               }
@@ -707,7 +755,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/recipe-file-info"
+                    }
+                  }
                 }
               }
             }
@@ -990,7 +1046,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/recipe-file-info"
+                    }
+                  }
                 }
               }
             }

@@ -43,9 +43,9 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body).toHaveLength(1);
-    expect(response.body[0]).toMatchObject({
+    expect(Array.isArray(response.body.recipeVersions)).toBe(true);
+    expect(response.body.recipeVersions).toHaveLength(1);
+    expect(response.body.recipeVersions[0]).toMatchObject({
       recipeId,
       content: {
         ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
@@ -54,8 +54,8 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
       isLatest: true,
       createdBy: SEED_USER_ID,
     });
-    expect(response.body[0].id).toBeDefined();
-    expect(response.body[0].createdAt).toBeDefined();
+    expect(response.body.recipeVersions[0].id).toBeDefined();
+    expect(response.body.recipeVersions[0].createdAt).toBeDefined();
   });
 
   it("should return 401 when not authenticated", async () => {

@@ -35,7 +35,7 @@ describe("createRecipe", () => {
     const [mutation] = withVueQuery(() => useCreateRecipeMutation());
 
     await listQuery.refetch();
-    const countBefore = listQuery.data.value?.length ?? 0;
+    const countBefore = listQuery.data.value?.recipes?.length ?? 0;
 
     await mutation.mutateAsync({
       collectionId: "my-kitchen",
@@ -44,9 +44,13 @@ describe("createRecipe", () => {
     });
 
     await listQuery.refetch();
-    const countAfter = listQuery.data.value?.length ?? 0;
+    const countAfter = listQuery.data.value?.recipes?.length ?? 0;
     expect(countAfter).toBe(countBefore + 1);
-    expect(listQuery.data.value?.some((r) => r.title === "Cache Test Recipe")).toBe(true);
+    expect(
+      listQuery.data.value?.recipes?.some(
+        (r) => r.title === "Cache Test Recipe",
+      ),
+    ).toBe(true);
 
     app.unmount();
   });

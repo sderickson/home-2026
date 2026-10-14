@@ -55,8 +55,10 @@ const members = computed(() => queries.membersQuery.data.value?.members ?? []);
 const userEmail = computed(
   () => kratosEmailFromSession(queries.sessionQuery.data.value) ?? "",
 );
-const versions = computed(() => queries.versionsQuery.data.value ?? []);
-const files = computed(() => queries.filesQuery.data.value ?? []);
+const versions = computed(
+  () => queries.versionsQuery.data.value?.recipeVersions ?? [],
+);
+const files = computed(() => queries.filesQuery.data.value?.files ?? []);
 
 const collectionDetailPath = computed(() =>
   constructPath(appLinks.collectionsDetail, { params: { collectionId } }),

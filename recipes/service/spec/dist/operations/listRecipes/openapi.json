@@ -26,9 +26,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipes"
+                  ],
+                  "properties": {
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    }
                   }
                 }
               }

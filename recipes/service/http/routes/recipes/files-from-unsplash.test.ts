@@ -58,35 +58,37 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      recipeId,
-      fileOriginalName: "unsplash-mock-photo-id.jpg",
-      mimetype: "image/jpeg",
-      uploadedBy: SEED_USER_ID,
-      unsplashAttribution: {
-        photographerName: "Mock Photographer",
-        photographerProfileUrl: expect.stringContaining(
-          "unsplash.com/@mockphotographer",
-        ),
-        unsplashSourceUrl: expect.stringContaining("unsplash.com"),
+      file: {
+        recipeId,
+        fileOriginalName: "unsplash-mock-photo-id.jpg",
+        mimetype: "image/jpeg",
+        uploadedBy: SEED_USER_ID,
+        unsplashAttribution: {
+          photographerName: "Mock Photographer",
+          photographerProfileUrl: expect.stringContaining(
+            "unsplash.com/@mockphotographer",
+          ),
+          unsplashSourceUrl: expect.stringContaining("unsplash.com"),
+        },
       },
     });
-    expect(response.body.unsplashAttribution.photographerProfileUrl).toMatch(
+    expect(response.body.file.unsplashAttribution.photographerProfileUrl).toMatch(
       /utm_source=893198&utm_medium=referral/,
     );
-    expect(response.body.unsplashAttribution.unsplashSourceUrl).toMatch(
+    expect(response.body.file.unsplashAttribution.unsplashSourceUrl).toMatch(
       /utm_source=893198&utm_medium=referral/,
     );
-    expect(response.body.id).toBeDefined();
-    expect(response.body.blobName).toBeDefined();
-    expect(response.body.size).toBeGreaterThan(0);
-    expect(response.body.createdAt).toBeDefined();
-    expect(response.body.updatedAt).toBeDefined();
+    expect(response.body.file.id).toBeDefined();
+    expect(response.body.file.blobName).toBeDefined();
+    expect(response.body.file.size).toBeGreaterThan(0);
+    expect(response.body.file.createdAt).toBeDefined();
+    expect(response.body.file.updatedAt).toBeDefined();
 
     const listOut = await recipeFileQueries.listRecipeFile(dbKey, {
       recipeId,
     });
     expect(listOut.result).toHaveLength(1);
-    expect(listOut.result![0].id).toBe(response.body.id);
+    expect(listOut.result![0].id).toBe(response.body.file.id);
     expect(listOut.result![0].unsplash_user).not.toBeNull();
   });
 

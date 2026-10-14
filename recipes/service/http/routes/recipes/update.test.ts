@@ -46,13 +46,15 @@ describe("PUT /recipes/:id", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      id: recipeId,
-      title: updateBody.title,
-      subtitle: "Short",
-      createdBy: SEED_USER_ID,
-      updatedBy: SEED_USER_ID,
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
+      recipe: {
+        id: recipeId,
+        title: updateBody.title,
+        subtitle: "Short",
+        createdBy: SEED_USER_ID,
+        updatedBy: SEED_USER_ID,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
     });
   });
 

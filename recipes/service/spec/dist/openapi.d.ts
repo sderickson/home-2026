@@ -860,7 +860,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe"][];
+                    "application/json": {
+                        recipes: components["schemas"]["recipe"][];
+                    };
                 };
             };
             /** @description Bad request - collectionId is required. */
@@ -1062,7 +1064,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe"];
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1160,7 +1164,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-version"][];
+                    "application/json": {
+                        recipeVersions: components["schemas"]["recipe-version"][];
+                    };
                 };
             };
             /** @description Unauthorized - authentication required. */
@@ -1215,7 +1221,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-version"];
+                    "application/json": {
+                        recipeVersion: components["schemas"]["recipe-version"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1270,7 +1278,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-version"];
+                    "application/json": {
+                        recipeVersion: components["schemas"]["recipe-version"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1320,7 +1330,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-file-info"][];
+                    "application/json": {
+                        files: components["schemas"]["recipe-file-info"][];
+                    };
                 };
             };
             /** @description Unauthorized - authentication required. */
@@ -1380,7 +1392,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-file-info"];
+                    "application/json": {
+                        file: components["schemas"]["recipe-file-info"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1596,7 +1610,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-file-info"];
+                    "application/json": {
+                        file: components["schemas"]["recipe-file-info"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

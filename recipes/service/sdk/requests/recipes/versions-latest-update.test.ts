@@ -27,8 +27,10 @@ describe("updateRecipeVersionLatest", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.recipeId).toBe(recipeId);
-    expect(result.content.instructionsMarkdown).toBe("Updated instructions.");
+    expect(result.recipeVersion.recipeId).toBe(recipeId);
+    expect(result.recipeVersion.content.instructionsMarkdown).toBe(
+      "Updated instructions.",
+    );
     const version = mockRecipeVersions.find(
       (v) => v.recipeId === recipeId && v.isLatest,
     );

@@ -6,12 +6,12 @@ export const filesListRecipesHandler = recipesHandler({
   path: "/recipes/{id}/files",
   status: 200,
   handler: async ({ params }) => {
-    const list = mockRecipeFiles
+    const files = mockRecipeFiles
       .filter((f) => f.recipeId === params.id)
       .sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
-    return list;
+    return { files };
   },
 });

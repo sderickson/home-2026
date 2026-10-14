@@ -162,7 +162,7 @@ const menuRecipesForDisplay = computed(() =>
 );
 
 const recipesList = computed(() =>
-  (recipesQuery.data.value ?? []).map((r) => ({
+  (recipesQuery.data.value?.recipes ?? []).map((r) => ({
     id: r.id,
     title: r.title,
   })),

@@ -52,7 +52,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe"
+                  "type": "object",
+                  "required": [
+                    "recipe"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    }
+                  }
                 }
               }
             }

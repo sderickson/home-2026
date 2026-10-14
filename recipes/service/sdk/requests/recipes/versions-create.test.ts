@@ -29,13 +29,15 @@ describe("createRecipeVersion", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.recipeId).toBe(recipeId);
-    expect(result.isLatest).toBe(true);
-    expect(result.content.instructionsMarkdown).toBe("Step 1. Step 2.");
+    expect(result.recipeVersion.recipeId).toBe(recipeId);
+    expect(result.recipeVersion.isLatest).toBe(true);
+    expect(result.recipeVersion.content.instructionsMarkdown).toBe(
+      "Step 1. Step 2.",
+    );
     expect(
       mockRecipeVersions.filter((v) => v.recipeId === recipeId),
     ).toHaveLength(initialVersionCount + 1);
-    expect(mockRecipes[0].currentVersionId).toBe(result.id);
+    expect(mockRecipes[0].currentVersionId).toBe(result.recipeVersion.id);
 
     app.unmount();
   });
@@ -48,7 +50,7 @@ describe("createRecipeVersion", () => {
     const [mutation] = withVueQuery(() => useCreateRecipeVersionMutation());
 
     await versionsQuery.refetch();
-    const countBefore = versionsQuery.data.value?.length ?? 0;
+    const countBefore = versionsQuery.data.value?.recipeVersions?.length ?? 0;
 
     const result = await mutation.mutateAsync({
       id: recipeId,
@@ -57,13 +59,15 @@ describe("createRecipeVersion", () => {
     });
 
     await versionsQuery.refetch();
-    const countAfter = versionsQuery.data.value?.length ?? 0;
+    const countAfter = versionsQuery.data.value?.recipeVersions?.length ?? 0;
     expect(countAfter).toBe(countBefore + 1);
-    expect(versionsQuery.data.value?.some((v) => v.id === result.id)).toBe(
-      true,
-    );
     expect(
-      versionsQuery.data.value?.some(
+      versionsQuery.data.value?.recipeVersions?.some(
+        (v) => v.id === result.recipeVersion.id,
+      ),
+    ).toBe(true);
+    expect(
+      versionsQuery.data.value?.recipeVersions?.some(
         (v) => v.content.instructionsMarkdown === "Cache test version.",
       ),
     ).toBe(true);

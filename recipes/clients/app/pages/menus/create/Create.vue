@@ -56,7 +56,7 @@ const currentMember = computed(() =>
 const showForm = computed(() => canEditMenuForRole(currentMember.value?.role));
 
 const recipes = computed(() =>
-  (recipesQuery.data.value ?? []).map((r) => ({
+  (recipesQuery.data.value?.recipes ?? []).map((r) => ({
     id: r.id,
     title: r.title,
   })),

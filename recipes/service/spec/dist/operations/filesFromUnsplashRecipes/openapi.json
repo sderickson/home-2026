@@ -36,7 +36,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-file-info"
+                  "type": "object",
+                  "required": [
+                    "file"
+                  ],
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/recipe-file-info"
+                    }
+                  }
                 }
               }
             }

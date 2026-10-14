@@ -139,7 +139,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-file-info"][];
+                    "application/json": {
+                        files: components["schemas"]["recipe-file-info"][];
+                    };
                 };
             };
             /** @description Unauthorized - authentication required. */

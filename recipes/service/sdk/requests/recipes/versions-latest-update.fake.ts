@@ -18,6 +18,6 @@ export const versionsLatestUpdateRecipesHandler = recipesHandler({
       if (body.instructionsMarkdown !== undefined)
         version.content.instructionsMarkdown = body.instructionsMarkdown;
     }
-    return version;
+    return { recipeVersion: version };
   },
 });

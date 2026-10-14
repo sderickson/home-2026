@@ -18,10 +18,10 @@ describe("listRecipeVersions", () => {
 
     await query.refetch();
     expect(query.data.value).toBeDefined();
-    expect(Array.isArray(query.data.value)).toBe(true);
+    expect(Array.isArray(query.data.value?.recipeVersions)).toBe(true);
     const versions = mockRecipeVersions.filter((v) => v.recipeId === id);
-    expect(query.data.value).toHaveLength(versions.length);
-    expect(query.data.value?.[0]?.recipeId).toBe(id);
+    expect(query.data.value?.recipeVersions).toHaveLength(versions.length);
+    expect(query.data.value?.recipeVersions?.[0]?.recipeId).toBe(id);
 
     app.unmount();
   });
@@ -33,7 +33,7 @@ describe("listRecipeVersions", () => {
     );
 
     await query.refetch();
-    const data = query.data.value;
+    const data = query.data.value?.recipeVersions;
     expect(data).toBeDefined();
     expect(Array.isArray(data)).toBe(true);
     if ((data?.length ?? 0) > 0) {

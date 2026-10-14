@@ -30,7 +30,12 @@ filesUploadRecipes:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/recipe-file-info.yaml"
+            type: object
+            required:
+              - file
+            properties:
+              file:
+                $ref: "../../schemas/recipe-file-info.yaml"
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

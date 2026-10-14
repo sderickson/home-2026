@@ -59,7 +59,7 @@ const filesQueries = useQueries({
 const enrichedByIndex = computed(() =>
   props.recipes.map((_, i) => {
     const detail = detailQueries.value[i]?.data;
-    const files = filesQueries.value[i]?.data;
+    const files = filesQueries.value[i]?.data?.files;
     return getCardEnrichment(detail, files ?? undefined);
   }),
 );

@@ -200,7 +200,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-version"];
+                    "application/json": {
+                        recipeVersion: components["schemas"]["recipe-version"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

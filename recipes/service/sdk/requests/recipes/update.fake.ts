@@ -16,6 +16,6 @@ export const updateRecipesHandler = recipesHandler({
         recipe.description = body.description;
       recipe.updatedAt = new Date().toISOString();
     }
-    return recipe;
+    return { recipe };
   },
 });

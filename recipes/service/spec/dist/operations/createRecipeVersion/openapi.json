@@ -37,7 +37,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/recipe-version"
+                  "type": "object",
+                  "required": [
+                    "recipeVersion"
+                  ],
+                  "properties": {
+                    "recipeVersion": {
+                      "$ref": "#/components/schemas/recipe-version"
+                    }
+                  }
                 }
               }
             }

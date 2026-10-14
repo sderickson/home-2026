@@ -29,12 +29,12 @@ describe("filesListRecipes", () => {
 
     await query.refetch();
     expect(query.data.value).toBeDefined();
-    expect(Array.isArray(query.data.value)).toBe(true);
-    expect(query.data.value).toHaveLength(expectedFiles.length);
-    expect(query.data.value?.[0]?.fileOriginalName).toBe(
+    expect(Array.isArray(query.data.value?.files)).toBe(true);
+    expect(query.data.value?.files).toHaveLength(expectedFiles.length);
+    expect(query.data.value?.files?.[0]?.fileOriginalName).toBe(
       expectedFiles[0].fileOriginalName,
     );
-    expect(query.data.value?.[0]?.id).toBe(expectedFiles[0].id);
+    expect(query.data.value?.files?.[0]?.id).toBe(expectedFiles[0].id);
 
     app.unmount();
   });
@@ -46,7 +46,7 @@ describe("filesListRecipes", () => {
     );
 
     await query.refetch();
-    expect(query.data.value).toEqual([]);
+    expect(query.data.value).toEqual({ files: [] });
 
     app.unmount();
   });

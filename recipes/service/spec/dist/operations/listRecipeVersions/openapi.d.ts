@@ -142,7 +142,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-version"][];
+                    "application/json": {
+                        recipeVersions: components["schemas"]["recipe-version"][];
+                    };
                 };
             };
             /** @description Unauthorized - authentication required. */

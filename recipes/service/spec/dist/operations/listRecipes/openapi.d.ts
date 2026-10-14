@@ -110,7 +110,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe"][];
+                    "application/json": {
+                        recipes: components["schemas"]["recipe"][];
+                    };
                 };
             };
             /** @description Bad request - collectionId is required. */

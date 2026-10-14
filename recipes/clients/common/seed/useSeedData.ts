@@ -76,14 +76,11 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
       const existingRecipesRaw = await queryClient.fetchQuery(
         listRecipesQuery(collectionId),
       );
-      const existingRecipesList = Array.isArray(existingRecipesRaw)
-        ? existingRecipesRaw
-        : [];
+      const existingRecipesList = existingRecipesRaw?.recipes ?? [];
       const byTitle = new Map<string, { id: string }>();
       for (const recipe of existingRecipesList) {
-        const title = (recipe as { title?: string }).title;
-        if (title && !byTitle.has(title))
-          byTitle.set(title, { id: (recipe as { id: string }).id });
+        const title = recipe.title;
+        if (title && !byTitle.has(title)) byTitle.set(title, { id: recipe.id });
       }
 
       const createdRecipes: { id: string }[] = [];
@@ -118,7 +115,7 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           const files = await queryClient.fetchQuery(
             filesListRecipesQuery(recipeId),
           );
-          hasImage = Array.isArray(files) && files.length > 0;
+          hasImage = (files?.files?.length ?? 0) > 0;
         } catch {
           // ignore list errors; we'll try to add image
         }

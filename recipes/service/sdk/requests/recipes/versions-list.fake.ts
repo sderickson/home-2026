@@ -6,11 +6,13 @@ export const versionsListRecipesHandler = recipesHandler({
   path: "/recipes/{id}/versions",
   status: 200,
   handler: async ({ params, query: _query, body: _body }) => {
-    return mockRecipeVersions
-      .filter((v) => v.recipeId === params.id)
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
+    return {
+      recipeVersions: mockRecipeVersions
+        .filter((v) => v.recipeId === params.id)
+        .sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        ),
+    };
   },
 });

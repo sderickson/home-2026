@@ -42,14 +42,16 @@ describe("filesDeleteRecipes", () => {
     const [mutation] = withVueQuery(() => useFilesDeleteRecipesMutation());
 
     await filesQuery.refetch();
-    const countBefore = filesQuery.data.value?.length ?? 0;
+    const countBefore = filesQuery.data.value?.files?.length ?? 0;
 
     await mutation.mutateAsync({ recipeId, fileId });
 
     await filesQuery.refetch();
-    const countAfter = filesQuery.data.value?.length ?? 0;
+    const countAfter = filesQuery.data.value?.files?.length ?? 0;
     expect(countAfter).toBe(countBefore - 1);
-    expect(filesQuery.data.value?.some((f) => f.id === fileId)).toBe(false);
+    expect(
+      filesQuery.data.value?.files?.some((f) => f.id === fileId),
+    ).toBe(false);
 
     app.unmount();
   });

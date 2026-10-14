@@ -74,8 +74,10 @@ const firstImageUrlById = computed(() =>
   Object.fromEntries(
     props.recipes.map((r, i) => [
       r.id,
-      getCardEnrichment(undefined, filesQueries.value[i]?.data ?? undefined)
-        .firstImageUrl,
+      getCardEnrichment(
+        undefined,
+        filesQueries.value[i]?.data?.files ?? undefined,
+      ).firstImageUrl,
     ]),
   ),
 );

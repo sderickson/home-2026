@@ -30,8 +30,10 @@ export function canShowCreateRecipeForRole(role: string | undefined): boolean {
   return role === "owner" || role === "editor";
 }
 
-export function getRecipesList<T>(data: T[] | undefined): T[] {
-  return data ?? [];
+export function getRecipesList(
+  data: { recipes?: unknown[] } | undefined,
+): unknown[] {
+  return data?.recipes ?? [];
 }
 
 export function getMenusList(

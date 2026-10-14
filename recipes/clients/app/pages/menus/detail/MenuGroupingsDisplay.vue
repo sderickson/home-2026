@@ -93,7 +93,7 @@ const enrichmentByRecipeId = computed(() => {
   >();
   uniqueRecipeIds.value.forEach((id, i) => {
     const detail = detailQueries.value[i]?.data;
-    const files = filesQueries.value[i]?.data ?? undefined;
+    const files = filesQueries.value[i]?.data?.files ?? undefined;
     map.set(id, getCardEnrichment(detail, files ?? undefined));
   });
   return map;

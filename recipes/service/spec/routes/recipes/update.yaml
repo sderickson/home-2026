@@ -35,7 +35,12 @@ updateRecipe:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/recipe.yaml"
+            type: object
+            required:
+              - recipe
+            properties:
+              recipe:
+                $ref: "../../schemas/recipe.yaml"
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

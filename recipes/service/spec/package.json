@@ -7,9 +7,14 @@
   },
   "scripts": {
     "typecheck": "tsc",
-    "generate": "npm exec saf-specs generate"
+    "generate": "npm exec saf-specs generate",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@saflib/openapi": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
   }
 }

@@ -149,7 +149,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["recipe-file-info"];
+                    "application/json": {
+                        file: components["schemas"]["recipe-file-info"];
+                    };
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

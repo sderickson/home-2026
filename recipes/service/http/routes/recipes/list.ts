@@ -27,8 +27,9 @@ export const listRecipesHandler = createHandler(async (req, res) => {
     collectionId,
   });
 
-  const response: RecipesServiceResponseBody["listRecipes"][200] =
-    (result ?? []).map((row) => recipeToApiRecipe(row));
+  const response: RecipesServiceResponseBody["listRecipes"][200] = {
+    recipes: (result ?? []).map((row) => recipeToApiRecipe(row)),
+  };
 
   res.status(200).json(response);
 });
