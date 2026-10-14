@@ -3,6 +3,7 @@ import { filesListRecipesHandler } from "./files-list.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
+import { sharedGetRecipesHandler } from "./shared-get.fake.ts";
 // END WORKFLOW AREA
 
 // BEGIN WORKFLOW AREA mutation-handler-imports FOR sdk/add-mutation
@@ -23,6 +24,7 @@ export const recipesFakeHandlers = [
   getRecipeHandler,
   listRecipesHandler,
   versionsListRecipesHandler,
+  sharedGetRecipesHandler,
   // END WORKFLOW AREA
 
   // BEGIN WORKFLOW AREA mutation-handler-array FOR sdk/add-mutation
