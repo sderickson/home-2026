@@ -1,3 +1,6 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 // Required for downloadUrl to be a valid full URI (recipes API base from env).
 if (!process.env.PROTOCOL) process.env.PROTOCOL = "http";
 if (!process.env.DOMAIN) process.env.DOMAIN = "docker.localhost";
@@ -7,11 +10,7 @@ import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  recipeQueries,
-  recipeFileQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -24,7 +23,7 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Test Recipe",
       subtitle: "Short",
@@ -56,7 +55,7 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
   });
 
   it("should return 200 with files when recipe has files", async () => {
-    const { result: file } = await recipeFileQueries.insertRecipeFile(dbKey, {
+    const { result: file } = await insertRecipeFile(dbKey, {
       recipe_id: recipeId,
       blob_name: "recipes/recipe-id/file-id.pdf",
       file_original_name: "recipe.pdf",
@@ -101,7 +100,7 @@ describe("GET /recipes/:id/files (filesListRecipes)", () => {
   });
 
   it("should return 200 when member requests files for private recipe in collection", async () => {
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
       subtitle: "Private",

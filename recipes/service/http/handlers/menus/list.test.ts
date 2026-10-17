@@ -1,14 +1,13 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  collectionQueries,
-  collectionMemberQueries,
-  menuQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "../recipes/_test-helpers.ts";
 
@@ -48,13 +47,13 @@ describe("GET /menus", () => {
   });
 
   it("should return 200 with all menus when caller is owner", async () => {
-    await menuQueries.createMenu(dbKey, {
+    await createMenu(dbKey, {
       collectionId,
       name: "First",
       createdBy: SEED_USER_ID,
       groupings: [],
     });
-    await menuQueries.createMenu(dbKey, {
+    await createMenu(dbKey, {
       collectionId,
       name: "Second",
       createdBy: SEED_USER_ID,
@@ -74,23 +73,23 @@ describe("GET /menus", () => {
 
   it("should return 200 with all menus when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(dbKey, {
+    const { result: ownerColl } = await createCollection(dbKey, {
       name: "Owner Collection",
       creatorEmail: "owner@example.com",
     });
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: viewerEmail,
       role: "viewer",
     });
-    await menuQueries.createMenu(dbKey, {
+    await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "First",
       createdBy: "owner@example.com",
       groupings: [],
     });
-    await menuQueries.createMenu(dbKey, {
+    await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Second",
       createdBy: "owner@example.com",
@@ -117,7 +116,7 @@ describe("GET /menus", () => {
   });
 
   it("should return 403 when collectionId provided and caller is not a member", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(dbKey, {
+    const { result: otherColl } = await createCollection(dbKey, {
       name: "Other",
       creatorEmail: "other@example.com",
     });

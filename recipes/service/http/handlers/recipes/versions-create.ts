@@ -1,3 +1,5 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { CreateVersionRecipeError, createVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-version";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -6,7 +8,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { createVersionResultToCreateRecipeVersionResponse } from "./_helpers.ts";
 
@@ -21,7 +23,7 @@ export const versionsCreateRecipesHandler = createHandler(
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
-    const { result, error } = await recipeQueries.createVersionRecipe(
+    const { result, error } = await createVersionRecipe(
       recipesDbKey,
       {
         recipeId: id,

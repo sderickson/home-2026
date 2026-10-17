@@ -1,3 +1,4 @@
+import { updateMenu } from "@sderickson/recipes-db/queries/menu/update";
 import { afterEach, describe, it, expect } from "vitest";
 import { useUpdateMenuMutation } from "./update.ts";
 import { listMenusQuery } from "./list.ts";

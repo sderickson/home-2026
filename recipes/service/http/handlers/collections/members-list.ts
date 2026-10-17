@@ -1,12 +1,11 @@
+import { CollectionMemberNotFoundError, CollectionNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByCollectionAndEmailCollectionMember } from "@sderickson/recipes-db/queries/collection-member/get-by-collection-and-email";
+import { listCollectionMember } from "@sderickson/recipes-db/queries/collection-member/list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import {
-  collectionMemberQueries,
-  CollectionMemberNotFoundError,
-  CollectionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { membersListResultToMembersListCollectionsResponse } from "./_helpers.ts";
 
@@ -23,7 +22,7 @@ export const membersListCollectionsHandler = createHandler(async (req, res) => {
     (auth as { emailVerified?: boolean }).emailVerified !== false;
 
   const { result: member, error: memberError } =
-    await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
+    await getByCollectionAndEmailCollectionMember(
       recipesDbKey,
       { collectionId: id, email: userEmail },
     );
@@ -42,7 +41,7 @@ export const membersListCollectionsHandler = createHandler(async (req, res) => {
   }
 
   const { result, error } =
-    await collectionMemberQueries.listCollectionMember(recipesDbKey, {
+    await listCollectionMember(recipesDbKey, {
       collectionId: id,
     });
 

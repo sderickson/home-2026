@@ -1,9 +1,6 @@
+import { CollectionEntity, CollectionMemberEntity, MenuEntity } from "@sderickson/recipes-db/types";
 // Shared mappers between database models and API response types.
-import type {
-  CollectionEntity,
-  CollectionMemberEntity,
-  MenuEntity,
-} from "@sderickson/recipes-db";
+
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { menuToApiMenu } from "../menus/_helpers.ts";
 

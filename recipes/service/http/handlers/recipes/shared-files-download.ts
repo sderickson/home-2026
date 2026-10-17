@@ -1,3 +1,5 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import {
@@ -5,10 +7,7 @@ import {
   PathTraversalError,
   StorageError,
 } from "@saflib/object-store";
-import {
-  recipeFileQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 
 export const sharedFilesDownloadRecipesHandler = createHandler(
@@ -19,7 +18,7 @@ export const sharedFilesDownloadRecipesHandler = createHandler(
     const id = req.params.id as string;
     const fileId = req.params.fileId as string;
 
-    const listOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    const listOut = await listRecipeFile(recipesDbKey, {
       recipeId: id,
     });
     if (listOut.error) {

@@ -1,3 +1,6 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { Readable } from "stream";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
@@ -5,11 +8,7 @@ import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { createObjectStore } from "@saflib/object-store";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  recipeQueries,
-  recipeFileQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -25,7 +24,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     container = createObjectStore({ type: "test" });
     dbKey = recipesDb.connect();
     collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Test Recipe",
       subtitle: "Short",
@@ -40,7 +39,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
     recipeId = result.recipe.id;
 
-    const insertOut = await recipeFileQueries.insertRecipeFile(dbKey, {
+    const insertOut = await insertRecipeFile(dbKey, {
       recipe_id: recipeId,
       blob_name: `recipes/${recipeId}/test-blob.pdf`,
       file_original_name: "test-doc.pdf",
@@ -82,7 +81,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   });
 
   it("should return 200 when admin downloads file from private recipe", async () => {
-    const { result: privateResult } = await recipeQueries.createWithVersionRecipe(
+    const { result: privateResult } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -96,7 +95,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     );
     if (!privateResult) throw new Error("Expected createWithVersionRecipe to return result");
     const privateRecipeId = privateResult.recipe.id;
-    const privFile = await recipeFileQueries.insertRecipeFile(dbKey, {
+    const privFile = await insertRecipeFile(dbKey, {
       recipe_id: privateRecipeId,
       blob_name: `recipes/${privateRecipeId}/priv.pdf`,
       file_original_name: "priv.pdf",
@@ -152,7 +151,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
   });
 
   it("should return 200 when member requests file from private recipe in collection", async () => {
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Private Recipe",
       subtitle: "Private",
@@ -163,7 +162,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     });
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
     const privateRecipeId = result.recipe.id;
-    const privFile = await recipeFileQueries.insertRecipeFile(dbKey, {
+    const privFile = await insertRecipeFile(dbKey, {
       recipe_id: privateRecipeId,
       blob_name: `recipes/${privateRecipeId}/priv.pdf`,
       file_original_name: "priv.pdf",

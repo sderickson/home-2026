@@ -1,3 +1,5 @@
+import { RecipeVersionNotFoundError } from "@sderickson/recipes-db/errors";
+import { UpdateLatestVersionRecipeError, updateLatestVersionRecipe } from "@sderickson/recipes-db/queries/recipe/update-latest-version";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,10 +7,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  recipeQueries,
-  RecipeVersionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { updateLatestVersionResultToUpdateRecipeVersionLatestResponse } from "./_helpers.ts";
@@ -24,7 +23,7 @@ export const versionsLatestUpdateRecipesHandler = createHandler(
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
-    const { result, error } = await recipeQueries.updateLatestVersionRecipe(
+    const { result, error } = await updateLatestVersionRecipe(
       recipesDbKey,
       { recipeId: id, content: data },
     );

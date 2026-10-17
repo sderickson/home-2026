@@ -1,14 +1,13 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  collectionQueries,
-  collectionMemberQueries,
-  recipeQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import {
   createTestCollection,
@@ -57,7 +56,7 @@ describe("POST /menus", () => {
   });
 
   it("should return 200 with menu including groupings when recipes in same collection", async () => {
-    const { result: recipe1 } = await recipeQueries.createWithVersionRecipe(
+    const { result: recipe1 } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -69,7 +68,7 @@ describe("POST /menus", () => {
         versionContent: { ingredients: [], instructionsMarkdown: "" },
       },
     );
-    const { result: recipe2 } = await recipeQueries.createWithVersionRecipe(
+    const { result: recipe2 } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -144,7 +143,7 @@ describe("POST /menus", () => {
   });
 
   it("should return 400 when recipeId in groupings belongs to different collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -152,14 +151,14 @@ describe("POST /menus", () => {
       },
     );
     expect(otherColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: otherColl!.id,
       email: SEED_USER_ID,
       role: "editor",
     });
 
     const { result: recipeInMyCollection } =
-      await recipeQueries.createWithVersionRecipe(dbKey, {
+      await createWithVersionRecipe(dbKey, {
         collectionId,
         title: "Mine",
         subtitle: "Mine",
@@ -199,7 +198,7 @@ describe("POST /menus", () => {
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -222,7 +221,7 @@ describe("POST /menus", () => {
 
   it("should return 403 when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -230,7 +229,7 @@ describe("POST /menus", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: viewerEmail,
       role: "viewer",

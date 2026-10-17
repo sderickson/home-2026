@@ -1,10 +1,11 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
 import { AsyncLocalStorage } from "async_hooks";
 import type { DbKey } from "@saflib/drizzle";
 // BEGIN SORTED WORKFLOW AREA storeImports FOR service/add-store
 import type { ObjectStore } from "@saflib/object-store";
 import { createObjectStore } from "@saflib/object-store";
 // END WORKFLOW AREA
-import { recipesDb } from "@sderickson/recipes-db";
+
 import path from "path";
 import fs from "fs";
 

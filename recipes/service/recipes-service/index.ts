@@ -1,8 +1,10 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { fixTextTimestamps } from "@sderickson/recipes-db/startup/fix-text-timestamps";
 import { startExpressServer } from "@saflib/express";
 import { createJobsApp, makeCronEnqueuer } from "@saflib/jobs-http";
 import { makeSubsystemReporters } from "@saflib/node";
 import { runRecipesCron } from "@sderickson/recipes-cron";
-import { fixTextTimestamps, recipesDb } from "@sderickson/recipes-db";
+
 import { createRecipesHttpApp } from "@sderickson/recipes-http";
 import {
   getRecipesJobsDbKey,

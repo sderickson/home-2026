@@ -1,3 +1,7 @@
+import { MenuNotFoundError, RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByIdMenu } from "@sderickson/recipes-db/queries/menu/get-by-id";
+import { updateMenu } from "@sderickson/recipes-db/queries/menu/update";
+import { getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,12 +9,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  menuQueries,
-  recipeQueries,
-  MenuNotFoundError,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
 import { updateMenuResultToUpdateMenuResponse } from "./_helpers.ts";
@@ -48,7 +47,7 @@ export const updateMenuHandler = createHandler(async (req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
   const userId = auth.userId;
 
-  const { result: menu, error: menuError } = await menuQueries.getByIdMenu(
+  const { result: menu, error: menuError } = await getByIdMenu(
     recipesDbKey,
     id,
   );
@@ -74,7 +73,7 @@ export const updateMenuHandler = createHandler(async (req, res) => {
   const recipeIds = recipeIdsFromGroupings(groupings);
 
   for (const recipeId of recipeIds) {
-    const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
+    const out = await getByIdRecipe(recipesDbKey, recipeId);
     if (out.error) {
       switch (true) {
         case out.error instanceof RecipeNotFoundError:
@@ -101,7 +100,7 @@ export const updateMenuHandler = createHandler(async (req, res) => {
     : [...menu!.editedByUserIds, userId];
 
   const { result: updated, error: updateError } =
-    await menuQueries.updateMenu(recipesDbKey, {
+    await updateMenu(recipesDbKey, {
       id,
       name: data.name ?? "",
       groupings,

@@ -1,3 +1,7 @@
+import { CollectionMemberNotFoundError, CollectionNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByCollectionAndEmailCollectionMember } from "@sderickson/recipes-db/queries/collection-member/get-by-collection-and-email";
+import { listCollectionMember } from "@sderickson/recipes-db/queries/collection-member/list";
+import { updateRoleCollectionMember } from "@sderickson/recipes-db/queries/collection-member/update-role";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,11 +9,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  collectionMemberQueries,
-  CollectionMemberNotFoundError,
-  CollectionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { updateRoleCollectionMemberResultToMembersUpdateCollectionsResponse } from "./_helpers.ts";
 
@@ -27,7 +27,7 @@ export const membersUpdateCollectionsHandler = createHandler(async (req, res) =>
     req.body ?? {};
 
   const { result: callerMember, error: memberError } =
-    await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
+    await getByCollectionAndEmailCollectionMember(
       recipesDbKey,
       { collectionId: id, email: userEmail },
     );
@@ -46,7 +46,7 @@ export const membersUpdateCollectionsHandler = createHandler(async (req, res) =>
   }
 
   const { result: members, error: listError } =
-    await collectionMemberQueries.listCollectionMember(recipesDbKey, {
+    await listCollectionMember(recipesDbKey, {
       collectionId: id,
     });
 
@@ -71,7 +71,7 @@ export const membersUpdateCollectionsHandler = createHandler(async (req, res) =>
   }
 
   const { result, error } =
-    await collectionMemberQueries.updateRoleCollectionMember(recipesDbKey, {
+    await updateRoleCollectionMember(recipesDbKey, {
       id: memberId,
       role: data.role,
     });

@@ -1,3 +1,4 @@
+import { listRecipes } from "@sderickson/recipes-db/queries/recipe/list";
 import { afterEach, describe, it, expect } from "vitest";
 import { listRecipesQuery } from "./list.ts";
 import { recipesServiceFakeHandlers } from "../../fakes.ts";

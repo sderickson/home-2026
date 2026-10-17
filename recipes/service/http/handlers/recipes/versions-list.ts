@@ -1,7 +1,9 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { VersionsListRecipeError, versionsListRecipe } from "@sderickson/recipes-db/queries/recipe/versions-list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { versionsListResultToListRecipeVersionsResponse } from "./_helpers.ts";
@@ -14,7 +16,7 @@ export const versionsListRecipesHandler = createHandler(
     const id = req.params.id as string;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: false });
 
-    const out = await recipeQueries.versionsListRecipe(recipesDbKey, id);
+    const out = await versionsListRecipe(recipesDbKey, id);
 
     if (out.error) {
       const error: VersionsListRecipeError = out.error;

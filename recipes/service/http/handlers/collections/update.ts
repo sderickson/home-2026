@@ -1,3 +1,6 @@
+import { CollectionMemberNotFoundError, CollectionNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByCollectionAndEmailCollectionMember } from "@sderickson/recipes-db/queries/collection-member/get-by-collection-and-email";
+import { updateCollection } from "@sderickson/recipes-db/queries/collection/update";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,12 +8,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-  CollectionMemberNotFoundError,
-  CollectionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { updateCollectionResultToUpdateCollectionsResponse } from "./_helpers.ts";
 
@@ -26,7 +24,7 @@ export const updateCollectionsHandler = createHandler(async (req, res) => {
   const data: RecipesServiceRequestBody["updateCollections"] = req.body ?? {};
 
   const { result: member, error: memberError } =
-    await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
+    await getByCollectionAndEmailCollectionMember(
       recipesDbKey,
       { collectionId: id, email: userEmail },
     );
@@ -44,7 +42,7 @@ export const updateCollectionsHandler = createHandler(async (req, res) => {
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 
-  const { result, error } = await collectionQueries.updateCollection(
+  const { result, error } = await updateCollection(
     recipesDbKey,
     { id, name: data.name },
   );

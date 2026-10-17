@@ -1,12 +1,10 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
+import { type DeleteRecipeError, deleteRecipe } from "@sderickson/recipes-db/queries/recipe/delete";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
-import {
-  recipeQueries,
-  recipeFileQueries,
-  RecipeNotFoundError,
-  type DeleteRecipeError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { deleteRecipeResultToDeleteRecipeResponse } from "./_helpers.ts";
@@ -20,14 +18,14 @@ export const deleteRecipeHandler = createHandler(
 
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
-    const filesListOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    const filesListOut = await listRecipeFile(recipesDbKey, {
       recipeId: id,
     });
 
     for (const file of filesListOut.result ?? []) {
       await recipesFileContainer.deleteFile(file.blob_name);
     }
-    const { result, error } = await recipeQueries.deleteRecipe(recipesDbKey, id);
+    const { result, error } = await deleteRecipe(recipesDbKey, id);
 
     if (error) {
       const err: DeleteRecipeError = error;

@@ -1,3 +1,5 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import {
@@ -5,10 +7,7 @@ import {
   PathTraversalError,
   StorageError,
 } from "@saflib/object-store";
-import {
-  recipeFileQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 
@@ -21,7 +20,7 @@ export const filesDownloadRecipesHandler = createHandler(
     const fileId = req.params.fileId as string;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: false });
 
-    const listOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    const listOut = await listRecipeFile(recipesDbKey, {
       recipeId: id,
     });
     if (listOut.error) {

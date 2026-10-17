@@ -1,13 +1,13 @@
+import { listByCollectionIdsCollectionMember } from "@sderickson/recipes-db/queries/collection-member/list-by-collection-ids";
+import { listByEmailCollection } from "@sderickson/recipes-db/queries/collection/list-by-email";
+import { listByCollectionIdMenu } from "@sderickson/recipes-db/queries/menu/list-by-collection-id";
+import { MenuEntity } from "@sderickson/recipes-db/types";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import type { MenuEntity } from "@sderickson/recipes-db";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-  menuQueries,
-} from "@sderickson/recipes-db";
+
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { collectionsListResultToListCollectionsResponse } from "./_helpers.ts";
 
@@ -22,7 +22,7 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
   const emailValidated =
     (auth as { emailVerified?: boolean }).emailVerified !== false;
 
-  const { result } = await collectionQueries.listByEmailCollection(
+  const { result } = await listByEmailCollection(
     recipesDbKey,
     { email },
   );
@@ -32,7 +32,7 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
   const collectionIds = visible.map((row) => row.id);
 
   const { result: memberRows } =
-    await collectionMemberQueries.listByCollectionIdsCollectionMember(
+    await listByCollectionIdsCollectionMember(
       recipesDbKey,
       { collectionIds },
     );
@@ -41,7 +41,7 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
 
   const allMenuRows: MenuEntity[] = [];
   for (const collectionId of collectionIds) {
-    const { result: menuRows } = await menuQueries.listByCollectionIdMenu(
+    const { result: menuRows } = await listByCollectionIdMenu(
       recipesDbKey,
       { collectionId },
     );

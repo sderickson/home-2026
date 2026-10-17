@@ -1,10 +1,9 @@
+import { CollectionNotFoundError } from "@sderickson/recipes-db/errors";
+import { listByCollectionIdMenu } from "@sderickson/recipes-db/queries/menu/list-by-collection-id";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import {
-  menuQueries,
-  CollectionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
 import { listMenusResultToListMenusResponse } from "./_helpers.ts";
@@ -27,7 +26,7 @@ export const listMenusHandler = createHandler(async (req, res) => {
 
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
-  const { result, error } = await menuQueries.listByCollectionIdMenu(
+  const { result, error } = await listByCollectionIdMenu(
     recipesDbKey,
     { collectionId },
   );

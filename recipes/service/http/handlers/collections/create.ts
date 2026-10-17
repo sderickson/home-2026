@@ -1,3 +1,4 @@
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,7 +6,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import { collectionQueries } from "@sderickson/recipes-db";
+
 import {
   isRecipesAdminEmail,
   recipesServiceStorage,
@@ -22,7 +23,7 @@ export const createCollectionsHandler = createHandler(async (req, res) => {
   }
 
   const data: RecipesServiceRequestBody["createCollections"] = req.body ?? {};
-  const { result, error } = await collectionQueries.createCollection(
+  const { result, error } = await createCollection(
     recipesDbKey,
     {
       name: data.name,

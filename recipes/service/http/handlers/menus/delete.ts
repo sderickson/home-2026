@@ -1,10 +1,10 @@
+import { MenuNotFoundError } from "@sderickson/recipes-db/errors";
+import { deleteMenu } from "@sderickson/recipes-db/queries/menu/delete";
+import { getByIdMenu } from "@sderickson/recipes-db/queries/menu/get-by-id";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
-import {
-  menuQueries,
-  MenuNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
 import { deleteMenuResultToDeleteMenuResponse } from "./_helpers.ts";
@@ -26,7 +26,7 @@ export const deleteMenuHandler = createHandler(async (req, res) => {
 
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
 
-  const { result: menu, error: menuError } = await menuQueries.getByIdMenu(
+  const { result: menu, error: menuError } = await getByIdMenu(
     recipesDbKey,
     id,
   );
@@ -50,7 +50,7 @@ export const deleteMenuHandler = createHandler(async (req, res) => {
     requireMutate: true,
   });
 
-  const { result, error: deleteError } = await menuQueries.deleteMenu(
+  const { result, error: deleteError } = await deleteMenu(
     recipesDbKey,
     id,
   );

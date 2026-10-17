@@ -1,14 +1,14 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
-import {
-  collectionQueries,
-  menuQueries,
-} from "@sderickson/recipes-db";
+
 
 const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const SEED_USER_EMAIL = "list-collections@example.com";
@@ -41,7 +41,7 @@ describe("GET /collections", () => {
 
   it("should return 200 with collections when authenticated and user is member", async () => {
     const { result: created, error: createError } =
-      await collectionQueries.createCollection(dbKey, {
+      await createCollection(dbKey, {
         id: "my-kitchen",
         name: "My Kitchen",
         creatorEmail: SEED_USER_EMAIL,
@@ -69,7 +69,7 @@ describe("GET /collections", () => {
 
   it("should return menus for collections when authenticated and collection has menus", async () => {
     const { result: created, error: createError } =
-      await collectionQueries.createCollection(dbKey, {
+      await createCollection(dbKey, {
         id: "with-menus",
         name: "With Menus",
         creatorEmail: SEED_USER_EMAIL,
@@ -78,7 +78,7 @@ describe("GET /collections", () => {
     expect(created).toBeDefined();
 
     const { result: menuResult, error: menuError } =
-      await menuQueries.createMenu(dbKey, {
+      await createMenu(dbKey, {
         collectionId: "with-menus",
         name: "Weeknight Dinners",
         createdBy: SEED_USER_EMAIL,

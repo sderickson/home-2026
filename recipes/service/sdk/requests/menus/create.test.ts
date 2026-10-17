@@ -1,3 +1,4 @@
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
 import { afterEach, describe, it, expect } from "vitest";
 import { useCreateMenuMutation } from "./create.ts";
 import { listMenusQuery } from "./list.ts";

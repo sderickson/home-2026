@@ -1,3 +1,6 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 /**
  * Tests for requireCollectionMembership and getRecipeAndRequireCollectionAuth.
  * Behavior is exercised via endpoints that use them (list/create recipes, get recipe).
@@ -7,7 +10,7 @@ import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders, makeAdminHeaders } from "@saflib/express";
-import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
@@ -89,7 +92,7 @@ describe("getRecipeAndRequireCollectionAuth (via GET /recipes/:id)", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Auth Test Recipe",
       subtitle: "Short",

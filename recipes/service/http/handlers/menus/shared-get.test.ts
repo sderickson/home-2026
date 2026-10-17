@@ -1,14 +1,14 @@
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 // Required for downloadUrl to be a valid full URI (recipes API base from env).
 if (!process.env.PROTOCOL) process.env.PROTOCOL = "http";
 if (!process.env.DOMAIN) process.env.DOMAIN = "docker.localhost";
 
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
 import request from "supertest";
-import {
-  menuQueries,
-  recipeFileQueries,
-  recipeQueries,
-} from "@sderickson/recipes-db";
+
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
 import {
   acquireRouterSlimRouteTest,
@@ -33,7 +33,7 @@ describe("sharedGetMenus", () => {
     const collectionId = await createTestCollection(ctx.dbKey);
 
     async function createRecipe(title: string) {
-      const { result } = await recipeQueries.createWithVersionRecipe(
+      const { result } = await createWithVersionRecipe(
         ctx.dbKey,
         {
           collectionId,
@@ -54,7 +54,7 @@ describe("sharedGetMenus", () => {
     soupId = await createRecipe("Leek Soup");
     breadId = await createRecipe("Bread");
 
-    const fileOut = await recipeFileQueries.insertRecipeFile(ctx.dbKey, {
+    const fileOut = await insertRecipeFile(ctx.dbKey, {
       recipe_id: soupId,
       blob_name: `recipes/${soupId}/photo.jpg`,
       file_original_name: "photo.jpg",
@@ -66,7 +66,7 @@ describe("sharedGetMenus", () => {
     if (!fileOut.result) throw new Error("Expected insertRecipeFile result");
     fileId = fileOut.result.id;
 
-    const menuOut = await menuQueries.createMenu(ctx.dbKey, {
+    const menuOut = await createMenu(ctx.dbKey, {
       collectionId,
       name: "Supper",
       createdBy: SEED_USER_ID,

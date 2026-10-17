@@ -1,6 +1,7 @@
+import { listRecipes } from "@sderickson/recipes-db/queries/recipe/list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
-import { recipeQueries } from "@sderickson/recipes-db";
+
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "./_collection-auth.ts";
@@ -23,7 +24,7 @@ export const listRecipesHandler = createHandler(async (req, res) => {
   });
 
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
-  const { result } = await recipeQueries.listRecipes(recipesDbKey, {
+  const { result } = await listRecipes(recipesDbKey, {
     collectionId,
   });
 

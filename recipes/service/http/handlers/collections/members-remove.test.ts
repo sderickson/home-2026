@@ -1,14 +1,15 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { listCollectionMember } from "@sderickson/recipes-db/queries/collection-member/list";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-} from "@sderickson/recipes-db";
+
 
 const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const SEED_USER_EMAIL = "members-remove@example.com";
@@ -29,7 +30,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
   });
 
   it("should return 204 when owner removes non-creator member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "to-remove",
@@ -39,7 +40,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
     );
     expect(created).toBeDefined();
 
-    const { result: added } = await collectionMemberQueries.addCollectionMember(
+    const { result: added } = await addCollectionMember(
       dbKey,
       {
         collectionId: "to-remove",
@@ -58,7 +59,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
     expect(response.body).toEqual({});
 
     const { result: membersAfter } =
-      await collectionMemberQueries.listCollectionMember(dbKey, {
+      await listCollectionMember(dbKey, {
         collectionId: "to-remove",
       });
     expect(membersAfter).toHaveLength(1);
@@ -66,7 +67,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
   });
 
   it("should return 401 when not authenticated", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "private",
@@ -76,7 +77,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
     );
     expect(created).toBeDefined();
 
-    const { result: added } = await collectionMemberQueries.addCollectionMember(
+    const { result: added } = await addCollectionMember(
       dbKey,
       {
         collectionId: "private",
@@ -94,7 +95,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
   });
 
   it("should return 403 when caller is not a member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "other-collection",
@@ -104,7 +105,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
     );
     expect(created).toBeDefined();
 
-    const { result: added } = await collectionMemberQueries.addCollectionMember(
+    const { result: added } = await addCollectionMember(
       dbKey,
       {
         collectionId: "other-collection",
@@ -123,7 +124,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
   });
 
   it("should return 403 when caller is member but not owner", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "shared",
@@ -133,7 +134,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
     );
     expect(created).toBeDefined();
 
-    const { result: added } = await collectionMemberQueries.addCollectionMember(
+    const { result: added } = await addCollectionMember(
       dbKey,
       {
         collectionId: "shared",
@@ -152,7 +153,7 @@ describe("DELETE /collections/:id/members/:memberId", () => {
   });
 
   it("should return 404 when member does not exist in collection", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "exists",

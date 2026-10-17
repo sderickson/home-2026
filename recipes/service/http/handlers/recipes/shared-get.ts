@@ -1,11 +1,10 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
+import { getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { ResponseBody as sharedGetRecipesResponseBody } from "@sderickson/recipes-spec/operations/sharedGetRecipes";
-import {
-  recipeFileQueries,
-  recipeQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getByIdResultToSharedGetRecipesResponse } from "./_helpers.ts";
 
@@ -15,7 +14,7 @@ export const sharedGetRecipesHandler = createHandler(async (req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
   const id = req.params.id as string;
 
-  const recipeOut = await recipeQueries.getByIdRecipe(recipesDbKey, id);
+  const recipeOut = await getByIdRecipe(recipesDbKey, id);
   if (recipeOut.error) {
     const error: SharedGetRecipeError = recipeOut.error;
     switch (true) {
@@ -26,7 +25,7 @@ export const sharedGetRecipesHandler = createHandler(async (req, res) => {
     }
   }
 
-  const filesOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+  const filesOut = await listRecipeFile(recipesDbKey, {
     recipeId: id,
   });
   if (filesOut.error) {

@@ -1,6 +1,9 @@
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { updateMenu } from "@sderickson/recipes-db/queries/menu/update";
+import { MenuEntity, RecipeEntity } from "@sderickson/recipes-db/types";
 // for shared mappers between database models and API response types
 // import types from both the adjacent spec and db packages, and map one to the other
-import type { MenuEntity, RecipeEntity } from "@sderickson/recipes-db";
+
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipeToApiRecipe } from "../recipes/_helpers.ts";
 

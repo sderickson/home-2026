@@ -1,3 +1,4 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
 import type { Express, Router } from "express";
 import express from "express";
 import type { DbKey } from "@saflib/drizzle";
@@ -5,7 +6,7 @@ import {
   createErrorMiddleware,
   createGlobalMiddleware,
 } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import {
   makeContext,
   recipesServiceStorage,

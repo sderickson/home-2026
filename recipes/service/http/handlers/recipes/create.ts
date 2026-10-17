@@ -1,3 +1,5 @@
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,7 +7,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import { recipeQueries } from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "./_collection-auth.ts";
 import {
@@ -33,7 +35,7 @@ export const createRecipeHandler = createHandler(
 
     const initialContent = data.initialVersion?.content;
     if (initialContent) {
-      const { result, error } = await recipeQueries.createWithVersionRecipe(
+      const { result, error } = await createWithVersionRecipe(
         recipesDbKey,
         {
           collectionId: collectionId.trim(),
@@ -65,7 +67,7 @@ export const createRecipeHandler = createHandler(
       return;
     }
 
-    const { result, error } = await recipeQueries.createRecipe(recipesDbKey, {
+    const { result, error } = await createRecipe(recipesDbKey, {
       collectionId: collectionId.trim(),
       title: data.title,
       subtitle: data.subtitle,

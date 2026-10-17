@@ -1,3 +1,6 @@
+import { CollectionNotFoundError, RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,12 +8,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  menuQueries,
-  recipeQueries,
-  CollectionNotFoundError,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
 import { createMenuResultToCreateMenuResponse } from "./_helpers.ts";
@@ -55,7 +53,7 @@ export const createMenuHandler = createHandler(async (req, res) => {
   const recipeIds = recipeIdsFromGroupings(groupings);
 
   for (const recipeId of recipeIds) {
-    const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
+    const out = await getByIdRecipe(recipesDbKey, recipeId);
     if (out.error) {
       switch (true) {
         case out.error instanceof RecipeNotFoundError:
@@ -77,7 +75,7 @@ export const createMenuHandler = createHandler(async (req, res) => {
     }
   }
 
-  const { result, error } = await menuQueries.createMenu(recipesDbKey, {
+  const { result, error } = await createMenu(recipesDbKey, {
     collectionId,
     name: data.name ?? "",
     createdBy: userId,

@@ -1,15 +1,14 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  collectionQueries,
-  collectionMemberQueries,
-  menuQueries,
-  recipeQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "../recipes/_test-helpers.ts";
 
@@ -29,7 +28,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 400 when collectionId is not provided", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "A Menu",
       createdBy: SEED_USER_ID,
@@ -43,7 +42,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 200 with menu and empty recipes when authenticated with collectionId", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Test Menu",
       createdBy: SEED_USER_ID,
@@ -73,7 +72,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 200 with menu and recipes when menu has groupings", async () => {
-    const { result: recipe1 } = await recipeQueries.createWithVersionRecipe(
+    const { result: recipe1 } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -85,7 +84,7 @@ describe("GET /menus/:id", () => {
         versionContent: { ingredients: [], instructionsMarkdown: "" },
       },
     );
-    const { result: recipe2 } = await recipeQueries.createWithVersionRecipe(
+    const { result: recipe2 } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -100,7 +99,7 @@ describe("GET /menus/:id", () => {
     expect(recipe1).toBeDefined();
     expect(recipe2).toBeDefined();
 
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu With Recipes",
       createdBy: SEED_USER_ID,
@@ -132,7 +131,7 @@ describe("GET /menus/:id", () => {
 
   it("should return 200 when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -140,12 +139,12 @@ describe("GET /menus/:id", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: viewerEmail,
       role: "viewer",
     });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Viewer Menu",
       createdBy: "owner@example.com",
@@ -163,7 +162,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 401 when not authenticated", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "A Menu",
       createdBy: SEED_USER_ID,
@@ -179,7 +178,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 403 when collectionId does not match menu collection", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -196,7 +195,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -204,7 +203,7 @@ describe("GET /menus/:id", () => {
       },
     );
     expect(otherColl).toBeDefined();
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
       createdBy: "other@example.com",
@@ -231,7 +230,7 @@ describe("GET /menus/:id", () => {
   });
 
   it("should return 200 and filter out missing recipes when menu references recipe that does not exist", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu With Bad Recipe Id",
       createdBy: SEED_USER_ID,

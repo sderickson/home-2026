@@ -1,16 +1,12 @@
+import { MenuNotFoundError, RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByIdMenu } from "@sderickson/recipes-db/queries/menu/get-by-id";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
+import { getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
+import { type RecipeEntity, type RecipeFileEntity, type RecipeVersionEntity } from "@sderickson/recipes-db/types";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { ResponseBody as sharedGetMenusResponseBody } from "@sderickson/recipes-spec/operations/sharedGetMenus";
-import {
-  menuQueries,
-  recipeFileQueries,
-  recipeQueries,
-  MenuNotFoundError,
-  RecipeNotFoundError,
-  type RecipeEntity,
-  type RecipeFileEntity,
-  type RecipeVersionEntity,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { menuToApiMenu } from "./_helpers.ts";
 import {
@@ -32,7 +28,7 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
   const id = req.params.id as string;
 
-  const menuOut = await menuQueries.getByIdMenu(recipesDbKey, id);
+  const menuOut = await getByIdMenu(recipesDbKey, id);
   if (menuOut.error) {
     const error = menuOut.error;
     switch (true) {
@@ -48,7 +44,7 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
   const versions: RecipeVersionEntity[] = [];
   const files: RecipeFileEntity[] = [];
   for (const recipeId of recipeIdsFromGroupings(menu.groupings)) {
-    const recipeOut = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
+    const recipeOut = await getByIdRecipe(recipesDbKey, recipeId);
     if (recipeOut.error) {
       // Deleted since it was added to the menu: leave it out.
       if (recipeOut.error instanceof RecipeNotFoundError) continue;
@@ -58,7 +54,7 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
     // Same scope as the authenticated GET /menus/{id}: only the menu's own collection.
     if (recipe.collectionId !== menu.collectionId) continue;
 
-    const filesOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    const filesOut = await listRecipeFile(recipesDbKey, {
       recipeId,
     });
     if (filesOut.error) {

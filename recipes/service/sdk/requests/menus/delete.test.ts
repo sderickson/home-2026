@@ -1,3 +1,4 @@
+import { deleteMenu } from "@sderickson/recipes-db/queries/menu/delete";
 import { afterEach, describe, it, expect } from "vitest";
 import { useDeleteMenuMutation } from "./delete.ts";
 import { listMenusQuery } from "./list.ts";

@@ -1,9 +1,11 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -15,7 +17,7 @@ describe("DELETE /recipes/:id", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     const collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "To Delete",
       subtitle: "Short",

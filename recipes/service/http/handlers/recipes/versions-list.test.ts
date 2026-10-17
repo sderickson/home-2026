@@ -1,9 +1,11 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -16,7 +18,7 @@ describe("GET /recipes/:id/versions (listRecipeVersions)", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Test Recipe",
       subtitle: "Short",

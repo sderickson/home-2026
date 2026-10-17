@@ -1,3 +1,4 @@
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
 <template>
   <form class="recipe-form" @submit.prevent>
     <v-card variant="outlined" class="mb-4 rounded-lg overflow-hidden">

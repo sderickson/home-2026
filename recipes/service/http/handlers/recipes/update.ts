@@ -1,3 +1,5 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { UpdateMetadataRecipeError, updateMetadataRecipe } from "@sderickson/recipes-db/queries/recipe/update-metadata";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -5,7 +7,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { updateMetadataResultToUpdateRecipeResponse } from "./_helpers.ts";
@@ -35,7 +37,7 @@ export const updateRecipeHandler = createHandler(
           : existing.description,
     };
 
-    const { result, error } = await recipeQueries.updateMetadataRecipe(
+    const { result, error } = await updateMetadataRecipe(
       recipesDbKey,
       {
         id,

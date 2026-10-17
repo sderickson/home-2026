@@ -1,15 +1,14 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  collectionQueries,
-  collectionMemberQueries,
-  menuQueries,
-  recipeQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import {
   createTestCollection,
@@ -32,7 +31,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 200 with updated menu when owner sends valid body", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Original Name",
       createdBy: SEED_USER_ID,
@@ -64,7 +63,7 @@ describe("PUT /menus/:id", () => {
 
   it("should return 200 and append current user to editedByUserIds when not present", async () => {
     const editorEmail = "editor@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -72,12 +71,12 @@ describe("PUT /menus/:id", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: editorEmail,
       role: "editor",
     });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
       createdBy: "owner@example.com",
@@ -103,7 +102,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 200 with updated groupings when recipes in same collection", async () => {
-    const { result: recipe } = await recipeQueries.createWithVersionRecipe(
+    const { result: recipe } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,
@@ -117,7 +116,7 @@ describe("PUT /menus/:id", () => {
     );
     expect(recipe).toBeDefined();
 
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -143,7 +142,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 400 when collectionId is missing", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -164,7 +163,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 400 when recipeId in groupings does not exist", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -186,7 +185,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 400 when recipeId in groupings belongs to different collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -194,14 +193,14 @@ describe("PUT /menus/:id", () => {
       },
     );
     expect(otherColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: otherColl!.id,
       email: SEED_USER_ID,
       role: "editor",
     });
 
     const { result: recipeInMyCollection } =
-      await recipeQueries.createWithVersionRecipe(dbKey, {
+      await createWithVersionRecipe(dbKey, {
         collectionId,
         title: "Mine",
         subtitle: "Mine",
@@ -212,7 +211,7 @@ describe("PUT /menus/:id", () => {
       });
     expect(recipeInMyCollection).toBeDefined();
 
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Menu in Other",
       createdBy: SEED_USER_ID,
@@ -236,7 +235,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 401 or 500 when not authenticated", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -254,7 +253,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 403 when menu does not belong to body collectionId", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -263,7 +262,7 @@ describe("PUT /menus/:id", () => {
     );
     expect(otherColl).toBeDefined();
 
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu in My Collection",
       createdBy: SEED_USER_ID,
@@ -284,7 +283,7 @@ describe("PUT /menus/:id", () => {
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -292,7 +291,7 @@ describe("PUT /menus/:id", () => {
       },
     );
     expect(otherColl).toBeDefined();
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
       createdBy: "other@example.com",
@@ -314,7 +313,7 @@ describe("PUT /menus/:id", () => {
 
   it("should return 403 when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -322,12 +321,12 @@ describe("PUT /menus/:id", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: viewerEmail,
       role: "viewer",
     });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
       createdBy: "owner@example.com",

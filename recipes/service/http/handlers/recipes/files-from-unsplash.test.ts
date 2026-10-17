@@ -1,13 +1,12 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  recipeQueries,
-  recipeFileQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -23,7 +22,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     const collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Test Recipe",
       subtitle: "Short",
@@ -84,7 +83,7 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
     expect(response.body.file.createdAt).toBeDefined();
     expect(response.body.file.updatedAt).toBeDefined();
 
-    const listOut = await recipeFileQueries.listRecipeFile(dbKey, {
+    const listOut = await listRecipeFile(dbKey, {
       recipeId,
     });
     expect(listOut.result).toHaveLength(1);

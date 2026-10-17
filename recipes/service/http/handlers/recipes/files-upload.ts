@@ -1,3 +1,7 @@
+import { generateShortId } from "@saflib/drizzle";
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { deleteRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/delete";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
 import { createReadStream } from "fs";
 import { unlink } from "fs/promises";
 import createError from "http-errors";
@@ -5,11 +9,7 @@ import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import { Readable } from "stream";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import {
-  generateShortId,
-  recipeFileQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { recipeFileToFilesUploadRecipesResponse } from "./_helpers.ts";
@@ -38,7 +38,7 @@ export const filesUploadRecipesHandler = createHandler(
     const pathId = generateShortId();
     const blob_name = `recipes/${id}/${pathId}`;
 
-    const insertOut = await recipeFileQueries.insertRecipeFile(recipesDbKey, {
+    const insertOut = await insertRecipeFile(recipesDbKey, {
       recipe_id: id,
       blob_name,
       file_original_name: multerFile.originalname,
@@ -74,7 +74,7 @@ export const filesUploadRecipesHandler = createHandler(
     }
 
     if (uploadResult.error) {
-      await recipeFileQueries.deleteRecipeFile(recipesDbKey, insertOut.result.id);
+      await deleteRecipeFile(recipesDbKey, insertOut.result.id);
       throw createError(500, "Failed to upload file to storage", {
         code: "FILE_UPLOAD_FAILED",
       });

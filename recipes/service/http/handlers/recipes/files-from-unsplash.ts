@@ -1,3 +1,7 @@
+import { generateShortId } from "@saflib/drizzle";
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { deleteRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/delete";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
@@ -6,11 +10,7 @@ import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
-import {
-  generateShortId,
-  recipeFileQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { getPhoto, trackDownload } from "@sderickson/recipes-unsplash";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { throwOnUnsplashError } from "../../unsplash-errors.ts";
@@ -63,7 +63,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const pathId = generateShortId();
     const blob_name = `recipes/${id}/${pathId}`;
 
-    const insertOut = await recipeFileQueries.insertRecipeFile(recipesDbKey, {
+    const insertOut = await insertRecipeFile(recipesDbKey, {
       recipe_id: id,
       blob_name,
       file_original_name: fileOriginalName,
@@ -94,7 +94,7 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     );
 
     if (uploadResult.error) {
-      await recipeFileQueries.deleteRecipeFile(
+      await deleteRecipeFile(
         recipesDbKey,
         insertOut.result.id,
       );

@@ -1,14 +1,14 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
+import { createMenu } from "@sderickson/recipes-db/queries/menu/create";
+import { getByIdMenu } from "@sderickson/recipes-db/queries/menu/get-by-id";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  collectionQueries,
-  collectionMemberQueries,
-  menuQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import {
   createTestCollection,
@@ -31,7 +31,7 @@ describe("DELETE /menus/:id", () => {
   });
 
   it("should return 204 when owner deletes menu and menu is removed", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "To Delete",
       createdBy: SEED_USER_ID,
@@ -47,13 +47,13 @@ describe("DELETE /menus/:id", () => {
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
 
-    const { result: after } = await menuQueries.getByIdMenu(dbKey, menu!.id);
+    const { result: after } = await getByIdMenu(dbKey, menu!.id);
     expect(after).toBeUndefined();
   });
 
   it("should return 204 when editor deletes menu", async () => {
     const editorEmail = "editor@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -61,12 +61,12 @@ describe("DELETE /menus/:id", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: editorEmail,
       role: "editor",
     });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
       createdBy: "owner@example.com",
@@ -83,7 +83,7 @@ describe("DELETE /menus/:id", () => {
   });
 
   it("should return 400 or 500 when collectionId is missing from query", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -102,7 +102,7 @@ describe("DELETE /menus/:id", () => {
   });
 
   it("should return 401 or 500 when not authenticated", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu",
       createdBy: SEED_USER_ID,
@@ -118,7 +118,7 @@ describe("DELETE /menus/:id", () => {
   });
 
   it("should return 403 when caller is not a member of the collection", async () => {
-    const { result: otherColl } = await collectionQueries.createCollection(
+    const { result: otherColl } = await createCollection(
       dbKey,
       {
         name: "Other",
@@ -126,7 +126,7 @@ describe("DELETE /menus/:id", () => {
       },
     );
     expect(otherColl).toBeDefined();
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: otherColl!.id,
       name: "Their Menu",
       createdBy: "other@example.com",
@@ -144,7 +144,7 @@ describe("DELETE /menus/:id", () => {
 
   it("should return 403 when caller is viewer", async () => {
     const viewerEmail = "viewer@example.com";
-    const { result: ownerColl } = await collectionQueries.createCollection(
+    const { result: ownerColl } = await createCollection(
       dbKey,
       {
         name: "Owner Collection",
@@ -152,12 +152,12 @@ describe("DELETE /menus/:id", () => {
       },
     );
     expect(ownerColl).toBeDefined();
-    await collectionMemberQueries.addCollectionMember(dbKey, {
+    await addCollectionMember(dbKey, {
       collectionId: ownerColl!.id,
       email: viewerEmail,
       role: "viewer",
     });
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId: ownerColl!.id,
       name: "Menu",
       createdBy: "owner@example.com",
@@ -184,7 +184,7 @@ describe("DELETE /menus/:id", () => {
   });
 
   it("should return 404 when menu belongs to different collection", async () => {
-    const { result: menu } = await menuQueries.createMenu(dbKey, {
+    const { result: menu } = await createMenu(dbKey, {
       collectionId,
       name: "Menu in My Collection",
       createdBy: SEED_USER_ID,

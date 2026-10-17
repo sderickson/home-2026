@@ -1,14 +1,14 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-} from "@sderickson/recipes-db";
+
 
 const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const SEED_USER_EMAIL = "members-list@example.com";
@@ -29,7 +29,7 @@ describe("GET /collections/:id/members", () => {
   });
 
   it("should return 200 with members when authenticated and caller is creator", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "solo",
@@ -56,7 +56,7 @@ describe("GET /collections/:id/members", () => {
   });
 
   it("should return 200 with all members when authenticated and caller is non-creator member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "shared",
@@ -66,7 +66,7 @@ describe("GET /collections/:id/members", () => {
     );
     expect(created).toBeDefined();
 
-    const { error: addError } = await collectionMemberQueries.addCollectionMember(
+    const { error: addError } = await addCollectionMember(
       dbKey,
       {
         collectionId: "shared",
@@ -94,7 +94,7 @@ describe("GET /collections/:id/members", () => {
   });
 
   it("should return 401 when not authenticated", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "private",
@@ -110,7 +110,7 @@ describe("GET /collections/:id/members", () => {
   });
 
   it("should return 403 when caller is not a member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "other-collection",

@@ -1,15 +1,15 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-} from "@sderickson/recipes-db";
+
 
 const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const SEED_USER_EMAIL = "members-add@example.com";
@@ -31,7 +31,7 @@ describe("POST /collections/:id/members", () => {
   });
 
   it("should return 200 with member when owner adds new member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "to-add",
@@ -65,7 +65,7 @@ describe("POST /collections/:id/members", () => {
   });
 
   it("should return 200 with updated member when owner adds existing email (upsert role)", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "upsert",
@@ -75,7 +75,7 @@ describe("POST /collections/:id/members", () => {
     );
     expect(created).toBeDefined();
 
-    const { error: addError } = await collectionMemberQueries.addCollectionMember(
+    const { error: addError } = await addCollectionMember(
       dbKey,
       {
         collectionId: "upsert",
@@ -107,7 +107,7 @@ describe("POST /collections/:id/members", () => {
   });
 
   it("should return 401 when not authenticated", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "private",
@@ -128,7 +128,7 @@ describe("POST /collections/:id/members", () => {
   });
 
   it("should return 403 when caller is not a member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "other-collection",
@@ -151,7 +151,7 @@ describe("POST /collections/:id/members", () => {
   });
 
   it("should return 403 when caller is member but not owner", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "shared",
@@ -161,7 +161,7 @@ describe("POST /collections/:id/members", () => {
     );
     expect(created).toBeDefined();
 
-    const { error: addError } = await collectionMemberQueries.addCollectionMember(
+    const { error: addError } = await addCollectionMember(
       dbKey,
       {
         collectionId: "shared",

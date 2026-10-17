@@ -1,12 +1,11 @@
+import { CollectionMemberNotFoundError, CollectionNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByCollectionAndEmailCollectionMember } from "@sderickson/recipes-db/queries/collection-member/get-by-collection-and-email";
+import { deleteCollection } from "@sderickson/recipes-db/queries/collection/delete";
+import { hasRecipesCollection } from "@sderickson/recipes-db/queries/collection/has-recipes";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-  CollectionMemberNotFoundError,
-  CollectionNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { deleteCollectionResultToDeleteCollectionsResponse } from "./_helpers.ts";
 
@@ -21,7 +20,7 @@ export const deleteCollectionsHandler = createHandler(async (req, res) => {
   }
 
   const { result: member, error: memberError } =
-    await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
+    await getByCollectionAndEmailCollectionMember(
       recipesDbKey,
       { collectionId: id, email: userEmail },
     );
@@ -40,7 +39,7 @@ export const deleteCollectionsHandler = createHandler(async (req, res) => {
   }
 
   const { result: hasRecipes, error: hasRecipesError } =
-    await collectionQueries.hasRecipesCollection(recipesDbKey, id);
+    await hasRecipesCollection(recipesDbKey, id);
 
   if (hasRecipesError) {
     switch (true) {
@@ -59,7 +58,7 @@ export const deleteCollectionsHandler = createHandler(async (req, res) => {
     );
   }
 
-  const { result, error } = await collectionQueries.deleteCollection(
+  const { result, error } = await deleteCollection(
     recipesDbKey,
     id,
   );

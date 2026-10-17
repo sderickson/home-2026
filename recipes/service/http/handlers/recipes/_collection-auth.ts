@@ -1,21 +1,16 @@
+import { CollectionMemberNotFoundError, CollectionNotFoundError, RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { getByCollectionAndEmailCollectionMember } from "@sderickson/recipes-db/queries/collection-member/get-by-collection-and-email";
+import { getByIdCollection } from "@sderickson/recipes-db/queries/collection/get-by-id";
+import { GetByIdRecipeResult, getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
+import { CollectionMemberEntity } from "@sderickson/recipes-db/types";
 /**
  * Collection-based permission for recipe (and nested) endpoints.
  * Use after resolving collectionId: from recipe.collectionId for :id routes, or from query/body for list/create.
  */
 import createError from "http-errors";
 import { safContextStorage } from "@saflib/node";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-  recipeQueries,
-  CollectionMemberNotFoundError,
-  CollectionNotFoundError,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
-import type {
-  CollectionMemberEntity,
-  GetByIdRecipeResult,
-} from "@sderickson/recipes-db";
+
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 
 /**
@@ -39,7 +34,7 @@ export async function requireCollectionMembership(
     throw createError(403, "Forbidden", { code: "FORBIDDEN" });
   }
 
-  const { error: collectionError } = await collectionQueries.getByIdCollection(
+  const { error: collectionError } = await getByIdCollection(
     recipesDbKey,
     collectionId,
   );
@@ -55,7 +50,7 @@ export async function requireCollectionMembership(
   const emailValidated = auth.emailVerified !== false;
 
   const { result: member, error: memberError } =
-    await collectionMemberQueries.getByCollectionAndEmailCollectionMember(
+    await getByCollectionAndEmailCollectionMember(
       recipesDbKey,
       { collectionId, email: userEmail },
     );
@@ -92,7 +87,7 @@ export async function getRecipeAndRequireCollectionAuth(
     throw new Error("Recipes service context not found");
   }
 
-  const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
+  const out = await getByIdRecipe(recipesDbKey, recipeId);
   if (out.error) {
     if (out.error instanceof RecipeNotFoundError) {
       throw createError(404, out.error.message, { code: "RECIPE_NOT_FOUND" });

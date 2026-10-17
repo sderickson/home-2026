@@ -1,9 +1,11 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";

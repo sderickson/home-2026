@@ -1,13 +1,13 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import {
-  recipesDb,
-  recipeQueries,
-  recipeFileQueries,
-} from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -21,7 +21,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Test Recipe",
       subtitle: "Short",
@@ -36,7 +36,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
     if (!result) throw new Error("Expected createWithVersionRecipe to return result");
     recipeId = result.recipe.id;
 
-    const insertFile = await recipeFileQueries.insertRecipeFile(dbKey, {
+    const insertFile = await insertRecipeFile(dbKey, {
       recipe_id: recipeId,
       blob_name: `recipes/${recipeId}/test-file.pdf`,
       file_original_name: "test.pdf",
@@ -62,7 +62,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
 
-    const listOut = await recipeFileQueries.listRecipeFile(dbKey, {
+    const listOut = await listRecipeFile(dbKey, {
       recipeId,
     });
     expect(listOut.result).toHaveLength(0);
@@ -97,7 +97,7 @@ describe("DELETE /recipes/:id/files/:fileId (filesDeleteRecipes)", () => {
   });
 
   it("should return 404 when file belongs to different recipe", async () => {
-    const { result: otherRecipe } = await recipeQueries.createWithVersionRecipe(
+    const { result: otherRecipe } = await createWithVersionRecipe(
       dbKey,
       {
         collectionId,

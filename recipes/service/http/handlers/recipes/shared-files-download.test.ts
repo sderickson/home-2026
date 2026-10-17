@@ -1,10 +1,9 @@
+import { insertRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/insert";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { Readable } from "stream";
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
 import request from "supertest";
-import {
-  recipeFileQueries,
-  recipeQueries,
-} from "@sderickson/recipes-db";
+
 import { getDefaultRecipesFileContainer } from "@sderickson/recipes-service-common";
 import {
   acquireRouterSlimRouteTest,
@@ -24,7 +23,7 @@ describe("sharedFilesDownloadRecipes", () => {
     ctx = acquireRouterSlimRouteTest(createRecipesShareRouter);
 
     const collectionId = await createTestCollection(ctx.dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(ctx.dbKey, {
+    const { result } = await createWithVersionRecipe(ctx.dbKey, {
       collectionId,
       title: "Shared Recipe",
       subtitle: "Public view",
@@ -41,7 +40,7 @@ describe("sharedFilesDownloadRecipes", () => {
     }
     recipeId = result.recipe.id;
 
-    const otherOut = await recipeQueries.createWithVersionRecipe(ctx.dbKey, {
+    const otherOut = await createWithVersionRecipe(ctx.dbKey, {
       collectionId,
       title: "Other Recipe",
       subtitle: "Other",
@@ -58,7 +57,7 @@ describe("sharedFilesDownloadRecipes", () => {
     }
     otherRecipeId = otherOut.result.recipe.id;
 
-    const fileOut = await recipeFileQueries.insertRecipeFile(ctx.dbKey, {
+    const fileOut = await insertRecipeFile(ctx.dbKey, {
       recipe_id: recipeId,
       blob_name: `recipes/${recipeId}/photo.jpg`,
       file_original_name: "photo.jpg",

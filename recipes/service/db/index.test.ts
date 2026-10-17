@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
-import * as exports from "@sderickson/recipes-db";
+import { describe, expect, it } from "vitest";
+import { getByIdRecipe } from "@sderickson/recipes-db/queries/recipe/get-by-id";
+import { recipesDb } from "@sderickson/recipes-db/instances";
 
 describe("@sderickson/recipes-db", () => {
-  it("should be defined", () => {
-    expect(exports).toBeDefined();
+  it("exposes query modules and instances via subpath exports", () => {
+    expect(typeof getByIdRecipe).toBe("function");
+    expect(recipesDb).toBeDefined();
   });
 });

@@ -1,10 +1,25 @@
 {
   "name": "@sderickson/recipes-db",
+  "saf": {
+    "kind": "db"
+  },
   "description": "Database package for recipes.",
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    "./instances": "./instances.ts",
+    "./errors": "./errors.ts",
+    "./types": "./types.ts",
+    "./queries/*": "./queries/*.ts",
+    "./schemas/*": "./schemas/*.ts",
+    "./startup/fix-text-timestamps": "./startup/fix-text-timestamps.ts"
+  },
+  "imports": {
+    "#errors.ts": "./errors.ts",
+    "#instances.ts": "./instances.ts",
+    "#queries/*": "./queries/*",
+    "#schemas/*": "./schemas/*",
+    "#types.ts": "./types.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -19,5 +34,6 @@
   },
   "devDependencies": {
     "@saflib/vitest": "*"
-  }
+  },
+  "sideEffects": false
 }

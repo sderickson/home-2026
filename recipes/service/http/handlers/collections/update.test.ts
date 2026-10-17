@@ -1,15 +1,15 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { addCollectionMember } from "@sderickson/recipes-db/queries/collection-member/add";
+import { createCollection } from "@sderickson/recipes-db/queries/collection/create";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import type { RecipesServiceRequestBody } from "@sderickson/recipes-spec";
-import {
-  collectionMemberQueries,
-  collectionQueries,
-} from "@sderickson/recipes-db";
+
 
 const SEED_USER_ID = "11111111-1111-1111-1111-111111111111";
 const SEED_USER_EMAIL = "update-collections@example.com";
@@ -30,7 +30,7 @@ describe("PUT /collections/:id", () => {
   });
 
   it("should return 200 with updated collection when caller is owner", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "to-rename",
@@ -62,7 +62,7 @@ describe("PUT /collections/:id", () => {
   });
 
   it("should return 401 when not authenticated", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "private",
@@ -82,7 +82,7 @@ describe("PUT /collections/:id", () => {
   });
 
   it("should return 403 when caller is not a member", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "other-collection",
@@ -104,7 +104,7 @@ describe("PUT /collections/:id", () => {
   });
 
   it("should return 403 when caller is member but not owner", async () => {
-    const { result: created } = await collectionQueries.createCollection(
+    const { result: created } = await createCollection(
       dbKey,
       {
         id: "shared",
@@ -114,7 +114,7 @@ describe("PUT /collections/:id", () => {
     );
     expect(created).toBeDefined();
 
-    const { error: addError } = await collectionMemberQueries.addCollectionMember(
+    const { error: addError } = await addCollectionMember(
       dbKey,
       {
         collectionId: "shared",

@@ -7,3 +7,5 @@ export const recipesDbManager = new DbManager(
   config,
   import.meta.url,
 );
+
+export const recipesDb = recipesDbManager.publicInterface();

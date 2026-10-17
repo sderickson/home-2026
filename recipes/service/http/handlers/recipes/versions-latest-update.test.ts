@@ -1,9 +1,12 @@
+import { recipesDb } from "@sderickson/recipes-db/instances";
+import { createRecipe } from "@sderickson/recipes-db/queries/recipe/create";
+import { createWithVersionRecipe } from "@sderickson/recipes-db/queries/recipe/create-with-version";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../http.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
-import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
+
 import type { DbKey } from "@saflib/drizzle";
 import type {
   RecipesServiceRequestBody,
@@ -20,7 +23,7 @@ describe("PUT /recipes/:id/versions/latest", () => {
   beforeEach(async () => {
     dbKey = recipesDb.connect();
     const collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+    const { result } = await createWithVersionRecipe(dbKey, {
       collectionId,
       title: "Recipe",
       subtitle: "Short",
@@ -106,7 +109,7 @@ describe("PUT /recipes/:id/versions/latest", () => {
 
   it("should return 404 when recipe has no versions", async () => {
     const collectionId = await createTestCollection(dbKey);
-    const { result } = await recipeQueries.createRecipe(dbKey, {
+    const { result } = await createRecipe(dbKey, {
       collectionId,
       title: "Recipe",
       subtitle: "Short",

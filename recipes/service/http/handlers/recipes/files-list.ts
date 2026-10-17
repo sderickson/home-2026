@@ -1,10 +1,9 @@
+import { RecipeNotFoundError } from "@sderickson/recipes-db/errors";
+import { listRecipeFile } from "@sderickson/recipes-db/queries/recipe-file/list";
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import {
-  recipeFileQueries,
-  RecipeNotFoundError,
-} from "@sderickson/recipes-db";
+
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
 import { filesListResultToFilesListRecipesResponse } from "./_helpers.ts";
@@ -17,7 +16,7 @@ export const filesListRecipesHandler = createHandler(
     const id = req.params.id as string;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: false });
 
-    const out = await recipeFileQueries.listRecipeFile(recipesDbKey, {
+    const out = await listRecipeFile(recipesDbKey, {
       recipeId: id,
     });
 
