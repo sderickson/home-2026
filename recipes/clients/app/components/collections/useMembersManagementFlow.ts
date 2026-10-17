@@ -1,11 +1,9 @@
 import type { ComputedRef } from "vue";
 import { computed, ref, watch } from "vue";
-import {
-  membersListCollectionsQuery,
-  useMembersAddCollectionsMutation,
-  useMembersRemoveCollectionsMutation,
-  useMembersUpdateCollectionsMutation,
-} from "@sderickson/recipes-sdk";
+import { useMembersAddCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/members-add";
+import { membersListCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/members-list";
+import { useMembersRemoveCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/members-remove";
+import { useMembersUpdateCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/members-update";
 import { useQuery } from "@tanstack/vue-query";
 import {
   kratosEmailFromSession,

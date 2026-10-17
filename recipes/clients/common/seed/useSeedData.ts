@@ -1,17 +1,15 @@
 import { ref } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
-import {
-  useCreateCollectionsMutation,
-  useCreateRecipeMutation,
-  useCreateMenuMutation,
-  useUpdateMenuMutation,
-  useFilesFromUnsplashRecipesMutation,
-  searchUnsplashPhotosQuery,
-  listCollectionsQuery,
-  listRecipesQuery,
-  listMenusQuery,
-  filesListRecipesQuery,
-} from "@sderickson/recipes-sdk";
+import { useCreateCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/create";
+import { listCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/list";
+import { useCreateMenuMutation } from "@sderickson/recipes-sdk/requests/menus/create";
+import { listMenusQuery } from "@sderickson/recipes-sdk/requests/menus/list";
+import { useUpdateMenuMutation } from "@sderickson/recipes-sdk/requests/menus/update";
+import { useCreateRecipeMutation } from "@sderickson/recipes-sdk/requests/recipes/create";
+import { useFilesFromUnsplashRecipesMutation } from "@sderickson/recipes-sdk/requests/recipes/files-from-unsplash";
+import { filesListRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/files-list";
+import { listRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/list";
+import { searchUnsplashPhotosQuery } from "@sderickson/recipes-sdk/requests/unsplash-photos/search";
 import {
   SEED_RECIPES,
   SEED_COLLECTION_NAME,

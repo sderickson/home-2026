@@ -68,7 +68,7 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
-import { useCreateMenuMutation } from "@sderickson/recipes-sdk";
+import { useCreateMenuMutation } from "@sderickson/recipes-sdk/requests/menus/create";
 import { create_menu_form as strings } from "./CreateMenuForm.strings.ts";
 import { buildCreateMenuPayload, type CreateMenuFormModel } from "./Create.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";

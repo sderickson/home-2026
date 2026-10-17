@@ -3,11 +3,7 @@ import type {
   RecipeFileInfo,
   RecipeVersion,
 } from "@sderickson/recipes-spec";
-import {
-  formatKeyIngredientsDisplay,
-  getCardEnrichment,
-  type CardEnrichment,
-} from "@sderickson/recipes-sdk";
+import { formatKeyIngredientsDisplay, getCardEnrichment, type CardEnrichment } from "@sderickson/recipes-sdk/components/recipe-list/RecipeList.logic";
 
 /**
  * Asserts that the public shared-menu payload is loaded.

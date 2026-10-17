@@ -162,7 +162,7 @@ import {
 import Sortable, { type SortableEvent } from "sortablejs";
 import type { MenuEditFormModel } from "./Detail.logic.ts";
 import { buildUpdateMenuPayload } from "./Detail.logic.ts";
-import { useUpdateMenuMutation } from "@sderickson/recipes-sdk";
+import { useUpdateMenuMutation } from "@sderickson/recipes-sdk/requests/menus/update";
 import { menu_edit_form as strings } from "./MenuEditForm.strings.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 

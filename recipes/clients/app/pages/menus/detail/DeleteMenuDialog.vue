@@ -23,7 +23,7 @@
 import { useRouter } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
-import { useDeleteMenuMutation } from "@sderickson/recipes-sdk";
+import { useDeleteMenuMutation } from "@sderickson/recipes-sdk/requests/menus/delete";
 import { delete_menu_dialog as strings } from "./DeleteMenuDialog.strings.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 

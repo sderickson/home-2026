@@ -1,13 +1,11 @@
 import { ref } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
-import {
-  useDeleteCollectionsMutation,
-  useDeleteMenuMutation,
-  useDeleteRecipeMutation,
-  listCollectionsQuery,
-  listMenusQuery,
-  listRecipesQuery,
-} from "@sderickson/recipes-sdk";
+import { useDeleteCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/delete";
+import { listCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/list";
+import { useDeleteMenuMutation } from "@sderickson/recipes-sdk/requests/menus/delete";
+import { listMenusQuery } from "@sderickson/recipes-sdk/requests/menus/list";
+import { useDeleteRecipeMutation } from "@sderickson/recipes-sdk/requests/recipes/delete";
+import { listRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/list";
 import { SEED_COLLECTION_NAME } from "@sderickson/recipes-clients-common/seed";
 
 export function useCleanupSeedData(options: {

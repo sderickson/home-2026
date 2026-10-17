@@ -1,4 +1,4 @@
-import { sharedGetRecipesQuery } from "@sderickson/recipes-sdk";
+import { sharedGetRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/shared-get";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 

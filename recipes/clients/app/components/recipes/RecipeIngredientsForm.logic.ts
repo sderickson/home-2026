@@ -4,4 +4,4 @@ export {
   isIngredientHeader,
   getIngredientHeaderText,
   type RecipeIngredient,
-} from "@sderickson/recipes-sdk";
+} from "@sderickson/recipes-sdk/ingredient";

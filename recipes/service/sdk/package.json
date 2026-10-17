@@ -7,14 +7,19 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts",
     "./client": "./client.ts",
     "./fakes": "./fakes.ts",
     "./strings": "./strings.ts",
     "./i18n": "./i18n.ts",
+    "./ingredient": "./ingredient.ts",
     "./test-app": "./test-app.ts",
     "./typed-fake": "./typed-fake.ts",
-    "./requests/*": "./requests/*.ts"
+    "./requests/*": "./requests/*.ts",
+    "./components/recipe-content-preview/RecipeContentPreview.vue": "./components/recipe-content-preview/RecipeContentPreview.vue",
+    "./components/recipe-files-display/RecipeFilesDisplay.vue": "./components/recipe-files-display/RecipeFilesDisplay.vue",
+    "./components/recipe-list/RecipeList.vue": "./components/recipe-list/RecipeList.vue",
+    "./components/recipe-list/RecipeList.logic": "./components/recipe-list/RecipeList.logic.ts",
+    "./components/recipe-preview/RecipePreview.vue": "./components/recipe-preview/RecipePreview.vue"
   },
   "imports": {
     "#client.ts": "./client.ts",

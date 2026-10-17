@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import type { RecipeFileInfo } from "@sderickson/recipes-spec";
 import { computed, ref } from "vue";
-import { RecipeContentPreview } from "@sderickson/recipes-sdk";
+import RecipeContentPreview from "@sderickson/recipes-sdk/components/recipe-content-preview/RecipeContentPreview.vue";
 import { useRecipesLoader } from "./Recipes.loader.ts";
 import {
   assertSharedRecipeLoaded,

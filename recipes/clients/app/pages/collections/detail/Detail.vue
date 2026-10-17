@@ -233,12 +233,10 @@ import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import { useQueries } from "@tanstack/vue-query";
 import type { Recipe } from "@sderickson/recipes-spec";
-import {
-  getRecipeQuery,
-  RecipeList,
-  recipeDetailIngredientsSearchText,
-  useDeleteCollectionsMutation,
-} from "@sderickson/recipes-sdk";
+import { recipeDetailIngredientsSearchText } from "@sderickson/recipes-sdk/components/recipe-list/RecipeList.logic";
+import RecipeList from "@sderickson/recipes-sdk/components/recipe-list/RecipeList.vue";
+import { useDeleteCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/delete";
+import { getRecipeQuery } from "@sderickson/recipes-sdk/requests/recipes/get";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { collections_detail as strings } from "./Detail.strings.ts";

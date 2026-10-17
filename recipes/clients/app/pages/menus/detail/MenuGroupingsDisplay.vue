@@ -22,12 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-  formatKeyIngredientsDisplay,
-  getCardEnrichment,
-  getRecipeQuery,
-  filesListRecipesQuery,
-} from "@sderickson/recipes-sdk";
+import { formatKeyIngredientsDisplay, getCardEnrichment } from "@sderickson/recipes-sdk/components/recipe-list/RecipeList.logic";
+import { filesListRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/files-list";
+import { getRecipeQuery } from "@sderickson/recipes-sdk/requests/recipes/get";
 import { computed } from "vue";
 import { useQueries } from "@tanstack/vue-query";
 import { appLinks } from "@sderickson/recipes-links";

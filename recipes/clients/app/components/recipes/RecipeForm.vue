@@ -126,13 +126,11 @@ import {
   shouldSaveRecipeVersionInPlace,
 } from "./RecipeForm.logic.ts";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
-import {
-  useCreateRecipeMutation,
-  useCreateRecipeVersionMutation,
-  useUpdateRecipeMutation,
-  useUpdateRecipeVersionLatestMutation,
-} from "@sderickson/recipes-sdk";
-import { RecipeContentPreview } from "@sderickson/recipes-sdk";
+import { useCreateRecipeMutation } from "@sderickson/recipes-sdk/requests/recipes/create";
+import { useUpdateRecipeMutation } from "@sderickson/recipes-sdk/requests/recipes/update";
+import { useCreateRecipeVersionMutation } from "@sderickson/recipes-sdk/requests/recipes/versions-create";
+import { useUpdateRecipeVersionLatestMutation } from "@sderickson/recipes-sdk/requests/recipes/versions-latest-update";
+import RecipeContentPreview from "@sderickson/recipes-sdk/components/recipe-content-preview/RecipeContentPreview.vue";
 
 const { t } = useReverseT();
 

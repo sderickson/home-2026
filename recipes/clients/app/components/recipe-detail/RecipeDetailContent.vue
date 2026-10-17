@@ -225,10 +225,8 @@ import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToHrefWithHost } from "@saflib/links";
 import { showInfo } from "@saflib/vue";
 import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
-import {
-  RecipeContentPreview,
-  useDeleteRecipeMutation,
-} from "@sderickson/recipes-sdk";
+import RecipeContentPreview from "@sderickson/recipes-sdk/components/recipe-content-preview/RecipeContentPreview.vue";
+import { useDeleteRecipeMutation } from "@sderickson/recipes-sdk/requests/recipes/delete";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { formatVersionDate } from "../../pages/recipes/detail/Detail.logic.ts";
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";

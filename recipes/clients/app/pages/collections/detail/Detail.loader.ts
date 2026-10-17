@@ -1,9 +1,7 @@
-import {
-  getCollectionsQuery,
-  listMenusQuery,
-  listRecipesQuery,
-  membersListCollectionsQuery,
-} from "@sderickson/recipes-sdk";
+import { getCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/get";
+import { membersListCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/members-list";
+import { listMenusQuery } from "@sderickson/recipes-sdk/requests/menus/list";
+import { listRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/list";
 import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";

@@ -118,10 +118,8 @@
 import type { UnsplashPhotoSearchItem } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
 import { useQuery } from "@tanstack/vue-query";
-import {
-  searchUnsplashPhotosQuery,
-  useFilesFromUnsplashRecipesMutation,
-} from "@sderickson/recipes-sdk";
+import { useFilesFromUnsplashRecipesMutation } from "@sderickson/recipes-sdk/requests/recipes/files-from-unsplash";
+import { searchUnsplashPhotosQuery } from "@sderickson/recipes-sdk/requests/unsplash-photos/search";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { unsplash_picker_dialog as strings } from "./UnsplashPickerDialog.strings.ts";
 

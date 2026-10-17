@@ -1,10 +1,8 @@
 import type { RecipeFileInfo } from "@sderickson/recipes-spec";
 import type { ComputedRef } from "vue";
 import { ref } from "vue";
-import {
-  useFilesDeleteRecipesMutation,
-  useFilesUploadRecipesMutation,
-} from "@sderickson/recipes-sdk";
+import { useFilesDeleteRecipesMutation } from "@sderickson/recipes-sdk/requests/recipes/files-delete";
+import { useFilesUploadRecipesMutation } from "@sderickson/recipes-sdk/requests/recipes/files-upload";
 
 /**
  * Stateful flow for recipe files on the recipe detail page: upload and delete

@@ -27,10 +27,8 @@
 import { computed } from "vue";
 import { useQueries } from "@tanstack/vue-query";
 import type { Recipe } from "@sderickson/recipes-spec";
-import {
-  filesListRecipesQuery,
-  getRecipeQuery,
-} from "../../requests/recipes/index.ts";
+import { filesListRecipesQuery } from "../../requests/recipes/files-list.ts";
+import { getRecipeQuery } from "../../requests/recipes/get.ts";
 import { useReverseT } from "../../i18n.ts";
 import { recipe_list_strings as strings } from "./RecipeList.strings.ts";
 import RecipeCard from "./RecipeCard.vue";

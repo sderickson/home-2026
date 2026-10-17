@@ -1,4 +1,4 @@
-import { getMenuQuery } from "@sderickson/recipes-sdk";
+import { getMenuQuery } from "@sderickson/recipes-sdk/requests/menus/get";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import { useDetailLoader } from "../../recipes/detail/Detail.loader.ts";

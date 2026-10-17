@@ -1,7 +1,5 @@
-import {
-  getCollectionsQuery,
-  getRecipeQuery,
-} from "@sderickson/recipes-sdk";
+import { getCollectionsQuery } from "@sderickson/recipes-sdk/requests/collections/get";
+import { getRecipeQuery } from "@sderickson/recipes-sdk/requests/recipes/get";
 import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 

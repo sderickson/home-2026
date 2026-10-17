@@ -46,12 +46,9 @@ import { useDisplay } from "vuetify";
 import { VIcon, VImg } from "vuetify/components";
 import { useQueries } from "@tanstack/vue-query";
 import type { Recipe } from "@sderickson/recipes-spec";
-import {
-  filesListRecipesQuery,
-  formatKeyIngredientsDisplay,
-  getCardEnrichment,
-  getRecipeQuery,
-} from "@sderickson/recipes-sdk";
+import { formatKeyIngredientsDisplay, getCardEnrichment } from "@sderickson/recipes-sdk/components/recipe-list/RecipeList.logic";
+import { filesListRecipesQuery } from "@sderickson/recipes-sdk/requests/recipes/files-list";
+import { getRecipeQuery } from "@sderickson/recipes-sdk/requests/recipes/get";
 import { groupRecipesByInitial } from "./RecipeListListView.logic.ts";
 
 const props = defineProps<{

@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { useCreateCollectionsMutation } from "@sderickson/recipes-sdk";
+import { useCreateCollectionsMutation } from "@sderickson/recipes-sdk/requests/collections/create";
 import { TanstackError, getTanstackErrorMessage } from "@saflib/sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { create_collection_dialog as strings } from "./CreateCollectionDialog.strings.ts";
