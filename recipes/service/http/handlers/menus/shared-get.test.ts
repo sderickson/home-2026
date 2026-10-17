@@ -19,7 +19,7 @@ import { createMenusShareRouter } from "./index.ts";
 import {
   createTestCollection,
   SEED_USER_ID,
-} from "../../routes/recipes/_test-helpers.ts";
+} from "../recipes/_test-helpers.ts";
 
 describe("sharedGetMenus", () => {
   let ctx: SlimRouteTestContext;

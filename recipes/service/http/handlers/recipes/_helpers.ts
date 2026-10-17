@@ -5,13 +5,14 @@ import type {
   RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
+import type {
+  RecipesServiceResponseBody,
+  UnsplashAttribution,
+} from "@sderickson/recipes-spec";
 import type { ResponseBody as sharedGetRecipesResponseBody } from "@sderickson/recipes-spec/operations/sharedGetRecipes";
 
 type SharedGet200 = sharedGetRecipesResponseBody["sharedGetRecipes"][200];
-type RecipeApi = SharedGet200["recipe"];
-type RecipeVersionApi = SharedGet200["currentVersion"];
-type RecipeFileInfoApi = SharedGet200["files"][number];
-type UnsplashAttribution = NonNullable<RecipeFileInfoApi["unsplashAttribution"]>;
+type SharedRecipeFileInfoApi = SharedGet200["files"][number];
 
 /** App name for Unsplash UTM params (utm_source). */
 const UTM_APP_NAME = "893198";
@@ -38,10 +39,68 @@ function unsplashUserToAttribution(
   };
 }
 
+type RecipeListResponseItem =
+  RecipesServiceResponseBody["listRecipes"][200]["recipes"][number];
+
+type GetRecipe200 = RecipesServiceResponseBody["getRecipe"][200];
+type RecipeVersionApi = GetRecipe200["currentVersion"];
+type CreateRecipe200 = RecipesServiceResponseBody["createRecipe"][200];
+type UpdateRecipe200 = RecipesServiceResponseBody["updateRecipe"][200];
+type ListRecipeVersions200 =
+  RecipesServiceResponseBody["listRecipeVersions"][200];
+type UpdateRecipeVersionLatest200 =
+  RecipesServiceResponseBody["updateRecipeVersionLatest"][200];
+type CreateRecipeVersion200 =
+  RecipesServiceResponseBody["createRecipeVersion"][200];
+type FilesListRecipes200 = RecipesServiceResponseBody["filesListRecipes"][200];
+type FilesUploadRecipes200 =
+  RecipesServiceResponseBody["filesUploadRecipes"][200];
+type FilesFromUnsplashRecipes200 =
+  RecipesServiceResponseBody["filesFromUnsplashRecipes"][200];
+type RecipeFileInfoApi = FilesListRecipes200["files"][number];
+
+export function recipeFileToApiRecipeFile(
+  row: RecipeFileEntity,
+): RecipeFileInfoApi {
+  return {
+    id: row.id,
+    recipeId: row.recipe_id,
+    blobName: row.blob_name,
+    fileOriginalName: row.file_original_name,
+    mimetype: row.mimetype,
+    size: row.size,
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
+    ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
+    downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
+    ...(row.unsplash_user !== null && {
+      unsplashAttribution: unsplashUserToAttribution(row.unsplash_user),
+    }),
+  };
+}
+
+export function filesListResultToFilesListRecipesResponse(
+  files: RecipeFileEntity[],
+): FilesListRecipes200 {
+  return { files: files.map(recipeFileToApiRecipeFile) };
+}
+
+export function recipeFileToFilesUploadRecipesResponse(
+  row: RecipeFileEntity,
+): FilesUploadRecipes200 {
+  return { file: recipeFileToApiRecipeFile(row) };
+}
+
+export function recipeFileToFilesFromUnsplashRecipesResponse(
+  row: RecipeFileEntity,
+): FilesFromUnsplashRecipes200 {
+  return { file: recipeFileToApiRecipeFile(row) };
+}
+
 export function recipeToApiRecipe(
   row: RecipeEntity,
   currentVersionId?: string,
-): RecipeApi {
+): RecipeListResponseItem {
   return {
     id: row.id,
     title: row.title,
@@ -68,10 +127,78 @@ export function recipeVersionToApiRecipeVersion(
   };
 }
 
+export function getByIdResultToGetRecipeResponse(
+  recipe: RecipeEntity,
+  currentVersion: RecipeVersionEntity,
+  options?: { files?: GetRecipe200["files"] },
+): GetRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe, currentVersion.id),
+    currentVersion: recipeVersionToApiRecipeVersion(currentVersion),
+    ...(options?.files !== undefined && { files: options.files }),
+  };
+}
+
+export function createWithVersionResultToCreateRecipeResponse(
+  recipe: RecipeEntity,
+  version: RecipeVersionEntity,
+): CreateRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe, version.id),
+    initialVersion: recipeVersionToApiRecipeVersion(version),
+  };
+}
+
+export function createRecipeResultToCreateRecipeResponse(
+  recipe: RecipeEntity,
+): CreateRecipe200 {
+  return {
+    recipe: recipeToApiRecipe(recipe),
+  };
+}
+
+export function updateMetadataResultToUpdateRecipeResponse(
+  row: RecipeEntity,
+): UpdateRecipe200 {
+  return { recipe: recipeToApiRecipe(row) };
+}
+
+export function versionsListResultToListRecipeVersionsResponse(
+  versions: RecipeVersionEntity[],
+): ListRecipeVersions200 {
+  return { recipeVersions: versions.map(recipeVersionToApiRecipeVersion) };
+}
+
+export function updateLatestVersionResultToUpdateRecipeVersionLatestResponse(
+  row: RecipeVersionEntity,
+): UpdateRecipeVersionLatest200 {
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
+}
+
+export function createVersionResultToCreateRecipeVersionResponse(
+  row: RecipeVersionEntity,
+): CreateRecipeVersion200 {
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
+}
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteRecipeResultToDeleteRecipeResponse(
+  _row: RecipeEntity,
+): void {
+  // 204 No Content - no body to map
+}
+
+/** No response body for 204; mapper used for consistency with other routes. */
+export function deleteFileResultToFilesDeleteRecipesResponse(
+  _row: RecipeFileEntity,
+): void {
+  // 204 No Content - no body to map
+}
+
 /** Map a recipe file with downloadUrl pointing at the public shared blob path. */
 export function recipeFileToSharedApiRecipeFile(
   row: RecipeFileEntity,
-): RecipeFileInfoApi {
+): SharedRecipeFileInfoApi {
   return {
     id: row.id,
     recipeId: row.recipe_id,

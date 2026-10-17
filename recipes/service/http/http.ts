@@ -17,14 +17,14 @@ import {
   recipesServiceStorage,
   type RecipesServiceContextOptions,
 } from "@sderickson/recipes-service-common";
-import { createAdminRouter } from "./routes/admin/index.ts";
+import { createAdminRouter } from "./handlers/admin/index.ts";
 import { groupRouterMounts } from "./routers.ts";
 
 // BEGIN SORTED WORKFLOW AREA router-imports FOR express/add-handler
-import { createCollectionsRouter } from "./routes/collections/index.ts";
-import { createMenusRouter } from "./routes/menus/index.ts";
-import { createRecipesRouter } from "./routes/recipes/index.ts";
-import { createUnsplashPhotosRouter } from "./routes/unsplash-photos/index.ts";
+import { createCollectionsRouter } from "./handlers/collections/index.ts";
+import { createMenusRouter } from "./handlers/menus/index.ts";
+import { createRecipesRouter } from "./handlers/recipes/index.ts";
+import { createUnsplashPhotosRouter } from "./handlers/unsplash-photos/index.ts";
 // END WORKFLOW AREA
 
 /**
@@ -60,7 +60,7 @@ export function createRecipesHttpApp(options: RecipesServiceContextOptions = {})
 
   app.use(createAdminRouter());
 
-  // Public/handler-group routers (e.g. share links) before authenticated routes/.
+  // Public/handler-group routers (e.g. share links) before authenticated handlers.
   for (const mount of groupRouterMounts()) {
     app.use(mount.createRouter());
   }

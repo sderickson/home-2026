@@ -12,7 +12,7 @@ import {
   type RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
-import { menuToApiMenu } from "../../routes/menus/_helpers.ts";
+import { menuToApiMenu } from "./_helpers.ts";
 import {
   recipeFileToSharedApiRecipeFile,
   recipeToApiRecipe,

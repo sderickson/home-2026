@@ -11,8 +11,8 @@ import {
   releaseSlimRouteTest,
   type SlimRouteTestContext,
 } from "#test/slim-route-test.ts";
-import { createRecipesRouter } from "./index.ts";
-import { createTestCollection, SEED_USER_ID } from "../../routes/recipes/_test-helpers.ts";
+import { createRecipesShareRouter } from "./index.ts";
+import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
 describe("sharedFilesDownloadRecipes", () => {
   let ctx: SlimRouteTestContext;
@@ -21,7 +21,7 @@ describe("sharedFilesDownloadRecipes", () => {
   let fileId: string;
 
   beforeAll(async () => {
-    ctx = acquireRouterSlimRouteTest(createRecipesRouter);
+    ctx = acquireRouterSlimRouteTest(createRecipesShareRouter);
 
     const collectionId = await createTestCollection(ctx.dbKey);
     const { result } = await recipeQueries.createWithVersionRecipe(ctx.dbKey, {

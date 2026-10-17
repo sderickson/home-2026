@@ -1,5 +1,7 @@
 // BEGIN WORKFLOW AREA fake-handler-imports FOR sdk/add-query
+import { filesDownloadRecipesHandler } from "./files-download.fake.ts";
 import { filesListRecipesHandler } from "./files-list.fake.ts";
+import { sharedFilesDownloadRecipesHandler } from "./shared-files-download.fake.ts";
 import { getRecipeHandler } from "./get.fake.ts";
 import { listRecipesHandler } from "./list.fake.ts";
 import { versionsListRecipesHandler } from "./versions-list.fake.ts";
@@ -20,7 +22,9 @@ import { versionsLatestUpdateRecipesHandler } from "./versions-latest-update.fak
 // export all fake handlers for this group
 export const recipesFakeHandlers = [
   // BEGIN WORKFLOW AREA fake-handler-array FOR sdk/add-query
+  filesDownloadRecipesHandler,
   filesListRecipesHandler,
+  sharedFilesDownloadRecipesHandler,
   getRecipeHandler,
   listRecipesHandler,
   versionsListRecipesHandler,

@@ -1,7 +1,9 @@
 // BEGIN SORTED WORKFLOW AREA query-exports FOR sdk/add-query
+export * from "./files-download.ts";
 export * from "./files-list.ts";
 export * from "./get.ts";
 export * from "./list.ts";
+export * from "./shared-files-download.ts";
 export * from "./shared-get.ts";
 export * from "./versions-list.ts";
 // END WORKFLOW AREA
