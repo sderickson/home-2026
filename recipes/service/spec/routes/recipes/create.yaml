@@ -3,6 +3,10 @@ createRecipe:
   operationId: "createRecipe"
   security:
     - session: [email-verified]
+  # instructionsMarkdown may contain raw HTML; the handler sanitizes it and
+  # rejects HTML in the other fields.
+  tags:
+    - "block-html-exempt"
 
   requestBody:
     required: true
@@ -44,12 +48,18 @@ createRecipe:
             type: object
             required:
               - recipe
+              - removedHtml
             properties:
               recipe:
                 $ref: "../../schemas/recipe.yaml"
               initialVersion:
                 $ref: "../../schemas/recipe-version.yaml"
                 description: "Present when initialVersion was supplied in the request."
+              removedHtml:
+                type: array
+                description: "Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed."
+                items:
+                  $ref: "../../schemas/html-removal.yaml"
 
     "400":
       description: "Bad request - collectionId is required in request body."

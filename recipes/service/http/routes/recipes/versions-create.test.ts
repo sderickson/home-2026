@@ -64,6 +64,39 @@ describe("POST /recipes/:id/versions", () => {
     } satisfies Partial<RecipesServiceResponseBody["createRecipeVersion"][200]>);
   });
 
+  it("should sanitize HTML in instructions and report what was removed", async () => {
+    const response = await request(app)
+      .post(`/recipes/${recipeId}/versions`)
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
+      .send({
+        ingredients: [],
+        instructionsMarkdown:
+          'Mix <b>well</b>.\n\n<br />\n\n<img src="a.png" onerror="x"> <script>alert(1)</script>',
+      } satisfies RecipesServiceRequestBody["createRecipeVersion"]);
+
+    expect(response.status).toBe(200);
+    expect(response.body.recipeVersion.content.instructionsMarkdown).toBe(
+      'Mix <b>well</b>.\n\n<br />\n\n<img src="a.png"> alert(1)',
+    );
+    expect(response.body.removedHtml).toEqual([
+      { tag: "img", attribute: "onerror" },
+      { tag: "script" },
+    ]);
+  });
+
+  it("should return 400 when an ingredient contains HTML", async () => {
+    const response = await request(app)
+      .post(`/recipes/${recipeId}/versions`)
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
+      .send({
+        ingredients: [{ name: "<i>Flour</i>", quantity: "1", unit: "cup" }],
+        instructionsMarkdown: "",
+      } satisfies RecipesServiceRequestBody["createRecipeVersion"]);
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe("HTML_NOT_ALLOWED");
+  });
+
   it("should return 401 when not authenticated", async () => {
     const response = await request(app)
       .post("/recipes/00000000-0000-0000-0000-000000000000/versions")

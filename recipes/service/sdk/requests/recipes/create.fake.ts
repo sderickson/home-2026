@@ -44,6 +44,6 @@ export const createRecipesHandler = recipesHandler({
       ...(currentVersionId && { currentVersionId }),
     };
     mockRecipes.push(recipe);
-    return { recipe, initialVersion };
+    return { recipe, initialVersion, removedHtml: [] };
   },
 });

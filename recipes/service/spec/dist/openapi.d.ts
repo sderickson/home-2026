@@ -347,6 +347,7 @@ export interface components {
         Collection: components["schemas"]["collection"];
         CollectionMember: components["schemas"]["collection-member"];
         Menu: components["schemas"]["menu"];
+        HtmlRemoval: components["schemas"]["html-removal"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -538,6 +539,19 @@ export interface components {
              * @example 2023-01-15T14:30:00Z
              */
             createdAt: string;
+        };
+        /** @description Something removed when sanitizing raw HTML in markdown. With only `tag`, the element was removed (its text is usually kept). With `attribute`, only that attribute was removed from the element. HTML comments use the tag `#comment`. */
+        "html-removal": {
+            /**
+             * @description Lowercase element name, e.g. "script"
+             * @example img
+             */
+            tag: string;
+            /**
+             * @description Attribute removed from the element, when only an attribute was removed
+             * @example onerror
+             */
+            attribute?: string;
         };
         /** @description Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view). */
         "unsplash-attribution": {
@@ -979,6 +993,8 @@ export interface operations {
                         recipe: components["schemas"]["recipe"];
                         /** @description Present when initialVersion was supplied in the request. */
                         initialVersion?: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
                 };
             };
@@ -1263,7 +1279,18 @@ export interface operations {
                 content: {
                     "application/json": {
                         recipeVersion: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
+                };
+            };
+            /** @description Bad request - HTML in a field other than instructionsMarkdown. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1320,7 +1347,18 @@ export interface operations {
                 content: {
                     "application/json": {
                         recipeVersion: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
+                };
+            };
+            /** @description Bad request - HTML in a field other than instructionsMarkdown. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

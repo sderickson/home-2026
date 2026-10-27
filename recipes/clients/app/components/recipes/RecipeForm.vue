@@ -122,9 +122,11 @@ import RecipeIngredientsForm from "./RecipeIngredientsForm.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import { recipe_form as strings } from "./RecipeForm.strings.ts";
 import {
+  describeRemovedHtml,
   isRecipeFormValid,
   shouldSaveRecipeVersionInPlace,
 } from "./RecipeForm.logic.ts";
+import { showWarning } from "@saflib/vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import {
   useCreateRecipeMutation,
@@ -231,9 +233,18 @@ function setIngredients(
   model.value.initialVersion.content.ingredients = v;
 }
 
+/** Tell the user when the server stripped HTML from the instructions. */
+function warnIfHtmlRemoved(removed: { tag: string; attribute?: string }[]) {
+  if (removed.length === 0) return;
+  showWarning(
+    t(strings.html_removed, { items: describeRemovedHtml(removed).join(", ") }),
+  );
+}
+
 async function handleCreate() {
   if (!isValid.value) return;
   const data = await createMutation.mutateAsync(model.value);
+  warnIfHtmlRemoved(data.removedHtml);
   emit("success", data.recipe.id);
   props.onSuccess?.(data.recipe.id);
 }
@@ -248,17 +259,16 @@ async function handleEditSave() {
     description: model.value.description ?? undefined,
   });
   const versionBody = content();
-  if (shouldSaveRecipeVersionInPlace(currentVersion.createdAt)) {
-    await updateLatestVersionMutation.mutateAsync({
-      id: recipe.id,
-      ...versionBody,
-    });
-  } else {
-    await createVersionMutation.mutateAsync({
-      id: recipe.id,
-      ...versionBody,
-    });
-  }
+  const saved = shouldSaveRecipeVersionInPlace(currentVersion.createdAt)
+    ? await updateLatestVersionMutation.mutateAsync({
+        id: recipe.id,
+        ...versionBody,
+      })
+    : await createVersionMutation.mutateAsync({
+        id: recipe.id,
+        ...versionBody,
+      });
+  warnIfHtmlRemoved(saved.removedHtml);
   emit("success", recipe.id);
   props.onSuccess?.(recipe.id);
 }

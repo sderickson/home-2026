@@ -138,10 +138,12 @@ export function getByIdResultToGetRecipeResponse(
 export function createWithVersionResultToCreateRecipeResponse(
   recipe: RecipeEntity,
   version: RecipeVersionEntity,
+  removedHtml: CreateRecipe200["removedHtml"],
 ): CreateRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe, version.id),
     initialVersion: recipeVersionToApiRecipeVersion(version),
+    removedHtml,
   };
 }
 
@@ -150,6 +152,7 @@ export function createRecipeResultToCreateRecipeResponse(
 ): CreateRecipe200 {
   return {
     recipe: recipeToApiRecipe(recipe),
+    removedHtml: [],
   };
 }
 
@@ -167,14 +170,16 @@ export function versionsListResultToListRecipeVersionsResponse(
 
 export function updateLatestVersionResultToUpdateRecipeVersionLatestResponse(
   row: RecipeVersionEntity,
+  removedHtml: UpdateRecipeVersionLatest200["removedHtml"],
 ): UpdateRecipeVersionLatest200 {
-  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row), removedHtml };
 }
 
 export function createVersionResultToCreateRecipeVersionResponse(
   row: RecipeVersionEntity,
+  removedHtml: CreateRecipeVersion200["removedHtml"],
 ): CreateRecipeVersion200 {
-  return { recipeVersion: recipeVersionToApiRecipeVersion(row) };
+  return { recipeVersion: recipeVersionToApiRecipeVersion(row), removedHtml };
 }
 
 /** No response body for 204; mapper used for consistency with other routes. */

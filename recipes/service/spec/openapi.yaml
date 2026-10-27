@@ -117,4 +117,6 @@ components:
       $ref: "./schemas/collection-member.yaml"
     Menu:
       $ref: "./schemas/menu.yaml"
+    HtmlRemoval:
+      $ref: "./schemas/html-removal.yaml"
     # END WORKFLOW AREA

@@ -102,6 +102,9 @@
             ]
           }
         ],
+        "tags": [
+          "block-html-exempt"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -153,7 +156,8 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "recipe"
+                    "recipe",
+                    "removedHtml"
                   ],
                   "properties": {
                     "recipe": {
@@ -162,6 +166,13 @@
                     "initialVersion": {
                       "$ref": "#/components/schemas/recipe-version",
                       "description": "Present when initialVersion was supplied in the request."
+                    },
+                    "removedHtml": {
+                      "type": "array",
+                      "description": "Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed.",
+                      "items": {
+                        "$ref": "#/components/schemas/html-removal"
+                      }
                     }
                   }
                 }
@@ -531,6 +542,9 @@
             ]
           }
         ],
+        "tags": [
+          "block-html-exempt"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -561,13 +575,31 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "recipeVersion"
+                    "recipeVersion",
+                    "removedHtml"
                   ],
                   "properties": {
                     "recipeVersion": {
                       "$ref": "#/components/schemas/recipe-version"
+                    },
+                    "removedHtml": {
+                      "type": "array",
+                      "description": "Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed.",
+                      "items": {
+                        "$ref": "#/components/schemas/html-removal"
+                      }
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - HTML in a field other than instructionsMarkdown.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -616,6 +648,9 @@
             ]
           }
         ],
+        "tags": [
+          "block-html-exempt"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -646,13 +681,31 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "recipeVersion"
+                    "recipeVersion",
+                    "removedHtml"
                   ],
                   "properties": {
                     "recipeVersion": {
                       "$ref": "#/components/schemas/recipe-version"
+                    },
+                    "removedHtml": {
+                      "type": "array",
+                      "description": "Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed.",
+                      "items": {
+                        "$ref": "#/components/schemas/html-removal"
+                      }
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - HTML in a field other than instructionsMarkdown.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
                 }
               }
             }
@@ -2647,6 +2700,9 @@
       "Menu": {
         "$ref": "#/components/schemas/menu"
       },
+      "HtmlRemoval": {
+        "$ref": "#/components/schemas/html-removal"
+      },
       "recipe": {
         "type": "object",
         "properties": {
@@ -2892,6 +2948,25 @@
           "isLatest",
           "createdBy",
           "createdAt"
+        ]
+      },
+      "html-removal": {
+        "type": "object",
+        "description": "Something removed when sanitizing raw HTML in markdown. With only `tag`, the element was removed (its text is usually kept). With `attribute`, only that attribute was removed from the element. HTML comments use the tag `#comment`.\n",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "description": "Lowercase element name, e.g. \"script\"",
+            "example": "img"
+          },
+          "attribute": {
+            "type": "string",
+            "description": "Attribute removed from the element, when only an attribute was removed",
+            "example": "onerror"
+          }
+        },
+        "required": [
+          "tag"
         ]
       },
       "unsplash-attribution": {

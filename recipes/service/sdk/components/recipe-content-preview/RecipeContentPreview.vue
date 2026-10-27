@@ -134,7 +134,8 @@ import type {
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import { computed, useId } from "vue";
-import { marked } from "marked";
+import DOMPurify from "dompurify";
+import { renderMarkdownToSafeHtml } from "@sderickson/recipes-markdown";
 import { useDisplay } from "vuetify";
 import { recipe_content_preview_strings as strings } from "./RecipeContentPreview.strings.ts";
 import { useReverseT } from "../../i18n.ts";
@@ -210,8 +211,9 @@ const ingredientRows = computed(() =>
 const renderedInstructions = computed(() =>
   content.value.instructionsMarkdown
     ? // role="list": Safari drops list semantics when list-style is none.
-      (
-        marked(content.value.instructionsMarkdown, { async: false }) as string
+      renderMarkdownToSafeHtml(
+        content.value.instructionsMarkdown,
+        DOMPurify,
       ).replace(/<ol(?=[ >])/g, '<ol role="list"')
     : "",
 );

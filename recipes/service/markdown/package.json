@@ -1,0 +1,27 @@
+{
+  "name": "@sderickson/recipes-markdown",
+  "description": "Markdown sanitizing and rendering shared by the recipes server and clients",
+  "private": true,
+  "type": "module",
+  "saf": {
+    "kind": "lib"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./server": "./server.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.17",
+    "jsdom": "^30.0.1",
+    "marked": "^18.0.0"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*",
+    "@types/jsdom": "^30.0.0"
+  }
+}

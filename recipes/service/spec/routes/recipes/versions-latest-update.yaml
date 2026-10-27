@@ -3,6 +3,10 @@ updateRecipeVersionLatest:
   operationId: "updateRecipeVersionLatest"
   security:
     - session: [email-verified]
+  # instructionsMarkdown may contain raw HTML; the handler sanitizes it and
+  # rejects HTML in the other fields.
+  tags:
+    - "block-html-exempt"
 
   parameters:
     - name: "id"
@@ -29,9 +33,22 @@ updateRecipeVersionLatest:
             type: object
             required:
               - recipeVersion
+              - removedHtml
             properties:
               recipeVersion:
                 $ref: "../../schemas/recipe-version.yaml"
+              removedHtml:
+                type: array
+                description: "Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed."
+                items:
+                  $ref: "../../schemas/html-removal.yaml"
+
+    "400":
+      description: "Bad request - HTML in a field other than instructionsMarkdown."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
 
     "401":
       description: "Unauthorized - missing or invalid auth headers, or not logged in."

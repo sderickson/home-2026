@@ -91,6 +91,43 @@ describe("POST /recipes", () => {
     expect(response.body.initialVersion).toBeUndefined();
   });
 
+  it("should sanitize HTML in the initial instructions", async () => {
+    const response = await request(app)
+      .post("/recipes")
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
+      .send({
+        collectionId,
+        title: "Html",
+        subtitle: "",
+        initialVersion: {
+          content: {
+            ingredients: [],
+            instructionsMarkdown: "Stir <iframe src=x></iframe>gently",
+          },
+        },
+      } satisfies RecipesServiceRequestBody["createRecipe"]);
+
+    expect(response.status).toBe(200);
+    expect(response.body.initialVersion.content.instructionsMarkdown).toBe(
+      "Stir gently",
+    );
+    expect(response.body.removedHtml).toEqual([{ tag: "iframe" }]);
+  });
+
+  it("should return 400 when the title contains HTML", async () => {
+    const response = await request(app)
+      .post("/recipes")
+      .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
+      .send({
+        collectionId,
+        title: "<b>Bold</b>",
+        subtitle: "",
+      } satisfies RecipesServiceRequestBody["createRecipe"]);
+
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe("HTML_NOT_ALLOWED");
+  });
+
   it("should return 401 when not authenticated", async () => {
     const response = await request(app)
       .post("/recipes")

@@ -12,6 +12,7 @@ import {
   createRecipeResultToCreateRecipeResponse,
   createWithVersionResultToCreateRecipeResponse,
 } from "./_helpers.ts";
+import { assertNoHtml, sanitizeVersionContent } from "./_markdown.ts";
 
 export const createRecipeHandler = createHandler(
   async (req, res) => {
@@ -24,6 +25,12 @@ export const createRecipeHandler = createHandler(
       });
     }
 
+    assertNoHtml({
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+    });
+
     await requireCollectionMembership(collectionId.trim(), {
       requireMutate: true,
     });
@@ -31,8 +38,12 @@ export const createRecipeHandler = createHandler(
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     const userId = auth.userId;
 
-    const initialContent = data.initialVersion?.content;
-    if (initialContent) {
+    const rawContent = data.initialVersion?.content;
+    if (rawContent) {
+      const { content, removedHtml } = sanitizeVersionContent({
+        ingredients: rawContent.ingredients ?? [],
+        instructionsMarkdown: rawContent.instructionsMarkdown ?? "",
+      });
       const { result, error } = await recipeQueries.createWithVersionRecipe(
         recipesDbKey,
         {
@@ -42,10 +53,7 @@ export const createRecipeHandler = createHandler(
           description: data.description ?? null,
           createdBy: userId,
           updatedBy: userId,
-          versionContent: {
-            ingredients: initialContent.ingredients ?? [],
-            instructionsMarkdown: initialContent.instructionsMarkdown ?? "",
-          },
+          versionContent: content,
         },
       );
 
@@ -60,6 +68,7 @@ export const createRecipeHandler = createHandler(
         createWithVersionResultToCreateRecipeResponse(
           result.recipe,
           result.version,
+          removedHtml,
         );
       res.status(200).json(response);
       return;

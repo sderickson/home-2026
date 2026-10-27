@@ -9,6 +9,7 @@ import type {
 import { recipeQueries, RecipeNotFoundError } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { createVersionResultToCreateRecipeVersionResponse } from "./_helpers.ts";
+import { sanitizeVersionContent } from "./_markdown.ts";
 
 type CreateVersionRecipeError = RecipeNotFoundError;
 
@@ -20,12 +21,13 @@ export const versionsCreateRecipesHandler = createHandler(
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
+    const { content, removedHtml } = sanitizeVersionContent(data);
 
     const { result, error } = await recipeQueries.createVersionRecipe(
       recipesDbKey,
       {
         recipeId: id,
-        content: data,
+        content,
         createdBy: auth.userId,
       },
     );
@@ -41,7 +43,7 @@ export const versionsCreateRecipesHandler = createHandler(
     }
 
     const response: RecipesServiceResponseBody["createRecipeVersion"][200] =
-      createVersionResultToCreateRecipeVersionResponse(result);
+      createVersionResultToCreateRecipeVersionResponse(result, removedHtml);
     res.status(200).json(response);
   },
 );
