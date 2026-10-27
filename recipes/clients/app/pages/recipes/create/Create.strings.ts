@@ -6,4 +6,5 @@ export const recipes_create_page = {
   breadcrumb_collections: "Collections",
   breadcrumb_recipes: "Recipes",
   breadcrumb_new: "New",
+  add_to_menu_label: "Add to a menu (optional)",
 };

@@ -2,7 +2,19 @@
   <v-container>
     <h1 class="text-h4 mb-4">{{ t(strings.title) }}</h1>
 
-    <RecipeForm v-model="formModel" @success="handleSuccess" />
+    <RecipeForm v-model="formModel" @success="handleSuccess">
+      <template v-if="menus.length > 0" #after-description>
+        <div class="text-subtitle-2 mb-2">
+          {{ t(strings.add_to_menu_label) }}
+        </div>
+        <MenuPlacementPicker
+          v-model="menuPlacement"
+          :menus="menus"
+          allow-none
+          class="mb-6"
+        />
+      </template>
+    </RecipeForm>
   </v-container>
 </template>
 
@@ -14,6 +26,12 @@ import { recipes_create_page as strings } from "./Create.strings.ts";
 import { useCreateLoader } from "./Create.loader.ts";
 import { assertCreateDataLoaded } from "./Create.logic.ts";
 import RecipeForm from "../../../components/recipes/RecipeForm.vue";
+import MenuPlacementPicker from "../../../components/menus/MenuPlacementPicker.vue";
+import { useAddRecipeToMenu } from "../../../components/menus/useAddRecipeToMenu.ts";
+import {
+  isPlacementComplete,
+  type MenuPlacement,
+} from "../../../components/menus/menuPlacement.logic.ts";
 import type { RecipeFormModel } from "../../../components/recipes/RecipeForm.vue";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { appLinks } from "@sderickson/recipes-links";
@@ -23,7 +41,7 @@ const { t } = useReverseT();
 const route = useRoute();
 const router = useRouter();
 const collectionId = route.params.collectionId as string;
-const { sessionQuery, collectionQuery } = useCreateLoader();
+const { sessionQuery, collectionQuery, menusQuery } = useCreateLoader();
 
 assertCreateDataLoaded(sessionQuery.data.value);
 
@@ -46,7 +64,21 @@ const formModel = ref<RecipeFormModel>({
   },
 });
 
-function handleSuccess(recipeId: string) {
+const menus = computed(() => menusQuery.data.value?.menus ?? []);
+const menuPlacement = ref<MenuPlacement>({ menuId: null, section: "" });
+const { addRecipeToMenu } = useAddRecipeToMenu();
+
+async function handleSuccess(recipeId: string) {
+  const placement = menuPlacement.value;
+  const menu = menus.value.find((m) => m.id === placement.menuId);
+  if (menu && isPlacementComplete(placement)) {
+    try {
+      await addRecipeToMenu(menu, placement.section, recipeId);
+    } catch {
+      // The recipe exists either way; the snackbar shows the menu error and
+      // the recipe page offers to add it to a menu again.
+    }
+  }
   router.push(
     constructPath(appLinks.recipesDetail, {
       params: { collectionId, id: recipeId },

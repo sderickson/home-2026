@@ -1,6 +1,11 @@
 <template>
   <div>
     <v-container fluid class="pa-0 pt-md-4" max-width="1040">
+      <AddToMenuPrompt
+        v-if="canEdit && !recipe.archivedAt"
+        :collection-id="collectionId"
+        :recipe-id="recipe.id"
+      />
       <RecipeDetailContent
         :recipe="recipe"
         :current-version="currentVersion"
@@ -29,6 +34,7 @@ import {
   assertVersionsLoaded,
 } from "./Detail.logic.ts";
 import RecipeDetailContent from "../../../components/recipe-detail/RecipeDetailContent.vue";
+import AddToMenuPrompt from "./AddToMenuPrompt.vue";
 import { useScreenWakeLock } from "../../../composables/useScreenWakeLock.ts";
 
 useScreenWakeLock();
@@ -55,6 +61,10 @@ const members = computed(() => queries.membersQuery.data.value?.members ?? []);
 const userEmail = computed(
   () => kratosEmailFromSession(queries.sessionQuery.data.value) ?? "",
 );
+const canEdit = computed(() => {
+  const role = members.value.find((m) => m.email === userEmail.value)?.role;
+  return role === "editor" || role === "owner";
+});
 const versions = computed(
   () => queries.versionsQuery.data.value?.recipeVersions ?? [],
 );

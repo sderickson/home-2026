@@ -59,6 +59,8 @@
               rows="3"
               class="mb-4"
             />
+            <!-- Extra fields for the page using the form (e.g. menu placement on create). -->
+            <slot name="after-description" />
             <div class="text-subtitle-2 mb-1">
               {{ t(strings.ingredients_label) }}
             </div>
