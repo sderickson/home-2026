@@ -367,7 +367,7 @@ async function onDeleteCollection() {
     await deleteMutation.mutateAsync(collectionId);
     router.push(appLinks.home.path);
   } catch {
-    // Error handled by mutation / global snackbar if configured
+    // The global mutation error handler shows it in the snackbar.
   }
 }
 
