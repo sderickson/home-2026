@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@saflib/links": "*",
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/sdk": "*",
     "@saflib/vite": "*",
     "@saflib/vitepress": "*",
