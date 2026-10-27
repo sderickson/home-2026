@@ -7,6 +7,8 @@
 import {
   mdiAccountGroup,
   mdiAccountGroupOutline,
+  mdiArchiveArrowUpOutline,
+  mdiArchiveOutline,
   mdiBookOpenPageVariantOutline,
   mdiCameraOutline,
   mdiCheck,
@@ -59,6 +61,8 @@ export const mdiIconPaths: Record<string, string> = {
   "mdi-chevron-up": mdiChevronUp,
   "mdi-close": mdiClose,
   "mdi-content-save": mdiContentSave,
+  "mdi-archive-arrow-up-outline": mdiArchiveArrowUpOutline,
+  "mdi-archive-outline": mdiArchiveOutline,
   "mdi-delete": mdiDelete,
   "mdi-delete-outline": mdiDeleteOutline,
   "mdi-dots-vertical": mdiDotsVertical,

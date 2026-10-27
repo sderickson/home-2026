@@ -26,6 +26,16 @@
               "type": "string"
             },
             "description": "Id of the collection to list recipes from."
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "List archived recipes instead of active ones."
           }
         ],
         "responses": {
@@ -441,6 +451,120 @@
           },
           "403": {
             "description": "Forbidden - user does not have required privileges (admin only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}/archive": {
+      "put": {
+        "summary": "Archive or unarchive a recipe. Caller must be editor/owner on its collection.",
+        "description": "Archived recipes are left out of the default recipe list. Archiving also removes the recipe from every menu in its collection; unarchiving does not put it back.\n",
+        "operationId": "archiveRecipe",
+        "security": [
+          {
+            "session": [
+              "email-verified"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Recipe id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "archived"
+                ],
+                "properties": {
+                  "archived": {
+                    "type": "boolean",
+                    "description": "True to archive, false to restore."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated recipe and the menus it was removed from.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "recipe",
+                    "removedFromMenus"
+                  ],
+                  "properties": {
+                    "recipe": {
+                      "$ref": "#/components/schemas/recipe"
+                    },
+                    "removedFromMenus": {
+                      "type": "array",
+                      "description": "Menus the recipe was removed from (empty when unarchiving).",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not editor/owner on the recipe's collection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2748,6 +2872,13 @@
             "format": "date-time",
             "description": "When the recipe was last updated",
             "example": "2023-02-01T09:00:00Z"
+          },
+          "archivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the recipe was archived; null or absent when active",
+            "example": null
           },
           "currentVersionId": {
             "type": "string",

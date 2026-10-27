@@ -106,6 +106,7 @@ export function recipeToApiRecipe(
     createdAt: row.createdAt.toISOString(),
     updatedBy: row.updatedBy,
     updatedAt: row.updatedAt.toISOString(),
+    ...(row.archivedAt && { archivedAt: row.archivedAt.toISOString() }),
     ...(currentVersionId !== undefined && { currentVersionId }),
   };
 }

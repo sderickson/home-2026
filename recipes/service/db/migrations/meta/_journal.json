@@ -78,6 +78,13 @@
       "when": 1789579174661,
       "tag": "0011_goofy_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1793071562126,
+      "tag": "0012_next_mole_man",
+      "breakpoints": true
     }
   ]
 }

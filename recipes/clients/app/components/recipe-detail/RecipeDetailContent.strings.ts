@@ -5,6 +5,7 @@ export const recipe_detail_content = {
   toolbar_edit: "Edit",
   toolbar_upload_image: "Upload from computer",
   toolbar_choose_unsplash: "Choose from Unsplash",
+  toolbar_archive: "Archive recipe",
   toolbar_delete: "Delete recipe",
   link_copied: "Link copied",
   remove_image: "Remove image",
@@ -18,6 +19,14 @@ export const recipe_detail_content = {
   delete_file_confirm: "Remove this file from the recipe?",
   delete_recipe: "Delete recipe",
   delete_recipe_confirm: "Delete this recipe? This cannot be undone.",
+  archive_recipe: "Archive recipe",
+  archive_recipe_confirm:
+    "Archive this recipe? It will be hidden from the recipe list and removed from any menus. You can restore it from the archive on the collection page.",
+  archived: "Recipe archived",
+  archived_from_menus: "Recipe archived and removed from: {menus}",
+  archived_banner: "This recipe is archived. It's hidden from the recipe list and can't be added to menus.",
+  restore_recipe: "Restore recipe",
+  restored: "Recipe restored",
   cancel: "Cancel",
   unsplash_photo_by: "Photo by {name}",
 };

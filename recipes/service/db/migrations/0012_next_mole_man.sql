@@ -1,0 +1,1 @@
+ALTER TABLE `recipe` ADD `archived_at` integer;

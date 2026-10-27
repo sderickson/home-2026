@@ -18,6 +18,9 @@ paths:
       $ref: "./routes/recipes/update.yaml#/updateRecipe"
     delete:
       $ref: "./routes/recipes/delete.yaml#/deleteRecipe"
+  /recipes/{id}/archive:
+    put:
+      $ref: "./routes/recipes/archive.yaml#/archiveRecipe"
   /recipes/{id}/versions:
     get:
       $ref: "./routes/recipes/versions-list.yaml#/listRecipeVersions"

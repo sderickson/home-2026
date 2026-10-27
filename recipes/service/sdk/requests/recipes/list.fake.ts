@@ -13,9 +13,12 @@ export const listRecipesHandler = recipesHandler({
       query.collectionId !== ""
     ) {
       const id = query.collectionId;
+      const archived = String(query.archived) === "true";
       return {
         recipes: list.filter(
-          (r) => (r as { collectionId?: string }).collectionId === id,
+          (r) =>
+            (r as { collectionId?: string }).collectionId === id &&
+            !!r.archivedAt === archived,
         ),
       };
     }

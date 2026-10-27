@@ -73,4 +73,27 @@ describe("listRecipes", () => {
     expect(r).toHaveProperty("updatedBy");
     expect(r).toHaveProperty("updatedAt");
   });
+
+  it("lists active recipes by default and archived ones on request", async () => {
+    const db = recipesDbManager.get(dbKey)!;
+    await db
+      .insert(recipe)
+      .values([
+        makeRecipeRow({ title: "Active" }),
+        makeRecipeRow({ title: "Old", archivedAt: new Date() }),
+      ]);
+
+    const active = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+    });
+    assert(active.result);
+    expect(active.result.map((r) => r.title)).toEqual(["Active"]);
+
+    const archived = await listRecipes(dbKey, {
+      collectionId: TEST_COLLECTION_ID,
+      archived: true,
+    });
+    assert(archived.result);
+    expect(archived.result.map((r) => r.title)).toEqual(["Old"]);
+  });
 });

@@ -2,6 +2,7 @@ import { recipes_common_strings } from "../common/strings.ts";
 
 // BEGIN WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { collections_detail } from "./pages/collections/detail/Detail.strings.ts";
+import { archived_recipes_section } from "./pages/collections/detail/ArchivedRecipesSection.strings.ts";
 import { create_collection_dialog } from "./components/collections/CreateCollectionDialog.strings.ts";
 import { create_menu_form } from "./pages/menus/create/CreateMenuForm.strings.ts";
 import { delete_menu_dialog } from "./pages/menus/detail/DeleteMenuDialog.strings.ts";
@@ -30,6 +31,7 @@ export const app_strings = {
   ...recipes_common_strings,
   // BEGIN WORKFLOW AREA string-object FOR vue/add-view sdk/add-component
   collections_detail,
+  archived_recipes_section,
   create_collection_dialog,
   create_menu_form,
   delete_menu_dialog,

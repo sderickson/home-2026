@@ -41,6 +41,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Archive or unarchive a recipe. Caller must be editor/owner on its collection.
+         * @description Archived recipes are left out of the default recipe list. Archiving also removes the recipe from every menu in its collection; unarchiving does not put it back.
+         */
+        put: operations["archiveRecipe"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes/{id}/versions": {
         parameters: {
             query?: never;
@@ -391,6 +411,12 @@ export interface components {
              * @example 2023-02-01T09:00:00Z
              */
             updatedAt: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was archived; null or absent when active
+             * @example null
+             */
+            archivedAt?: string | null;
             /**
              * @description Optional id of the current/latest version for display
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
@@ -901,6 +927,8 @@ export interface operations {
             query: {
                 /** @description Id of the collection to list recipes from. */
                 collectionId: string;
+                /** @description List archived recipes instead of active ones. */
+                archived?: boolean;
             };
             header?: never;
             path?: never;
@@ -1183,6 +1211,70 @@ export interface operations {
                 };
             };
             /** @description Forbidden - user does not have required privileges (admin only). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
+    archiveRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description True to archive, false to restore. */
+                    archived: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description The updated recipe and the menus it was removed from. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        /** @description Menus the recipe was removed from (empty when unarchiving). */
+                        removedFromMenus: {
+                            id: string;
+                            name: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller is not editor/owner on the recipe's collection. */
             403: {
                 headers: {
                     [name: string]: unknown;

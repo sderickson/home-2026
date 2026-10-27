@@ -11,6 +11,13 @@ listRecipes:
       schema:
         type: string
       description: Id of the collection to list recipes from.
+    - name: archived
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+      description: List archived recipes instead of active ones.
   responses:
     "400":
       description: "Bad request - collectionId is required."
