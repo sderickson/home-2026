@@ -182,6 +182,13 @@
     margin: 12mm;
   }
 
+  /* Screen sizes are much too large on paper. Scaling the whole page keeps
+   * the rules, frames and columns in proportion; a 16px body prints at 9pt,
+   * and the page lays out as if it were wider, so desktop layouts apply. */
+  html {
+    zoom: 0.75;
+  }
+
   html,
   body,
   .v-application {
