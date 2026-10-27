@@ -8,7 +8,7 @@ import { StubComponent } from "@saflib/vue/components";
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    component: () => import("./LayoutDemo.vue"),
+    component: StubComponent,
   },
 ];
 
