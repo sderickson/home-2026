@@ -33,6 +33,9 @@
           <p v-if="recipe.subtitle" class="rcp__subtitle text-ink-2">
             {{ recipe.subtitle }}
           </p>
+          <p v-if="recipe.description" class="rcp__description text-ink-2">
+            {{ recipe.description }}
+          </p>
         </div>
         <div v-if="$slots.tools" class="rcp__tools">
           <slot name="tools" />
@@ -109,20 +112,6 @@
         </v-col>
       </v-row>
 
-      <section
-        v-if="recipe.description"
-        class="rcp__notes ruled-32"
-        :aria-labelledby="`${uid}-notes`"
-      >
-        <component
-          :is="sectionHeading"
-          :id="`${uid}-notes`"
-          class="section-label"
-        >
-          {{ t(strings.notes) }}
-        </component>
-        <p class="text-ink-2">{{ recipe.description }}</p>
-      </section>
     </div>
   </article>
 </template>
@@ -220,7 +209,7 @@ const renderedInstructions = computed(() =>
 </script>
 
 <style scoped>
-/* One index card's contents: header → ingredients | method → notes.
+/* One index card's contents: header (title, subtitle, description) → ingredients | method.
  * Text in ruled areas uses line-height var(--rule) and vertical spacing in
  * multiples of it, so it sits on the lines. Below md (and in compact mode) it
  * is one column: the --narrow rules near the end. */
@@ -289,6 +278,15 @@ const renderedInstructions = computed(() =>
 .rcp__subtitle {
   margin: 10px 0 0;
   font-size: 20px;
+}
+
+/* The longer description reads as a short paragraph under the subtitle. */
+.rcp__description {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-line;
 }
 
 .rcp__photo {
@@ -485,18 +483,6 @@ const renderedInstructions = computed(() =>
   margin-bottom: 0;
 }
 
-/* ---------- Notes ---------- */
-.rcp__notes {
-  padding: 0 var(--pad) 28px;
-}
-
-.rcp__notes p {
-  margin: 0;
-  font-size: var(--body-size);
-  line-height: var(--rule);
-  white-space: pre-line;
-}
-
 /* ---------- Narrow (below md, and compact): one column ---------- */
 .recipe-content-preview--narrow .rcp {
   --pad: 18px;
@@ -527,6 +513,11 @@ const renderedInstructions = computed(() =>
 .recipe-content-preview--narrow .rcp__subtitle {
   margin-top: 6px;
   font-size: 17px;
+}
+
+.recipe-content-preview--narrow .rcp__description {
+  margin-top: 6px;
+  font-size: 15px;
 }
 
 .recipe-content-preview--narrow .rcp__head .rcp__photo {
@@ -561,10 +552,6 @@ const renderedInstructions = computed(() =>
   --step-indent: 38px;
 }
 
-.recipe-content-preview--narrow .rcp__notes {
-  padding-bottom: 0;
-}
-
 /* ---------- Compact (dialogs) ---------- */
 .recipe-content-preview--compact .rcp {
   --pad: 24px;
@@ -586,6 +573,11 @@ const renderedInstructions = computed(() =>
 .recipe-content-preview--compact .rcp__subtitle {
   margin-top: 4px;
   font-size: 16px;
+}
+
+.recipe-content-preview--compact .rcp__description {
+  margin-top: 4px;
+  font-size: 14px;
 }
 
 .recipe-content-preview--compact .rcp__print--small {
