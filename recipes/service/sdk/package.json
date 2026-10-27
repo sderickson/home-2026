@@ -2,6 +2,9 @@
   "name": "@sderickson/recipes-sdk",
   "description": "Tanstack queries and shared components for recipes service",
   "private": true,
+  "saf": {
+    "kind": "sdk"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts",
@@ -22,6 +25,7 @@
     "@saflib/vitest": "*"
   },
   "dependencies": {
+    "@saflib/links": "*",
     "@saflib/monorepo": "*",
     "@saflib/ory-kratos-sdk": "*",
     "@saflib/sdk": "*",

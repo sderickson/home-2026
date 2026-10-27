@@ -1,3 +1,4 @@
+import type { App } from "vue";
 import type { Theme } from "vitepress";
 import { createVuetify } from "vuetify";
 import { VueQueryPlugin } from "@tanstack/vue-query";
@@ -19,8 +20,10 @@ const vuetify = createVuetify(vuetifyConfig);
 export default {
   Layout: StaticSiteLayout,
   enhanceApp({ app }) {
-    app.use(vuetify);
-    app.use(VueQueryPlugin, { queryClient: createTanstackQueryClient() });
-    app.component("RootHomePage", RootHomePage);
+    // VitePress types its app with its own nested copy of @vue types.
+    const vueApp = app as unknown as App;
+    vueApp.use(vuetify);
+    vueApp.use(VueQueryPlugin, { queryClient: createTanstackQueryClient() });
+    vueApp.component("RootHomePage", RootHomePage);
   },
 } as Theme;

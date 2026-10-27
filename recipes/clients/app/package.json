@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-app-spa",
   "private": true,
+  "saf": {
+    "kind": "spa"
+  },
   "type": "module",
   "exports": {
     ".": "./main.ts",
@@ -21,14 +24,19 @@
     "@milkdown/crepe": "7.22.2",
     "@saflib/links": "*",
     "@saflib/ory-kratos-sdk": "*",
+    "@saflib/sdk": "*",
     "@saflib/vue": "*",
     "@sderickson/recipes-clients-common": "*",
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
+    "@sderickson/recipes-spec": "*",
     "sortablejs": "^1.15.2",
     "vue-router": "*"
   },
   "devDependencies": {
+    "@saflib/playwright": "*",
+    "@saflib/vite": "*",
+    "@sderickson/recipes-root-clients": "*",
     "@types/marked": "^6.0.0",
     "@types/sortablejs": "^1.15.8"
   }

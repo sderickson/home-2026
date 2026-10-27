@@ -2,6 +2,9 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
+      "path": "../../../saflib/drizzle"
+    },
+    {
       "path": "../../../saflib/email/email-service"
     },
     {
@@ -17,16 +20,10 @@
       "path": "../../../saflib/object-store"
     },
     {
-      "path": "../../../saflib/secret-store"
-    },
-    {
       "path": "../../../saflib/vendors/brevo"
     },
     {
-      "path": "../../../saflib/vendors/infisical"
-    },
-    {
-      "path": "../integrations/unsplash"
+      "path": "../db"
     }
   ],
   "exclude": [
@@ -34,11 +31,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

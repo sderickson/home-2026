@@ -1,7 +1,7 @@
 {
   "name": "@sderickson/recipes-jobs",
   "saf": {
-    "kind": "lib"
+    "kind": "domain"
   },
   "description": "Jobs slice for the recipes product",
   "type": "module",
@@ -19,9 +19,9 @@
     "@saflib/env": "*",
     "@saflib/jobs-db": "*",
     "@saflib/jobs-http": "*",
+    "@saflib/openapi": "*",
     "@sderickson/recipes-cron": "*",
-    "@sderickson/recipes-service-common": "*",
-    "@sderickson/recipes-spec": "*"
+    "@sderickson/recipes-service-common": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"

@@ -1,4 +1,4 @@
-import { recipes_common_strings } from "../common/strings.ts";
+import { recipes_common_strings } from "@sderickson/recipes-clients-common/strings";
 
 // BEGIN WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { collections_detail } from "./pages/collections/detail/Detail.strings.ts";

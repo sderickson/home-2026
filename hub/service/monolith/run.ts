@@ -8,7 +8,7 @@ import { initSentry } from "@saflib/vendors-sentry-node";
 import { startOryKratosService } from "@saflib/ory-kratos-http";
 import { callbacks } from "@sderickson/hub-kratos-courier";
 import { startRecipesService } from "@sderickson/recipes-service";
-import { initializeDependencies } from "@sderickson/recipes-service-common";
+import { initializeDependencies } from "@sderickson/recipes-service";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");

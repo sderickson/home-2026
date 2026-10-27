@@ -1,0 +1,35 @@
+{
+  "name": "@sderickson/recipes-http-app",
+  "description": "HTTP app chrome for the recipes service: middleware order, auth gate and platform routers",
+  "saf": {
+    "kind": "http-app"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@saflib/analytics-http": "*",
+    "@saflib/cron-http": "*",
+    "@saflib/drizzle": "*",
+    "@saflib/env": "*",
+    "@saflib/errors-http": "*",
+    "@saflib/express": "*",
+    "@saflib/jobs-http": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/node-log-http": "*",
+    "@saflib/node-metrics-http": "*",
+    "@sderickson/recipes-cron": "*",
+    "@sderickson/recipes-jobs": "*",
+    "@sderickson/recipes-service-common": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
+  },
+  "sideEffects": false
+}

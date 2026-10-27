@@ -17,6 +17,12 @@
       "path": "../../../saflib/node"
     },
     {
+      "path": "../../../saflib/vendors/brevo"
+    },
+    {
+      "path": "../../../saflib/vendors/infisical"
+    },
+    {
       "path": "../../../saflib/vendors/loki"
     },
     {
@@ -32,6 +38,12 @@
       "path": "../http"
     },
     {
+      "path": "../http-app"
+    },
+    {
+      "path": "../integrations/unsplash"
+    },
+    {
       "path": "../jobs"
     },
     {
@@ -43,11 +55,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

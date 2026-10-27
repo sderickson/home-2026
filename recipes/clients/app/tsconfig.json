@@ -10,13 +10,22 @@
       "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
     },
     {
+      "path": "../../../saflib/sdk"
+    },
+    {
       "path": "../../../saflib/vue"
     },
     {
       "path": "../../service/sdk"
     },
     {
+      "path": "../../service/spec"
+    },
+    {
       "path": "../common"
+    },
+    {
+      "path": "../links"
     }
   ],
   "exclude": [
@@ -25,11 +34,7 @@
     "e2e",
     "playwright-report",
     "test-results",
-    "vite.config.ts",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "vite.config.ts"
   ],
   "include": [
     "**/*.ts",

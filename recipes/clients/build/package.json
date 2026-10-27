@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-root-clients",
   "description": "Vite setup to build all recipes clients",
+  "saf": {
+    "kind": "other"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,5 +20,8 @@
   },
   "workspaces": [
     "clients/*"
-  ]
+  ],
+  "exports": {
+    "./html-header-plugin": "./html-header-plugin.ts"
+  }
 }

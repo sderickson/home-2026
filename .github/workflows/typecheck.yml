@@ -21,3 +21,5 @@ jobs:
         run: npm install
       - name: Run Typecheck
         run: npm run typecheck
+      - name: Check package boundaries
+        run: npm exec saf-imports boundaries

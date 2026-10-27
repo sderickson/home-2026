@@ -3,19 +3,19 @@ import { createJobsApp, makeCronEnqueuer } from "@saflib/jobs-http";
 import { makeSubsystemReporters } from "@saflib/node";
 import { runRecipesCron } from "@sderickson/recipes-cron";
 import { fixTextTimestamps, recipesDb } from "@sderickson/recipes-db";
-import { createRecipesHttpApp } from "@sderickson/recipes-http";
 import {
   getRecipesJobsDbKey,
   recipesJobOperations,
   recipesTriggerMap,
   runRecipesJobs,
 } from "@sderickson/recipes-jobs";
-import {
-  makeContext,
-  initializeDependencies,
-} from "@sderickson/recipes-service-common";
+import { makeContext } from "@sderickson/recipes-service-common";
 import { jsonSpec } from "@sderickson/recipes-spec";
+import { initializeDependencies } from "./dependencies.ts";
 import { typedEnv } from "./env.ts";
+import { createRecipesHttpApp } from "./http.ts";
+
+export { initializeDependencies };
 
 export async function startRecipesService() {
   const { log, logError } = makeSubsystemReporters("init", "main");
@@ -60,7 +60,7 @@ export async function startRecipesService() {
     log.info("recipes-cron startup complete.");
 
     log.info("Starting recipes-jobs runtime...");
-    await runRecipesJobs(context);
+    await runRecipesJobs(context, jsonSpec);
     log.info("recipes-jobs runtime startup complete.");
 
     log.info("Starting recipes-jobs app...");
@@ -75,7 +75,7 @@ export async function startRecipesService() {
     log.info("recipes-jobs app listening on " + jobsSocketPath);
 
     log.info("Starting recipes-http...");
-    const expressApp = createRecipesHttpApp(context);
+    const { app: expressApp } = createRecipesHttpApp(context);
     startExpressServer(expressApp, {
       port: parseInt(
         typedEnv.RECIPES_SERVICE_HTTP_HOST.split(":")[1] || "3000",

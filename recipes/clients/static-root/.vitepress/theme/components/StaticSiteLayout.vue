@@ -8,7 +8,7 @@
 import { computed } from "vue";
 import { Content } from "vitepress";
 import { useKratosSession } from "@saflib/ory-kratos-sdk";
-import RecipesLayout from "@sderickson/recipes-clients-common/components/recipes-layout";
+import { RecipesLayout } from "@sderickson/recipes-clients-common/components";
 
 // Signed-in visitors get the App/Account/Logout nav instead of Login.
 const kratosSessionQuery = useKratosSession();

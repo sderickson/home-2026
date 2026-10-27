@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-service",
   "description": "Service package for recipes",
+  "saf": {
+    "kind": "app"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts"
@@ -19,13 +22,17 @@
     "@saflib/jobs-http": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
+    "@saflib/vendors-brevo": "*",
+    "@saflib/vendors-infisical": "*",
     "@saflib/vendors-loki": "*",
     "@sderickson/recipes-cron": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",
+    "@sderickson/recipes-http-app": "*",
     "@sderickson/recipes-jobs": "*",
     "@sderickson/recipes-service-common": "*",
-    "@sderickson/recipes-spec": "*"
+    "@sderickson/recipes-spec": "*",
+    "@sderickson/recipes-unsplash": "*"
   },
   "devDependencies": {
     "@saflib/vitest": "*"
