@@ -1,5 +1,6 @@
 import { recipesHandler } from "../../typed-fake.ts";
 import { mockRecipes, mockRecipeVersions } from "./mocks.ts";
+import { mockMenus } from "../menus/mocks.ts";
 
 export const deleteRecipesHandler = recipesHandler({
   verb: "delete",
@@ -13,6 +14,12 @@ export const deleteRecipesHandler = recipesHandler({
       if (mockRecipeVersions[i].recipeId === params.id) {
         mockRecipeVersions.splice(i, 1);
       }
+    }
+    for (const menu of mockMenus) {
+      menu.groupings = menu.groupings.map((g) => ({
+        ...g,
+        recipeIds: g.recipeIds.filter((id) => id !== params.id),
+      }));
     }
     return undefined;
   },

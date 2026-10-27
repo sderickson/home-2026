@@ -6,6 +6,7 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipe } from "../../schemas/recipe.ts";
 import { menu } from "../../schemas/menu.ts";
+import { removeRecipeFromMenus } from "./_remove-from-menus.ts";
 
 export type SetArchivedRecipeError = RecipeNotFoundError;
 
@@ -47,30 +48,12 @@ export const setArchivedRecipe = queryWrapper(
       if (!updated) return undefined;
       if (!params.archived) return { recipe: updated, removedFromMenus: [] };
 
-      const menus = tx
-        .select()
-        .from(menu)
-        .where(eq(menu.collectionId, updated.collectionId))
-        .all();
-      const removedFromMenus = [];
-      for (const m of menus) {
-        if (!m.groupings.some((g) => g.recipeIds.includes(params.id))) {
-          continue;
-        }
-        const [updatedMenu] = tx
-          .update(menu)
-          .set({
-            groupings: m.groupings.map((g) => ({
-              ...g,
-              recipeIds: g.recipeIds.filter((id) => id !== params.id),
-            })),
-            updatedAt: now,
-          })
-          .where(eq(menu.id, m.id))
-          .returning()
-          .all();
-        removedFromMenus.push(updatedMenu!);
-      }
+      const removedFromMenus = removeRecipeFromMenus(
+        tx,
+        params.id,
+        updated.collectionId,
+        now,
+      );
       return { recipe: updated, removedFromMenus };
     });
 

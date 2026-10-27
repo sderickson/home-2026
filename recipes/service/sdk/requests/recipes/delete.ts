@@ -14,6 +14,8 @@ export const useDeleteRecipeMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      // The server also takes the recipe off any menus.
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
     },
   });
 };

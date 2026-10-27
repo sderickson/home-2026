@@ -3,9 +3,14 @@ import type { DbKey } from "@saflib/drizzle";
 import { eq } from "drizzle-orm";
 import { recipesDbManager } from "../../instances.ts";
 import { RecipeNotFoundError } from "../../errors.ts";
-import { insertTestCollection, makeRecipeRow } from "../../test-fixtures.ts";
+import {
+  insertTestCollection,
+  makeRecipeRow,
+  TEST_COLLECTION_ID,
+} from "../../test-fixtures.ts";
 import { recipe, recipeVersion } from "../../schemas/recipe.ts";
 import { recipeFile } from "../../schemas/recipe-file.ts";
+import { menu } from "../../schemas/menu.ts";
 import { deleteRecipe } from "./delete.ts";
 import { getByIdRecipe } from "./get-by-id.ts";
 
@@ -102,5 +107,35 @@ describe("deleteRecipe", () => {
       .from(recipeFile)
       .where(eq(recipeFile.recipe_id, recipeId));
     expect(remainingFiles).toHaveLength(0);
+  });
+
+  it("removes the deleted recipe from menus", async () => {
+    const db = recipesDbManager.get(dbKey)!;
+    const [target, other] = await db
+      .insert(recipe)
+      .values([makeRecipeRow({ title: "A" }), makeRecipeRow({ title: "B" })])
+      .returning();
+    const now = new Date();
+    const [menuRow] = await db
+      .insert(menu)
+      .values({
+        collectionId: TEST_COLLECTION_ID,
+        name: "Weeknights",
+        createdBy: "u",
+        createdAt: now,
+        updatedBy: "u",
+        updatedAt: now,
+        editedByUserIds: [],
+        groupings: [{ name: "Mains", recipeIds: [target!.id, other!.id] }],
+      })
+      .returning();
+
+    const out = await deleteRecipe(dbKey, target!.id);
+    assert(out.result);
+
+    const [after] = await db.select().from(menu).where(eq(menu.id, menuRow!.id));
+    expect(after!.groupings).toEqual([
+      { name: "Mains", recipeIds: [other!.id] },
+    ]);
   });
 });
