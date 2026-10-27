@@ -36,6 +36,16 @@ export function addRecipeToGroupings(
   );
 }
 
+/** The menus that list the recipe in any section, in the given order. */
+export function menusContainingRecipe<M extends { groupings: MenuGrouping[] }>(
+  menus: M[],
+  recipeId: string,
+): M[] {
+  return menus.filter((m) =>
+    m.groupings.some((g) => g.recipeIds.includes(recipeId)),
+  );
+}
+
 /** True when any menu lists the recipe in any section. */
 export function isRecipeOnAnyMenu(
   menus: { groupings: MenuGrouping[] }[],

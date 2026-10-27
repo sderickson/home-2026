@@ -40,6 +40,10 @@
         <div v-if="$slots.tools" class="rcp__tools">
           <slot name="tools" />
         </div>
+        <!-- Bottom-left of the header, level with the stamp (e.g. the menus it's on). -->
+        <div v-if="$slots['stamp-start']" class="rcp__stamp-start">
+          <slot name="stamp-start" />
+        </div>
         <!-- Date stamp (and any version controls) in the header's bottom-right corner. -->
         <div v-if="$slots.stamp" class="rcp__stamp">
           <slot name="stamp" />
@@ -232,22 +236,39 @@ const renderedInstructions = computed(() =>
   border-bottom: 2px solid rgb(var(--v-theme-card-red-line));
 }
 
-/* Room under the titles for the bottom-right stamp. */
-.rcp__head:has(.rcp__stamp) {
+/* Room under the titles for the bottom stamps. */
+.rcp__head:has(.rcp__stamp, .rcp__stamp-start) {
   position: relative;
   padding-bottom: 40px;
 }
 
-.rcp__stamp {
+.rcp__stamp,
+.rcp__stamp-start {
   position: absolute;
-  right: 12px;
   bottom: 4px;
   display: flex;
   align-items: center;
   gap: 2px;
+  /* Same height as the stamp's x-small buttons, so the two lines up. */
+  min-height: 28px;
   font-family: var(--font-mono);
   font-size: 13px;
   color: rgb(var(--v-theme-ink-2));
+}
+
+.rcp__stamp {
+  right: 12px;
+}
+
+/* Left-aligned with the titles; truncates rather than running into the stamp. */
+.rcp__stamp-start {
+  left: var(--pad);
+  /* The stamp with version arrows is about 240px wide. */
+  max-width: calc(100% - var(--pad) - 260px);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rcp__titles {
@@ -497,8 +518,18 @@ const renderedInstructions = computed(() =>
   padding-bottom: 12px;
 }
 
-.recipe-content-preview--narrow .rcp__head:has(.rcp__stamp) {
+.recipe-content-preview--narrow .rcp__head:has(.rcp__stamp, .rcp__stamp-start) {
   padding-bottom: 36px;
+}
+
+/* Phones: no room beside the stamp, so the start line sits just above it. */
+.recipe-content-preview--narrow .rcp__head:has(.rcp__stamp-start) {
+  padding-bottom: 64px;
+}
+
+.recipe-content-preview--narrow .rcp__stamp-start {
+  bottom: 32px;
+  max-width: calc(100% - 2 * var(--pad));
 }
 
 .recipe-content-preview--narrow .rcp__tools {

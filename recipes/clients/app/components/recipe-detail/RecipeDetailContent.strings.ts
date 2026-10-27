@@ -12,6 +12,7 @@ export const recipe_detail_content = {
   previous_image: "Previous image",
   next_image: "Next image",
   version_stamp: "Version: {date}",
+  on_menus: "On:",
   older_version: "Older version",
   newer_version: "Newer version",
   close: "Close",

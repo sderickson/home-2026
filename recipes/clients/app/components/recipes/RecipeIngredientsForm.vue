@@ -276,6 +276,8 @@ function onRowEnter(e: KeyboardEvent, i: number) {
 
 const rowsBodyRef = ref<HTMLElement | null>(null);
 let sortable: Sortable | null = null;
+/** Where the dragged row sat before Sortable moved it. */
+let dragOrigin: { parent: HTMLElement; nextSibling: Node | null } | null = null;
 
 onMounted(() => {
   if (!rowsBodyRef.value) return;
@@ -284,8 +286,13 @@ onMounted(() => {
     draggable: ".ingredient-row",
     ghostClass: "ingredient-drag-ghost",
     dragClass: "ingredient-drag-dragging",
+    onStart(evt: SortableEvent) {
+      dragOrigin = { parent: evt.from, nextSibling: evt.item.nextSibling };
+    },
     onEnd(evt: SortableEvent) {
-      const { oldIndex, newIndex, item, from } = evt;
+      const { oldIndex, newIndex, item } = evt;
+      const origin = dragOrigin;
+      dragOrigin = null;
       if (
         oldIndex === undefined ||
         newIndex === undefined ||
@@ -293,9 +300,11 @@ onMounted(() => {
       )
         return;
       // Undo Sortable's DOM move and let Vue re-render from the reordered list,
-      // since rows are keyed by index.
-      from.removeChild(item);
-      from.insertBefore(item, from.children[oldIndex] ?? null);
+      // since rows are keyed by index. Put the row back before the exact node
+      // it came from: counting elements would skip Vue's text-node anchors at
+      // the ends of the v-for, and a row restored past the end anchor makes
+      // Vue insert later rows above it (and the screen stops matching the data).
+      if (origin) origin.parent.insertBefore(item, origin.nextSibling);
       const next = [...list.value];
       const [moved] = next.splice(oldIndex, 1);
       next.splice(newIndex, 0, moved);

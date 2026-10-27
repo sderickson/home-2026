@@ -1,28 +1,44 @@
 <template>
-  <v-card
+  <v-sheet
     v-if="visible"
-    variant="tonal"
-    color="primary"
-    class="mb-4 d-print-none"
+    color="primary-tint"
+    rounded="lg"
+    class="add-to-menu-prompt d-flex flex-wrap align-center ga-2 mb-4 py-2 pl-4 pr-2 d-print-none"
   >
-    <v-card-item :title="t(strings.title)" :subtitle="t(strings.body)" />
-    <v-card-text>
-      <MenuPlacementPicker v-model="placement" :menus="menus" />
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
+    <div class="flex-1-1 add-to-menu-prompt__text">
+      <div class="text-body-1 font-weight-medium">{{ t(strings.title) }}</div>
+      <div class="text-body-2 text-medium-emphasis">{{ t(strings.body) }}</div>
+    </div>
+    <div class="d-flex ga-1 ml-auto">
       <v-btn variant="text" @click="dismiss">{{ t(strings.dismiss) }}</v-btn>
-      <v-btn
-        variant="flat"
-        color="primary"
-        :disabled="!isPlacementComplete(placement)"
-        :loading="isPending"
-        @click="add"
-      >
+      <v-btn variant="flat" color="primary" @click="dialogOpen = true">
         {{ t(strings.add) }}
       </v-btn>
-    </v-card-actions>
-  </v-card>
+    </div>
+  </v-sheet>
+
+  <v-dialog v-model="dialogOpen" max-width="520">
+    <v-card :title="t(strings.dialog_title)">
+      <v-card-text>
+        <MenuPlacementPicker v-model="placement" :menus="menus" />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn variant="text" @click="dialogOpen = false">
+          {{ t(strings.cancel) }}
+        </v-btn>
+        <v-btn
+          variant="flat"
+          color="primary"
+          :disabled="!isPlacementComplete(placement)"
+          :loading="isPending"
+          @click="add"
+        >
+          {{ t(strings.add) }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -98,11 +114,20 @@ watch(
 );
 
 const { addRecipeToMenu, isPending } = useAddRecipeToMenu();
+const dialogOpen = ref(false);
 
 async function add() {
   const menu = menus.value.find((m) => m.id === placement.value.menuId);
   if (!menu || !isPlacementComplete(placement.value)) return;
   await addRecipeToMenu(menu, placement.value.section, props.recipeId);
+  dialogOpen.value = false;
   showInfo(t(strings.added, { menu: menu.name }));
 }
 </script>
+
+<style scoped>
+/* Keep the text column from squeezing the buttons onto their own line too early. */
+.add-to-menu-prompt__text {
+  min-width: 14rem;
+}
+</style>
