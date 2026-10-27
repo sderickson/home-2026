@@ -1,6 +1,8 @@
 listRecipes:
   summary: "List recipes in a collection. Auth required; caller must be at least viewer on the collection."
   operationId: "listRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: collectionId
@@ -9,6 +11,13 @@ listRecipes:
       schema:
         type: string
       description: Id of the collection to list recipes from.
+    - name: archived
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+      description: List archived recipes instead of active ones.
   responses:
     "400":
       description: "Bad request - collectionId is required."

@@ -1,6 +1,8 @@
 updateRecipe:
   summary: "Update recipe metadata only (title, descriptions). Admin only."
   operationId: "updateRecipe"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

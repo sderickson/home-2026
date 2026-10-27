@@ -1,6 +1,8 @@
 deleteRecipe:
   summary: "Delete recipe and related versions/files. Admin only."
   operationId: "deleteRecipe"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

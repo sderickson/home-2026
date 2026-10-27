@@ -1,5 +1,23 @@
 <template>
   <div>
+    <v-alert
+      v-if="isArchived"
+      type="info"
+      variant="tonal"
+      icon="mdi-archive-outline"
+      class="mb-4 d-print-none"
+    >
+      {{ t(strings.archived_banner) }}
+      <template v-if="showEdit" #append>
+        <v-btn
+          variant="text"
+          :loading="archiveRecipeMutation.isPending.value"
+          @click="setArchived(false)"
+        >
+          {{ t(strings.restore_recipe) }}
+        </v-btn>
+      </template>
+    </v-alert>
     <v-card class="recipe-card paper">
       <RecipeContentPreview
         :recipe="props.recipe"
@@ -45,6 +63,20 @@
                   @click="unsplashPickerOpen = true"
                 />
               </template>
+              <v-list-item
+                v-if="showEdit && !isArchived"
+                prepend-icon="mdi-archive-outline"
+                :title="t(strings.toolbar_archive)"
+                :disabled="archiveRecipeMutation.isPending.value"
+                @click="archiveRecipeDialogOpen = true"
+              />
+              <v-list-item
+                v-if="showEdit && isArchived"
+                prepend-icon="mdi-archive-arrow-up-outline"
+                :title="t(strings.restore_recipe)"
+                :disabled="archiveRecipeMutation.isPending.value"
+                @click="setArchived(false)"
+              />
               <v-list-item
                 v-if="showEdit && showFilesEdit"
                 prepend-icon="mdi-delete"
@@ -200,6 +232,16 @@
     />
 
     <ConfirmDialog
+      v-model="archiveRecipeDialogOpen"
+      :title="t(strings.archive_recipe)"
+      :message="t(strings.archive_recipe_confirm)"
+      :confirm-label="t(strings.archive_recipe)"
+      :cancel-label="t(strings.cancel)"
+      :loading="archiveRecipeMutation.isPending.value"
+      @confirm="setArchived(true)"
+    />
+
+    <ConfirmDialog
       v-model="deleteRecipeDialogOpen"
       :title="t(strings.delete_recipe)"
       :message="t(strings.delete_recipe_confirm)"
@@ -227,6 +269,7 @@ import { showInfo } from "@saflib/vue";
 import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
 import {
   RecipeContentPreview,
+  useArchiveRecipeMutation,
   useDeleteRecipeMutation,
 } from "@sderickson/recipes-sdk";
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
@@ -263,6 +306,9 @@ const recipeEditPath = computed(() =>
 
 const filesFlow = useDetailFilesFlow(computed(() => props.recipe.id));
 const deleteRecipeMutation = useDeleteRecipeMutation();
+const archiveRecipeMutation = useArchiveRecipeMutation();
+const isArchived = computed(() => !!props.recipe.archivedAt);
+const archiveRecipeDialogOpen = ref(false);
 
 const deleteRecipeDialogOpen = ref(false);
 const unsplashPickerOpen = ref(false);
@@ -339,6 +385,30 @@ async function copyShareLink() {
   });
   await navigator.clipboard.writeText(href);
   showInfo(t(strings.link_copied));
+}
+
+async function setArchived(archived: boolean) {
+  const { removedFromMenus } = await archiveRecipeMutation.mutateAsync({
+    id: props.recipe.id,
+    archived,
+  });
+  archiveRecipeDialogOpen.value = false;
+  if (!archived) {
+    showInfo(t(strings.restored));
+    return;
+  }
+  showInfo(
+    removedFromMenus.length > 0
+      ? t(strings.archived_from_menus, {
+          menus: removedFromMenus.map((m) => m.name).join(", "),
+        })
+      : t(strings.archived),
+  );
+  await router.push(
+    constructPath(appLinks.collectionsDetail, {
+      params: { collectionId: props.collectionId },
+    }),
+  );
 }
 
 async function doDeleteRecipe() {

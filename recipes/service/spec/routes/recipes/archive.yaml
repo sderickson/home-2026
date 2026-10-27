@@ -1,0 +1,78 @@
+archiveRecipe:
+  summary: "Archive or unarchive a recipe. Caller must be editor/owner on its collection."
+  description: >
+    Archived recipes are left out of the default recipe list. Archiving also
+    removes the recipe from every menu in its collection; unarchiving does not
+    put it back.
+  operationId: "archiveRecipe"
+  security:
+    - session: [email-verified]
+
+  parameters:
+    - name: "id"
+      in: "path"
+      required: true
+      schema:
+        type: string
+      description: "Recipe id"
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - archived
+          properties:
+            archived:
+              type: boolean
+              description: "True to archive, false to restore."
+
+  responses:
+    "200":
+      description: "The updated recipe and the menus it was removed from."
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - recipe
+              - removedFromMenus
+            properties:
+              recipe:
+                $ref: "../../schemas/recipe.yaml"
+              removedFromMenus:
+                type: array
+                description: "Menus the recipe was removed from (empty when unarchiving)."
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "403":
+      description: "Forbidden - caller is not editor/owner on the recipe's collection."
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"
+
+    "404":
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/error.yaml"

@@ -1,0 +1,17 @@
+# HtmlRemoval — one kind of raw HTML the server stripped from saved markdown.
+type: object
+description: >
+  Something removed when sanitizing raw HTML in markdown. With only `tag`, the
+  element was removed (its text is usually kept). With `attribute`, only that
+  attribute was removed from the element. HTML comments use the tag `#comment`.
+properties:
+  tag:
+    type: string
+    description: Lowercase element name, e.g. "script"
+    example: "img"
+  attribute:
+    type: string
+    description: Attribute removed from the element, when only an attribute was removed
+    example: "onerror"
+required:
+  - tag

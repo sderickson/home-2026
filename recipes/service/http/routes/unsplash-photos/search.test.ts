@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import express from "express";
-import { createRecipesHttpApp } from "../../http.ts";
+import { createRecipesHttpApp } from "../../test/http-app.ts";
 import { makeAdminHeaders, makeUserHeaders } from "@saflib/express";
 
 describe("GET /unsplash-photos/search (searchUnsplashPhotos)", () => {

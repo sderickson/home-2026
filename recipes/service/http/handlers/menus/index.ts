@@ -17,9 +17,7 @@ export function createMenusShareRouter(): IRouter {
   // BEGIN WORKFLOW AREA route-registrations FOR express/add-handler
   router.get(
     "/menus/:id/shared",
-    ...createOperationScopedMiddleware(sharedGetMenusOperationJsonSpec, {
-      enforceAuth: false,
-    }),
+    ...createOperationScopedMiddleware(sharedGetMenusOperationJsonSpec),
     sharedGetMenusHandler,
   );
   // END WORKFLOW AREA

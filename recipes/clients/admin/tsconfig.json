@@ -4,7 +4,28 @@
   ],
   "references": [
     {
+      "path": "../../../saflib/analytics/analytics-vue"
+    },
+    {
+      "path": "../../../saflib/base/service/sdk"
+    },
+    {
+      "path": "../../../saflib/cron/cron-vue"
+    },
+    {
+      "path": "../../../saflib/errors/errors-vue"
+    },
+    {
+      "path": "../../../saflib/jobs/jobs-vue"
+    },
+    {
       "path": "../../../saflib/links"
+    },
+    {
+      "path": "../../../saflib/node-log/node-log-vue"
+    },
+    {
+      "path": "../../../saflib/node-metrics/node-metrics-vue"
     },
     {
       "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
@@ -17,6 +38,9 @@
     },
     {
       "path": "../common"
+    },
+    {
+      "path": "../links"
     }
   ],
   "exclude": [
@@ -24,11 +48,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

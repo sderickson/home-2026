@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  describeRemovedHtml,
   isRecipeFormValid,
   isSameLocalCalendarDay,
   shouldSaveRecipeVersionInPlace,
@@ -51,5 +52,17 @@ describe("shouldSaveRecipeVersionInPlace", () => {
     const previousDay = new Date(2026, 9, 9, 18, 0, 0).toISOString();
     expect(shouldSaveRecipeVersionInPlace(earlierSameDay, now)).toBe(true);
     expect(shouldSaveRecipeVersionInPlace(previousDay, now)).toBe(false);
+  });
+});
+
+describe("describeRemovedHtml", () => {
+  it("labels removed elements, attributes and comments", () => {
+    expect(
+      describeRemovedHtml([
+        { tag: "script" },
+        { tag: "img", attribute: "onerror" },
+        { tag: "#comment" },
+      ]),
+    ).toEqual(["<script>", "onerror on <img>", "comments"]);
   });
 });

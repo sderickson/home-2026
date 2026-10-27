@@ -1,14 +1,19 @@
 {
   "name": "@sderickson/recipes-static-root",
   "description": "Static root site for recipes using VitePress + Vuetify",
+  "saf": {
+    "kind": "other"
+  },
   "type": "module",
   "scripts": {
+    "typecheck": "vue-tsc --incremental -p tsconfig.typecheck.json",
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
   "dependencies": {
     "@saflib/links": "*",
+    "@saflib/ory-kratos-sdk": "*",
     "@saflib/sdk": "*",
     "@saflib/vite": "*",
     "@saflib/vitepress": "*",

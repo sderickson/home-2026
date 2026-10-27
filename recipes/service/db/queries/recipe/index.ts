@@ -11,6 +11,11 @@ import {
 export type { GetByIdRecipeResult };
 import { getByIdsRecipe } from "./get-by-ids.ts";
 import { listRecipes } from "./list.ts";
+import {
+  setArchivedRecipe,
+  type SetArchivedRecipeError,
+} from "./set-archived.ts";
+export type { SetArchivedRecipeError };
 import { updateLatestVersionRecipe } from "./update-latest-version.ts";
 import { updateMetadataRecipe } from "./update-metadata.ts";
 import { versionsListRecipe } from "./versions-list.ts";
@@ -25,6 +30,7 @@ export const recipeQueries = {
   getByIdRecipe,
   getByIdsRecipe,
   listRecipes,
+  setArchivedRecipe,
   updateLatestVersionRecipe,
   updateMetadataRecipe,
   versionsListRecipe,

@@ -1,6 +1,8 @@
 filesDownloadRecipes:
   summary: "Serve recipe file binary (blob)."
   operationId: "filesDownloadRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

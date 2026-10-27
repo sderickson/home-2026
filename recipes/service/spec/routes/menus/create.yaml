@@ -1,6 +1,8 @@
 createMenus:
   summary: "Create menu in a collection. Editor or owner on collection only. Recipe ids in groupings must belong to the same collection."
   operationId: "createMenu"
+  security:
+    - session: [email-verified]
 
   requestBody:
     required: true

@@ -87,3 +87,16 @@ export function getEditedFields(
     fields.push(FIELD_LABELS.instructions);
   return fields;
 }
+
+/**
+ * Short labels for HTML the server stripped from instructions, e.g.
+ * `<script>`, `onclick on <img>`, `comments`. Order follows the input.
+ */
+export function describeRemovedHtml(
+  removed: { tag: string; attribute?: string }[],
+): string[] {
+  return removed.map(({ tag, attribute }) => {
+    if (tag === "#comment") return "comments";
+    return attribute ? `${attribute} on <${tag}>` : `<${tag}>`;
+  });
+}

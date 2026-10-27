@@ -5,8 +5,7 @@ sharedFilesDownloadRecipes:
     unauthenticated share page. Distinct from the authenticated
     GET /recipes/{id}/files/{fileId}/blob so the public surface stays explicit.
   operationId: "sharedFilesDownloadRecipes"
-  tags:
-    - "no-auth"
+  x-public: true
 
   parameters:
     - name: "id"

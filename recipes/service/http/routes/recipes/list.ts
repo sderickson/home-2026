@@ -23,8 +23,11 @@ export const listRecipesHandler = createHandler(async (req, res) => {
   });
 
   const { recipesDbKey } = recipesServiceStorage.getStore()!;
+  // The validator may or may not have coerced the query string.
+  const archived = String(req.query.archived) === "true";
   const { result } = await recipeQueries.listRecipes(recipesDbKey, {
     collectionId,
+    archived,
   });
 
   const response: RecipesServiceResponseBody["listRecipes"][200] = {

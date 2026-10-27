@@ -110,7 +110,7 @@ async function onSubmit() {
       }),
     );
   } catch {
-    // Mutation error surfaced by TanStack
+    // The global mutation error handler shows it in the snackbar.
   }
 }
 </script>

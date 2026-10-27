@@ -1,4 +1,4 @@
-import { recipes_common_strings } from "../common/strings.ts";
+import { recipes_common_strings } from "@sderickson/recipes-clients-common/strings";
 import { home } from "./pages/home/Home.strings.ts";
 import { users } from "./pages/users/Users.strings.ts";
 

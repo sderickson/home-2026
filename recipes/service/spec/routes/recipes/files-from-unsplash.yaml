@@ -2,6 +2,8 @@
 filesFromUnsplashRecipes:
   summary: "Add a recipe file from an Unsplash photo. Backend fetches photo, tracks download, stores file and Unsplash user; returns RecipeFileInfo with unsplashAttribution when applicable."
   operationId: "filesFromUnsplashRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

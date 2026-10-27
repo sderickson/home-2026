@@ -11,8 +11,6 @@ export const createUnsplashPhotosRouter = () => {
     "/unsplash-photos",
     createScopedMiddleware({
       apiSpec: jsonSpec,
-      enforceAuth: true,
-      emailVerificationRequired: true,
     }),
   );
   router.get("/unsplash-photos/search", searchUnsplashPhotosHandler);

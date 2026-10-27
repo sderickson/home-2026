@@ -9,7 +9,12 @@
         <p class="text-h6 text-medium-emphasis font-weight-regular mb-5">
           Organize, iterate, and share recipes.
         </p>
-        <div class="d-flex flex-wrap ga-3 mb-4">
+        <div v-if="loggedIn" class="d-flex flex-wrap ga-3 mb-4">
+          <v-btn :href="appHref" color="primary" size="large" rounded="lg">
+            Open your recipes
+          </v-btn>
+        </div>
+        <div v-else class="d-flex flex-wrap ga-3 mb-4">
           <v-btn :href="demoHref" color="primary" size="large" rounded="lg">
             Try the demo
           </v-btn>
@@ -152,10 +157,26 @@
     >
       <h2 class="text-h5 font-weight-medium mb-2 text-white">Give it a try</h2>
       <div class="d-flex flex-wrap justify-center ga-3">
-        <v-btn :href="registerHref" color="primary" size="large" rounded="lg">
+        <v-btn
+          v-if="loggedIn"
+          :href="appHref"
+          color="primary"
+          size="large"
+          rounded="lg"
+        >
+          Open your recipes
+        </v-btn>
+        <v-btn
+          v-else
+          :href="registerHref"
+          color="primary"
+          size="large"
+          rounded="lg"
+        >
           Sign up
         </v-btn>
         <v-btn
+          v-if="!loggedIn"
           :href="demoHref"
           variant="outlined"
           color="white"
@@ -180,7 +201,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { linkToHrefWithHost } from "@saflib/links";
+import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { useResolvedHref } from "@saflib/vue/useResolvedHref";
 import { appLinks } from "@sderickson/recipes-links";
 import { authLinks } from "@sderickson/hub-links";
@@ -195,6 +218,10 @@ const menuSrc = menuUrl;
 
 const sourceHref = "https://github.com/sderickson/home-2026/tree/main/recipes";
 
+const kratosSessionQuery = useKratosSession();
+const loggedIn = computed(() => !!kratosSessionQuery.data.value?.identity);
+
+const appHref = useResolvedHref(appLinks.home);
 const demoHref = useResolvedHref(appLinks.home);
 const registerHref = useResolvedHref(() =>
   linkToHrefWithHost(authLinks.newRegistration, {

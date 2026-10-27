@@ -1,6 +1,8 @@
 deleteCollections:
   summary: "Delete collection. Owner only. Forbidden if collection has any recipes (409)."
   operationId: "deleteCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

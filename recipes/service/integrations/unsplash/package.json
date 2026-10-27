@@ -2,6 +2,9 @@
   "name": "@sderickson/recipes-unsplash",
   "description": "TODO: Add package description",
   "private": true,
+  "saf": {
+    "kind": "integration"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts"

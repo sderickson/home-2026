@@ -59,10 +59,22 @@
       "path": "./recipes/clients/common"
     },
     {
+      "path": "./recipes/clients/links"
+    },
+    {
+      "path": "./recipes/clients/static-root"
+    },
+    {
       "path": "./recipes/plans"
     },
     {
+      "path": "./recipes/security"
+    },
+    {
       "path": "./recipes/service/common"
+    },
+    {
+      "path": "./recipes/service/cron"
     },
     {
       "path": "./recipes/service/db"
@@ -71,7 +83,16 @@
       "path": "./recipes/service/http"
     },
     {
+      "path": "./recipes/service/http-app"
+    },
+    {
       "path": "./recipes/service/integrations/unsplash"
+    },
+    {
+      "path": "./recipes/service/jobs"
+    },
+    {
+      "path": "./recipes/service/markdown"
     },
     {
       "path": "./recipes/service/monolith"

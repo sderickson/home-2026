@@ -218,6 +218,11 @@
       />
     </section>
 
+    <ArchivedRecipesSection
+      :collection-id="collectionId"
+      :get-recipe-link-props="getRecipeLinkProps"
+    />
+
     <MembersManagementDialog
       v-model="membersDialogOpen"
       :collection-id="collectionId"
@@ -242,6 +247,7 @@ import {
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath, linkToProps } from "@saflib/links";
 import { collections_detail as strings } from "./Detail.strings.ts";
+import ArchivedRecipesSection from "./ArchivedRecipesSection.vue";
 import { useDetailLoader } from "./Detail.loader.ts";
 import {
   assertCollectionDetailLoaded,
@@ -367,7 +373,7 @@ async function onDeleteCollection() {
     await deleteMutation.mutateAsync(collectionId);
     router.push(appLinks.home.path);
   } catch {
-    // Error handled by mutation / global snackbar if configured
+    // The global mutation error handler shows it in the snackbar.
   }
 }
 

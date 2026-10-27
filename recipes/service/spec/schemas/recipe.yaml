@@ -36,6 +36,12 @@ properties:
     format: date-time
     description: When the recipe was last updated
     example: "2023-02-01T09:00:00Z"
+  archivedAt:
+    type: string
+    format: date-time
+    nullable: true
+    description: When the recipe was archived; null or absent when active
+    example: null
   currentVersionId:
     type: string
     description: Optional id of the current/latest version for display

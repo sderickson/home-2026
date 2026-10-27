@@ -1,6 +1,8 @@
 membersAddCollections:
   summary: "Add a member to a collection (or update role if email already exists). Owner only."
   operationId: "membersAddCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

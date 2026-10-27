@@ -1,6 +1,8 @@
 getCollections:
   summary: "Get one collection by id. Caller must be a member (any role) and have validated email; creator always has access."
   operationId: "getCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

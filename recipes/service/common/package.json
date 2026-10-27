@@ -2,6 +2,9 @@
   "name": "@sderickson/recipes-service-common",
   "description": "Shared types and utilities for the recipes service",
   "private": true,
+  "saf": {
+    "kind": "domain"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts"
@@ -12,14 +15,16 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@saflib/drizzle": "*",
     "@saflib/email-service": "*",
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
     "@saflib/object-store": "*",
-    "@saflib/secret-store": "*",
     "@saflib/vendors-brevo": "*",
-    "@saflib/vendors-infisical": "*",
-    "@sderickson/recipes-unsplash": "*"
+    "@sderickson/recipes-db": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*"
   }
 }

@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-account-spa",
   "private": true,
+  "saf": {
+    "kind": "spa"
+  },
   "type": "module",
   "exports": {
     ".": "./main.ts",
@@ -24,5 +27,8 @@
     "@sderickson/recipes-links": "*",
     "@sderickson/recipes-sdk": "*",
     "vue-router": "*"
+  },
+  "devDependencies": {
+    "@saflib/sdk": "*"
   }
 }

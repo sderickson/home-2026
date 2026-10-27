@@ -1,6 +1,8 @@
 createCollections:
   summary: "Create a collection. Caller becomes sole owner and creator. Id is optional (URL-safe, unique); if omitted, server generates one."
   operationId: "createCollections"
+  security:
+    - session: [email-verified]
 
   requestBody:
     required: true

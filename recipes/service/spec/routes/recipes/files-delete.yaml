@@ -1,6 +1,8 @@
 filesDeleteRecipes:
   summary: "Remove one file from a recipe. Admin only."
   operationId: "filesDeleteRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

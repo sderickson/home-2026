@@ -10,4 +10,6 @@ export const recipe_form = {
   submit_create: "Create recipe",
   toolbar_preview: "Preview",
   toolbar_save: "Save",
+  html_removed:
+    "Saved, but some HTML in the instructions isn't allowed and was removed: {items}",
 };

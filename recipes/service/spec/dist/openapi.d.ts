@@ -41,6 +41,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Archive or unarchive a recipe. Caller must be editor/owner on its collection.
+         * @description Archived recipes are left out of the default recipe list. Archiving also removes the recipe from every menu in its collection; unarchiving does not put it back.
+         */
+        put: operations["archiveRecipe"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes/{id}/versions": {
         parameters: {
             query?: never;
@@ -347,6 +367,7 @@ export interface components {
         Collection: components["schemas"]["collection"];
         CollectionMember: components["schemas"]["collection-member"];
         Menu: components["schemas"]["menu"];
+        HtmlRemoval: components["schemas"]["html-removal"];
         recipe: {
             /**
              * @description Unique identifier for the recipe
@@ -390,6 +411,12 @@ export interface components {
              * @example 2023-02-01T09:00:00Z
              */
             updatedAt: string;
+            /**
+             * Format: date-time
+             * @description When the recipe was archived; null or absent when active
+             * @example null
+             */
+            archivedAt?: string | null;
             /**
              * @description Optional id of the current/latest version for display
              * @example b2c3d4e5-e89b-12d3-a456-426614174002
@@ -538,6 +565,19 @@ export interface components {
              * @example 2023-01-15T14:30:00Z
              */
             createdAt: string;
+        };
+        /** @description Something removed when sanitizing raw HTML in markdown. With only `tag`, the element was removed (its text is usually kept). With `attribute`, only that attribute was removed from the element. HTML comments use the tag `#comment`. */
+        "html-removal": {
+            /**
+             * @description Lowercase element name, e.g. "script"
+             * @example img
+             */
+            tag: string;
+            /**
+             * @description Attribute removed from the element, when only an attribute was removed
+             * @example onerror
+             */
+            attribute?: string;
         };
         /** @description Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view). */
         "unsplash-attribution": {
@@ -887,6 +927,8 @@ export interface operations {
             query: {
                 /** @description Id of the collection to list recipes from. */
                 collectionId: string;
+                /** @description List archived recipes instead of active ones. */
+                archived?: boolean;
             };
             header?: never;
             path?: never;
@@ -979,6 +1021,8 @@ export interface operations {
                         recipe: components["schemas"]["recipe"];
                         /** @description Present when initialVersion was supplied in the request. */
                         initialVersion?: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
                 };
             };
@@ -1186,6 +1230,70 @@ export interface operations {
             };
         };
     };
+    archiveRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Recipe id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description True to archive, false to restore. */
+                    archived: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description The updated recipe and the menus it was removed from. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recipe: components["schemas"]["recipe"];
+                        /** @description Menus the recipe was removed from (empty when unarchiving). */
+                        removedFromMenus: {
+                            id: string;
+                            name: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Forbidden - caller is not editor/owner on the recipe's collection. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
+                };
+            };
+        };
+    };
     listRecipeVersions: {
         parameters: {
             query?: never;
@@ -1263,7 +1371,18 @@ export interface operations {
                 content: {
                     "application/json": {
                         recipeVersion: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
+                };
+            };
+            /** @description Bad request - HTML in a field other than instructionsMarkdown. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
@@ -1320,7 +1439,18 @@ export interface operations {
                 content: {
                     "application/json": {
                         recipeVersion: components["schemas"]["recipe-version"];
+                        /** @description Raw HTML removed from instructionsMarkdown when sanitizing. Empty when nothing was removed. */
+                        removedHtml: components["schemas"]["html-removal"][];
                     };
+                };
+            };
+            /** @description Bad request - HTML in a field other than instructionsMarkdown. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["error"];
                 };
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */

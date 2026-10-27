@@ -8,8 +8,7 @@ sharedGetMenus:
     (/recipes/{recipeId}/shared/files/{fileId}/blob), not the authenticated
     blob path. Groupings only list recipes that still exist.
   operationId: "sharedGetMenus"
-  tags:
-    - "no-auth"
+  x-public: true
 
   parameters:
     - name: "id"

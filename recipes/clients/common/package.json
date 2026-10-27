@@ -2,6 +2,9 @@
   "name": "@sderickson/recipes-clients-common",
   "description": "Shared look-and-feel and utilities for web clients",
   "private": true,
+  "saf": {
+    "kind": "vue"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts",
@@ -23,18 +26,22 @@
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
+    "@saflib/links": "*",
     "@saflib/ory-kratos-sdk": "*",
     "@saflib/ory-kratos-spa": "*",
     "@saflib/vendors-sentry-client": "*",
     "@saflib/vue": "*",
     "@sderickson/hub-links": "*",
     "@sderickson/recipes-links": "*",
-    "@sderickson/recipes-spec": "*",
-    "@sderickson/recipes-sdk": "*"
+    "@sderickson/recipes-sdk": "*",
+    "@sderickson/recipes-spec": "*"
   },
   "sideEffects": [
     "./style-imports.ts",
     "**/*.scss",
     "**/*.css"
-  ]
+  ],
+  "devDependencies": {
+    "@saflib/playwright": "*"
+  }
 }

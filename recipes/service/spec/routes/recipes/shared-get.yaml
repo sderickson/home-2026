@@ -6,8 +6,7 @@ sharedGetRecipes:
     to the shared blob path
     (/recipes/{id}/shared/files/{fileId}/blob), not the authenticated blob path.
   operationId: "sharedGetRecipes"
-  tags:
-    - "no-auth"
+  x-public: true
 
   parameters:
     - name: "id"

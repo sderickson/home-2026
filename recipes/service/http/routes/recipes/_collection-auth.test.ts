@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
-import { createRecipesHttpApp } from "../../http.ts";
+import { createRecipesHttpApp } from "../../test/http-app.ts";
 import { makeUserHeaders, makeAdminHeaders } from "@saflib/express";
 import { recipesDb, recipeQueries } from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";

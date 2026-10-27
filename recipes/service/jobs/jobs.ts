@@ -7,7 +7,7 @@ import {
 } from "@saflib/jobs-http";
 import { createOnDiskDbKeyAccessor } from "@saflib/drizzle";
 import { typedEnv } from "@saflib/env";
-import { jsonSpec } from "@sderickson/recipes-spec";
+import type { OpenApiDocument } from "@saflib/openapi";
 import {
   recipesServiceStorage,
   type RecipesServiceContext,
@@ -40,18 +40,21 @@ const jobsDbAccessor = createOnDiskDbKeyAccessor({
 export const getRecipesJobsDbKey = jobsDbAccessor.getDbKey;
 
 /**
- * Validates `recipesTriggerMap` / `recipesJobOperations` against the recipes
- * OpenAPI spec and `cron:` trigger keys against registered `recipesCronJobs`,
- * then starts the jobs runtime.
+ * Validates `recipesTriggerMap` / `recipesJobOperations` against `apiSpec`
+ * (the composition root passes the recipes spec) and `cron:` trigger keys
+ * against registered `recipesCronJobs`, then starts the jobs runtime.
  */
-export const runRecipesJobs = (context: RecipesServiceContext) => {
+export const runRecipesJobs = (
+  context: RecipesServiceContext,
+  apiSpec: OpenApiDocument,
+) => {
   return recipesServiceStorage.run(context, async () => {
     validateCronTriggerKeys(recipesTriggerMap, Object.keys(recipesCronJobs));
 
     return runJobs({
       triggerMap: recipesTriggerMap,
       operationConfig: recipesJobOperations,
-      apiSpec: jsonSpec,
+      apiSpec,
       targetSocketPath:
         (
           typedEnv as {

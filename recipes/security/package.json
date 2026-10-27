@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-security",
   "private": true,
+  "saf": {
+    "kind": "lib"
+  },
   "type": "module",
   "scripts": {
     "test:e2e": "playwright test",

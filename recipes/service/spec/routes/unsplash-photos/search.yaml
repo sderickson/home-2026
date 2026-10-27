@@ -2,6 +2,8 @@
 searchUnsplashPhotos:
   summary: "Search Unsplash for photos by query (e.g. recipe title). Not recipe-scoped; general Unsplash search. Used by the Unsplash picker modal."
   operationId: "searchUnsplashPhotos"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "q"

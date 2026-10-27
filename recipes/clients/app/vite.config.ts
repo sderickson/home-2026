@@ -1,5 +1,5 @@
 import { makeConfig } from "@saflib/vite";
-import { htmlHeaderPlugin } from "../build/html-header-plugin.ts";
+import { htmlHeaderPlugin } from "@sderickson/recipes-root-clients/html-header-plugin";
 import path from "path";
 
 const monorepoRoot = path.resolve(import.meta.dirname, "../../..");

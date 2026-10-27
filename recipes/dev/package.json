@@ -1,6 +1,9 @@
 {
   "name": "@sderickson/recipes-dev",
   "description": "Docker compose setup for dev environment",
+  "saf": {
+    "kind": "other"
+  },
   "type": "module",
   "scripts": {
     "typecheck": "tsc -b",

@@ -187,7 +187,7 @@ async function addSelectedPhoto() {
     emit("update:modelValue", false);
     emit("added");
   } catch {
-    // Error surfaced via mutation state / global error handling if needed
+    // The global mutation error handler shows it in the snackbar.
   }
 }
 </script>

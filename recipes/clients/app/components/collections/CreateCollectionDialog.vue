@@ -80,7 +80,10 @@ const name = ref("");
 const optionalId = ref("");
 const saving = ref(false);
 const submitError = ref<string | null>(null);
-const createMutation = useCreateCollectionsMutation();
+// Errors render inline in the dialog, not in the snackbar.
+const createMutation = useCreateCollectionsMutation({
+  silenceErrorSnackbar: true,
+});
 
 watch(
   () => props.modelValue,

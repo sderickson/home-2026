@@ -1,6 +1,8 @@
 updateCollections:
   summary: "Update collection name. Owner only."
   operationId: "updateCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

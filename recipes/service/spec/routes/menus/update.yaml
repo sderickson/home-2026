@@ -1,6 +1,8 @@
 updateMenus:
   summary: "Update menu name and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection."
   operationId: "updateMenu"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: id

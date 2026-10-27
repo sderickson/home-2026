@@ -1,0 +1,65 @@
+/* Vuetify component CSS overrides (imported once via ../style-imports.ts — SPAs and VitePress).
+ *
+ * Prefer this file (or clients/build/vuetify-settings.scss) over <style> blocks in Vue SFCs
+ * when restyling .v-* components — keeps the design system consistent.
+ *
+ * To find selectors and structure, open the component under:
+ *   node_modules/vuetify/lib/components/<VComponent>/
+ * Examples: VBtn.sass, VDialog.sass, VCard.sass, VList.sass, …
+ * Sass variable defaults ($button-height, …) are in adjacent _variables.scss
+ * and are overridden in clients/build/vuetify-settings.scss via `@use "vuetify/settings"`.
+ *
+ * App-wide utility classes that are NOT restyling Vuetify belong in globals.scss.
+ * Vuetify's own styles are in cascade layers, so these unlayered rules win.
+ */
+
+/* App bar: white with a thin bottom border. */
+.v-app-bar.v-toolbar {
+  border-bottom: 1px solid rgb(var(--v-theme-outline-soft));
+}
+
+/* Buttons: outlined (secondary) buttons use the theme outline, not currentColor. */
+.v-btn {
+  font-weight: 500;
+}
+
+.v-btn.bg-primary {
+  font-weight: 600;
+}
+
+.v-btn--variant-outlined {
+  border-color: rgb(var(--v-theme-outline));
+}
+
+/* Segmented toggle (v-btn-toggle): selected segment is tinted. */
+.v-btn-group .v-btn.v-btn--active {
+  background: rgb(var(--v-theme-primary-tint));
+  color: rgb(var(--v-theme-primary));
+}
+
+.v-btn-group .v-btn.v-btn--active > .v-btn__overlay {
+  opacity: 0;
+}
+
+/* Outlined fields: solid theme outline instead of translucent ink. */
+.v-field--variant-outlined:not(.v-field--focused):not(.v-field--error)
+  .v-field__outline {
+  --v-field-border-opacity: 1;
+  color: rgb(var(--v-theme-outline));
+}
+
+/* Breadcrumbs: small mono, muted. */
+.v-breadcrumbs {
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgb(var(--v-theme-muted));
+}
+
+.v-breadcrumbs-item--disabled {
+  opacity: 1;
+}
+
+.v-breadcrumbs-item--link {
+  text-decoration: underline;
+}

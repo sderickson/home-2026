@@ -2,6 +2,9 @@
   "name": "@sderickson/recipes-db",
   "description": "Database package for recipes.",
   "private": true,
+  "saf": {
+    "kind": "db"
+  },
   "type": "module",
   "exports": {
     ".": "./index.ts"

@@ -1,6 +1,8 @@
 listCollections:
   summary: "List collections the current user is a member of (any role). Returns only collections where the user's email is in collection_member and (email is validated OR user is creator). Includes menus for each collection (viewers see public menus only; editors/owners see all)."
   operationId: "listCollections"
+  security:
+    - session: [email-verified]
 
   responses:
     "200":

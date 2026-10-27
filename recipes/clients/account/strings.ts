@@ -1,5 +1,5 @@
 // import { accountSdkStrings } from "@saflib/account-sdk/strings";
-import { recipes_common_strings } from "../common/strings.ts";
+import { recipes_common_strings } from "@sderickson/recipes-clients-common/strings";
 
 // BEGIN SORTED WORKFLOW AREA string-imports FOR vue/add-view sdk/add-component
 import { home_page } from "./pages/home/Home.strings.ts";

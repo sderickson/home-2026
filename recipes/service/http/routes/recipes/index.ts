@@ -3,6 +3,7 @@ import { createScopedMiddleware, uploadToDiskOptions } from "@saflib/express";
 import { jsonSpec } from "@sderickson/recipes-spec";
 
 // BEGIN SORTED WORKFLOW AREA handler-imports FOR express/add-handler
+import { archiveRecipeHandler } from "./archive.ts";
 import { createRecipeHandler } from "./create.ts";
 import { deleteRecipeHandler } from "./delete.ts";
 import { filesDeleteRecipesHandler } from "./files-delete.ts";
@@ -25,8 +26,6 @@ export const createRecipesRouter = () => {
     "/recipes",
     createScopedMiddleware({
       apiSpec: jsonSpec,
-      enforceAuth: true,
-      emailVerificationRequired: true,
       fileUploader: uploadToDiskOptions,
     }),
   );
@@ -36,12 +35,16 @@ export const createRecipesRouter = () => {
   router.get("/recipes/:id/files", filesListRecipesHandler);
   router.get("/recipes/:id/files/:fileId/blob", filesDownloadRecipesHandler);
   router.post("/recipes/:id/files", filesUploadRecipesHandler);
-  router.post("/recipes/:id/files/from-unsplash", filesFromUnsplashRecipesHandler);
+  router.post(
+    "/recipes/:id/files/from-unsplash",
+    filesFromUnsplashRecipesHandler,
+  );
   router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);
   router.post("/recipes/:id/versions", versionsCreateRecipesHandler);
   router.put("/recipes/:id", updateRecipeHandler);
   router.delete("/recipes/:id", deleteRecipeHandler);
+  router.put("/recipes/:id/archive", archiveRecipeHandler);
   router.put(
     "/recipes/:id/versions/latest",
     versionsLatestUpdateRecipesHandler,

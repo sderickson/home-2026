@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
-import { createRecipesHttpApp } from "../../http.ts";
+import { createRecipesHttpApp } from "../../test/http-app.ts";
 import { makeUserHeaders } from "@saflib/express";
 import {
   recipesDb,
@@ -37,7 +37,9 @@ describe("GET /menus/:id", () => {
     });
     expect(menu).toBeDefined();
 
-    const response = await request(app).get(`/menus/${menu!.id}`);
+    const response = await request(app)
+      .get(`/menus/${menu!.id}`)
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(400);
   });

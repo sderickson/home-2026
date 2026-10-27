@@ -1,7 +1,7 @@
 {
   "name": "@sderickson/recipes-cron",
   "saf": {
-    "kind": "lib"
+    "kind": "domain"
   },
   "description": "Cron service for the recipes product",
   "type": "module",

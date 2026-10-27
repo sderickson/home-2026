@@ -24,6 +24,8 @@ export interface RecipeEntity {
   createdAt: Date;
   updatedBy: string;
   updatedAt: Date;
+  /** Set when archived: hidden from the recipe list and removed from menus. */
+  archivedAt: Date | null;
 }
 
 export const recipe = sqliteTable(
@@ -42,6 +44,7 @@ export const recipe = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedBy: text("updated_by").notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+    archivedAt: integer("archived_at", { mode: "timestamp" }),
   },
   (table) => [index("recipe_collection_id_idx").on(table.collectionId)],
 );

@@ -8,6 +8,9 @@
       "path": "../../../saflib/env"
     },
     {
+      "path": "../../../saflib/errors/errors-service"
+    },
+    {
       "path": "../../../saflib/monorepo"
     },
     {
@@ -23,15 +26,6 @@
       "path": "../../../saflib/vendors/sentry-node"
     },
     {
-      "path": "../common"
-    },
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../http"
-    },
-    {
       "path": "../recipes-service"
     }
   ],
@@ -40,11 +34,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

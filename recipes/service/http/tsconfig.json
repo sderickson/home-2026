@@ -2,16 +2,19 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../saflib/cron/cron-http"
+      "path": "../../../saflib/base/service/spec"
+    },
+    {
+      "path": "../../../saflib/drizzle"
     },
     {
       "path": "../../../saflib/express"
     },
     {
-      "path": "../../../saflib/jobs/jobs-http"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../saflib/monorepo"
+      "path": "../../../saflib/node"
     },
     {
       "path": "../../../saflib/object-store"
@@ -20,16 +23,13 @@
       "path": "../common"
     },
     {
-      "path": "../cron"
-    },
-    {
       "path": "../db"
     },
     {
       "path": "../integrations/unsplash"
     },
     {
-      "path": "../jobs"
+      "path": "../markdown"
     },
     {
       "path": "../spec"
@@ -40,11 +40,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

@@ -49,5 +49,13 @@
     "drizzle-kit": "^0.31.10",
     "@tanstack/vue-query": "5.85.9",
     "@vitejs/plugin-vue": "6.0.8"
+  },
+  "safImports": {
+    "boundaries": {
+      "baseline": "recipes/import-boundaries.baseline.json",
+      "scope": [
+        "dir:recipes/**"
+      ]
+    }
   }
 }
