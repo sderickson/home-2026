@@ -4,6 +4,7 @@ import {
   defaultSectionFor,
   isPlacementComplete,
   isRecipeOnAnyMenu,
+  menusContainingRecipe,
 } from "./menuPlacement.logic.ts";
 
 const groupings = [
@@ -52,5 +53,16 @@ describe("defaultSectionFor", () => {
     expect(defaultSectionFor({ groupings })).toBe("Mains");
     expect(defaultSectionFor({ groupings: [] })).toBe("");
     expect(defaultSectionFor(undefined)).toBe("");
+  });
+});
+
+describe("menusContainingRecipe", () => {
+  it("keeps only the menus that list the recipe", () => {
+    const weeknights = { id: "w", groupings };
+    const brunch = { id: "b", groupings: [{ name: "Eggs", recipeIds: ["z"] }] };
+    expect(menusContainingRecipe([weeknights, brunch], "a")).toEqual([
+      weeknights,
+    ]);
+    expect(menusContainingRecipe([weeknights, brunch], "q")).toEqual([]);
   });
 });

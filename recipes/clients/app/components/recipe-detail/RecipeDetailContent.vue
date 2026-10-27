@@ -88,6 +88,15 @@
             </v-list>
           </v-menu>
         </template>
+        <template v-if="recipeMenus.length > 0" #stamp-start>
+          <span>{{ t(strings.on_menus) }}</span>
+          <template v-for="(menu, i) in recipeMenus" :key="menu.id">
+            <span v-if="i > 0" aria-hidden="true">·</span>
+            <router-link :to="menuPath(menu.id)" class="recipe-menu-link">
+              {{ menu.name }}
+            </router-link>
+          </template>
+        </template>
         <template v-if="displayedVersion" #stamp>
           <v-btn
             v-if="versionsNewestFirst.length > 1"
@@ -261,6 +270,7 @@ import type {
   RecipeVersion,
 } from "@sderickson/recipes-spec";
 import { computed, ref, watch } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import { useRouter } from "vue-router";
 import { recipe_detail_content as strings } from "./RecipeDetailContent.strings.ts";
 import { appLinks } from "@sderickson/recipes-links";
@@ -268,6 +278,7 @@ import { constructPath, linkToHrefWithHost } from "@saflib/links";
 import { showInfo } from "@saflib/vue";
 import { useDetailFilesFlow } from "../../pages/recipes/detail/useDetailFilesFlow.ts";
 import {
+  listMenusQuery,
   RecipeContentPreview,
   useArchiveRecipeMutation,
   useDeleteRecipeMutation,
@@ -275,6 +286,7 @@ import {
 import { useReverseT } from "@sderickson/recipes-app-spa/i18n";
 import { formatVersionDate } from "../../pages/recipes/detail/Detail.logic.ts";
 import ConfirmDialog from "../../pages/recipes/detail/ConfirmDialog.vue";
+import { menusContainingRecipe } from "../menus/menuPlacement.logic.ts";
 import UnsplashPickerDialog from "../../pages/recipes/detail/UnsplashPickerDialog.vue";
 
 export interface RecipeDetailContentProps {
@@ -305,6 +317,19 @@ const recipeEditPath = computed(() =>
 );
 
 const filesFlow = useDetailFilesFlow(computed(() => props.recipe.id));
+
+// Not in the page loader: the menu line is extra and shouldn't hold up the recipe.
+const menusQuery = useQuery(
+  computed(() => listMenusQuery(props.collectionId)),
+);
+const recipeMenus = computed(() =>
+  menusContainingRecipe(menusQuery.data.value?.menus ?? [], props.recipe.id),
+);
+function menuPath(menuId: string) {
+  return constructPath(appLinks.menusDetail, {
+    params: { collectionId: props.collectionId, id: menuId },
+  });
+}
 const deleteRecipeMutation = useDeleteRecipeMutation();
 const archiveRecipeMutation = useArchiveRecipeMutation();
 const isArchived = computed(() => !!props.recipe.archivedAt);
@@ -432,6 +457,17 @@ watch(
 </script>
 
 <style scoped>
+/* Menu names in the header's bottom-left line: quiet until hovered. */
+.recipe-menu-link {
+  color: inherit;
+  text-decoration: none;
+}
+.recipe-menu-link:hover,
+.recipe-menu-link:focus-visible {
+  color: rgb(var(--v-theme-primary));
+  text-decoration: underline;
+}
+
 .recipe-card {
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.05),
