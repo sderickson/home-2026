@@ -1,6 +1,8 @@
 getRecipe:
   summary: "Get one recipe. Auth required; caller must be at least viewer on the recipe's collection."
   operationId: "getRecipe"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

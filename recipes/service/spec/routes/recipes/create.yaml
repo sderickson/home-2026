@@ -1,6 +1,8 @@
 createRecipe:
   summary: "Create recipe (and optionally initial version). Admin only."
   operationId: "createRecipe"
+  security:
+    - session: [email-verified]
 
   requestBody:
     required: true

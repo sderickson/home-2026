@@ -33,8 +33,10 @@ describe("RecipesEdit", () => {
       },
     );
 
-    await vi.waitFor(() =>
-      expect(wrapper.text()).toContain("Classic Chocolate Chip Cookies"),
+    // The page loads the Milkdown editor, which is slow on a cold import.
+    await vi.waitFor(
+      () => expect(wrapper.text()).toContain("Classic Chocolate Chip Cookies"),
+      { timeout: 5000 },
     );
     expect(useCurrentBreadcrumbs().value.map((crumb) => crumb.title)).toEqual([
       "My Kitchen",

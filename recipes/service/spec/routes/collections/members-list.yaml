@@ -1,6 +1,8 @@
 membersListCollections:
   summary: "List members of a collection (email, role, isCreator). Caller must be a member (any role) with validated email; creator always has access."
   operationId: "membersListCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

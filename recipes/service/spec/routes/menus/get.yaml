@@ -1,6 +1,8 @@
 getMenus:
   summary: "Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required."
   operationId: "getMenu"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: id

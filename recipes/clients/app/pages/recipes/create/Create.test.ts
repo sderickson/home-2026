@@ -25,7 +25,10 @@ describe("RecipesCreate", () => {
     await router.isReady();
 
     const wrapper = mountTestApp(RecipesCreateAsync, {}, { router });
-    await vi.waitFor(() => expect(wrapper.text()).toContain("Create recipe"));
+    // The page loads the Milkdown editor, which is slow on a cold import.
+    await vi.waitFor(() => expect(wrapper.text()).toContain("Create recipe"), {
+      timeout: 5000,
+    });
     wrapper.unmount();
   });
 });

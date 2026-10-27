@@ -1,6 +1,8 @@
 listRecipes:
   summary: "List recipes in a collection. Auth required; caller must be at least viewer on the collection."
   operationId: "listRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: collectionId

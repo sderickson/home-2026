@@ -21,8 +21,6 @@ export const createCollectionsRouter = () => {
     "/collections",
     createScopedMiddleware({
       apiSpec: jsonSpec,
-      enforceAuth: true,
-      emailVerificationRequired: true,
     }),
   );
   router.get("/collections", listCollectionsHandler);
@@ -32,8 +30,14 @@ export const createCollectionsRouter = () => {
   router.delete("/collections/:id", deleteCollectionsHandler);
   router.get("/collections/:id/members", membersListCollectionsHandler);
   router.post("/collections/:id/members", membersAddCollectionsHandler);
-  router.put("/collections/:id/members/:memberId", membersUpdateCollectionsHandler);
-  router.delete("/collections/:id/members/:memberId", membersRemoveCollectionsHandler);
+  router.put(
+    "/collections/:id/members/:memberId",
+    membersUpdateCollectionsHandler,
+  );
+  router.delete(
+    "/collections/:id/members/:memberId",
+    membersRemoveCollectionsHandler,
+  );
 
   return router;
 };

@@ -1,6 +1,8 @@
 filesUploadRecipes:
   summary: "Upload a new file for a recipe (multiple files allowed). Admin only."
   operationId: "filesUploadRecipes"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

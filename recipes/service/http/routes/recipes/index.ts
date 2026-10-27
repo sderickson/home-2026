@@ -25,8 +25,6 @@ export const createRecipesRouter = () => {
     "/recipes",
     createScopedMiddleware({
       apiSpec: jsonSpec,
-      enforceAuth: true,
-      emailVerificationRequired: true,
       fileUploader: uploadToDiskOptions,
     }),
   );
@@ -36,7 +34,10 @@ export const createRecipesRouter = () => {
   router.get("/recipes/:id/files", filesListRecipesHandler);
   router.get("/recipes/:id/files/:fileId/blob", filesDownloadRecipesHandler);
   router.post("/recipes/:id/files", filesUploadRecipesHandler);
-  router.post("/recipes/:id/files/from-unsplash", filesFromUnsplashRecipesHandler);
+  router.post(
+    "/recipes/:id/files/from-unsplash",
+    filesFromUnsplashRecipesHandler,
+  );
   router.delete("/recipes/:id/files/:fileId", filesDeleteRecipesHandler);
   router.get("/recipes/:id/versions", versionsListRecipesHandler);
   router.post("/recipes/:id/versions", versionsCreateRecipesHandler);

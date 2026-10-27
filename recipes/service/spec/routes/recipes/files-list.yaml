@@ -1,8 +1,7 @@
 filesListRecipes:
   summary: "List all files for a recipe."
   operationId: "filesListRecipes"
-  tags:
-    - "no-auth"
+  x-public: true
 
   parameters:
     - name: "id"

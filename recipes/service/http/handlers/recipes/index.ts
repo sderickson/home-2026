@@ -19,16 +19,13 @@ export function createRecipesRouter(): IRouter {
   // BEGIN WORKFLOW AREA route-registrations FOR express/add-handler
   router.get(
     "/recipes/:id/shared",
-    ...createOperationScopedMiddleware(sharedGetRecipesOperationJsonSpec, {
-      enforceAuth: false,
-    }),
+    ...createOperationScopedMiddleware(sharedGetRecipesOperationJsonSpec),
     sharedGetRecipesHandler,
   );
   router.get(
     "/recipes/:id/shared/files/:fileId/blob",
     ...createOperationScopedMiddleware(
       sharedFilesDownloadRecipesOperationJsonSpec,
-      { enforceAuth: false },
     ),
     sharedFilesDownloadRecipesHandler,
   );

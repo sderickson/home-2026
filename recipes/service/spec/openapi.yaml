@@ -89,6 +89,9 @@ paths:
   # END WORKFLOW AREA
 
 components:
+  securitySchemes:
+    session:
+      $ref: "pkg:@saflib/openapi/security-schemes/session.yaml"
   schemas:
     Error:
       $ref: "./schemas/error.yaml"

@@ -1,6 +1,8 @@
 updateRecipeVersionLatest:
   summary: "Update the latest version in place (no new version created). Admin only."
   operationId: "updateRecipeVersionLatest"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

@@ -1,6 +1,8 @@
 membersRemoveCollections:
   summary: "Remove a member from a collection. Owner only. Cannot remove the creator (permanent owner); returns 400 if attempted."
   operationId: "membersRemoveCollections"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"

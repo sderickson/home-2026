@@ -1,6 +1,8 @@
 deleteMenus:
   summary: "Delete menu. Query collectionId when not inferred from path. Editor or owner on collection; menu must belong to collection."
   operationId: "deleteMenu"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: id

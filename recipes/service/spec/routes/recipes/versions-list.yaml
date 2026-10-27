@@ -1,8 +1,7 @@
 listRecipeVersions:
   summary: "List version history for a recipe (ordered by createdAt)."
   operationId: "listRecipeVersions"
-  tags:
-    - "no-auth"
+  x-public: true
 
   parameters:
     - name: "id"

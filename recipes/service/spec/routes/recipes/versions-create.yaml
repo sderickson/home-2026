@@ -1,6 +1,8 @@
 createRecipeVersion:
   summary: "Create a new recipe version (recorded history entry). Admin only."
   operationId: "createRecipeVersion"
+  security:
+    - session: [email-verified]
 
   parameters:
     - name: "id"
