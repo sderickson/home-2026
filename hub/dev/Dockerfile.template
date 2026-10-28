@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:labs
 # Recipes static clients for hub dev (recipes.* on Caddy)
 
-FROM node:24-slim AS builder
+FROM node:26-slim AS builder
 
 WORKDIR /app
 
