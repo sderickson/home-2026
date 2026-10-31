@@ -2,16 +2,16 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../../audit/audit-db"
+      "path": "../../../saflib/audit/audit-db"
     },
     {
-      "path": "../../../../audit/audit-http"
+      "path": "../../../saflib/audit/audit-http"
     },
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../env"
+      "path": "../../../saflib/env"
     },
     {
       "path": "../common"

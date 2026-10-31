@@ -2,40 +2,40 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../../analytics/analytics-http"
+      "path": "../../../saflib/analytics/analytics-http"
     },
     {
-      "path": "../../../../cron/cron-http"
+      "path": "../../../saflib/cron/cron-http"
     },
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../email/email-service"
+      "path": "../../../saflib/email/email-service"
     },
     {
-      "path": "../../../../env"
+      "path": "../../../saflib/env"
     },
     {
-      "path": "../../../../errors/errors-http"
+      "path": "../../../saflib/errors/errors-http"
     },
     {
-      "path": "../../../../express"
+      "path": "../../../saflib/express"
     },
     {
-      "path": "../../../../jobs/jobs-http"
+      "path": "../../../saflib/jobs/jobs-http"
     },
     {
-      "path": "../../../../monorepo"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../../node-log/node-log-http"
+      "path": "../../../saflib/node-log/node-log-http"
     },
     {
-      "path": "../../../../node-metrics/node-metrics-http"
+      "path": "../../../saflib/node-metrics/node-metrics-http"
     },
     {
-      "path": "../../../../vendors/brevo"
+      "path": "../../../saflib/vendors/brevo"
     },
     {
       "path": "../audit"

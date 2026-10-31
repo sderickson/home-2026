@@ -9,7 +9,7 @@ import {
 import { workspacePackageExportsPlugin } from "@saflib/vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const monorepoRoot = path.resolve(__dirname, "../../../../..");
+const monorepoRoot = path.resolve(__dirname, "../../../..");
 
 export default defineConfig({
   title: "Notebook",

@@ -21,34 +21,34 @@
   },
   "references": [
     {
-      "path": "../../../../env"
+      "path": "../../../saflib/env"
     },
     {
-      "path": "../../../../errors/errors-service"
+      "path": "../../../saflib/errors/errors-service"
     },
     {
-      "path": "../../../../express"
+      "path": "../../../saflib/express"
     },
     {
-      "path": "../../../../jobs/jobs-http"
+      "path": "../../../saflib/jobs/jobs-http"
     },
     {
-      "path": "../../../../monorepo"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../../node"
+      "path": "../../../saflib/node"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-http"
+      "path": "../../../saflib/ory-kratos/ory-kratos-http"
     },
     {
-      "path": "../../../../secret-store"
+      "path": "../../../saflib/secret-store"
     },
     {
-      "path": "../../../../vendors/loki"
+      "path": "../../../saflib/vendors/loki"
     },
     {
-      "path": "../../../../vendors/sentry-node"
+      "path": "../../../saflib/vendors/sentry-node"
     },
     {
       "path": "../audit"

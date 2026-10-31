@@ -2,22 +2,22 @@
   "files": [],
   "references": [
     {
-      "path": "../../../../errors/errors-vue"
+      "path": "../../../saflib/errors/errors-vue"
     },
     {
-      "path": "../../../../links"
+      "path": "../../../saflib/links"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-sdk"
+      "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-spa"
+      "path": "../../../saflib/ory-kratos/ory-kratos-spa"
     },
     {
-      "path": "../../../../sdk"
+      "path": "../../../saflib/sdk"
     },
     {
-      "path": "../../../../vue"
+      "path": "../../../saflib/vue"
     },
     {
       "path": "../../service/sdk"

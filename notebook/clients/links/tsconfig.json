@@ -23,7 +23,7 @@
   },
   "references": [
     {
-      "path": "../../../../links"
+      "path": "../../../saflib/links"
     }
   ]
 }
