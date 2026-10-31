@@ -6,6 +6,7 @@
 import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { accountLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
+import { scrollBehavior } from "@saflib/vue";
 
 // BEGIN SORTED WORKFLOW AREA page-imports FOR vue/add-view
 import HomeAsync from "./pages/home/HomeAsync.vue";
@@ -33,5 +34,6 @@ export const createAccountRouter = (options?: { history?: RouterHistory }) => {
   return createRouter({
     history: options?.history ?? createWebHistory("/"),
     routes,
+    scrollBehavior,
   });
 };
