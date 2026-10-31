@@ -104,14 +104,6 @@
 	reverse_proxy kratos:4433
 }
 
-# Grafana (admin login via GF_SECURITY_ADMIN_* in compose, not Kratos)
-
-{$PROTOCOL}://grafana.{$DOMAIN} {
-	reverse_proxy grafana:3000 {
-		import reverse_proxy_common
-	}
-}
-
 # Domain redirects (optional)
 
 {$DOMAIN_REDIRECTS} {

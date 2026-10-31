@@ -45,7 +45,11 @@ properties:
   downloadUrl:
     type: string
     format: uri
-    description: Full URL to download or view the file (API base + /recipes/:id/files/:fileId/blob)
+    description: >
+      Full URL to download or view the file. For uploads, the API blob path
+      (API base + /recipes/:id/files/:fileId/blob). For Unsplash photos, an
+      images.unsplash.com hotlink capped at 1600px wide; clients may override
+      the w/h/fit query params for smaller sizes.
     example: "https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob"
   unsplashAttribution:
     $ref: "./unsplash-attribution.yaml"

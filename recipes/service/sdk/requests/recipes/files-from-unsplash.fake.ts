@@ -12,20 +12,20 @@ export const filesFromUnsplashRecipesHandler = recipesHandler({
   handler: async ({ params, body }) => {
     const recipeId = params.id;
     const unsplashPhotoId = body?.unsplashPhotoId ?? "unknown";
-    const imageUrl = body?.imageUrl;
     const now = new Date().toISOString();
     const id = nextDeterministicId("file", mockRecipeFiles.length);
     const fileInfo: RecipeFileInfo = {
       id,
       recipeId,
-      blobName: `recipes/${recipeId}/${id}`,
+      // Hotlinked from Unsplash, so nothing is stored.
+      blobName: "",
       fileOriginalName: `unsplash-${unsplashPhotoId}.jpg`,
       mimetype: "image/jpeg",
       size: 0,
       createdAt: now,
       updatedAt: now,
       uploadedBy: placeholderUserId,
-      downloadUrl: imageUrl ?? `https://storage.example.com/recipes/${recipeId}/${id}`,
+      downloadUrl: `https://images.unsplash.com/${unsplashPhotoId}?w=1600&fit=max&auto=format&q=80`,
       unsplashAttribution: {
         photographerName: "Fake Photographer",
         photographerProfileUrl: `https://unsplash.com/@fake?utm_source=recipes&utm_medium=referral`,

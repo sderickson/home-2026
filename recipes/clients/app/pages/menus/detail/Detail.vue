@@ -71,6 +71,8 @@
       v-if="!isEditing"
       :groupings="menu.groupings"
       :recipes="menuRecipesForDisplay"
+      :current-versions="menuData.currentVersions"
+      :files="menuData.files"
       :menu-id="menuId"
       :collection-id="collectionId"
       :view-mode="viewMode"

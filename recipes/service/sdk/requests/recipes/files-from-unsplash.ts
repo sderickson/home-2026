@@ -13,13 +13,11 @@ export const useFilesFromUnsplashRecipesMutation = () => {
     mutationFn: async ({
       recipeId,
       unsplashPhotoId,
-      downloadLocation,
-      imageUrl,
     }: FilesFromUnsplashRecipesVariables) => {
       return handleClientMethod(
         getClient().POST("/recipes/{id}/files/from-unsplash", {
           params: { path: { id: recipeId } },
-          body: { unsplashPhotoId, downloadLocation, imageUrl },
+          body: { unsplashPhotoId },
         }),
       );
     },
@@ -28,6 +26,8 @@ export const useFilesFromUnsplashRecipesMutation = () => {
         queryKey: ["recipes", variables.recipeId, "files"],
       });
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      // Menu responses include recipe titles, versions, and files.
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
     },
   });
 };

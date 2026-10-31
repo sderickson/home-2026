@@ -17,7 +17,6 @@
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
-    "@saflib/vendors-loki": "*",
     "@sderickson/hub-db": "*",
     "@sderickson/hub-http": "*",
     "@sderickson/hub-service-common": "*"

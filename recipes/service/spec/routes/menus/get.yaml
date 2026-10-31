@@ -1,5 +1,5 @@
 getMenus:
-  summary: "Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required."
+  summary: "Get one menu with groupings, plus every recipe in the menu with its current version and files. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required."
   operationId: "getMenu"
   security:
     - session: [email-verified]
@@ -20,7 +20,7 @@ getMenus:
 
   responses:
     "200":
-      description: "Menu with groupings and flat array of full Recipe objects for every recipe in the menu's groupings."
+      description: "Menu with groupings, and its recipes' current versions and files, enough to render the menu in one request."
       content:
         application/json:
           schema:
@@ -28,6 +28,8 @@ getMenus:
             required:
               - menu
               - recipes
+              - currentVersions
+              - files
             properties:
               menu:
                 $ref: "../../schemas/menu.yaml"
@@ -35,7 +37,17 @@ getMenus:
                 type: array
                 items:
                   $ref: "../../schemas/recipe.yaml"
-                description: Full Recipe objects for every recipe referenced in the menu's groupings (enough to render the menu).
+                description: Full Recipe objects for every recipe referenced in the menu's groupings.
+              currentVersions:
+                type: array
+                description: "Current version of each recipe in `recipes` (match on recipeId)."
+                items:
+                  $ref: "../../schemas/recipe-version.yaml"
+              files:
+                type: array
+                description: "Files for every recipe in `recipes` (match on recipeId); empty array when none."
+                items:
+                  $ref: "../../schemas/recipe-file-info.yaml"
     "401":
       description: "Unauthorized - authentication required."
       content:

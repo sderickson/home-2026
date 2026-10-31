@@ -23,9 +23,6 @@
       "path": "../../../saflib/vendors/infisical"
     },
     {
-      "path": "../../../saflib/vendors/loki"
-    },
-    {
       "path": "../common"
     },
     {

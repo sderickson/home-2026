@@ -3,16 +3,12 @@ import { createHandler } from "@saflib/express";
 import type { ResponseBody as sharedGetMenusResponseBody } from "@sderickson/recipes-spec/operations/sharedGetMenus";
 import {
   menuQueries,
-  recipeFileQueries,
   recipeQueries,
   MenuNotFoundError,
-  RecipeNotFoundError,
-  type RecipeEntity,
-  type RecipeFileEntity,
-  type RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { menuToApiMenu } from "../../routes/menus/_helpers.ts";
+import { loadRecipeVersionsAndFiles } from "../../routes/recipes/_helpers.ts";
 import {
   recipeFileToSharedApiRecipeFile,
   recipeToApiRecipe,
@@ -44,32 +40,21 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
   }
   const menu = menuOut.result;
 
-  const recipes: RecipeEntity[] = [];
-  const versions: RecipeVersionEntity[] = [];
-  const files: RecipeFileEntity[] = [];
-  for (const recipeId of recipeIdsFromGroupings(menu.groupings)) {
-    const recipeOut = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
-    if (recipeOut.error) {
-      // Deleted since it was added to the menu: leave it out.
-      if (recipeOut.error instanceof RecipeNotFoundError) continue;
-      throw recipeOut.error satisfies never;
-    }
-    const { recipe, latestVersion } = recipeOut.result;
-    // Same scope as the authenticated GET /menus/{id}: only the menu's own collection.
-    if (recipe.collectionId !== menu.collectionId) continue;
-
-    const filesOut = await recipeFileQueries.listRecipeFile(recipesDbKey, {
-      recipeId,
-    });
-    if (filesOut.error) {
-      if (filesOut.error instanceof RecipeNotFoundError) continue;
-      throw filesOut.error satisfies never;
-    }
-
-    recipes.push(recipe);
-    versions.push(latestVersion);
-    files.push(...filesOut.result);
-  }
+  // Same scope as the authenticated GET /menus/{id}: only the menu's own
+  // collection. Recipes deleted since they were added are left out.
+  const recipeIds = recipeIdsFromGroupings(menu.groupings);
+  const recipes = (
+    await recipeQueries.getByIdsRecipe(
+      recipesDbKey,
+      recipeIds,
+      menu.collectionId,
+    )
+  ).sort((a, b) => recipeIds.indexOf(a.id) - recipeIds.indexOf(b.id));
+  const { versions, files } = await loadRecipeVersionsAndFiles(
+    recipesDbKey,
+    recipes.map((r) => r.id),
+  );
+  const versionIdByRecipeId = new Map(versions.map((v) => [v.recipeId, v.id]));
 
   const found = new Set(recipes.map((r) => r.id));
   const response: SharedGetMenus200 = {
@@ -80,7 +65,9 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
         recipeIds: g.recipeIds.filter((rid) => found.has(rid)),
       })),
     },
-    recipes: recipes.map((r, i) => recipeToApiRecipe(r, versions[i]!.id)),
+    recipes: recipes.map((r) =>
+      recipeToApiRecipe(r, versionIdByRecipeId.get(r.id)),
+    ),
     currentVersions: versions.map(recipeVersionToApiRecipeVersion),
     files: files.map(recipeFileToSharedApiRecipeFile),
   };

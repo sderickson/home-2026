@@ -20,6 +20,8 @@ export const useUpdateRecipeMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      // Menu responses include recipe titles, versions, and files.
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
     },
   });
 };

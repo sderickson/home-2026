@@ -18,14 +18,10 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
 
   monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     restart: unless-stopped
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
     deploy:
       resources:
         limits:
@@ -78,54 +74,6 @@ services:
       - ./kratos:/etc/config/kratos
     restart: unless-stopped
 
-  prometheus:
-    image: prom/prometheus:v3.11.2
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-  loki:
-    image: grafana/loki:latest
-    volumes:
-      - ./loki-config.yaml:/etc/loki/loki-config.yaml
-    command: -config.file=/etc/loki/loki-config.yaml
-
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - grafana_storage:/var/lib/grafana
-    env_file:
-      - ./.env.grafana.secrets
-    environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=false
-      - GF_USERS_ALLOW_SIGN_UP=false
-
-  node_exporter:
-    image: prom/node-exporter:latest
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - "--path.procfs=/host/proc"
-      - "--path.sysfs=/host/sys"
-      - "--path.rootfs=/rootfs"
-      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)"
-
-  watchtower:
-    image: containrrr/watchtower:latest
-    command:
-      # Poll every 5 seconds so local "push new :latest" tests are fast.
-      - "--interval=60"
-      # Only update containers explicitly opted-in via the enable label.
-      - "--label-enable"
-      - "--cleanup"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # GHCR auth: assume docker login has written credentials to ~/.docker/config.json on the host.
-      - ${HOME}/.docker/config.json:/config.json:ro
-    restart: unless-stopped
-
 volumes:
   caddy_data:
   caddy_config:
-  grafana_storage:

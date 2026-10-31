@@ -11,9 +11,6 @@
       "path": "../../../saflib/node"
     },
     {
-      "path": "../../../saflib/vendors/loki"
-    },
-    {
       "path": "../common"
     },
     {

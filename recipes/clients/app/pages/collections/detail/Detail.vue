@@ -208,11 +208,15 @@
       <RecipeList
         v-else-if="mdAndUp && recipesView === 'grid'"
         :recipes="filteredRecipes"
+        :current-versions="currentVersions"
+        :files="recipeFiles"
         :get-recipe-link-props="getRecipeLinkProps"
       />
       <RecipeListListView
         v-else
         :recipes="filteredRecipes"
+        :current-versions="currentVersions"
+        :files="recipeFiles"
         :get-recipe-link-props="getRecipeLinkProps"
         :grouped="!isSearching"
       />
@@ -236,10 +240,8 @@ import { useBreadcrumbs } from "@sderickson/recipes-clients-common";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
-import { useQueries } from "@tanstack/vue-query";
 import type { Recipe } from "@sderickson/recipes-spec";
 import {
-  getRecipeQuery,
   RecipeList,
   recipeDetailIngredientsSearchText,
   useDeleteCollectionsMutation,
@@ -316,23 +318,25 @@ const isSearching = computed(
   () => (recipeSearchQuery.value ?? "").trim().length > 0,
 );
 
-/** Same queries as RecipeList — shared cache so ingredients are not fetched twice. */
-const recipeDetailQueries = useQueries({
-  queries: computed(() => recipes.value.map((r) => getRecipeQuery(r.id))),
-});
+const currentVersions = computed(
+  () => recipesQuery.data.value?.currentVersions ?? [],
+);
+const recipeFiles = computed(() => recipesQuery.data.value?.files ?? []);
+const currentVersionByRecipeId = computed(
+  () => new Map(currentVersions.value.map((v) => [v.recipeId, v])),
+);
 
 const filteredRecipes = computed(() => {
   const list = recipes.value;
   const q = (recipeSearchQuery.value ?? "").trim().toLowerCase();
   if (!q) return list;
-  return list.filter((r, i) => {
+  return list.filter((r) => {
     const text = [r.title, r.subtitle, r.description ?? ""]
       .join(" ")
       .toLowerCase();
     if (text.includes(q)) return true;
-    const detail = recipeDetailQueries.value[i]?.data;
-    if (!detail) return false;
-    return recipeDetailIngredientsSearchText(detail).includes(q);
+    const currentVersion = currentVersionByRecipeId.value.get(r.id);
+    return recipeDetailIngredientsSearchText({ currentVersion }).includes(q);
   });
 });
 

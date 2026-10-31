@@ -3,7 +3,11 @@ import request from "supertest";
 import express from "express";
 import { createRecipesHttpApp } from "../../test/http-app.ts";
 import { makeUserHeaders } from "@saflib/express";
-import { recipesDb } from "@sderickson/recipes-db";
+import {
+  recipeFileQueries,
+  recipeQueries,
+  recipesDb,
+} from "@sderickson/recipes-db";
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
@@ -39,7 +43,64 @@ describe("GET /recipes", () => {
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ recipes: [] });
+    expect(response.body).toEqual({
+      recipes: [],
+      currentVersions: [],
+      files: [],
+    });
+  });
+
+  it("should include current versions and files for listed recipes", async () => {
+    const { result } = await recipeQueries.createWithVersionRecipe(dbKey, {
+      collectionId,
+      title: "Pancakes",
+      subtitle: "Fluffy",
+      description: null,
+      createdBy: SEED_USER_ID,
+      updatedBy: SEED_USER_ID,
+      versionContent: {
+        ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
+        instructionsMarkdown: "Mix and cook.",
+      },
+    });
+    if (!result)
+      throw new Error("Expected createWithVersionRecipe to return result");
+    const recipeId = result.recipe.id;
+    const { result: file } = await recipeFileQueries.insertRecipeFile(dbKey, {
+      recipe_id: recipeId,
+      blob_name: `recipes/${recipeId}/photo.jpg`,
+      file_original_name: "photo.jpg",
+      mimetype: "image/jpeg",
+      size: 1024,
+      uploaded_by: SEED_USER_ID,
+    });
+    if (!file) throw new Error("Expected insertRecipeFile to return result");
+
+    const response = await request(app)
+      .get("/recipes")
+      .query({ collectionId })
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
+
+    expect(response.status).toBe(200);
+    expect(response.body.recipes).toHaveLength(1);
+    expect(response.body.recipes[0].currentVersionId).toBe(
+      result.version.id,
+    );
+    expect(response.body.currentVersions).toHaveLength(1);
+    expect(response.body.currentVersions[0]).toMatchObject({
+      recipeId,
+      content: {
+        ingredients: [{ name: "Flour", quantity: "1", unit: "cup" }],
+      },
+    });
+    expect(response.body.files).toHaveLength(1);
+    expect(response.body.files[0]).toMatchObject({
+      id: file.id,
+      recipeId,
+      downloadUrl: expect.stringContaining(
+        `/recipes/${recipeId}/files/${file.id}/blob`,
+      ),
+    });
   });
 
   it("should return 401 or 500 when not authenticated (no auth context)", async () => {

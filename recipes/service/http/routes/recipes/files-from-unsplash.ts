@@ -1,13 +1,11 @@
 import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
-import { Readable } from "stream";
 import type {
   RecipesServiceRequestBody,
   RecipesServiceResponseBody,
 } from "@sderickson/recipes-spec";
 import {
-  generateShortId,
   recipeFileQueries,
   RecipeNotFoundError,
 } from "@sderickson/recipes-db";
@@ -25,14 +23,9 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const id = req.params.id as string;
     const body =
       req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
-    const {
-      unsplashPhotoId,
-      downloadLocation: _downloadLocation,
-      imageUrl,
-    } = body;
+    const { unsplashPhotoId } = body;
 
-    const { recipesDbKey, recipesFileContainer } =
-      recipesServiceStorage.getStore()!;
+    const { recipesDbKey } = recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
 
     const photoResult = await getPhoto(unsplashPhotoId);
@@ -47,30 +40,17 @@ export const filesFromUnsplashRecipesHandler = createHandler(
       throwOnUnsplashError(trackResult.error, "track download");
     }
 
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      throw createError(502, "Failed to fetch image", {
-        code: "IMAGE_FETCH_FAILED",
-      });
-    }
-    const imageBytes = new Uint8Array(await imageResponse.arrayBuffer());
-    const size = imageBytes.length;
-    const contentType = imageResponse.headers.get("content-type");
-    const mimetype = contentType?.split(";")[0]?.trim() || "image/jpeg";
-    const ext = mimetype === "image/png" ? "png" : "jpg";
-    const fileOriginalName = `unsplash-${unsplashPhotoId}.${ext}`;
-
-    const pathId = generateShortId();
-    const blob_name = `recipes/${id}/${pathId}`;
-
+    // Hotlinked rather than stored, per the Unsplash API guidelines. No blob.
     const insertOut = await recipeFileQueries.insertRecipeFile(recipesDbKey, {
       recipe_id: id,
-      blob_name,
-      file_original_name: fileOriginalName,
-      mimetype,
-      size,
+      blob_name: "",
+      file_original_name: `unsplash-${unsplashPhotoId}.jpg`,
+      mimetype: "image/jpeg",
+      size: 0,
       uploaded_by: auth.userId,
       unsplash_user: user,
+      unsplash_photo_id: unsplashPhotoId,
+      unsplash_image_url: photoResponse.urls.raw,
     });
 
     if (insertOut.error) {
@@ -81,26 +61,6 @@ export const filesFromUnsplashRecipesHandler = createHandler(
         default:
           throw error satisfies never;
       }
-    }
-
-    const stream = Readable.from(Buffer.from(imageBytes));
-    const uploadResult = await recipesFileContainer.uploadFile(
-      blob_name,
-      stream,
-      {
-        mimetype,
-        filename: fileOriginalName,
-      },
-    );
-
-    if (uploadResult.error) {
-      await recipeFileQueries.deleteRecipeFile(
-        recipesDbKey,
-        insertOut.result.id,
-      );
-      throw createError(500, "Failed to upload file to storage", {
-        code: "FILE_UPLOAD_FAILED",
-      });
     }
 
     const response: RecipesServiceResponseBody["filesFromUnsplashRecipes"][200] =

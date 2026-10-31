@@ -1,7 +1,6 @@
 import { startHubService } from "./index.ts";
-import { collectSystemMetrics, setServiceName } from "@saflib/node";
+import { setServiceName } from "@saflib/node";
 import { getGitHashes } from "@saflib/node/git-hashes";
-import { addLokiTransport } from "@saflib/vendors-loki";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/vendors-sentry-node";
@@ -16,9 +15,7 @@ setServiceName("hub");
 const { root, saflib } = getGitHashes();
 console.log("[hub] git hashes: root=%s saflib=%s", root, saflib);
 
-addLokiTransport();
 initSentry();
-collectSystemMetrics();
 
 await initializeDependencies();
 startOryKratosService({ callbacks });

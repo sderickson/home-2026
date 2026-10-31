@@ -24,7 +24,6 @@
     "@saflib/node": "*",
     "@saflib/vendors-brevo": "*",
     "@saflib/vendors-infisical": "*",
-    "@saflib/vendors-loki": "*",
     "@sderickson/recipes-cron": "*",
     "@sderickson/recipes-db": "*",
     "@sderickson/recipes-http": "*",

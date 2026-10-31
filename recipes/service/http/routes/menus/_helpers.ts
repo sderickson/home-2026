@@ -1,8 +1,17 @@
 // for shared mappers between database models and API response types
 // import types from both the adjacent spec and db packages, and map one to the other
-import type { MenuEntity, RecipeEntity } from "@sderickson/recipes-db";
+import type {
+  MenuEntity,
+  RecipeEntity,
+  RecipeFileEntity,
+  RecipeVersionEntity,
+} from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import { recipeToApiRecipe } from "../recipes/_helpers.ts";
+import {
+  recipeFileToApiRecipeFile,
+  recipeToApiRecipe,
+  recipeVersionToApiRecipeVersion,
+} from "../recipes/_helpers.ts";
 
 type ListMenus200 = RecipesServiceResponseBody["listMenus"][200];
 type MenuApi = ListMenus200["menus"][number];
@@ -35,10 +44,17 @@ export function listMenusResultToListMenusResponse(
 export function getMenuResultToGetMenuResponse(
   menu: MenuEntity,
   recipes: RecipeEntity[],
+  versions: RecipeVersionEntity[],
+  files: RecipeFileEntity[],
 ): GetMenu200 {
+  const versionIdByRecipeId = new Map(versions.map((v) => [v.recipeId, v.id]));
   return {
     menu: menuToApiMenu(menu),
-    recipes: recipes.map((r) => recipeToApiRecipe(r)),
+    recipes: recipes.map((r) =>
+      recipeToApiRecipe(r, versionIdByRecipeId.get(r.id)),
+    ),
+    currentVersions: versions.map(recipeVersionToApiRecipeVersion),
+    files: files.map(recipeFileToApiRecipeFile),
   };
 }
 

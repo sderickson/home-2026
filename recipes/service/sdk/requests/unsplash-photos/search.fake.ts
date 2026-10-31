@@ -14,7 +14,6 @@ function photosForQuery(q: string | undefined, limit: number): UnsplashPhotoSear
     list.push({
       id,
       ...picsumPhotoUrls(seed),
-      downloadLocation: `https://api.unsplash.com/photos/${id}/download`,
     });
   }
   return list;

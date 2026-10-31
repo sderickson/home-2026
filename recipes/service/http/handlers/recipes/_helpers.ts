@@ -5,6 +5,7 @@ import type {
   RecipeVersionEntity,
 } from "@sderickson/recipes-db";
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
+import { unsplashHotlinkUrl } from "../../routes/recipes/_helpers.ts";
 import type { ResponseBody as sharedGetRecipesResponseBody } from "@sderickson/recipes-spec/operations/sharedGetRecipes";
 
 type SharedGet200 = sharedGetRecipesResponseBody["sharedGetRecipes"][200];
@@ -82,7 +83,9 @@ export function recipeFileToSharedApiRecipeFile(
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
-    downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/shared/files/${row.id}/blob`,
+    downloadUrl: row.unsplash_image_url
+      ? unsplashHotlinkUrl(row.unsplash_image_url)
+      : `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/shared/files/${row.id}/blob`,
     ...(row.unsplash_user !== null && {
       unsplashAttribution: unsplashUserToAttribution(row.unsplash_user),
     }),

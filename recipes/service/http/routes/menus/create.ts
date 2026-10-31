@@ -9,7 +9,6 @@ import {
   menuQueries,
   recipeQueries,
   CollectionNotFoundError,
-  RecipeNotFoundError,
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
@@ -54,27 +53,17 @@ export const createMenuHandler = createHandler(async (req, res) => {
   const groupings = Array.isArray(data.groupings) ? data.groupings : [];
   const recipeIds = recipeIdsFromGroupings(groupings);
 
-  for (const recipeId of recipeIds) {
-    const out = await recipeQueries.getByIdRecipe(recipesDbKey, recipeId);
-    if (out.error) {
-      switch (true) {
-        case out.error instanceof RecipeNotFoundError:
-          throw createError(
-            400,
-            "Recipe ids in groupings must belong to the same collection",
-            { code: "VALIDATION_ERROR" },
-          );
-        default:
-          throw out.error satisfies never;
-      }
-    }
-    if (out.result.recipe.collectionId !== collectionId) {
-      throw createError(
-        400,
-        "Recipe ids in groupings must belong to the same collection",
-        { code: "VALIDATION_ERROR" },
-      );
-    }
+  const foundRecipes = await recipeQueries.getByIdsRecipe(
+    recipesDbKey,
+    recipeIds,
+    collectionId,
+  );
+  if (foundRecipes.length !== recipeIds.length) {
+    throw createError(
+      400,
+      "Recipe ids in groupings must belong to the same collection",
+      { code: "VALIDATION_ERROR" },
+    );
   }
 
   const { result, error } = await menuQueries.createMenu(recipesDbKey, {

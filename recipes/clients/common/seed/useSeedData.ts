@@ -120,11 +120,7 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
           // ignore list errors; we'll try to add image
         }
         if (!hasImage) {
-          let photo: {
-            id: string;
-            downloadLocation: string;
-            regularUrl: string;
-          } | null = null;
+          let photo: { id: string } | null = null;
           try {
             const searchResult = await queryClient.fetchQuery(
               searchUnsplashPhotosQuery({ q: r.searchQuery, perPage: 1 }),
@@ -138,8 +134,6 @@ export function useSeedData(options: { getSuccessMessage: () => string }) {
               await addFromUnsplash.mutateAsync({
                 recipeId,
                 unsplashPhotoId: photo.id,
-                downloadLocation: photo.downloadLocation,
-                imageUrl: photo.regularUrl,
               });
             } catch (e) {
               if (!isUnsplashRateLimitError(e)) throw e;

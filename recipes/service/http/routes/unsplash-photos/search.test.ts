@@ -26,7 +26,6 @@ describe("GET /unsplash-photos/search (searchUnsplashPhotos)", () => {
         id: expect.any(String),
         thumbUrl: expect.any(String),
         regularUrl: expect.any(String),
-        downloadLocation: expect.any(String),
       });
     }
   });

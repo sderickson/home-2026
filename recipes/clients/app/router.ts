@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouterHistory } from "vue-router";
 import { appLinks } from "@sderickson/recipes-links";
 import { PageNotFound } from "@saflib/vue/components";
+import { scrollBehavior } from "@saflib/vue";
 
 // BEGIN WORKFLOW AREA page-imports FOR vue/add-view
 import CollectionLayout from "./layouts/CollectionLayout.vue";
@@ -74,5 +75,6 @@ export const createAppRouter = (options?: { history?: RouterHistory }) => {
   return createRouter({
     history: options?.history ?? createWebHistory("/"),
     routes,
+    scrollBehavior,
   });
 };

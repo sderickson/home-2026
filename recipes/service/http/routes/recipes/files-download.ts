@@ -41,6 +41,14 @@ export const filesDownloadRecipesHandler = createHandler(
       });
     }
 
+    // Unsplash photos are hotlinked (downloadUrl points at Unsplash), so they
+    // have no stored blob.
+    if (!file.blob_name) {
+      throw createError(404, "Recipe file not found", {
+        code: "RECIPE_FILE_NOT_FOUND",
+      });
+    }
+
     const readOut = await recipesFileContainer.readFile(file.blob_name);
     if (readOut.error) {
       const err: FileNotFoundError | PathTraversalError | StorageError =

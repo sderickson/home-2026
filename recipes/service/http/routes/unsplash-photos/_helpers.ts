@@ -15,6 +15,5 @@ export function unsplashPhotoToSearchItem(
     id: photo.id,
     thumbUrl: photo.urls.thumb,
     regularUrl: photo.urls.regular,
-    downloadLocation: photo.links.download_location,
   };
 }
