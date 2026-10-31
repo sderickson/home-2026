@@ -6,7 +6,7 @@ services:
     image: saflib-dev-site:latest
     build:
       context: ../..
-      dockerfile: dev-site/dev-site-docker/Dockerfile
+      dockerfile: saflib/dev-site/dev-site-docker/Dockerfile
     ports:
       - "3099:3099"
     environment:
