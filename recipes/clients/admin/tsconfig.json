@@ -7,7 +7,7 @@
       "path": "../../../saflib/analytics/analytics-vue"
     },
     {
-      "path": "../../../saflib/base/service/sdk"
+      "path": "../../../saflib/base/product/service/sdk"
     },
     {
       "path": "../../../saflib/cron/cron-vue"
