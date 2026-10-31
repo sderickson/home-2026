@@ -42,12 +42,13 @@ services:
       - node
       - --experimental-strip-types
       - --disable-warning=ExperimentalWarning
-      - /app/docker/dev/install-node-modules.ts
+      - /app/saflib/docker/dev/install-node-modules.ts
     volumes: &node-volumes
       # Source is bind-mounted; node_modules stays in a Linux-only named volume
       # (the host's macOS builds would shadow it otherwise).
       - ../..:/app
       - node_modules:/app/node_modules
+      - saflib_node_modules:/app/saflib/node_modules
       - npm_cache:/root/.npm
 
   clients:
@@ -81,6 +82,7 @@ services:
     volumes:
       - ../..:/app
       - node_modules:/app/node_modules
+      - saflib_node_modules:/app/saflib/node_modules
       - npm_cache:/root/.npm
       - db_data:/app/notebook/service/db/data
       - cron_data:/app/notebook/service/cron/data
@@ -133,6 +135,8 @@ volumes:
     name: sderickson-notebook-dev-caddy-config
   node_modules:
     name: sderickson-notebook-dev-node-modules
+  saflib_node_modules:
+    name: sderickson-notebook-dev-saflib-node-modules
   npm_cache:
     name: sderickson-notebook-dev-npm-cache
   kratos_home:
