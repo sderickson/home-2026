@@ -1,8 +1,3 @@
-# Have Caddy serve prometheus metrics
-http://caddy:2020 {
-	metrics
-}
-
 # For old URLs, or domains you don't want people to use (such as "www")
 # set the env variable DOMAIN_REDIRECTS. This snippet won't work unless
 # a domain is given so even if you don't want to redirect, you need to
@@ -126,7 +121,7 @@ http://caddy:2020 {
 }
 
 # Used for standalone services which provide their own UI, only accessible to admins,
-# such as Grafana and Prometheus.
+# such as internal admin dashboards.
 (admin-proxy) {
 	forward_auth {args[0]} {
 		uri /auth/verify?

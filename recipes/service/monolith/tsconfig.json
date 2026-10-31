@@ -20,9 +20,6 @@
       "path": "../../../saflib/ory-kratos/ory-kratos-http"
     },
     {
-      "path": "../../../saflib/vendors/loki"
-    },
-    {
       "path": "../../../saflib/vendors/sentry-node"
     },
     {

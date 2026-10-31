@@ -18,30 +18,6 @@ services:
 
   # END WORKFLOW AREA
 
-  # loki:
-  #   extends:
-  #     file: remote-assets/docker-compose.prod.yaml
-  #     service: loki
-  #   volumes:
-  #     - ./remote-assets/loki-config.yaml:/etc/loki/loki-config.yaml
-  #   command: -config.file=/etc/loki/loki-config.yaml
-
-  # prometheus:
-  #   extends:
-  #     file: remote-assets/docker-compose.prod.yaml
-  #     service: prometheus
-  #   volumes:
-  #     - ./remote-assets/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  # grafana:
-  #   extends:
-  #     file: remote-assets/docker-compose.prod.yaml
-  #     service: grafana
-  #   volumes: !override []
-  #   env_file: !override []
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-
   kratos-migrate:
     extends:
       file: remote-assets/docker-compose.prod.yaml

@@ -1,7 +1,6 @@
 import { startRecipesService } from "./index.ts";
-import { collectSystemMetrics, setServiceName } from "@saflib/node";
+import { setServiceName } from "@saflib/node";
 import { getGitHashes } from "@saflib/node/git-hashes";
-import { addLokiTransport } from "@saflib/vendors-loki";
 import { validateEnv } from "@saflib/env";
 import { configureMockErrors } from "@saflib/errors-service";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
@@ -16,10 +15,8 @@ setServiceName("recipes");
 const { root, saflib } = getGitHashes();
 console.log("[recipes] git hashes: root=%s saflib=%s", root, saflib);
 
-addLokiTransport();
 configureMockErrors();
 initSentry();
-collectSystemMetrics();
 
 await initializeDependencies();
 startOryKratosService({ callbacks });

@@ -11,7 +11,6 @@
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
     "@saflib/ory-kratos-http": "*",
-    "@saflib/vendors-loki": "*",
     "@saflib/vendors-sentry-node": "*",
     "@sderickson/hub-kratos-courier": "*",
     "@sderickson/recipes-service": "*"
