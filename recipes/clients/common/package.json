@@ -25,7 +25,6 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@mdi/js": "^7.4.47",
     "@saflib/links": "*",
     "@saflib/ory-kratos-sdk": "*",
     "@saflib/ory-kratos-spa": "*",

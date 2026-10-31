@@ -32,8 +32,7 @@
     "@sderickson/notebook-http-app": "*",
     "@sderickson/notebook-jobs": "*",
     "@saflib/jobs-db": "*",
-    "@saflib/vitest": "*",
-    "supertest": "^7.0.0"
+    "@saflib/vitest": "*"
   },
   "sideEffects": false,
   "imports": {

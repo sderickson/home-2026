@@ -33,8 +33,7 @@
     "@saflib/vendors-brevo": "*"
   },
   "devDependencies": {
-    "@saflib/vitest": "*",
-    "supertest": "^7.0.0"
+    "@saflib/vitest": "*"
   },
   "sideEffects": false
 }
