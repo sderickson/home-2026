@@ -4,6 +4,7 @@ import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { menuQueries, recipeQueries, MenuNotFoundError } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "../recipes/_collection-auth.ts";
+import { loadRecipeVersionsAndFiles } from "../recipes/_helpers.ts";
 import { getMenuResultToGetMenuResponse } from "./_helpers.ts";
 
 /** Collect unique recipe ids from menu groupings in order of first appearance. */
@@ -73,9 +74,19 @@ export const getMenuHandler = createHandler(async (req, res) => {
     recipeIds: g.recipeIds.filter((id) => foundRecipeIds.has(id)),
   }));
 
+  const { versions, files } = await loadRecipeVersionsAndFiles(
+    recipesDbKey,
+    recipeEntities.map((r) => r.id),
+  );
+
   const menuForResponse = { ...menu!, groupings: filteredGroupings };
   const response: RecipesServiceResponseBody["getMenu"][200] =
-    getMenuResultToGetMenuResponse(menuForResponse, recipeEntities);
+    getMenuResultToGetMenuResponse(
+      menuForResponse,
+      recipeEntities,
+      versions,
+      files,
+    );
 
   res.status(200).json(response);
 });

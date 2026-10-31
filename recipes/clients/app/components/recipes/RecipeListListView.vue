@@ -44,18 +44,23 @@
 import { computed, defineComponent, h } from "vue";
 import { useDisplay } from "vuetify";
 import { VIcon, VImg } from "vuetify/components";
-import { useQueries } from "@tanstack/vue-query";
-import type { Recipe } from "@sderickson/recipes-spec";
+import type {
+  Recipe,
+  RecipeFileInfo,
+  RecipeVersion,
+} from "@sderickson/recipes-spec";
 import {
-  filesListRecipesQuery,
   formatKeyIngredientsDisplay,
-  getCardEnrichment,
-  getRecipeQuery,
+  getCardEnrichmentsByRecipeId,
 } from "@sderickson/recipes-sdk";
 import { groupRecipesByInitial } from "./RecipeListListView.logic.ts";
 
 const props = defineProps<{
   recipes: Recipe[];
+  /** Current versions for `recipes` (from the list response), for key ingredients. */
+  currentVersions: RecipeVersion[];
+  /** Files for `recipes` (from the list response), for the first image. */
+  files: RecipeFileInfo[];
   getRecipeLinkProps: (recipeId: string) => { to?: string; href?: string };
   /** Sort alphabetically and group under letter headings. Otherwise one flat list in the given order. */
   grouped?: boolean;
@@ -69,26 +74,13 @@ const groups = computed(() =>
     : [{ letter: "", recipes: props.recipes }],
 );
 
-const filesQueries = useQueries({
-  queries: computed(() =>
-    props.recipes.map((r) => filesListRecipesQuery(r.id)),
-  ),
-});
-
-/** Same queries as the collection page's ingredient search, so this reuses the cache. */
-const detailQueries = useQueries({
-  queries: computed(() => props.recipes.map((r) => getRecipeQuery(r.id))),
-});
-
 const enrichmentById = computed(() =>
   Object.fromEntries(
-    props.recipes.map((r, i) => [
-      r.id,
-      getCardEnrichment(
-        detailQueries.value[i]?.data,
-        filesQueries.value[i]?.data?.files ?? undefined,
-      ),
-    ]),
+    getCardEnrichmentsByRecipeId(
+      props.recipes,
+      props.currentVersions,
+      props.files,
+    ),
   ),
 );
 

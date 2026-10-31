@@ -280,7 +280,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get one menu with groupings and full Recipe objects for every recipe in the menu. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required. */
+        /** Get one menu with groupings, plus every recipe in the menu with its current version and files. Auth required; caller must be at least viewer on the menu's collection. Query collectionId is required. */
         get: operations["getMenu"];
         /** Update menu name and groupings. On edit, server appends current user id to editedByUserIds if not present. Editor or owner on collection; menu must belong to collection. Recipe ids in groupings must belong to the same collection. */
         put: operations["updateMenu"];
@@ -423,68 +423,6 @@ export interface components {
              */
             currentVersionId?: string;
         };
-        error: {
-            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
-            code?: string;
-            /**
-             * @description A human-readable description of the error.
-             * @example The requested resource could not be found.
-             */
-            message?: string;
-        };
-        /**
-         * @description Version body — structured ingredients and markdown instructions
-         * @example {
-         *       "ingredients": [
-         *         {
-         *           "name": "All-purpose flour",
-         *           "quantity": "2",
-         *           "unit": "cups"
-         *         }
-         *       ],
-         *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
-         *     }
-         */
-        content: {
-            /**
-             * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
-             * @example [
-             *       {
-             *         "name": "All-purpose flour",
-             *         "quantity": "2",
-             *         "unit": "cups"
-             *       },
-             *       {
-             *         "name": "Butter",
-             *         "quantity": "1/2",
-             *         "unit": "cup"
-             *       }
-             *     ]
-             */
-            ingredients: {
-                /**
-                 * @description Ingredient name
-                 * @example All-purpose flour
-                 */
-                name: string;
-                /**
-                 * @description Quantity as string to support values like "1/3", "2+1/3"
-                 * @example 2+1/3
-                 */
-                quantity: string;
-                /**
-                 * @description Unit of measure (unrestricted string)
-                 * @example cups
-                 */
-                unit: string;
-            }[];
-            /**
-             * @description Recipe instructions in markdown
-             * @example 1. Preheat oven to 350°F.
-             *     2. Mix dry ingredients...
-             */
-            instructionsMarkdown: string;
-        };
         "recipe-version": {
             /**
              * @description Unique identifier for this recipe version
@@ -566,19 +504,6 @@ export interface components {
              */
             createdAt: string;
         };
-        /** @description Something removed when sanitizing raw HTML in markdown. With only `tag`, the element was removed (its text is usually kept). With `attribute`, only that attribute was removed from the element. HTML comments use the tag `#comment`. */
-        "html-removal": {
-            /**
-             * @description Lowercase element name, e.g. "script"
-             * @example img
-             */
-            tag: string;
-            /**
-             * @description Attribute removed from the element, when only an attribute was removed
-             * @example onerror
-             */
-            attribute?: string;
-        };
         /** @description Minimal fields needed to attribute an Unsplash photo: photographer and links with UTM params per Unsplash API requirements. Shown when displaying Unsplash-sourced recipe files (e.g. full-size view). */
         "unsplash-attribution": {
             /**
@@ -656,6 +581,81 @@ export interface components {
             downloadUrl?: string;
             /** @description When present, the file was sourced from Unsplash; frontend must show attribution (e.g. full-size view). Omitted when file is from upload. */
             unsplashAttribution?: components["schemas"]["unsplash-attribution"];
+        };
+        error: {
+            /** @description A short, machine-readable error code, for when HTTP status codes are not sufficient. */
+            code?: string;
+            /**
+             * @description A human-readable description of the error.
+             * @example The requested resource could not be found.
+             */
+            message?: string;
+        };
+        /**
+         * @description Version body — structured ingredients and markdown instructions
+         * @example {
+         *       "ingredients": [
+         *         {
+         *           "name": "All-purpose flour",
+         *           "quantity": "2",
+         *           "unit": "cups"
+         *         }
+         *       ],
+         *       "instructionsMarkdown": "1. Preheat oven to 350°F.\n2. Mix dry ingredients."
+         *     }
+         */
+        content: {
+            /**
+             * @description List of ingredients; quantity and unit are strings (e.g. "2+1/3", "cups")
+             * @example [
+             *       {
+             *         "name": "All-purpose flour",
+             *         "quantity": "2",
+             *         "unit": "cups"
+             *       },
+             *       {
+             *         "name": "Butter",
+             *         "quantity": "1/2",
+             *         "unit": "cup"
+             *       }
+             *     ]
+             */
+            ingredients: {
+                /**
+                 * @description Ingredient name
+                 * @example All-purpose flour
+                 */
+                name: string;
+                /**
+                 * @description Quantity as string to support values like "1/3", "2+1/3"
+                 * @example 2+1/3
+                 */
+                quantity: string;
+                /**
+                 * @description Unit of measure (unrestricted string)
+                 * @example cups
+                 */
+                unit: string;
+            }[];
+            /**
+             * @description Recipe instructions in markdown
+             * @example 1. Preheat oven to 350°F.
+             *     2. Mix dry ingredients...
+             */
+            instructionsMarkdown: string;
+        };
+        /** @description Something removed when sanitizing raw HTML in markdown. With only `tag`, the element was removed (its text is usually kept). With `attribute`, only that attribute was removed from the element. HTML comments use the tag `#comment`. */
+        "html-removal": {
+            /**
+             * @description Lowercase element name, e.g. "script"
+             * @example img
+             */
+            tag: string;
+            /**
+             * @description Attribute removed from the element, when only an attribute was removed
+             * @example onerror
+             */
+            attribute?: string;
         };
         /** @description One photo returned from Unsplash search, enough to show a thumbnail and to request "add from Unsplash" later. */
         "unsplash-photo-search-item": {
@@ -936,7 +936,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of recipes in the collection. */
+            /** @description Recipes in the collection, with their current versions and files, so list pages can render cards (key ingredients, first image) and search ingredients in one request. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -944,6 +944,10 @@ export interface operations {
                 content: {
                     "application/json": {
                         recipes: components["schemas"]["recipe"][];
+                        /** @description Current version of each recipe in `recipes` (match on recipeId). */
+                        currentVersions: components["schemas"]["recipe-version"][];
+                        /** @description Files for every recipe in `recipes` (match on recipeId); empty array when none. */
+                        files: components["schemas"]["recipe-file-info"][];
                     };
                 };
             };
@@ -2514,7 +2518,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Menu with groupings and flat array of full Recipe objects for every recipe in the menu's groupings. */
+            /** @description Menu with groupings, and its recipes' current versions and files, enough to render the menu in one request. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2522,8 +2526,12 @@ export interface operations {
                 content: {
                     "application/json": {
                         menu: components["schemas"]["menu"];
-                        /** @description Full Recipe objects for every recipe referenced in the menu's groupings (enough to render the menu). */
+                        /** @description Full Recipe objects for every recipe referenced in the menu's groupings. */
                         recipes: components["schemas"]["recipe"][];
+                        /** @description Current version of each recipe in `recipes` (match on recipeId). */
+                        currentVersions: components["schemas"]["recipe-version"][];
+                        /** @description Files for every recipe in `recipes` (match on recipeId); empty array when none. */
+                        files: components["schemas"]["recipe-file-info"][];
                     };
                 };
             };

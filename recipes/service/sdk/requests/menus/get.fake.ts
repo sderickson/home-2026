@@ -1,10 +1,11 @@
 import { recipesHandler } from "../../typed-fake.ts";
 import { mockMenus } from "./mocks.ts";
 import { mockRecipes } from "../recipes/mocks.ts";
+import { mockVersionsAndFilesFor } from "../recipes/list.fake.ts";
 
 /**
  * Fake handler for GET /menus/:id.
- * Reflects path id and optional query collectionId; returns { menu, recipes } from shared mocks.
+ * Reflects path id and optional query collectionId; returns { menu, recipes, currentVersions, files } from shared mocks.
  * Menu from mockMenus (./mocks.ts); recipes resolved from menu.groupings via mockRecipes (recipes mocks).
  * No validation.
  */
@@ -26,6 +27,6 @@ export const getMenuHandler = recipesHandler({
     const recipes = recipeIds
       .map((rid) => mockRecipes.find((r) => r.id === rid))
       .filter((r): r is (typeof mockRecipes)[number] => r != null);
-    return { menu, recipes };
+    return { menu, recipes, ...mockVersionsAndFilesFor(recipes) };
   },
 });

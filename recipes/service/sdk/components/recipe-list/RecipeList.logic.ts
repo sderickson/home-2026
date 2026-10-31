@@ -45,6 +45,7 @@ export function formatKeyIngredientsDisplay(
 
 /** File-like shape with mimetype and downloadUrl (e.g. from files list API). */
 export interface RecipeFileLike {
+  recipeId?: string;
   mimetype?: string | null;
   downloadUrl?: string | null;
 }
@@ -52,6 +53,7 @@ export interface RecipeFileLike {
 /** Detail-like shape with currentVersion.content.ingredients (e.g. from getRecipe API). */
 export interface RecipeDetailLike {
   currentVersion?: {
+    recipeId?: string;
     content?: {
       ingredients?: { name: string; quantity: string; unit: string }[];
     };
@@ -95,4 +97,26 @@ export function getCardEnrichment(
     firstImageUrl: firstImage?.downloadUrl ?? null,
     keyIngredients: filterKeyIngredients(ingredients),
   };
+}
+
+/**
+ * Card enrichment for each recipe, keyed by recipe id, from the flat
+ * `currentVersions` and `files` arrays that list responses include.
+ */
+export function getCardEnrichmentsByRecipeId(
+  recipes: { id: string }[],
+  currentVersions: NonNullable<RecipeDetailLike["currentVersion"]>[],
+  files: RecipeFileLike[],
+): Map<string, CardEnrichment> {
+  const map = new Map<string, CardEnrichment>();
+  for (const recipe of recipes) {
+    map.set(
+      recipe.id,
+      getCardEnrichment(
+        { currentVersion: currentVersions.find((v) => v.recipeId === recipe.id) },
+        files.filter((f) => f.recipeId === recipe.id),
+      ),
+    );
+  }
+  return map;
 }

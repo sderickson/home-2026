@@ -2,7 +2,6 @@ import createError from "http-errors";
 import { createHandler } from "@saflib/express";
 import { getSafContextWithAuth } from "@saflib/node";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import type { MenuEntity } from "@sderickson/recipes-db";
 import {
   collectionMemberQueries,
   collectionQueries,
@@ -39,15 +38,11 @@ export const listCollectionsHandler = createHandler(async (_req, res) => {
 
   const members = memberRows ?? [];
 
-  const allMenuRows: MenuEntity[] = [];
-  for (const collectionId of collectionIds) {
-    const { result: menuRows } = await menuQueries.listByCollectionIdMenu(
-      recipesDbKey,
-      { collectionId },
-    );
-    const list = menuRows ?? [];
-    allMenuRows.push(...list);
-  }
+  const { result: menuRows } = await menuQueries.listByCollectionIdsMenu(
+    recipesDbKey,
+    { collectionIds },
+  );
+  const allMenuRows = menuRows ?? [];
 
   const response: RecipesServiceResponseBody["listCollections"][200] =
     collectionsListResultToListCollectionsResponse(

@@ -24,12 +24,10 @@
 <script setup lang="ts">
 import {
   formatKeyIngredientsDisplay,
-  getCardEnrichment,
-  getRecipeQuery,
-  filesListRecipesQuery,
+  getCardEnrichmentsByRecipeId,
 } from "@sderickson/recipes-sdk";
 import { computed } from "vue";
-import { useQueries } from "@tanstack/vue-query";
+import type { RecipeFileInfo, RecipeVersion } from "@sderickson/recipes-spec";
 import { appLinks } from "@sderickson/recipes-links";
 import { constructPath } from "@saflib/links";
 import FancyMenuDisplay from "./FancyMenuDisplay.vue";
@@ -38,38 +36,16 @@ import DinerMenuDisplay from "./DinerMenuDisplay.vue";
 const props = defineProps<{
   groupings: { name: string; recipeIds: string[] }[];
   recipes: { id: string; title: string; subtitle?: string }[];
+  /** Current versions for `recipes` (from the menu response), for key ingredients. */
+  currentVersions: RecipeVersion[];
+  /** Files for `recipes` (from the menu response), for the first image. */
+  files: RecipeFileInfo[];
   menuId: string;
   collectionId: string;
   viewMode: "menu" | "diner";
   menuTitle: string;
   collectionName: string;
 }>();
-
-const uniqueRecipeIds = computed(() => {
-  const seen = new Set<string>();
-  const ids: string[] = [];
-  for (const g of props.groupings) {
-    for (const id of g.recipeIds) {
-      if (!seen.has(id)) {
-        seen.add(id);
-        ids.push(id);
-      }
-    }
-  }
-  return ids;
-});
-
-const detailQueries = useQueries({
-  queries: computed(() =>
-    uniqueRecipeIds.value.map((id) => getRecipeQuery(id)),
-  ),
-});
-
-const filesQueries = useQueries({
-  queries: computed(() =>
-    uniqueRecipeIds.value.map((id) => filesListRecipesQuery(id)),
-  ),
-});
 
 const recipeById = computed(() => {
   const map = new Map<
@@ -82,25 +58,13 @@ const recipeById = computed(() => {
   return map;
 });
 
-const enrichmentByRecipeId = computed(() => {
-  const map = new Map<
-    string,
-    {
-      firstImageUrl: string | null;
-      keyIngredients: {
-        name: string;
-        quantity: string;
-        unit: string;
-      }[];
-    }
-  >();
-  uniqueRecipeIds.value.forEach((id, i) => {
-    const detail = detailQueries.value[i]?.data;
-    const files = filesQueries.value[i]?.data?.files ?? undefined;
-    map.set(id, getCardEnrichment(detail, files ?? undefined));
-  });
-  return map;
-});
+const enrichmentByRecipeId = computed(() =>
+  getCardEnrichmentsByRecipeId(
+    props.recipes,
+    props.currentVersions,
+    props.files,
+  ),
+);
 
 const subtextByRecipeId = computed(() => {
   const map = new Map<string, string>();

@@ -26,6 +26,8 @@
       <RecipeListListView
         v-else
         :recipes="archivedRecipes"
+        :current-versions="archivedQuery.data.value?.currentVersions ?? []"
+        :files="archivedQuery.data.value?.files ?? []"
         :get-recipe-link-props="getRecipeLinkProps"
         grouped
       />

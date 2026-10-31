@@ -13,7 +13,7 @@ describe("RecipeList", () => {
 
   it("renders empty state when no recipes", () => {
     const wrapper = mountTestApp(RecipeList, {
-      props: { recipes: [], getRecipeLinkProps },
+      props: { recipes: [], currentVersions: [], files: [], getRecipeLinkProps },
     });
 
     expect(getElementByString(wrapper, strings.empty).exists()).toBe(true);
@@ -22,7 +22,7 @@ describe("RecipeList", () => {
   it("renders a card for each recipe with title and subtitle", () => {
     const recipes = mockRecipes.slice(0, 2);
     const wrapper = mountTestApp(RecipeList, {
-      props: { recipes, getRecipeLinkProps },
+      props: { recipes, currentVersions: [], files: [], getRecipeLinkProps },
     });
 
     for (const recipe of recipes) {

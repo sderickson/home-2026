@@ -1,9 +1,12 @@
 // Shared mappers between database models and API response types.
-import type {
-  RecipeEntity,
-  RecipeFileEntity,
-  RecipeVersionEntity,
+import {
+  recipeFileQueries,
+  recipeQueries,
+  type RecipeEntity,
+  type RecipeFileEntity,
+  type RecipeVersionEntity,
 } from "@sderickson/recipes-db";
+import type { DbKey } from "@saflib/drizzle";
 import { getRecipesApiBaseUrl } from "@sderickson/recipes-service-common";
 import type {
   RecipesServiceResponseBody,
@@ -109,6 +112,24 @@ export function recipeToApiRecipe(
     ...(row.archivedAt && { archivedAt: row.archivedAt.toISOString() }),
     ...(currentVersionId !== undefined && { currentVersionId }),
   };
+}
+
+/**
+ * Current versions and files for a set of recipes, in two queries. Lets list
+ * responses carry everything needed to render cards without a request per recipe.
+ */
+export async function loadRecipeVersionsAndFiles(
+  dbKey: DbKey,
+  recipeIds: string[],
+): Promise<{
+  versions: RecipeVersionEntity[];
+  files: RecipeFileEntity[];
+}> {
+  const [versions, files] = await Promise.all([
+    recipeQueries.getLatestVersionsByIdsRecipe(dbKey, recipeIds),
+    recipeFileQueries.listByRecipeIdsRecipeFile(dbKey, recipeIds),
+  ]);
+  return { versions, files };
 }
 
 export function recipeVersionToApiRecipeVersion(

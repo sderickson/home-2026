@@ -130,6 +130,13 @@ describe("GET /menus/:id", () => {
       createdBy: SEED_USER_ID,
     });
     expect(response.body.recipes[0].createdAt).toEqual(expect.any(String));
+    expect(response.body.currentVersions).toHaveLength(2);
+    expect(
+      response.body.currentVersions.map((v: { recipeId: string }) => v.recipeId),
+    ).toEqual(
+      expect.arrayContaining([recipe1!.recipe.id, recipe2!.recipe.id]),
+    );
+    expect(response.body.files).toEqual([]);
   });
 
   it("should return 200 when caller is viewer", async () => {

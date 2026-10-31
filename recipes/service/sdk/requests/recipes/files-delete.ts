@@ -25,6 +25,8 @@ export const useFilesDeleteRecipesMutation = () => {
         queryKey: ["recipes", variables.recipeId, "files"],
       });
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      // Menu responses include recipe titles, versions, and files.
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
     },
   });
 };

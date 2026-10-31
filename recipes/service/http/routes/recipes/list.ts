@@ -4,7 +4,12 @@ import { recipeQueries } from "@sderickson/recipes-db";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { requireCollectionMembership } from "./_collection-auth.ts";
-import { recipeToApiRecipe } from "./_helpers.ts";
+import {
+  loadRecipeVersionsAndFiles,
+  recipeFileToApiRecipeFile,
+  recipeToApiRecipe,
+  recipeVersionToApiRecipeVersion,
+} from "./_helpers.ts";
 
 export const listRecipesHandler = createHandler(async (req, res) => {
   const collectionId =
@@ -30,8 +35,19 @@ export const listRecipesHandler = createHandler(async (req, res) => {
     archived,
   });
 
+  const rows = result ?? [];
+  const { versions, files } = await loadRecipeVersionsAndFiles(
+    recipesDbKey,
+    rows.map((row) => row.id),
+  );
+  const versionIdByRecipeId = new Map(versions.map((v) => [v.recipeId, v.id]));
+
   const response: RecipesServiceResponseBody["listRecipes"][200] = {
-    recipes: (result ?? []).map((row) => recipeToApiRecipe(row)),
+    recipes: rows.map((row) =>
+      recipeToApiRecipe(row, versionIdByRecipeId.get(row.id)),
+    ),
+    currentVersions: versions.map(recipeVersionToApiRecipeVersion),
+    files: files.map(recipeFileToApiRecipeFile),
   };
 
   res.status(200).json(response);

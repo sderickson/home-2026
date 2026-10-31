@@ -44,15 +44,30 @@ listRecipes:
           schema:
             $ref: "../../schemas/error.yaml"
     "200":
-      description: "List of recipes in the collection."
+      description: >
+        Recipes in the collection, with their current versions and files, so
+        list pages can render cards (key ingredients, first image) and search
+        ingredients in one request.
       content:
         application/json:
           schema:
             type: object
             required:
               - recipes
+              - currentVersions
+              - files
             properties:
               recipes:
                 type: array
                 items:
                   $ref: "../../schemas/recipe.yaml"
+              currentVersions:
+                type: array
+                description: "Current version of each recipe in `recipes` (match on recipeId)."
+                items:
+                  $ref: "../../schemas/recipe-version.yaml"
+              files:
+                type: array
+                description: "Files for every recipe in `recipes` (match on recipeId); empty array when none."
+                items:
+                  $ref: "../../schemas/recipe-file-info.yaml"
