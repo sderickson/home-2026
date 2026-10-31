@@ -1,0 +1,50 @@
+{
+  "name": "@sderickson/notebook-sdk",
+  "saf": {
+    "kind": "sdk"
+  },
+  "description": "Tanstack queries and shared components for notebook service",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./client.ts",
+    "./i18n": "./i18n.ts",
+    "./strings": "./strings.ts",
+    "./test-app": "./test-app.ts",
+    "./typed-fake": "./test/typed-fake.ts",
+    "./test/scoped-mock": "./test/scoped-mock.ts",
+    "./requests/*": "./requests/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "vue-tsc -b"
+  },
+  "dependencies": {
+    "@sderickson/notebook-sdk-common": "*",
+    "@sderickson/notebook-spec": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/ory-kratos-sdk": "*",
+    "@saflib/sdk": "*",
+    "@saflib/vue": "*"
+  },
+  "devDependencies": {
+    "@sderickson/notebook-test": "*",
+    "@saflib/vitest": "*"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  },
+  "sideEffects": [
+    "./client.ts"
+  ],
+  "imports": {
+    "#client.ts": "./client.ts",
+    "#test/typed-fake.ts": "./test/typed-fake.ts",
+    "#test/scoped-mock.ts": "./test/scoped-mock.ts",
+    "#requests/*": "./requests/*"
+  }
+}

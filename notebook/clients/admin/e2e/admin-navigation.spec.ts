@@ -1,0 +1,109 @@
+import { expect } from "@playwright/test";
+import { test as notebook } from "@playwright/test";
+import { getUniqueEmail, getUniqueId } from "@saflib/playwright";
+import {
+  registrationPageFixture,
+  type RegistrationPageFixture,
+} from "@saflib/ory-kratos-spa/fixtures";
+import {
+  baseFixture,
+  type NotebookFixture,
+} from "@sderickson/notebook-clients-common/fixtures";
+import { adminLinks } from "@sderickson/notebook-links";
+import { home as homeStrings } from "#pages/home/Home.strings.ts";
+import { users as usersStrings } from "#pages/users/Users.strings.ts";
+
+type AdminNavigationFixtures = {
+  baseApp: NotebookFixture;
+  registrationPage: RegistrationPageFixture;
+};
+
+const test = notebook.extend<AdminNavigationFixtures>({
+  baseApp: baseFixture,
+  registrationPage: registrationPageFixture,
+});
+
+function protocol(): string {
+  return process.env.PROTOCOL ?? "http";
+}
+
+function domain(): string {
+  return process.env.DOMAIN ?? "docker.localhost";
+}
+
+function adminUrl(path: string): string {
+  return `${protocol()}://admin.${domain()}${path}`;
+}
+
+/**
+ * Only pages that render for a plain registered (unverified, non-admin) session.
+ * Cron/jobs/audit need verified site-admin (+ MFA); emails/logs/metrics/events
+ * are development-deployment-only and must stay out of prod builds.
+ */
+const sidebarPages: {
+  path: string;
+  assert: (page: import("@playwright/test").Page) => Promise<void>;
+}[] = [
+  {
+    path: adminLinks.home.path,
+    assert: async (page) => {
+      await expect(
+        page.getByRole("heading", { name: homeStrings.title }),
+      ).toBeVisible();
+    },
+  },
+  {
+    path: adminLinks.users.path,
+    assert: async (page) => {
+      await expect(
+        page.getByRole("heading", { name: usersStrings.title }),
+      ).toBeVisible();
+    },
+  },
+];
+
+test("admin navigation smoke", async ({
+  page,
+  baseApp,
+  registrationPage,
+}) => {
+  test.setTimeout(180_000);
+
+  const email = getUniqueEmail();
+  // Unique password so Kratos HIBP / breach checks do not reject registration.
+  const password = `Saf-E2e-${getUniqueId()}-Aa1!`;
+
+  await baseApp.step("Register a session", async () => {
+    await registrationPage.gotoRegistration();
+    await registrationPage.toBeVisible();
+    await registrationPage.completeRegistration(email, password);
+    // Registration creates a session; leave the registration flow before admin.
+    await expect(page).not.toHaveURL(/registration/, { timeout: 60_000 });
+  });
+
+  await baseApp.step("Open admin home", async () => {
+    await page.goto(adminUrl(adminLinks.home.path));
+    await expect(
+      page.getByRole("heading", { name: homeStrings.title }),
+    ).toBeVisible({ timeout: 30_000 });
+  });
+
+  for (const entry of sidebarPages) {
+    await baseApp.step(`Visit ${entry.path}`, async () => {
+      await page.goto(adminUrl(entry.path));
+      await entry.assert(page);
+    });
+  }
+
+  await baseApp.step("Users lookup form is interactive", async () => {
+    await page.goto(adminUrl(adminLinks.users.path));
+    await expect(
+      page.getByRole("heading", { name: usersStrings.title }),
+    ).toBeVisible();
+    await page
+      .getByLabel(usersStrings.id_label)
+      .fill("22222222-2222-2222-2222-222222222222");
+    await page.getByRole("button", { name: usersStrings.submit }).click();
+    await expect(page).toHaveURL(/id=22222222-2222-2222-2222-222222222222/);
+  });
+});
