@@ -1,7 +1,2 @@
-.env.monolith.secrets
-.env.kratos.secrets
-.env.grafana.secrets
-# BEGIN WORKFLOW AREA env-secrets FOR product/init
-.env.recipes.secrets
 .env.hub.secrets
-# END WORKFLOW AREA
+.env.kratos.secrets

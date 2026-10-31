@@ -1,6 +1,6 @@
 {
-  "name": "@sderickson/deploy",
-  "description": "Docker compose setup for building and deploying Sderickson products to production",
+  "name": "@sderickson/hub-deploy",
+  "description": "Platform deploy: the edge (Caddy), identity (Kratos) and hub. Products deploy separately from <product>/deploy.",
   "bin": {
     "run-clean-slate": "./run-prod-local.ts"
   },

@@ -1,4 +1,4 @@
 import common.Caddyfile
 import hub-domain.Caddyfile
-# BEGIN WORKFLOW AREA import-product-caddy FOR product/init
-# END WORKFLOW AREA
+# Product routes, registered by each product's own deploy (`saf-deploy up`).
+import sites/*.Caddyfile

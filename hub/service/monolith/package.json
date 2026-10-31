@@ -15,8 +15,6 @@
     "@sderickson/hub-db": "*",
     "@sderickson/hub-http": "*",
     "@sderickson/hub-service": "*",
-    "@sderickson/hub-service-common": "*",
-    "@sderickson/recipes-service": "*",
-    "@sderickson/recipes-service-common": "*"
+    "@sderickson/hub-service-common": "*"
   }
 }

@@ -30,18 +30,6 @@ export interface HubMonolithEnvSchema {
   DOMAIN_REDIRECTS?: string;
   HUB_SERVICE_HTTP_HOST: string;
   /**
-   * Infisical environment slug (e.g. dev, staging, prod). Required for live API calls (e.g. getSecret); not needed when using the mock client.
-   */
-  INFISICAL_ENVIRONMENT?: string;
-  /**
-   * Infisical project ID. Required for live API calls (e.g. getSecret); not needed when using the mock client.
-   */
-  INFISICAL_PROJECT_ID?: string;
-  /**
-   * Infisical token for authenticating with the Infisical API (e.g. a project or universal auth token). Required for live secret fetches; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
-   */
-  INFISICAL_TOKEN?: string;
-  /**
    * Host URL for the Ory Kratos courier callback server (e.g. recipes-monolith:3000).
    */
   KRATOS_HANDLER_HTTP_HOST: string;
@@ -57,7 +45,6 @@ export interface HubMonolithEnvSchema {
    * The protocol of the deployment, e.g. 'https'
    */
   PROTOCOL: "https" | "http";
-  RECIPES_SERVICE_HTTP_HOST: string;
   SENTRY_DSN?: string;
   /**
    * Comma-separated list of service subdomains, e.g. 'revenue,geo,core'.
@@ -71,10 +58,6 @@ export interface HubMonolithEnvSchema {
    * The timezone of the deployment, e.g. 'America/New_York'. Must be UTC.
    */
   TZ: "UTC";
-  /**
-   * Unsplash API Access Key. Create an application at https://unsplash.com/developers to obtain an access key. Required for live API calls; omit or set to 'mock' to use the mock client (e.g. in tests or when the integration is disabled).
-   */
-  UNSPLASH_API_KEY?: string;
 }
 
 /**

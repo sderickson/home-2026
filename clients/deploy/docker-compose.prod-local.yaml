@@ -1,0 +1,14 @@
+# Blog/resume stack, locally. Start hub/deploy's prod-local first (it owns the
+# edge network and Caddy); `npm run prod-local` then registers the routes there.
+services:
+  clients-web:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: clients-web
+    env_file: !override
+      - ./env.web.prod-local
+
+networks:
+  edge:
+    name: sderickson-edge
+    external: true

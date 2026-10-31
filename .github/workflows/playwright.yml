@@ -24,10 +24,10 @@ jobs:
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning saflib/docker/bin/saf-docker/index.ts generate
       - name: Pre-build images
         run: npm run build
-        working-directory: ./deploy
+        working-directory: ./hub/deploy
       - name: Run server
         run: npm run prod-local &> last-docker-compose.log &
-        working-directory: ./deploy
+        working-directory: ./hub/deploy
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium firefox
       - name: Run Playwright tests
@@ -46,5 +46,5 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: last-docker-compose-log
-          path: ./deploy/last-docker-compose.log
+          path: ./hub/deploy/last-docker-compose.log
           retention-days: 30

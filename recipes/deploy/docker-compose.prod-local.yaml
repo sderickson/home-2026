@@ -1,0 +1,22 @@
+# Recipes stack, locally. Start hub/deploy's prod-local first (it owns the edge
+# network and Caddy); `npm run prod-local` then registers recipes' routes there.
+services:
+  recipes-monolith:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: recipes-monolith
+    volumes: !override []
+    env_file: !override
+      - ./env.recipes-monolith.prod-local
+
+  recipes-web:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: recipes-web
+    env_file: !override
+      - ./env.web.prod-local
+
+networks:
+  edge:
+    name: sderickson-edge
+    external: true

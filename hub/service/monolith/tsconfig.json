@@ -2,12 +2,6 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../recipes/service/common"
-    },
-    {
-      "path": "../../../recipes/service/recipes-service"
-    },
-    {
       "path": "../../../saflib/env"
     },
     {
