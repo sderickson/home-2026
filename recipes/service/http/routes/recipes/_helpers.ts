@@ -58,6 +58,20 @@ type FilesFromUnsplashRecipes200 =
   RecipesServiceResponseBody["filesFromUnsplashRecipes"][200];
 type RecipeFileInfoApi = FilesListRecipes200["files"][number];
 
+/**
+ * Hotlink URL for an Unsplash photo, from its stored `urls.raw`. Capped to a
+ * size that suits full views; clients override w/h for thumbnails.
+ * @see https://unsplash.com/documentation#dynamically-resizable-images
+ */
+export function unsplashHotlinkUrl(rawUrl: string): string {
+  const url = new URL(rawUrl);
+  url.searchParams.set("w", "1600");
+  url.searchParams.set("fit", "max");
+  url.searchParams.set("auto", "format");
+  url.searchParams.set("q", "80");
+  return url.toString();
+}
+
 export function recipeFileToApiRecipeFile(
   row: RecipeFileEntity,
 ): RecipeFileInfoApi {
@@ -71,7 +85,9 @@ export function recipeFileToApiRecipeFile(
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
     ...(row.uploaded_by !== null && { uploadedBy: row.uploaded_by }),
-    downloadUrl: `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
+    downloadUrl: row.unsplash_image_url
+      ? unsplashHotlinkUrl(row.unsplash_image_url)
+      : `${getRecipesApiBaseUrl()}/recipes/${row.recipe_id}/files/${row.id}/blob`,
     ...(row.unsplash_user !== null && {
       unsplashAttribution: unsplashUserToAttribution(row.unsplash_user),
     }),
@@ -129,6 +145,9 @@ export async function loadRecipeVersionsAndFiles(
     recipeQueries.getLatestVersionsByIdsRecipe(dbKey, recipeIds),
     recipeFileQueries.listByRecipeIdsRecipeFile(dbKey, recipeIds),
   ]);
+  // Keep the caller's recipe order (e.g. menu order).
+  const order = new Map(recipeIds.map((id, i) => [id, i]));
+  versions.sort((a, b) => order.get(a.recipeId)! - order.get(b.recipeId)!);
   return { versions, files };
 }
 

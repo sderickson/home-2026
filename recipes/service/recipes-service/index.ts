@@ -11,6 +11,7 @@ import {
 } from "@sderickson/recipes-jobs";
 import { makeContext } from "@sderickson/recipes-service-common";
 import { jsonSpec } from "@sderickson/recipes-spec";
+import { backfillUnsplashHotlinks } from "./backfill-unsplash-hotlinks.ts";
 import { initializeDependencies } from "./dependencies.ts";
 import { typedEnv } from "./env.ts";
 import { createRecipesHttpApp } from "./http.ts";
@@ -41,6 +42,22 @@ export async function startRecipesService() {
       }
     }
     log.info("recipes-db timestamp repair complete.");
+
+    // Not awaited: calls Unsplash per row, and must not hold up startup.
+    void backfillUnsplashHotlinks(dbKey)
+      .then(({ updated, skipped, stoppedOn }) => {
+        if (updated > 0 || skipped > 0) {
+          log.info(
+            `Unsplash hotlink backfill: ${updated} updated, ${skipped} skipped.`,
+          );
+        }
+        if (stoppedOn) {
+          log.warn(
+            `Unsplash hotlink backfill stopped early; will retry next startup: ${stoppedOn.message}`,
+          );
+        }
+      })
+      .catch((err) => logError(err));
 
     const jobsSocketPath =
       (

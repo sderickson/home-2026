@@ -11,6 +11,8 @@ export * from "./requests/recipes/index.ts";
 export * from "./requests/unsplash-photos/index.ts";
 // END WORKFLOW AREA
 
+export { thumbnailImageUrl } from "./image-url.ts";
+
 // Key-ingredient display helpers for list/card subtext (subtitle or comma-separated non-staple ingredients).
 export {
   filterKeyIngredients,

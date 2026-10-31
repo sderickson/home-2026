@@ -1,4 +1,8 @@
 import { isIngredientHeader } from "../../ingredient.ts";
+import { thumbnailImageUrl } from "../../image-url.ts";
+
+/** Card, list-row, and diner photos render at about 44–60px. */
+const CARD_THUMBNAIL_PX = 64;
 
 /**
  * Logic for recipe list card enrichment: key ingredients filter and
@@ -94,7 +98,9 @@ export function getCardEnrichment(
     (f.mimetype ?? "").startsWith("image/"),
   );
   return {
-    firstImageUrl: firstImage?.downloadUrl ?? null,
+    firstImageUrl: firstImage?.downloadUrl
+      ? thumbnailImageUrl(firstImage.downloadUrl, CARD_THUMBNAIL_PX)
+      : null,
     keyIngredients: filterKeyIngredients(ingredients),
   };
 }

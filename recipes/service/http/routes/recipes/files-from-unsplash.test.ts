@@ -11,7 +11,7 @@ import {
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
-/** Minimal valid JPEG (1x1) as data URL so fetch works without network. */
+/** Sent as imageUrl, which the backend ignores (it hotlinks by photo id). */
 const minimalJpegDataUrl =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQACEQADAP8A";
 
@@ -79,8 +79,12 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       /utm_source=893198&utm_medium=referral/,
     );
     expect(response.body.file.id).toBeDefined();
-    expect(response.body.file.blobName).toBeDefined();
-    expect(response.body.file.size).toBeGreaterThan(0);
+    // Hotlinked, not stored: no blob, and downloadUrl points at Unsplash.
+    expect(response.body.file.blobName).toBe("");
+    expect(response.body.file.size).toBe(0);
+    expect(response.body.file.downloadUrl).toMatch(
+      /^https:\/\/images\.unsplash\.com\/photo-mock-raw\?.*w=1600/,
+    );
     expect(response.body.file.createdAt).toBeDefined();
     expect(response.body.file.updatedAt).toBeDefined();
 
@@ -90,6 +94,9 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
     expect(listOut.result).toHaveLength(1);
     expect(listOut.result![0].id).toBe(response.body.file.id);
     expect(listOut.result![0].unsplash_user).not.toBeNull();
+    expect(listOut.result![0].unsplash_image_url).toBe(
+      "https://images.unsplash.com/photo-mock-raw",
+    );
   });
 
   it("should return 401 when not authenticated", async () => {

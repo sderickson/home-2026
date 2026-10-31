@@ -575,7 +575,7 @@ export interface components {
             uploadedBy?: string | null;
             /**
              * Format: uri
-             * @description Full URL to download or view the file (API base + /recipes/:id/files/:fileId/blob)
+             * @description Full URL to download or view the file. For uploads, the API blob path (API base + /recipes/:id/files/:fileId/blob). For Unsplash photos, an images.unsplash.com hotlink capped at 1600px wide; clients may override the w/h/fit query params for smaller sizes.
              * @example https://api.recipes.example.com/recipes/a1b2c3d4-e89b-12d3-a456-426614174001/files/123e4567-e89b-12d3-a456-426614174000/blob
              */
             downloadUrl?: string;
@@ -683,7 +683,7 @@ export interface components {
              */
             downloadLocation: string;
         };
-        /** @description Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage. */
+        /** @description Payload to add a recipe file from an Unsplash photo. The backend looks the photo up by id, tracks the download, and stores its hotlink URL (the image itself is not stored, per the Unsplash API guidelines). */
         "add-recipe-file-from-unsplash-request": {
             /**
              * @description Unsplash photo id (short id) of the chosen photo
@@ -692,16 +692,16 @@ export interface components {
             unsplashPhotoId: string;
             /**
              * Format: uri
-             * @description Unsplash download tracking URL; backend calls trackDownload with this
+             * @description Ignored; the backend tracks the download by photo id. Accepted so existing clients keep working.
              * @example https://api.unsplash.com/photos/abc123/download
              */
-            downloadLocation: string;
+            downloadLocation?: string;
             /**
              * Format: uri
-             * @description URL to fetch image bytes (e.g. regular or full size from search result)
+             * @description Ignored; the backend uses the photo's own URLs. Accepted so existing clients keep working.
              * @example https://images.unsplash.com/photo-123/regular
              */
-            imageUrl: string;
+            imageUrl?: string;
         };
         collection: {
             /**
@@ -1672,6 +1672,13 @@ export interface operations {
                 content: {
                     "application/octet-stream": string;
                 };
+            };
+            /** @description Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored). */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
@@ -2785,6 +2792,13 @@ export interface operations {
                 content: {
                     "application/octet-stream": string;
                 };
+            };
+            /** @description Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored). */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found - recipe or file missing, or file does not belong to that recipe. */
             404: {

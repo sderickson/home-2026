@@ -18,7 +18,8 @@ export const filesFromUnsplashRecipesHandler = recipesHandler({
     const fileInfo: RecipeFileInfo = {
       id,
       recipeId,
-      blobName: `recipes/${recipeId}/${id}`,
+      // Hotlinked from Unsplash, so nothing is stored.
+      blobName: "",
       fileOriginalName: `unsplash-${unsplashPhotoId}.jpg`,
       mimetype: "image/jpeg",
       size: 0,

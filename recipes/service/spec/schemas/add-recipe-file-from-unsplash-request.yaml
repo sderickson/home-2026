@@ -1,6 +1,6 @@
 # AddRecipeFileFromUnsplashRequest — request body for POST /recipes/:id/files/from-unsplash
 type: object
-description: Payload to add a recipe file from an Unsplash photo. Backend will fetch the photo by ID to get the user object for storage.
+description: Payload to add a recipe file from an Unsplash photo. The backend looks the photo up by id, tracks the download, and stores its hotlink URL (the image itself is not stored, per the Unsplash API guidelines).
 properties:
   unsplashPhotoId:
     type: string
@@ -9,14 +9,12 @@ properties:
   downloadLocation:
     type: string
     format: uri
-    description: Unsplash download tracking URL; backend calls trackDownload with this
+    description: Ignored; the backend tracks the download by photo id. Accepted so existing clients keep working.
     example: "https://api.unsplash.com/photos/abc123/download"
   imageUrl:
     type: string
     format: uri
-    description: URL to fetch image bytes (e.g. regular or full size from search result)
+    description: Ignored; the backend uses the photo's own URLs. Accepted so existing clients keep working.
     example: "https://images.unsplash.com/photo-123/regular"
 required:
   - unsplashPhotoId
-  - downloadLocation
-  - imageUrl

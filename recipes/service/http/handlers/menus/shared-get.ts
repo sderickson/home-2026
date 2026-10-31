@@ -42,11 +42,14 @@ export const sharedGetMenusHandler = createHandler(async (req, res) => {
 
   // Same scope as the authenticated GET /menus/{id}: only the menu's own
   // collection. Recipes deleted since they were added are left out.
-  const recipes = await recipeQueries.getByIdsRecipe(
-    recipesDbKey,
-    recipeIdsFromGroupings(menu.groupings),
-    menu.collectionId,
-  );
+  const recipeIds = recipeIdsFromGroupings(menu.groupings);
+  const recipes = (
+    await recipeQueries.getByIdsRecipe(
+      recipesDbKey,
+      recipeIds,
+      menu.collectionId,
+    )
+  ).sort((a, b) => recipeIds.indexOf(a.id) - recipeIds.indexOf(b.id));
   const { versions, files } = await loadRecipeVersionsAndFiles(
     recipesDbKey,
     recipes.map((r) => r.id),

@@ -2,7 +2,9 @@
 import { deleteRecipeFile } from "./delete.ts";
 import { insertRecipeFile } from "./insert.ts";
 import { listByRecipeIdsRecipeFile } from "./list-by-recipe-ids.ts";
+import { listMissingUnsplashHotlinkRecipeFile } from "./list-missing-unsplash-hotlink.ts";
 import { listRecipeFile } from "./list.ts";
+import { setUnsplashHotlinkRecipeFile } from "./set-unsplash-hotlink.ts";
 // END WORKFLOW AREA
 
 export const recipeFileQueries = {
@@ -10,6 +12,8 @@ export const recipeFileQueries = {
   deleteRecipeFile,
   insertRecipeFile,
   listByRecipeIdsRecipeFile,
+  listMissingUnsplashHotlinkRecipeFile,
   listRecipeFile,
+  setUnsplashHotlinkRecipeFile,
   // END WORKFLOW AREA
 };

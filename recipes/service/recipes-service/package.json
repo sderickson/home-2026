@@ -17,6 +17,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@saflib/drizzle": "*",
     "@saflib/env": "*",
     "@saflib/express": "*",
     "@saflib/jobs-http": "*",

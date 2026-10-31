@@ -121,6 +121,32 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     expect(Buffer.isBuffer(response.body)).toBe(true);
   });
 
+  it("should redirect to the Unsplash hotlink for Unsplash files", async () => {
+    const { result: hotlinked } = await recipeFileQueries.insertRecipeFile(
+      dbKey,
+      {
+        recipe_id: recipeId,
+        blob_name: "",
+        file_original_name: "unsplash-abc.jpg",
+        mimetype: "image/jpeg",
+        size: 0,
+        uploaded_by: SEED_USER_ID,
+        unsplash_user: { name: "Photographer" },
+        unsplash_photo_id: "abc",
+        unsplash_image_url: "https://images.unsplash.com/photo-abc?ixid=x",
+      },
+    );
+
+    const response = await request(app)
+      .get(`/recipes/${recipeId}/files/${hotlinked!.id}/blob`)
+      .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toMatch(
+      /^https:\/\/images\.unsplash\.com\/photo-abc\?ixid=x&w=1600/,
+    );
+  });
+
   it("should return 401 when not authenticated", async () => {
     const response = await request(app).get(
       `/recipes/${recipeId}/files/${fileId}/blob`,

@@ -25,7 +25,8 @@ export const deleteRecipeHandler = createHandler(
     });
 
     for (const file of filesListOut.result ?? []) {
-      await recipesFileContainer.deleteFile(file.blob_name);
+      // Hotlinked Unsplash files have no stored copy.
+      if (file.blob_name) await recipesFileContainer.deleteFile(file.blob_name);
     }
     const { result, error } = await recipeQueries.deleteRecipe(recipesDbKey, id);
 
