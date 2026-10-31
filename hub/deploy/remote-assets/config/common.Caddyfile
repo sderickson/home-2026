@@ -1,9 +1,7 @@
-# For old URLs, or domains you don't want people to use (such as "www")
-# set the env variable DOMAIN_REDIRECTS. This snippet won't work unless
-# a domain is given so even if you don't want to redirect, you need to
-# set the env variable.
+# For old URLs, or domains you don't want people to use (such as "www").
+# args[0]: the origin to redirect to (e.g. https://example.com).
 (redirect) {
-	redir {$PROTOCOL}://{args[0]}{uri} permanent
+	redir {args[0]}{uri} permanent
 }
 
 # Caddy is the source of request IDs for API requests.
@@ -33,6 +31,25 @@
 	file_server {
 		pass_thru
 	}
+}
+
+# Shared edge headers for HTML sites, without a CSP. Products built from the
+# saflib template add their own CSP on top (see their caddy/<product>.Caddyfile).
+(html-edge-headers) {
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "unsafe-none"
+		Cross-Origin-Resource-Policy "same-origin"
+		-Server
+	}
+	@https tls
+	@https_cf header X-Forwarded-Proto https
+	header @https >Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	header @https_cf >Strict-Transport-Security "max-age=31536000; includeSubDomains"
 }
 
 # Edge headers for SPAs. Production CSP is stricter than recipes/dev (no unsafe-eval).

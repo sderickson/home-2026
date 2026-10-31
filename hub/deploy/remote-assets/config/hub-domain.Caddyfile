@@ -55,5 +55,5 @@
 # Domain redirects (optional)
 
 {$DOMAIN_REDIRECTS} {
-	import redirect {$DOMAIN}
+	import redirect {$PROTOCOL}://{$DOMAIN}
 }
