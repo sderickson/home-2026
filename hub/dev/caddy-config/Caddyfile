@@ -22,30 +22,7 @@ http://admin.docker.localhost {
 	reverse_proxy hub-clients:5173
 }
 
-# Recipes client subdomains → static builds served by caddy
-
-http://recipes.docker.localhost {
-	import spa /recipes-clients /recipes/index.html
-}
-
-http://app.recipes.docker.localhost {
-	import spa /recipes-clients /app.recipes/index.html
-}
-
-http://admin.recipes.docker.localhost {
-	import spa /recipes-clients /admin.recipes/index.html
-}
-
-http://account.recipes.docker.localhost {
-	import spa /recipes-clients /account.recipes/index.html
-}
-
 # API subdomains
-
-http://api.recipes.docker.localhost {
-	import cors recipes.docker.localhost
-	import kratos-api-proxy monolith:3002
-}
 
 http://hub.docker.localhost {
 	import cors docker.localhost
