@@ -8,6 +8,9 @@
       "path": "../../../saflib/env"
     },
     {
+      "path": "../../../saflib/object-store"
+    },
+    {
       "path": "../../../saflib/express"
     },
     {

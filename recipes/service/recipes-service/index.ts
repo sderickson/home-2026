@@ -12,6 +12,7 @@ import {
 import { makeContext } from "@sderickson/recipes-service-common";
 import { jsonSpec } from "@sderickson/recipes-spec";
 import { backfillUnsplashHotlinks } from "./backfill-unsplash-hotlinks.ts";
+import { cleanupUnsplashCopies } from "./cleanup-unsplash-copies.ts";
 import { initializeDependencies } from "./dependencies.ts";
 import { typedEnv } from "./env.ts";
 import { createRecipesHttpApp } from "./http.ts";
@@ -44,20 +45,33 @@ export async function startRecipesService() {
     log.info("recipes-db timestamp repair complete.");
 
     // Not awaited: calls Unsplash per row, and must not hold up startup.
-    void backfillUnsplashHotlinks(dbKey)
-      .then(({ updated, skipped, stoppedOn }) => {
-        if (updated > 0 || skipped > 0) {
-          log.info(
-            `Unsplash hotlink backfill: ${updated} updated, ${skipped} skipped.`,
-          );
-        }
-        if (stoppedOn) {
-          log.warn(
-            `Unsplash hotlink backfill stopped early; will retry next startup: ${stoppedOn.message}`,
-          );
-        }
-      })
-      .catch((err) => logError(err));
+    void (async () => {
+      const backfill = await backfillUnsplashHotlinks(dbKey);
+      console.log(
+        `[recipes] Unsplash hotlink backfill: ${backfill.updated} updated, ${backfill.skipped} skipped.`,
+      );
+      if (backfill.stoppedOn) {
+        console.warn(
+          `[recipes] Unsplash hotlink backfill stopped early; will retry next startup: ${backfill.stoppedOn.message}`,
+        );
+      }
+
+      const cleanup = await cleanupUnsplashCopies(
+        dbKey,
+        context.recipesFileContainer,
+      );
+      console.log(
+        `[recipes] Deleted ${cleanup.deleted} stored Unsplash image copies (now hotlinked).`,
+      );
+      if (cleanup.stoppedOn) {
+        console.warn(
+          `[recipes] Unsplash copy cleanup stopped early; will retry next startup: ${cleanup.stoppedOn.message}`,
+        );
+      }
+    })().catch((err) => {
+      console.error("[recipes] Unsplash backfill/cleanup failed:", err);
+      logError(err);
+    });
 
     const jobsSocketPath =
       (
