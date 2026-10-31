@@ -676,12 +676,6 @@ export interface components {
              * @example https://images.unsplash.com/photo-123/regular
              */
             regularUrl: string;
-            /**
-             * Format: uri
-             * @description Unsplash download tracking URL; required when adding the photo via the API
-             * @example https://api.unsplash.com/photos/abc123/download
-             */
-            downloadLocation: string;
         };
         /** @description Payload to add a recipe file from an Unsplash photo. The backend looks the photo up by id, tracks the download, and stores its hotlink URL (the image itself is not stored, per the Unsplash API guidelines). */
         "add-recipe-file-from-unsplash-request": {
@@ -690,18 +684,6 @@ export interface components {
              * @example K3m9_xR2
              */
             unsplashPhotoId: string;
-            /**
-             * Format: uri
-             * @description Ignored; the backend tracks the download by photo id. Accepted so existing clients keep working.
-             * @example https://api.unsplash.com/photos/abc123/download
-             */
-            downloadLocation?: string;
-            /**
-             * Format: uri
-             * @description Ignored; the backend uses the photo's own URLs. Accepted so existing clients keep working.
-             * @example https://images.unsplash.com/photo-123/regular
-             */
-            imageUrl?: string;
         };
         collection: {
             /**
@@ -1672,13 +1654,6 @@ export interface operations {
                 content: {
                     "application/octet-stream": string;
                 };
-            };
-            /** @description Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored). */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Unauthorized - missing or invalid auth headers, or not logged in. */
             401: {
@@ -2792,13 +2767,6 @@ export interface operations {
                 content: {
                     "application/octet-stream": string;
                 };
-            };
-            /** @description Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored). */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Not Found - recipe or file missing, or file does not belong to that recipe. */
             404: {

@@ -17,13 +17,11 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@saflib/drizzle": "*",
     "@saflib/env": "*",
     "@saflib/express": "*",
     "@saflib/jobs-http": "*",
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
-    "@saflib/object-store": "*",
     "@saflib/vendors-brevo": "*",
     "@saflib/vendors-infisical": "*",
     "@sderickson/recipes-cron": "*",

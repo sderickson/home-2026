@@ -23,7 +23,6 @@ export const filesFromUnsplashRecipesHandler = createHandler(
     const id = req.params.id as string;
     const body =
       req.body as RecipesServiceRequestBody["filesFromUnsplashRecipes"];
-    // downloadLocation and imageUrl are ignored: the photo is looked up by id.
     const { unsplashPhotoId } = body;
 
     const { recipesDbKey } = recipesServiceStorage.getStore()!;

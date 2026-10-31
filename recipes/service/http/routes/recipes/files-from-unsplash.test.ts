@@ -11,10 +11,6 @@ import {
 import type { DbKey } from "@saflib/drizzle";
 import { createTestCollection, SEED_USER_ID } from "./_test-helpers.ts";
 
-/** Sent as imageUrl, which the backend ignores (it hotlinks by photo id). */
-const minimalJpegDataUrl =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQACEQADAP8A";
-
 describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () => {
   let app: express.Express;
   let dbKey: DbKey;
@@ -51,9 +47,6 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation:
-          "https://api.unsplash.com/photos/mock-photo-id/download",
-        imageUrl: minimalJpegDataUrl,
       });
 
     expect(response.status).toBe(200);
@@ -104,9 +97,6 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .post(`/recipes/${recipeId}/files/from-unsplash`)
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation:
-          "https://api.unsplash.com/photos/mock-photo-id/download",
-        imageUrl: minimalJpegDataUrl,
       });
 
     expect(response.status).toBe(401);
@@ -118,9 +108,6 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeUserHeaders("other-user-id", "other@example.com"))
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation:
-          "https://api.unsplash.com/photos/mock-photo-id/download",
-        imageUrl: minimalJpegDataUrl,
       });
 
     expect(response.status).toBe(403);
@@ -133,9 +120,6 @@ describe("POST /recipes/:id/files/from-unsplash (filesFromUnsplashRecipes)", () 
       .set(makeAdminHeaders(SEED_USER_ID, SEED_USER_ID))
       .send({
         unsplashPhotoId: "mock-photo-id",
-        downloadLocation:
-          "https://api.unsplash.com/photos/mock-photo-id/download",
-        imageUrl: minimalJpegDataUrl,
       });
 
     expect(response.status).toBe(404);

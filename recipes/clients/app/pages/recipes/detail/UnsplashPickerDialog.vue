@@ -181,8 +181,6 @@ async function addSelectedPhoto() {
     await addFromUnsplashMutation.mutateAsync({
       recipeId: props.recipeId,
       unsplashPhotoId: photo.id,
-      downloadLocation: photo.downloadLocation,
-      imageUrl: photo.regularUrl,
     });
     emit("update:modelValue", false);
     emit("added");

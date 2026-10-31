@@ -1157,9 +1157,6 @@
               }
             }
           },
-          "302": {
-            "description": "Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored)."
-          },
           "401": {
             "description": "Unauthorized - missing or invalid auth headers, or not logged in.",
             "content": {
@@ -2802,9 +2799,6 @@
               }
             }
           },
-          "302": {
-            "description": "Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored)."
-          },
           "404": {
             "description": "Not Found - recipe or file missing, or file does not belong to that recipe.",
             "content": {
@@ -3261,19 +3255,12 @@
             "format": "uri",
             "description": "URL of the regular-size image (e.g. for add-from-Unsplash)",
             "example": "https://images.unsplash.com/photo-123/regular"
-          },
-          "downloadLocation": {
-            "type": "string",
-            "format": "uri",
-            "description": "Unsplash download tracking URL; required when adding the photo via the API",
-            "example": "https://api.unsplash.com/photos/abc123/download"
           }
         },
         "required": [
           "id",
           "thumbUrl",
-          "regularUrl",
-          "downloadLocation"
+          "regularUrl"
         ]
       },
       "add-recipe-file-from-unsplash-request": {
@@ -3284,18 +3271,6 @@
             "type": "string",
             "description": "Unsplash photo id (short id) of the chosen photo",
             "example": "K3m9_xR2"
-          },
-          "downloadLocation": {
-            "type": "string",
-            "format": "uri",
-            "description": "Ignored; the backend tracks the download by photo id. Accepted so existing clients keep working.",
-            "example": "https://api.unsplash.com/photos/abc123/download"
-          },
-          "imageUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Ignored; the backend uses the photo's own URLs. Accepted so existing clients keep working.",
-            "example": "https://images.unsplash.com/photo-123/regular"
           }
         },
         "required": [

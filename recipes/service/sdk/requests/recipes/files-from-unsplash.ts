@@ -13,13 +13,11 @@ export const useFilesFromUnsplashRecipesMutation = () => {
     mutationFn: async ({
       recipeId,
       unsplashPhotoId,
-      downloadLocation,
-      imageUrl,
     }: FilesFromUnsplashRecipesVariables) => {
       return handleClientMethod(
         getClient().POST("/recipes/{id}/files/from-unsplash", {
           params: { path: { id: recipeId } },
-          body: { unsplashPhotoId, downloadLocation, imageUrl },
+          body: { unsplashPhotoId },
         }),
       );
     },

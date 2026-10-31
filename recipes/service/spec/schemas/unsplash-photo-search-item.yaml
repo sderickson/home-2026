@@ -16,13 +16,7 @@ properties:
     format: uri
     description: URL of the regular-size image (e.g. for add-from-Unsplash)
     example: "https://images.unsplash.com/photo-123/regular"
-  downloadLocation:
-    type: string
-    format: uri
-    description: Unsplash download tracking URL; required when adding the photo via the API
-    example: "https://api.unsplash.com/photos/abc123/download"
 required:
   - id
   - thumbUrl
   - regularUrl
-  - downloadLocation

@@ -23,8 +23,6 @@ describe("filesFromUnsplashRecipes", () => {
     const result = await mutation.mutateAsync({
       recipeId,
       unsplashPhotoId: "mock-photo-1",
-      downloadLocation: "https://api.unsplash.com/photos/mock-photo-1/download",
-      imageUrl: "https://images.unsplash.com/photo-1/regular",
     });
 
     expect(result).toBeDefined();
@@ -60,8 +58,6 @@ describe("filesFromUnsplashRecipes", () => {
     const result = await mutation.mutateAsync({
       recipeId,
       unsplashPhotoId: "cache-test-photo",
-      downloadLocation: "https://api.unsplash.com/photos/cache-test-photo/download",
-      imageUrl: "https://images.unsplash.com/photo-cache/regular",
     });
 
     await filesQuery.refetch();

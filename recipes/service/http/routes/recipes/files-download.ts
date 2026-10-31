@@ -11,7 +11,6 @@ import {
 } from "@sderickson/recipes-db";
 import { recipesServiceStorage } from "@sderickson/recipes-service-common";
 import { getRecipeAndRequireCollectionAuth } from "./_collection-auth.ts";
-import { unsplashHotlinkUrl } from "./_helpers.ts";
 
 export const filesDownloadRecipesHandler = createHandler(
   async (req, res) => {
@@ -42,10 +41,12 @@ export const filesDownloadRecipesHandler = createHandler(
       });
     }
 
-    // Unsplash photos are hotlinked, per their API guidelines.
-    if (file.unsplash_image_url) {
-      res.redirect(302, unsplashHotlinkUrl(file.unsplash_image_url));
-      return;
+    // Unsplash photos are hotlinked (downloadUrl points at Unsplash), so they
+    // have no stored blob.
+    if (!file.blob_name) {
+      throw createError(404, "Recipe file not found", {
+        code: "RECIPE_FILE_NOT_FOUND",
+      });
     }
 
     const readOut = await recipesFileContainer.readFile(file.blob_name);

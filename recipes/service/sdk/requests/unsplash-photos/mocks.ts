@@ -27,7 +27,6 @@ export const mockUnsplashPhotos: UnsplashPhotoSearchItem[] = PHOTO_SEEDS.map(
   (seed, i) => ({
     id: `mock-photo-${i + 1}`,
     ...picsumPhotoUrls(seed),
-    downloadLocation: `https://api.unsplash.com/photos/mock-photo-${i + 1}/download`,
   }),
 );
 

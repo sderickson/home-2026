@@ -121,7 +121,7 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
     expect(Buffer.isBuffer(response.body)).toBe(true);
   });
 
-  it("should redirect to the Unsplash hotlink for Unsplash files", async () => {
+  it("should return 404 for hotlinked Unsplash files, which have no blob", async () => {
     const { result: hotlinked } = await recipeFileQueries.insertRecipeFile(
       dbKey,
       {
@@ -141,10 +141,8 @@ describe("GET /recipes/:id/files/:fileId/blob (filesDownloadRecipes)", () => {
       .get(`/recipes/${recipeId}/files/${hotlinked!.id}/blob`)
       .set(makeUserHeaders(SEED_USER_ID, SEED_USER_ID));
 
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toMatch(
-      /^https:\/\/images\.unsplash\.com\/photo-abc\?ixid=x&w=1600/,
-    );
+    expect(response.status).toBe(404);
+    expect(response.body.code).toBe("RECIPE_FILE_NOT_FOUND");
   });
 
   it("should return 401 when not authenticated", async () => {

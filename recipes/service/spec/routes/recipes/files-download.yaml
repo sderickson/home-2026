@@ -19,8 +19,6 @@ filesDownloadRecipes:
       description: "Recipe file id"
 
   responses:
-    "302":
-      description: "Redirect to the Unsplash hotlink, for files sourced from Unsplash (they are not stored)."
     "200":
       description: "File binary content."
       content:
