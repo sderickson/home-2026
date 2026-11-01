@@ -8,7 +8,7 @@ import { typedEnv } from "./env.ts";
 
 validateEnv(process.env, envSchema);
 
-const monorepoRoot = path.resolve(import.meta.dirname, "../../../..");
+const monorepoRoot = path.resolve(import.meta.dirname, "../../..");
 
 export default mergeConfig(
   makeConfig({

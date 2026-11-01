@@ -1,6 +1,6 @@
 {
   "extends": [
-    "../../../../vue/tsconfig.app.base.json"
+    "../../../saflib/vue/tsconfig.app.base.json"
   ],
   "compilerOptions": {
     "rootDir": ".",
@@ -23,19 +23,19 @@
   ],
   "references": [
     {
-      "path": "../../../../links"
+      "path": "../../../saflib/links"
     },
     {
-      "path": "../../../../sdk"
+      "path": "../../../saflib/sdk"
     },
     {
-      "path": "../../../../vite"
+      "path": "../../../saflib/vite"
     },
     {
-      "path": "../../../../vitepress"
+      "path": "../../../saflib/vitepress"
     },
     {
-      "path": "../../../../vue"
+      "path": "../../../saflib/vue"
     },
     {
       "path": "../common"

@@ -2,22 +2,22 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../../cron/cron-http"
+      "path": "../../../saflib/cron/cron-http"
     },
     {
-      "path": "../../../../cron/cron-db"
+      "path": "../../../saflib/cron/cron-db"
     },
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../env"
+      "path": "../../../saflib/env"
     },
     {
-      "path": "../../../../monorepo"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../../node"
+      "path": "../../../saflib/node"
     },
     {
       "path": "../common"

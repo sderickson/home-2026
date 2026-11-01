@@ -2,19 +2,19 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../env"
+      "path": "../../../saflib/env"
     },
     {
-      "path": "../../../../jobs/jobs-db"
+      "path": "../../../saflib/jobs/jobs-db"
     },
     {
-      "path": "../../../../jobs/jobs-http"
+      "path": "../../../saflib/jobs/jobs-http"
     },
     {
-      "path": "../../../../openapi"
+      "path": "../../../saflib/openapi"
     },
     {
       "path": "../common"

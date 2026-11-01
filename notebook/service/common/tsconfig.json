@@ -21,25 +21,25 @@
   },
   "references": [
     {
-      "path": "../../../../audit/audit-db"
+      "path": "../../../saflib/audit/audit-db"
     },
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../email/email-service"
+      "path": "../../../saflib/email/email-service"
     },
     {
-      "path": "../../../../monorepo"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../../node"
+      "path": "../../../saflib/node"
     },
     {
-      "path": "../../../../object-store"
+      "path": "../../../saflib/object-store"
     },
     {
-      "path": "../../../../vendors/brevo"
+      "path": "../../../saflib/vendors/brevo"
     },
     {
       "path": "../db"

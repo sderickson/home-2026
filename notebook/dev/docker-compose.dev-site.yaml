@@ -5,7 +5,7 @@ services:
   site:
     image: saflib-dev-site:latest
     build:
-      context: ../../..
+      context: ../..
       dockerfile: dev-site/dev-site-docker/Dockerfile
     ports:
       - "3099:3099"

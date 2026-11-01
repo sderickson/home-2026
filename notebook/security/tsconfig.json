@@ -25,13 +25,13 @@
   },
   "references": [
     {
-      "path": "../../../ory-kratos/ory-kratos-spa"
+      "path": "../../saflib/ory-kratos/ory-kratos-spa"
     },
     {
-      "path": "../../../playwright"
+      "path": "../../saflib/playwright"
     },
     {
-      "path": "../../../security"
+      "path": "../../saflib/security"
     }
   ]
 }

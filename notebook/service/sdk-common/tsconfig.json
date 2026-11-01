@@ -1,13 +1,13 @@
 {
   "extends": [
-    "../../../../vue/tsconfig.app.base.json"
+    "../../../saflib/vue/tsconfig.app.base.json"
   ],
   "references": [
     {
-      "path": "../../../../monorepo"
+      "path": "../../../saflib/monorepo"
     },
     {
-      "path": "../../../../sdk"
+      "path": "../../../saflib/sdk"
     }
   ],
   "compilerOptions": {

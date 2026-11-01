@@ -19,7 +19,7 @@
   ],
   "references": [
     {
-      "path": "../../../../email/email-service"
+      "path": "../../../saflib/email/email-service"
     }
   ]
 }

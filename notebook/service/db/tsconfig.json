@@ -2,10 +2,10 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../../drizzle"
+      "path": "../../../saflib/drizzle"
     },
     {
-      "path": "../../../../utils"
+      "path": "../../../saflib/utils"
     }
   ],
   "compilerOptions": {

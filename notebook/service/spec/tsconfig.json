@@ -20,10 +20,10 @@
   ],
   "references": [
     {
-      "path": "../../../../jobs/jobs-spec"
+      "path": "../../../saflib/jobs/jobs-spec"
     },
     {
-      "path": "../../../../openapi"
+      "path": "../../../saflib/openapi"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "extends": [
-    "../../../../vue/tsconfig.app.base.json"
+    "../../../saflib/vue/tsconfig.app.base.json"
   ],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
@@ -19,25 +19,25 @@
   ],
   "references": [
     {
-      "path": "../../../../analytics/analytics-vue"
+      "path": "../../../saflib/analytics/analytics-vue"
     },
     {
-      "path": "../../../../errors/errors-vue"
+      "path": "../../../saflib/errors/errors-vue"
     },
     {
-      "path": "../../../../links"
+      "path": "../../../saflib/links"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-sdk"
+      "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-spa"
+      "path": "../../../saflib/ory-kratos/ory-kratos-spa"
     },
     {
-      "path": "../../../../sdk"
+      "path": "../../../saflib/sdk"
     },
     {
-      "path": "../../../../vue"
+      "path": "../../../saflib/vue"
     },
     {
       "path": "../../service/sdk"

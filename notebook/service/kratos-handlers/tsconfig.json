@@ -20,10 +20,10 @@
   },
   "references": [
     {
-      "path": "../../../../node"
+      "path": "../../../saflib/node"
     },
     {
-      "path": "../../../../ory-kratos/ory-kratos-http"
+      "path": "../../../saflib/ory-kratos/ory-kratos-http"
     },
     {
       "path": "../common"

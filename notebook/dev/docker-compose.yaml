@@ -1,7 +1,7 @@
 name: sderickson-notebook-dev
 
 # Dev stack for the notebook product (sibling of saflib library packages).
-# Compose / build context is the saflib monorepo root (`../../..` from this directory).
+# Compose / build context is the saflib monorepo root (`../..` from this directory).
 # Source is bind-mounted at /app; nothing is copied into images, so code changes
 # need no rebuild. product/init adds the product layout's saflib/node_modules mask.
 #
@@ -16,7 +16,7 @@ services:
       - clients
     image: sderickson-notebook-dev:latest
     build:
-      context: ../../..
+      context: ../..
       dockerfile: ./notebook/dev/Dockerfile
     env_file:
       - ./env.caddy
@@ -39,7 +39,7 @@ services:
   deps:
     image: sderickson-notebook-dev-node:latest
     build:
-      context: ../../..
+      context: ../..
       dockerfile: ./notebook/dev/builds/node/Dockerfile
     command:
       - node
@@ -49,7 +49,7 @@ services:
     volumes: &node-volumes
       # Source is bind-mounted; node_modules stays in a Linux-only named volume
       # (the host's macOS builds would shadow it otherwise).
-      - ../../..:/app
+      - ../..:/app
       - node_modules:/app/node_modules
       - npm_cache:/root/.npm
 
@@ -82,7 +82,7 @@ services:
       - --disable-warning=ExperimentalWarning
       - ./run.ts
     volumes:
-      - ../../..:/app
+      - ../..:/app
       - node_modules:/app/node_modules
       - npm_cache:/root/.npm
       - db_data:/app/notebook/service/db/data
