@@ -31,6 +31,25 @@ export const accountLinks: LinkMap = {
     subdomain,
     path: "/sessions",
   },
+  /**
+   * Email verification, for satellites made from the product template (it
+   * links here; hub runs verification in its auth SPA's Kratos pages).
+   */
+  verifyEmail: {
+    subdomain: "auth",
+    path: "/new-verification",
+    params: ["return_to", "required"],
+  },
+  verification: {
+    subdomain: "auth",
+    path: "/verification",
+    params: ["flow", "token", "return_to"],
+  },
+  newVerification: {
+    subdomain: "auth",
+    path: "/new-verification",
+    params: ["return_to"],
+  },
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
   // END WORKFLOW AREA
 };
