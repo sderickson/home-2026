@@ -1,6 +1,6 @@
 import type { LinkMap } from "@saflib/links";
 
-const subdomain = "root";
+const subdomain = "notebook";
 
 export const rootLinks: LinkMap = {
   home: {

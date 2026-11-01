@@ -28,24 +28,16 @@
 	}
 }
 
-http://{$DOMAIN} {
+http://notebook.{$DOMAIN} {
 	import static-site /notebook-root
 }
 
-http://auth.{$DOMAIN} {
-	import spa /notebook-clients /auth/index.html
+http://app.notebook.{$DOMAIN} {
+	import spa /notebook-clients /app.notebook/index.html
 }
 
-http://app.{$DOMAIN} {
-	import spa /notebook-clients /app/index.html
-}
-
-http://admin.{$DOMAIN} {
-	import spa /notebook-clients /admin/index.html
-}
-
-http://account.{$DOMAIN} {
-	import spa /notebook-clients /account/index.html
+http://admin.notebook.{$DOMAIN} {
+	import spa /notebook-clients /admin.notebook/index.html
 }
 
 # BEGIN WORKFLOW AREA client-subdomains FOR vue/add-spa

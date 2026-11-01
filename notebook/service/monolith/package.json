@@ -15,15 +15,12 @@
     "./run": "./run.ts"
   },
   "dependencies": {
-
-
     "@sderickson/notebook-audit": "*",
     "@sderickson/notebook-cron": "*",
     "@sderickson/notebook-db": "*",
     "@sderickson/notebook-http": "*",
     "@sderickson/notebook-http-app": "*",
     "@sderickson/notebook-jobs": "*",
-    "@sderickson/notebook-kratos-handlers": "*",
     "@sderickson/notebook-service-common": "*",
     "@sderickson/notebook-spec": "*",
     "@saflib/env": "*",

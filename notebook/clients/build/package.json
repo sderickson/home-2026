@@ -11,10 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sderickson/notebook-account-spa": "*",
     "@sderickson/notebook-admin-spa": "*",
     "@sderickson/notebook-app-spa": "*",
-    "@sderickson/notebook-auth-spa": "*",
     "@saflib/env": "*",
     "@saflib/monorepo": "*",
     "@saflib/vite": "*"

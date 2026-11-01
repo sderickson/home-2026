@@ -1,7 +1,8 @@
 {
   "name": "@sderickson/notebook-links",
   "saf": {
-    "kind": "lib"
+    "kind": "lib",
+    "identity": "hub"
   },
   "description": "Links for the templates app client",
   "private": true,
@@ -10,7 +11,8 @@
     ".": "./index.ts"
   },
   "dependencies": {
-    "@saflib/links": "*"
+    "@saflib/links": "*",
+    "@sderickson/hub-links": "*"
   },
   "scripts": {
     "typecheck": "tsc -b"

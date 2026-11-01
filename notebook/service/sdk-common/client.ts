@@ -18,7 +18,7 @@ export function createApiClient<Paths extends {}>(): () => ReturnType<
   let client: ReturnType<typeof createSafClient<Paths>> | null = null;
   return () => {
     if (!client) {
-      client = createSafClient<Paths>("api");
+      client = createSafClient<Paths>("api.notebook");
     }
     return client;
   };

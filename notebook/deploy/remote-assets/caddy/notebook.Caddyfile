@@ -21,27 +21,17 @@
 
 # Client subdomains (served by the web container)
 
-{$PROTOCOL}://{$DOMAIN} {
+{$PROTOCOL}://notebook.{$DOMAIN} {
 	import notebook-security-headers-marketing
 	reverse_proxy notebook-web:80
 }
 
-{$PROTOCOL}://auth.{$DOMAIN} {
+{$PROTOCOL}://app.notebook.{$DOMAIN} {
 	import notebook-security-headers-spa
 	reverse_proxy notebook-web:80
 }
 
-{$PROTOCOL}://app.{$DOMAIN} {
-	import notebook-security-headers-spa
-	reverse_proxy notebook-web:80
-}
-
-{$PROTOCOL}://admin.{$DOMAIN} {
-	import notebook-security-headers-spa
-	reverse_proxy notebook-web:80
-}
-
-{$PROTOCOL}://account.{$DOMAIN} {
+{$PROTOCOL}://admin.notebook.{$DOMAIN} {
 	import notebook-security-headers-spa
 	reverse_proxy notebook-web:80
 }
@@ -63,7 +53,7 @@
 # API subdomain
 # Public monolith paths skip Kratos forward_auth (health, CSP ingest, marketing unsubscribe).
 
-{$PROTOCOL}://api.{$DOMAIN} {
+{$PROTOCOL}://api.notebook.{$DOMAIN} {
 	import transport-security
 	import cors {$CORS_ORIGINS}
 	@public_monolith path /health /csp-violations /user-configs/unsubscribe-marketing
@@ -75,16 +65,3 @@
 	import kratos-api-proxy notebook-monolith:3001
 }
 
-# Kratos public API (the platform's Kratos, on the edge network)
-
-{$PROTOCOL}://kratos.{$DOMAIN} {
-	import transport-security
-	import cors {$CORS_ORIGINS}
-	reverse_proxy kratos:4433 {
-		import reverse_proxy_common
-	}
-}
-
-{$DOMAIN_REDIRECTS} {
-	import redirect {$PROTOCOL}://{$DOMAIN}
-}

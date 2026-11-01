@@ -4,11 +4,6 @@ import { addLokiTransport } from "@saflib/vendors-loki";
 import { validateEnv } from "@saflib/env";
 import { configureMockErrors } from "@saflib/errors-service";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
-import { startOryKratosService } from "@saflib/ory-kratos-http";
-import {
-  callbacks,
-  makeKratosActionHandler,
-} from "@sderickson/notebook-kratos-handlers";
 import { initializeDependencies } from "./dependencies.ts";
 
 validateEnv(process.env, envSchema);
@@ -22,8 +17,4 @@ collectSystemMetrics();
 
 await initializeDependencies();
 
-startOryKratosService({
-  courierCallbacks: callbacks,
-  actionHandler: makeKratosActionHandler(),
-});
 await startNotebookService();
