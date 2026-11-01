@@ -16,6 +16,8 @@
   "workspaces": [
     "clients/**",
     "hub/**",
+    "hub/deploy/**",
+    "notebook/**",
     "recipes/**",
     "saflib/**"
   ],
@@ -56,7 +58,8 @@
     "boundaries": {
       "baseline": "recipes/import-boundaries.baseline.json",
       "scope": [
-        "dir:recipes/**"
+        "dir:recipes/**",
+        "dir:notebook/**"
       ]
     }
   }
