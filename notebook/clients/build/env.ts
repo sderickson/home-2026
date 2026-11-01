@@ -10,6 +10,4 @@ export interface NotebookClientsEnvSchema extends EnvEnvSchema, ViteEnvSchema {}
 /**
  * `process.env` casted to the `NotebookClientsEnvSchema` type.
  */
-export const typedEnv = (globalThis.process
-  ? process.env
-  : {}) as unknown as NotebookClientsEnvSchema;
+export const typedEnv = (globalThis.process ? process.env : {}) as unknown as NotebookClientsEnvSchema;
