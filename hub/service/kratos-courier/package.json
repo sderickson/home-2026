@@ -1,12 +1,12 @@
 {
   "name": "@sderickson/hub-kratos-courier",
-  "description": "Shared Kratos HTTP courier callbacks for hub and recipes monoliths",
+  "description": "Shared Kratos courier callbacks for the hub and recipes monoliths",
   "type": "module",
   "exports": {
     ".": "./index.ts"
   },
   "dependencies": {
-    "@sderickson/recipes-service-common": "*",
+    "@saflib/email-service": "*",
     "@saflib/node": "*",
     "@saflib/ory-kratos-http": "*"
   },

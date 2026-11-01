@@ -14,6 +14,12 @@
       "path": "../../../saflib/ory-kratos/ory-kratos-http"
     },
     {
+      "path": "../../../saflib/vendors/brevo"
+    },
+    {
+      "path": "../../../saflib/vendors/infisical"
+    },
+    {
       "path": "../../../saflib/vendors/sentry-node"
     },
     {

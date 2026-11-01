@@ -6,8 +6,9 @@ import { configureMockErrors } from "@saflib/errors-service";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/vendors-sentry-node";
 import { startOryKratosService } from "@saflib/ory-kratos-http";
-import { callbacks } from "@sderickson/hub-kratos-courier";
+import { createCourierCallbacks } from "@sderickson/hub-kratos-courier";
 import { initializeDependencies } from "@sderickson/recipes-service";
+import { getEmailClient } from "@sderickson/recipes-service-common";
 
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
@@ -19,5 +20,5 @@ configureMockErrors();
 initSentry();
 
 await initializeDependencies();
-startOryKratosService({ callbacks });
+startOryKratosService({ callbacks: createCourierCallbacks(getEmailClient()) });
 startRecipesService();

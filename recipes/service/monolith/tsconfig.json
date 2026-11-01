@@ -23,6 +23,9 @@
       "path": "../../../saflib/vendors/sentry-node"
     },
     {
+      "path": "../common"
+    },
+    {
       "path": "../recipes-service"
     }
   ],

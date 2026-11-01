@@ -5,7 +5,12 @@ import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
 import { initSentry } from "@saflib/vendors-sentry-node";
 import { startOryKratosService } from "@saflib/ory-kratos-http";
-import { callbacks } from "@sderickson/hub-kratos-courier";
+import { createCourierCallbacks } from "@sderickson/hub-kratos-courier";
+import {
+  configureSecretStore,
+  getSecretStore,
+} from "@saflib/vendors-infisical";
+import { configureEmail } from "@saflib/vendors-brevo";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
@@ -15,5 +20,7 @@ console.log("[hub] git hashes: root=%s saflib=%s", root, saflib);
 
 initSentry();
 
-startOryKratosService({ callbacks });
+configureSecretStore();
+const email = await configureEmail(getSecretStore());
+startOryKratosService({ callbacks: createCourierCallbacks(email) });
 startHubService();

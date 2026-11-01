@@ -10,10 +10,12 @@
     "@saflib/monorepo": "*",
     "@saflib/node": "*",
     "@saflib/ory-kratos-http": "*",
+    "@saflib/vendors-brevo": "*",
+    "@saflib/vendors-infisical": "*",
     "@saflib/vendors-sentry-node": "*",
-    "@sderickson/hub-kratos-courier": "*",
     "@sderickson/hub-db": "*",
     "@sderickson/hub-http": "*",
+    "@sderickson/hub-kratos-courier": "*",
     "@sderickson/hub-service": "*",
     "@sderickson/hub-service-common": "*"
   }
