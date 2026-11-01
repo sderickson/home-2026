@@ -11,7 +11,6 @@ export default defineConfig({
 
     projects: [
       // BEGIN WORKFLOW AREA test-product-dependencies FOR product/init
-      "notebook/**/vitest.config.{ts,js,mts,mjs}",
       "recipes/**/vitest.config.{ts,js,mts,mjs}",
       "hub/**/vitest.config.{ts,js,mts,mjs}",
       // END WORKFLOW AREA
