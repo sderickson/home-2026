@@ -1,8 +1,11 @@
-# Blog/resume stack, locally. Start hub/deploy's prod-local first (it owns the
-# edge network and Caddy); `npm run prod-local` then registers the routes there.
+# Blog/resume stack, locally, together with the platform (hub/deploy's
+# prod-local: edge, Kratos, hub) in one project, so `npm run prod-local` starts
+# everything and follows one log. Production runs them as separate stacks.
 # Own project name: every deploy folder is called deploy, which would put all
 # the local stacks in one compose project.
 name: clients-prod-local
+include:
+  - ../../hub/deploy/docker-compose.prod-local.yaml
 services:
   clients-web:
     extends:
@@ -10,8 +13,3 @@ services:
       service: clients-web
     env_file: !override
       - ./env.web.prod-local
-
-networks:
-  edge:
-    name: sderickson-edge
-    external: true
