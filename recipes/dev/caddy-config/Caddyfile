@@ -80,6 +80,14 @@ http://api.recipes.docker.localhost, http://api.docker.localhost {
 	import kratos-api-proxy monolith:3002
 }
 
+# Hub API (hub monolith, as in production)
+
+http://hub.docker.localhost {
+	import transport-security
+	import cors {$DOMAIN}
+	import kratos-api-proxy hub-monolith:3001
+}
+
 # Kratos public API
 
 http://kratos.docker.localhost {

@@ -76,6 +76,25 @@ services:
       - ./env.dev
       - ./.env
 
+  # Hub, as in production: serves hub.docker.localhost and receives Kratos'
+  # courier requests (verification and recovery emails).
+  hub-monolith:
+    image: sderickson-recipes-dev-node:latest
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    working_dir: /app/hub/service/monolith
+    command:
+      - node
+      - --watch
+      - --experimental-strip-types
+      - --disable-warning=ExperimentalWarning
+      - ./run.ts
+    volumes: *node-volumes
+    env_file:
+      - ./env.hub.dev
+      - ./.env
+
   kratos-migrate:
     image: oryd/kratos:v26.2.0
     entrypoint: ["/bin/sh", "-c"]
