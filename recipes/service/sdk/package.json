@@ -34,7 +34,8 @@
     "@saflib/vue": "*",
     "@sderickson/recipes-markdown": "*",
     "@sderickson/recipes-spec": "*",
-    "dompurify": "^3.4.17"
+    "dompurify": "^3.4.17",
+    "msw": "^2.0.0"
   },
   "msw": {
     "workerDirectory": [

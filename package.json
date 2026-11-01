@@ -10,14 +10,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
-    "typecheck": "vue-tsc -b",
-    "preinstall": "node --experimental-strip-types --disable-warning=ExperimentalWarning saflib/monorepo/bin/lock-prune-run.ts --yes"
+    "typecheck": "vue-tsc -b"
   },
   "author": "Scott Erickson <sderickson@gmail.com>",
   "workspaces": [
     "clients/**",
     "hub/**",
-    "hub/deploy/**",
     "notebook/**",
     "recipes/**",
     "saflib/**"
@@ -31,7 +29,7 @@
   },
   "overrides": {
     "vue-router": "^5.0.0",
-    "vuetify": "^4.1.6",
+    "vuetify": "4.1.8",
     "vite": "8.0.13",
     "rolldown": "1.0.1",
     "better-sqlite3": "12.11.1",
@@ -53,8 +51,7 @@
     "@vitejs/plugin-vue": "6.0.8",
     "editorconfig": {
       "commander": "^15.0.0"
-    },
-    "eslint": "10.11.0"
+    }
   },
   "safImports": {
     "boundaries": {

@@ -1,5 +1,8 @@
 # Recipes stack, locally. Start hub/deploy's prod-local first (it owns the edge
 # network and Caddy); `npm run prod-local` then registers recipes' routes there.
+# Own project name: every deploy folder is called deploy, which would put all
+# the local stacks in one compose project.
+name: recipes-prod-local
 services:
   recipes-monolith:
     extends:
