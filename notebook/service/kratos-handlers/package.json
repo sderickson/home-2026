@@ -1,0 +1,27 @@
+{
+  "name": "@sderickson/notebook-kratos-handlers",
+  "saf": {
+    "kind": "domain"
+  },
+  "description": "Shared Kratos webhook handlers for notebook (email courier callbacks + action handler)",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@sderickson/notebook-email": "*",
+    "@sderickson/notebook-service-common": "*",
+    "@saflib/node": "*",
+    "@saflib/ory-kratos-http": "*"
+  },
+  "devDependencies": {
+    "@saflib/email-service": "*",
+    "@saflib/monorepo": "*",
+    "vitest": "*"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -b"
+  },
+  "sideEffects": false
+}

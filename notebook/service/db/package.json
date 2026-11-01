@@ -1,0 +1,40 @@
+{
+  "name": "@sderickson/notebook-db",
+  "saf": {
+    "kind": "db"
+  },
+  "description": "Database package for notebook.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./instances": "./instances.ts",
+    "./errors": "./errors.ts",
+    "./types": "./types.ts",
+    "./queries/*": "./queries/*.ts",
+    "./schemas/*": "./schemas/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "generate": "drizzle-kit generate",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+
+    "@saflib/drizzle": "*",
+    "@saflib/utils": "*"
+  },
+  "devDependencies": {
+    "@saflib/vitest": "*",
+    "drizzle-kit": "*"
+  },
+  "sideEffects": false,
+  "imports": {
+    "#errors.ts": "./errors.ts",
+    "#instances.ts": "./instances.ts",
+    "#queries/*": "./queries/*",
+    "#schemas/*": "./schemas/*",
+    "#types.ts": "./types.ts"
+  }
+}

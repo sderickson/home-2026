@@ -1,0 +1,37 @@
+{
+  "name": "@sderickson/notebook-auth-spa",
+  "saf": {
+    "kind": "spa"
+  },
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./main.ts",
+    "./strings": "./strings.ts",
+    "./i18n": "./i18n.ts",
+    "./test-app": "./test-app.ts",
+    "./*": "./*"
+  },
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "npm exec playwright test",
+    "test:e2e:ui": "npm exec playwright test --ui",
+    "typecheck": "vue-tsc -b"
+  },
+  "dependencies": {
+    "@sderickson/notebook-clients-common": "*",
+    "@sderickson/notebook-links": "*",
+    "@saflib/errors-vue": "*",
+    "@saflib/links": "*",
+    "@saflib/ory-kratos-sdk": "*",
+    "@saflib/ory-kratos-spa": "*",
+    "@saflib/vue": "*"
+  },
+  "sideEffects": false,
+  "imports": {
+    "#*": "./*"
+  }
+}

@@ -1,0 +1,26 @@
+# The product's stack, locally. Start the platform's prod-local first (deploy/,
+# it owns the edge network and Caddy); `npm run prod-local` then registers this
+# product's routes there.
+# Own project name: every deploy folder is called deploy, which would put all
+# the local stacks in one compose project.
+name: notebook-prod-local
+services:
+  notebook-monolith:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: notebook-monolith
+    volumes: !override []
+    env_file: !override
+      - ./env.monolith.prod-local
+
+  notebook-web:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: notebook-web
+    env_file: !override
+      - ./env.web.prod-local
+
+networks:
+  edge:
+    name: sderickson-edge
+    external: true
