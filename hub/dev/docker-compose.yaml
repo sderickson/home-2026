@@ -5,6 +5,9 @@ services:
       - 80:80
     volumes:
       - ./caddy-config:/etc/caddy/
+      # Satellite products' routes (notebook): their dev stacks include this one
+      # and point SAF_DEV_SITES at their own sites/.
+      - ${SAF_DEV_SITES:-./sites}:/etc/caddy-sites:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
