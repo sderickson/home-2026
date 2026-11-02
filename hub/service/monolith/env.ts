@@ -1,6 +1,4 @@
-import type { DrizzleEnvSchema } from "@saflib/drizzle/env";
 import type { EnvEnvSchema } from "@saflib/env/env";
-import type { ExpressEnvSchema } from "@saflib/express/env";
 import type { NodeEnvSchema } from "@saflib/node/env";
 import type { OryKratosHttpEnvSchema } from "@saflib/ory-kratos-http/env";
 import type { VendorsInfisicalEnvSchema } from "@saflib/vendors-infisical/env";
@@ -14,9 +12,7 @@ import type { HubServiceCommonEnvSchema } from "@sderickson/hub-service-common/e
  */
 export interface HubMonolithEnvSchema
   extends
-    DrizzleEnvSchema,
     EnvEnvSchema,
-    ExpressEnvSchema,
     NodeEnvSchema,
     OryKratosHttpEnvSchema,
     VendorsInfisicalEnvSchema,

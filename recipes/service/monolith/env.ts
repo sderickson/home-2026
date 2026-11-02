@@ -1,5 +1,4 @@
 import type { EnvEnvSchema } from "@saflib/env/env";
-import type { ExpressEnvSchema } from "@saflib/express/env";
 import type { NodeEnvSchema } from "@saflib/node/env";
 import type { OryKratosHttpEnvSchema } from "@saflib/ory-kratos-http/env";
 import type { VendorsSentryNodeEnvSchema } from "@saflib/vendors-sentry-node/env";
@@ -13,7 +12,6 @@ import type { RecipesServiceCommonEnvSchema } from "@sderickson/recipes-service-
 export interface RecipesMonolithEnvSchema
   extends
     EnvEnvSchema,
-    ExpressEnvSchema,
     NodeEnvSchema,
     OryKratosHttpEnvSchema,
     VendorsSentryNodeEnvSchema,

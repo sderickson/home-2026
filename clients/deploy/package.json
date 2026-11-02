@@ -1,5 +1,8 @@
 {
   "name": "@sderickson/clients-deploy",
+  "saf": {
+    "kind": "other"
+  },
   "description": "Blog and resume deploy: one static web container. Joins the platform's (hub/deploy) edge and registers its routes there.",
   "type": "module",
   "scripts": {

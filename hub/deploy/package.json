@@ -1,5 +1,8 @@
 {
   "name": "@sderickson/hub-deploy",
+  "saf": {
+    "kind": "other"
+  },
   "description": "Platform deploy: the edge (Caddy), identity (Kratos) and hub. Products deploy separately from <product>/deploy.",
   "bin": {
     "run-clean-slate": "./run-prod-local.ts"

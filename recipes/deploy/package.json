@@ -1,5 +1,8 @@
 {
   "name": "@sderickson/recipes-deploy",
+  "saf": {
+    "kind": "other"
+  },
   "description": "Recipes deploy: the recipes monolith and web container. Joins the platform's (hub/deploy) edge and registers its routes there.",
   "type": "module",
   "scripts": {
