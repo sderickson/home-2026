@@ -26,6 +26,13 @@ services:
       - edge
     restart: unless-stopped
 
+  # Hub's SPAs; the edge proxies hub's hosts here (caddy/hub.Caddyfile).
+  hub-web:
+    image: $CONTAINER_REGISTRY/sderickson-hub-deploy-web:latest
+    restart: unless-stopped
+    env_file:
+      - ./env.web
+
   monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     restart: unless-stopped

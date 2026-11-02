@@ -1,0 +1,38 @@
+# Serves hub's static files behind the edge, which terminates TLS, adds
+# security headers and proxies here with the Host header intact.
+{
+	admin off
+	auto_https off
+}
+
+(spa) {
+	encode gzip
+	root * /srv{args[0]}
+	file_server {
+		pass_thru
+	}
+	@non-file expression path_regexp('^[^.]*$')
+	handle @non-file {
+		try_files {args[1]}
+	}
+}
+
+http://{$DOMAIN} {
+	import spa /hub-clients /root/index.html
+}
+
+http://auth.{$DOMAIN} {
+	import spa /hub-clients /auth/index.html
+}
+
+http://app.{$DOMAIN} {
+	import spa /hub-clients /app/index.html
+}
+
+http://admin.{$DOMAIN} {
+	import spa /hub-clients /admin/index.html
+}
+
+http://account.{$DOMAIN} {
+	import spa /hub-clients /account/index.html
+}
