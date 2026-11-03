@@ -1,0 +1,12 @@
+import type { LinkMap } from "@saflib/links";
+
+const subdomain = "notebook";
+
+export const rootLinks: LinkMap = {
+  home: {
+    subdomain,
+    path: "/",
+  },
+  // BEGIN WORKFLOW AREA page-links FOR vue/add-view
+  // END WORKFLOW AREA
+};

@@ -2,7 +2,7 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../recipes/service/common"
+      "path": "../../../saflib/email/email-service"
     },
     {
       "path": "../../../saflib/node"
@@ -16,16 +16,9 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
-  "include": [
-    "**/*.ts",
-    "**/*.json"
-  ],
+  "include": ["**/*.ts", "**/*.json"],
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./dist/types",

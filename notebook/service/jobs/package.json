@@ -1,0 +1,31 @@
+{
+  "name": "@sderickson/notebook-jobs",
+  "saf": {
+    "kind": "domain"
+  },
+  "description": "Jobs slice for the notebook golden product",
+  "type": "module",
+  "exports": {
+    ".": "./jobs.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@sderickson/notebook-cron": "*",
+    "@sderickson/notebook-service-common": "*",
+    "@saflib/drizzle": "*",
+    "@saflib/env": "*",
+    "@saflib/jobs-db": "*",
+    "@saflib/jobs-http": "*",
+    "@saflib/openapi": "*"
+  },
+  "devDependencies": {
+    "@sderickson/notebook-spec": "*",
+    "@saflib/vitest": "*"
+  },
+  "sideEffects": false
+}

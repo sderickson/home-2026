@@ -15,8 +15,9 @@
   "author": "Scott Erickson <sderickson@gmail.com>",
   "workspaces": [
     "clients/**",
-    "deploy/**",
     "hub/**",
+    "hub/deploy/**",
+    "notebook/**",
     "recipes/**",
     "saflib/**"
   ],
@@ -48,13 +49,17 @@
     "msw": "2.12.7",
     "drizzle-kit": "^0.31.10",
     "@tanstack/vue-query": "5.85.9",
-    "@vitejs/plugin-vue": "6.0.8"
+    "@vitejs/plugin-vue": "6.0.8",
+    "editorconfig": {
+      "commander": "^15.0.0"
+    }
   },
   "safImports": {
     "boundaries": {
       "baseline": "recipes/import-boundaries.baseline.json",
       "scope": [
-        "dir:recipes/**"
+        "dir:recipes/**",
+        "dir:notebook/**"
       ]
     }
   }

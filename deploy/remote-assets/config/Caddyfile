@@ -1,4 +1,0 @@
-import common.Caddyfile
-import hub-domain.Caddyfile
-# BEGIN WORKFLOW AREA import-product-caddy FOR product/init
-# END WORKFLOW AREA

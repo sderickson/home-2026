@@ -1,0 +1,99 @@
+# Platform deploy: the edge (Caddy), identity (Kratos), and hub. Products deploy
+# separately (their own <product>/deploy) and join the `edge` network; each
+# registers its routes into the edge's sites volume (`saf-deploy up` does this).
+services:
+  caddy:
+    cap_add:
+      - NET_ADMIN
+    image: $CONTAINER_REGISTRY/sderickson-caddy:latest
+    # Fixed name: product deploys register their routes with it (SAF_EDGE_CONTAINER).
+    container_name: sderickson-edge
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    env_file:
+      - ./env.caddy
+    environment:
+      - DISABLE_VITE_DEV_SERVER=#
+    volumes:
+      - ./config:/etc/caddy/
+      - caddy_sites:/etc/caddy/sites
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
+  # Hub's SPAs; the edge proxies hub's hosts here (caddy/hub.Caddyfile).
+  hub-web:
+    image: $CONTAINER_REGISTRY/sderickson-hub-deploy-web:latest
+    restart: unless-stopped
+    env_file:
+      - ./env.web
+
+  monolith:
+    image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+    memswap_limit: 2G
+    volumes:
+      - /opt/hub/cron:/app/hub/service/cron/data
+      - /opt/hub/db:/app/hub/service/db/data
+      - /opt/hub/identity:/app/hub/service/identity/data
+      - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
+    build:
+      context: ../../..
+      dockerfile: hub/service/monolith/Dockerfile
+    env_file:
+      - ./env.hub.config
+      - ./.env.hub.secrets
+
+  kratos-migrate:
+    image: oryd/kratos:v26.2.0
+    command: migrate sql -e --yes
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - /opt/kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+
+  kratos:
+    image: oryd/kratos:v26.2.0
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    env_file:
+      - ./env.kratos.config
+      - ./.env.kratos.secrets
+    volumes:
+      - /opt/kratos/data:/var/lib/sqlite
+      - ./kratos:/etc/config/kratos
+    # On the edge network so product services reach its admin API (kratos:4434).
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
+networks:
+  edge:
+    name: sderickson-edge
+
+volumes:
+  # Names pinned to the original single-stack deploy's, so certificates carry over.
+  caddy_data:
+    name: home_caddy_data
+  caddy_config:
+    name: home_caddy_config
+  # Product routes (<product>.Caddyfile), registered by each product's deploy.
+  caddy_sites:
+    name: sderickson-caddy-sites

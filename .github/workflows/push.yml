@@ -46,8 +46,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Each product deploys independently; build and push every deploy's images.
       - name: Build images
-        run: npm run build --workspace=@sderickson/deploy
+        run: npm run build --workspace=@sderickson/hub-deploy --workspace=@sderickson/recipes-deploy --workspace=@sderickson/clients-deploy
 
       - name: Push images
-        run: npm run push --workspace=@sderickson/deploy
+        run: npm run push --workspace=@sderickson/hub-deploy --workspace=@sderickson/recipes-deploy --workspace=@sderickson/clients-deploy

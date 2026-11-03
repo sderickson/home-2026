@@ -1,0 +1,12 @@
+# Blog and resume routes on the platform's edge. Registered by this deploy
+# (`saf-deploy up`); uses the edge's snippets and env (common.Caddyfile, env.caddy).
+
+{$PROTOCOL}://blog.{$DOMAIN} {
+	import security-headers-marketing
+	reverse_proxy clients-web:80
+}
+
+{$PROTOCOL}://resume.{$DOMAIN} {
+	import security-headers-marketing
+	reverse_proxy clients-web:80
+}

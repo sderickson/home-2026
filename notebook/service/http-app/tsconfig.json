@@ -1,0 +1,74 @@
+{
+  "extends": "@saflib/monorepo/tsconfig.json",
+  "references": [
+    {
+      "path": "../../../saflib/analytics/analytics-http"
+    },
+    {
+      "path": "../../../saflib/cron/cron-http"
+    },
+    {
+      "path": "../../../saflib/drizzle"
+    },
+    {
+      "path": "../../../saflib/email/email-service"
+    },
+    {
+      "path": "../../../saflib/env"
+    },
+    {
+      "path": "../../../saflib/errors/errors-http"
+    },
+    {
+      "path": "../../../saflib/express"
+    },
+    {
+      "path": "../../../saflib/jobs/jobs-http"
+    },
+    {
+      "path": "../../../saflib/monorepo"
+    },
+    {
+      "path": "../../../saflib/node-log/node-log-http"
+    },
+    {
+      "path": "../../../saflib/node-metrics/node-metrics-http"
+    },
+    {
+      "path": "../../../saflib/vendors/brevo"
+    },
+    {
+      "path": "../audit"
+    },
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../cron"
+    },
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../jobs"
+    }
+  ],
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "rootDir": "."
+  },
+  "exclude": [
+    "node_modules",
+    "dist/types",
+    "e2e",
+    "playwright-report",
+    "test-results"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.json"
+  ]
+}

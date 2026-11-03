@@ -2,12 +2,6 @@
   "extends": "@saflib/monorepo/tsconfig.json",
   "references": [
     {
-      "path": "../../../recipes/service/common"
-    },
-    {
-      "path": "../../../recipes/service/recipes-service"
-    },
-    {
       "path": "../../../saflib/env"
     },
     {
@@ -18,6 +12,12 @@
     },
     {
       "path": "../../../saflib/ory-kratos/ory-kratos-http"
+    },
+    {
+      "path": "../../../saflib/vendors/brevo"
+    },
+    {
+      "path": "../../../saflib/vendors/infisical"
     },
     {
       "path": "../../../saflib/vendors/sentry-node"
@@ -43,11 +43,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",

@@ -1,0 +1,30 @@
+{
+  "name": "@sderickson/clients-deploy",
+  "saf": {
+    "kind": "other"
+  },
+  "description": "Blog and resume deploy: one static web container. Joins the platform's (hub/deploy) edge and registers its routes there.",
+  "type": "module",
+  "scripts": {
+    "generate": "saf-docker generate",
+    "prod-local": "sh ../../hub/deploy/scripts/prod-local-claim-edge.sh clients-prod-local && . ./env.remote && export CONTAINER_REGISTRY && docker compose -f docker-compose.prod-local.yaml up --detach --remove-orphans && (cd ../../hub/deploy && saf-deploy register-sites --local) && saf-deploy register-sites --local && docker compose -f docker-compose.prod-local.yaml logs --follow --since 1m $(docker compose -f docker-compose.prod-local.yaml config --services | grep -v kratos-migrate)",
+    "build": "saf-deploy build",
+    "build:native": "saf-deploy build --platform native",
+    "status": "saf-deploy status",
+    "push": "saf-deploy push",
+    "sync": "saf-deploy sync",
+    "exec-remote": "saf-deploy exec",
+    "remote-setup": "saf-deploy setup",
+    "remote-pull": "saf-deploy pull",
+    "remote-deploy": "saf-deploy up",
+    "remote-undeploy": "saf-deploy down",
+    "remote-logs": "saf-deploy logs",
+    "remote-purge": "saf-deploy purge",
+    "full-deploy": "saf-deploy release",
+    "prod-local:down": "docker compose -f docker-compose.prod-local.yaml down"
+  },
+  "dependencies": {
+    "@saflib/deploy-cli": "*",
+    "@saflib/dev-tools": "*"
+  }
+}

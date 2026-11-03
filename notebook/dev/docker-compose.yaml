@@ -1,0 +1,71 @@
+name: sderickson-notebook-dev
+
+# notebook's dev stack. notebook is a satellite of hub: this includes hub's
+# dev stack (Caddy on :80, Kratos, hub's monolith and clients) and adds
+# notebook's own services. notebook's routes (sites/notebook.Caddyfile) are mounted into
+# hub's Caddy through SAF_DEV_SITES (env.include). Run one satellite's dev
+# stack at a time; they share hub's.
+include:
+  - path: ../../hub/dev/docker-compose.yaml
+    env_file: ./env.include
+
+services:
+  # The logged-out marketing site, built from clients/root.
+  notebook-static:
+    image: sderickson-notebook-dev:latest
+    build:
+      context: ../..
+      dockerfile: ./notebook/dev/Dockerfile
+    command: ["caddy", "file-server", "--root", "/srv/notebook-static-root", "--listen", ":80"]
+
+  notebook-clients:
+    image: sderickson-hub-dev-node:latest
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    working_dir: /app/notebook/clients/build
+    env_file:
+      - ./env.dev
+    volumes:
+      - ../..:/app
+      - node_modules:/app/node_modules
+      - saflib_node_modules:/app/saflib/node_modules
+      - npm_cache:/root/.npm
+    command: npm run dev
+
+  notebook-monolith:
+    image: sderickson-hub-dev-node:latest
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    working_dir: /app/notebook/service/monolith
+    # Same env defaults the deploy image applies (see its Dockerfile).
+    entrypoint: ["sh", "/app/notebook/deploy/scripts/apply-env-defaults.sh"]
+    environment:
+      - SAF_ENV_DEFAULTS=/app/notebook/deploy/env.defaults
+    # Restarts when any file it imports changes (service code and saflib alike).
+    command:
+      - node
+      - --watch
+      - --experimental-strip-types
+      - --disable-warning=ExperimentalWarning
+      - ./run.ts
+    volumes:
+      - ../..:/app
+      - node_modules:/app/node_modules
+      - saflib_node_modules:/app/saflib/node_modules
+      - npm_cache:/root/.npm
+      - notebook_db_data:/app/notebook/service/db/data
+      - notebook_cron_data:/app/notebook/service/cron/data
+      - notebook_jobs_data:/app/notebook/service/jobs/data
+    env_file:
+      - ./env.dev
+      - ./.env
+
+volumes:
+  notebook_db_data:
+    name: sderickson-notebook-dev-db-data
+  notebook_cron_data:
+    name: sderickson-notebook-dev-cron-data
+  notebook_jobs_data:
+    name: sderickson-notebook-dev-jobs-data

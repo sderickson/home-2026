@@ -55,10 +55,11 @@ http://admin.docker.localhost {
 	import spa /hub-clients /admin/index.html
 }
 
-# Built (static) saflib dev-site: Express API + SPA on one port.
+# Built (static) saflib dev-site: Express API + SPA on one port. Runs as its
+# own stack (`npm run dev-site`), published on the host's port 3099.
 http://dev.docker.localhost {
 	import security-headers
-	reverse_proxy site:3099 {
+	reverse_proxy host.docker.internal:3099 {
 		import reverse_proxy_common
 	}
 }
@@ -77,6 +78,14 @@ http://api.recipes.docker.localhost, http://api.docker.localhost {
 		}
 	}
 	import kratos-api-proxy monolith:3002
+}
+
+# Hub API (hub monolith, as in production)
+
+http://hub.docker.localhost {
+	import transport-security
+	import cors {$DOMAIN}
+	import kratos-api-proxy hub-monolith:3001
 }
 
 # Kratos public API

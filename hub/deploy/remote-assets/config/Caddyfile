@@ -1,0 +1,4 @@
+import common.Caddyfile
+# Routes registered by each deploy (`saf-deploy up`): hub's and Kratos's from
+# this one (remote-assets/caddy/), each product's from its own.
+import sites/*.Caddyfile

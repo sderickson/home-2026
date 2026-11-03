@@ -1,0 +1,83 @@
+putMineUserConfigs:
+  summary: "Update the caller's user config"
+  operationId: "putMineUserConfigs"
+  security:
+    - session: []
+  description: >
+    Upserts the authenticated user's display name and marketing email preference. Lazy-creates the `user_config` row when missing. `display_name` is trimmed; empty or whitespace-only values are rejected. When `marketing_emails_opt_in` becomes `true`, sets `marketing_emails_opt_in_at` to now if newly opted in; when set to `false`, clears `marketing_emails_opt_in_at` to null. Pass `terms_of_service_agreed_at: "now"` to record Terms of Service agreement at the server's current time (preserved once set; not overwritten). `user_id`, timestamps, and client-supplied ISO values for `marketing_emails_opt_in_at` / `terms_of_service_agreed_at` may be included when echoing a prior GET but are ignored — ownership and timestamps are server-controlled.
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          additionalProperties: false
+          required:
+            - display_name
+            - marketing_emails_opt_in
+          properties:
+            display_name:
+              type: string
+              maxLength: 80
+              description: >
+                How the user appears to themselves and others. Trimmed server-side; must be non-empty after trim. Max length 80.
+              example: "Alex Rivera"
+            marketing_emails_opt_in:
+              type: boolean
+              description: >
+                Explicit consent for product/marketing email. When flipped to true, `marketing_emails_opt_in_at` is set; when flipped to false, that timestamp is cleared.
+              example: false
+            terms_of_service_agreed_at:
+              type: [ string, "null" ]
+              description: >
+                Pass the literal string `now` to record Terms of Service agreement using the server clock. Any other value (including ISO timestamps from a prior GET, or null) is ignored. Once recorded, the agreement timestamp is not cleared or overwritten.
+              example: "now"
+            # Accepted so clients may echo a prior GET; ignored by the server.
+            user_id:
+              type: string
+            marketing_emails_opt_in_at:
+              type: [ string, "null" ]
+              format: date-time
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+  responses:
+    "200":
+      description: "User config updated (or created then updated)."
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - user_config
+            properties:
+              user_config:
+                description: Owner-only preferences for the signed-in user after upsert.
+                $ref: "../../openapi.yaml#/components/schemas/UserConfig"
+
+    "400":
+      description: "`display_name` is empty or whitespace-only after trim."
+      content:
+        application/json:
+          schema:
+            $ref: "pkg:@saflib/openapi/schemas/error.yaml"
+
+    "401":
+      description: "Unauthorized - missing or invalid auth headers, or not logged in."
+      content:
+        application/json:
+          schema:
+            $ref: "pkg:@saflib/openapi/schemas/error.yaml"
+
+    "403":
+      description: "Forbidden."
+      content:
+        application/json:
+          schema:
+            $ref: "pkg:@saflib/openapi/schemas/error.yaml"

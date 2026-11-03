@@ -1,1 +1,1 @@
-export { callbacks } from "./callbacks.ts";
+export { createCourierCallbacks } from "./callbacks.ts";

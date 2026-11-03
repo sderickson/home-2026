@@ -1,0 +1,44 @@
+# Hub's routes on the edge. Registered by this deploy (`saf-deploy up`), which
+# fills in {$...} from hub.env (or hub.prod-local.env with --local). Snippets
+# (security-headers, kratos-api-proxy, redirect, ...) come from the edge's
+# common.Caddyfile.
+
+# Hub client subdomains (served by the hub-web container)
+
+{$PROTOCOL}://{$DOMAIN} {
+	import security-headers-marketing
+	reverse_proxy hub-web:80
+}
+
+{$PROTOCOL}://auth.{$DOMAIN} {
+	import security-headers
+	reverse_proxy hub-web:80
+}
+
+{$PROTOCOL}://app.{$DOMAIN} {
+	import security-headers
+	reverse_proxy hub-web:80
+}
+
+{$PROTOCOL}://admin.{$DOMAIN} {
+	import security-headers
+	reverse_proxy hub-web:80
+}
+
+{$PROTOCOL}://account.{$DOMAIN} {
+	import security-headers
+	reverse_proxy hub-web:80
+}
+
+# Hub API (forward_auth to Kratos whoami, then proxy to the hub service)
+
+{$PROTOCOL}://hub.{$DOMAIN} {
+	import transport-security
+	import kratos-api-proxy {$HUB_SERVICE_HTTP_HOST}
+}
+
+# Domain redirects (optional)
+
+{$DOMAIN_REDIRECTS} {
+	import redirect {$PROTOCOL}://{$DOMAIN}
+}

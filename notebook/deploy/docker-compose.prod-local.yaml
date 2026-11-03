@@ -1,0 +1,23 @@
+# Notebook stack, locally, together with the platform (hub/deploy's
+# prod-local: edge, Kratos, hub) in one project, so `npm run prod-local` starts
+# everything and follows one log. Production runs them as separate stacks.
+# Own project name: every deploy folder is called deploy, which would put all
+# the local stacks in one compose project.
+name: notebook-prod-local
+include:
+  - ../../hub/deploy/docker-compose.prod-local.yaml
+services:
+  notebook-monolith:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: notebook-monolith
+    volumes: !override []
+    env_file: !override
+      - ./env.monolith.prod-local
+
+  notebook-web:
+    extends:
+      file: remote-assets/docker-compose.prod.yaml
+      service: notebook-web
+    env_file: !override
+      - ./env.web.prod-local

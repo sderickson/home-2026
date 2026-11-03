@@ -1,0 +1,25 @@
+# notebook's routes in its identity owner's dev Caddy (see ../docker-compose.yaml).
+# Snippets come from the owner's caddy-config/common.Caddyfile.
+
+http://notebook.docker.localhost {
+	reverse_proxy notebook-static:80 {
+		import reverse_proxy_common
+	}
+}
+
+http://app.notebook.docker.localhost, http://admin.notebook.docker.localhost {
+	reverse_proxy notebook-clients:5173 {
+		import reverse_proxy_common
+	}
+}
+
+http://api.notebook.docker.localhost {
+	import cors "^http://((app|admin)\.)?notebook\.docker\.localhost$"
+	@public_monolith path /health /csp-violations /user-configs/unsubscribe-marketing /dev/logs /dev/logs/stream
+	handle @public_monolith {
+		reverse_proxy notebook-monolith:3001 {
+			import reverse_proxy_common
+		}
+	}
+	import kratos-api-proxy notebook-monolith:3001
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@sderickson/notebook-root-static",
+  "saf": {
+    "kind": "other"
+  },
+  "description": "Static root site for Notebook using VitePress + Vuetify",
+  "type": "module",
+  "scripts": {
+    "typecheck": "vue-tsc --incremental -p tsconfig.typecheck.json",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@sderickson/notebook-clients-common": "*",
+    "@saflib/links": "*",
+    "@saflib/sdk": "*",
+    "@saflib/vite": "*",
+    "@saflib/vitepress": "*",
+    "@saflib/vue": "*"
+  },
+  "sideEffects": false
+}

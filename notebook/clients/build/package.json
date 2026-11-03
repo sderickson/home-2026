@@ -1,0 +1,33 @@
+{
+  "name": "@sderickson/notebook-clients",
+  "saf": {
+    "kind": "other"
+  },
+  "description": "Vite setup to build all notebook clients",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@sderickson/notebook-admin-spa": "*",
+    "@sderickson/notebook-app-spa": "*",
+    "@saflib/env": "*",
+    "@saflib/monorepo": "*",
+    "@saflib/vite": "*"
+  },
+  "workspaces": [
+    "clients/*"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
+  "exports": {
+    "./env": "./env.ts"
+  },
+  "imports": {
+    "#env.ts": "./env.ts"
+  }
+}

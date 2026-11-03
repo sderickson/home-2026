@@ -4,6 +4,12 @@
   ],
   "references": [
     {
+      "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
+    },
+    {
+      "path": "../../../saflib/ory-kratos/ory-kratos-spa"
+    },
+    {
       "path": "../../../saflib/vendors/sentry-client"
     },
     {
@@ -18,11 +24,7 @@
     "dist/types",
     "e2e",
     "playwright-report",
-    "test-results",
-    "workflows/template/**",
-    "workflows/templates/**",
-    "**/workflows/template/**",
-    "**/workflows/templates/**"
+    "test-results"
   ],
   "include": [
     "**/*.ts",
