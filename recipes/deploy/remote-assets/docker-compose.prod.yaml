@@ -25,13 +25,6 @@ services:
     networks:
       - edge
 
-  recipes-web:
-    image: $CONTAINER_REGISTRY/sderickson-recipes-deploy-web:latest
-    restart: unless-stopped
-    env_file:
-      - ./env.web
-    networks:
-      - edge
 
 networks:
   edge:

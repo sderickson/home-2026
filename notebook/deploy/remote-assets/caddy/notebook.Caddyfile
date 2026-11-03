@@ -23,17 +23,17 @@
 
 {$PROTOCOL}://notebook.{$DOMAIN} {
 	import notebook-security-headers-marketing
-	reverse_proxy notebook-web:80
+	reverse_proxy notebook-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://app.notebook.{$DOMAIN} {
 	import notebook-security-headers-spa
-	reverse_proxy notebook-web:80
+	reverse_proxy notebook-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://admin.notebook.{$DOMAIN} {
 	import notebook-security-headers-spa
-	reverse_proxy notebook-web:80
+	reverse_proxy notebook-web-{$SAF_COLOR}:80
 }
 
 # BEGIN WORKFLOW AREA client-subdomains FOR vue/add-spa

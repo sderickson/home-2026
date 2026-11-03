@@ -3,10 +3,10 @@
 
 {$PROTOCOL}://blog.{$DOMAIN} {
 	import security-headers-marketing
-	reverse_proxy clients-web:80
+	reverse_proxy clients-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://resume.{$DOMAIN} {
 	import security-headers-marketing
-	reverse_proxy clients-web:80
+	reverse_proxy clients-web-{$SAF_COLOR}:80
 }

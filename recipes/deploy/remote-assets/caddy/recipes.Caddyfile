@@ -3,22 +3,22 @@
 
 {$PROTOCOL}://recipes.{$DOMAIN} {
 	import security-headers-marketing
-	reverse_proxy recipes-web:80
+	reverse_proxy recipes-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://app.recipes.{$DOMAIN} {
 	import security-headers
-	reverse_proxy recipes-web:80
+	reverse_proxy recipes-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://admin.recipes.{$DOMAIN} {
 	import security-headers
-	reverse_proxy recipes-web:80
+	reverse_proxy recipes-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://account.recipes.{$DOMAIN} {
 	import security-headers
-	reverse_proxy recipes-web:80
+	reverse_proxy recipes-web-{$SAF_COLOR}:80
 }
 
 # API: forward_auth to Kratos whoami, then proxy to the recipes service.

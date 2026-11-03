@@ -36,3 +36,8 @@ http://admin.{$DOMAIN} {
 http://account.{$DOMAIN} {
 	import spa /hub-clients /account/index.html
 }
+
+# Health check for the container (docker-compose.blue-green.yaml).
+http://localhost {
+	respond /health 200
+}

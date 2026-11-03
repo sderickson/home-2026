@@ -25,3 +25,8 @@ http://blog.{$DOMAIN} {
 http://resume.{$DOMAIN} {
 	import static-site /resume-client
 }
+
+# Health check for the container (docker-compose.blue-green.yaml).
+http://localhost {
+	respond /health 200
+}

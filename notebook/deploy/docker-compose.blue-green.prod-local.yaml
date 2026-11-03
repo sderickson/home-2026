@@ -1,0 +1,15 @@
+# Notebook's blue-green services for `saf-deploy up --local`, run beside a
+# prod-local stack (`npm run prod-local`): prod-local env files instead of
+# production's.
+services:
+  notebook-web:
+    extends:
+      file: remote-assets/docker-compose.blue-green.yaml
+      service: notebook-web
+    env_file: !override
+      - ./env.web.prod-local
+
+networks:
+  edge:
+    name: sderickson-edge
+    external: true

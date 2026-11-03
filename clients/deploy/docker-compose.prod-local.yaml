@@ -9,7 +9,7 @@ include:
 services:
   clients-web:
     extends:
-      file: remote-assets/docker-compose.prod.yaml
+      file: remote-assets/docker-compose.blue-green.yaml
       service: clients-web
     env_file: !override
       - ./env.web.prod-local
