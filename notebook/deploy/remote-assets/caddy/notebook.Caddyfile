@@ -58,10 +58,10 @@
 	import cors {$CORS_ORIGINS}
 	@public_monolith path /health /csp-violations /user-configs/unsubscribe-marketing
 	handle @public_monolith {
-		reverse_proxy notebook-monolith:3001 {
+		reverse_proxy notebook-monolith-{$SAF_COLOR}:3001 {
 			import reverse_proxy_common
 		}
 	}
-	import kratos-api-proxy notebook-monolith:3001
+	import kratos-api-proxy notebook-monolith-{$SAF_COLOR}:3001
 }
 

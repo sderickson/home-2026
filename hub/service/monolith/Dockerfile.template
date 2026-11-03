@@ -10,4 +10,6 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 #{ copy_src }#
 
 WORKDIR /app/hub/service/monolith
-CMD ["npm", "start"]
+# node itself (not npm start) so it gets SIGTERM and shuts down gracefully:
+# a blue-green deploy stops the old color that way.
+CMD ["node", "--experimental-strip-types", "./run.ts"]

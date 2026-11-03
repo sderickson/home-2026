@@ -3,6 +3,36 @@
 # containers (`<service>-${SAF_COLOR}`, see caddy/hub.Caddyfile). A new
 # color must pass its healthcheck before routes switch to it.
 services:
+  hub-monolith:
+    image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
+    container_name: hub-monolith-${SAF_COLOR:-blue}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+    memswap_limit: 2G
+    volumes:
+      - /opt/hub/cron:/app/hub/service/cron/data
+      - /opt/hub/db:/app/hub/service/db/data
+      - /opt/hub/identity:/app/hub/service/identity/data
+      - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
+    env_file:
+      - ./env.hub.config
+      - ./.env.hub.secrets
+    # The old color gets SIGTERM; in-flight requests and jobs get time to finish.
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - edge
+
   hub-web:
     image: $CONTAINER_REGISTRY/sderickson-hub-deploy-web:latest
     container_name: hub-web-${SAF_COLOR:-blue}

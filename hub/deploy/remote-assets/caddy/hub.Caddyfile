@@ -34,7 +34,7 @@
 
 {$PROTOCOL}://hub.{$DOMAIN} {
 	import transport-security
-	import kratos-api-proxy {$HUB_SERVICE_HTTP_HOST}
+	import kratos-api-proxy hub-monolith-{$SAF_COLOR}:3001
 }
 
 # Domain redirects (optional)

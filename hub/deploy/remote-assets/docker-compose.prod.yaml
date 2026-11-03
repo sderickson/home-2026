@@ -26,28 +26,6 @@ services:
       - edge
     restart: unless-stopped
 
-  monolith:
-    image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 384M
-        reservations:
-          memory: 192M
-    memswap_limit: 2G
-    volumes:
-      - /opt/hub/cron:/app/hub/service/cron/data
-      - /opt/hub/db:/app/hub/service/db/data
-      - /opt/hub/identity:/app/hub/service/identity/data
-      - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
-    build:
-      context: ../../..
-      dockerfile: hub/service/monolith/Dockerfile
-    env_file:
-      - ./env.hub.config
-      - ./.env.hub.secrets
-
   kratos-migrate:
     image: oryd/kratos:v26.2.0
     command: migrate sql -e --yes

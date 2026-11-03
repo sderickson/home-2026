@@ -27,9 +27,9 @@
 	import cors {$CORS_ORIGIN_ALLOWLIST}
 	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors /recipes/*/shared /recipes/*/shared/files/*/blob /menus/*/shared
 	handle @public_monolith {
-		reverse_proxy recipes-monolith:3002 {
+		reverse_proxy recipes-monolith-{$SAF_COLOR}:3002 {
 			import reverse_proxy_common
 		}
 	}
-	import kratos-api-proxy recipes-monolith:3002
+	import kratos-api-proxy recipes-monolith-{$SAF_COLOR}:3002
 }
