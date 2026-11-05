@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "dompurify": "^3.4.17",
-    "jsdom": "^30.0.1",
+    "jsdom": "^31.0.0",
     "marked": "^18.0.0"
   },
   "devDependencies": {
