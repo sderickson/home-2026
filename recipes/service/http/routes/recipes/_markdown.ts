@@ -4,7 +4,7 @@ import {
   valueContainsDisallowedHtml,
 } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import { sanitizeMarkdownOnServer } from "@sderickson/recipes-markdown/server";
+import { sanitizeMarkdown } from "@sderickson/recipes-markdown";
 
 type VersionContent = {
   ingredients: { name: string; quantity: string; unit: string }[];
@@ -33,14 +33,12 @@ export function assertNoHtml(fields: Record<string, unknown>): void {
  * Reject HTML in ingredients and strip disallowed HTML from the instructions.
  * Returns the content to store and what was removed, for the response.
  */
-export async function sanitizeVersionContent(
-  content: VersionContent,
-): Promise<{
+export function sanitizeVersionContent(content: VersionContent): {
   content: VersionContent;
   removedHtml: RemovedHtml;
-}> {
+} {
   assertNoHtml({ ingredients: content.ingredients });
-  const { markdown, removed } = await sanitizeMarkdownOnServer(
+  const { markdown, removed } = sanitizeMarkdown(
     content.instructionsMarkdown ?? "",
   );
   return {
