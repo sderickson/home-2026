@@ -51,3 +51,8 @@ http://admin.notebook.{$DOMAIN} {
 
 
 # END WORKFLOW AREA
+
+# Health check for the container (docker-compose.blue-green.yaml).
+http://localhost {
+	respond /health 200
+}

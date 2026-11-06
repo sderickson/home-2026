@@ -7,34 +7,34 @@
 
 {$PROTOCOL}://{$DOMAIN} {
 	import security-headers-marketing
-	reverse_proxy hub-web:80
+	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://auth.{$DOMAIN} {
 	import security-headers
-	reverse_proxy hub-web:80
+	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://app.{$DOMAIN} {
 	import security-headers
-	reverse_proxy hub-web:80
+	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://admin.{$DOMAIN} {
 	import security-headers
-	reverse_proxy hub-web:80
+	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
 {$PROTOCOL}://account.{$DOMAIN} {
 	import security-headers
-	reverse_proxy hub-web:80
+	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
 # Hub API (forward_auth to Kratos whoami, then proxy to the hub service)
 
 {$PROTOCOL}://hub.{$DOMAIN} {
 	import transport-security
-	import kratos-api-proxy {$HUB_SERVICE_HTTP_HOST}
+	import kratos-api-proxy hub-monolith-{$SAF_COLOR}:3001
 }
 
 # Domain redirects (optional)

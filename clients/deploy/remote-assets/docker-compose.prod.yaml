@@ -1,15 +1,4 @@
-# Blog and resume deploy. Requires the platform deploy (hub/deploy): joins its
-# edge network and registers caddy/clients.Caddyfile with its edge.
-services:
-  clients-web:
-    image: $CONTAINER_REGISTRY/sderickson-clients-deploy-web:latest
-    restart: unless-stopped
-    env_file:
-      - ./env.web
-    networks:
-      - edge
-
-networks:
-  edge:
-    name: sderickson-edge
-    external: true
+# Blog and resume deploy. Requires the platform deploy (hub/deploy): its web
+# container (docker-compose.blue-green.yaml) joins the edge network, and
+# caddy/clients.Caddyfile is registered with the edge. Nothing else runs here.
+services: {}

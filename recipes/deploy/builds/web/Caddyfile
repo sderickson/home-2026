@@ -42,3 +42,8 @@ http://admin.recipes.{$DOMAIN} {
 http://account.recipes.{$DOMAIN} {
 	import spa /recipes-clients /account.recipes/index.html
 }
+
+# Health check for the container (docker-compose.blue-green.yaml).
+http://localhost {
+	respond /health 200
+}

@@ -1,0 +1,54 @@
+# Recipes services deployed blue-green (`saf-deploy up`): each runs as
+# recipes-blue or recipes-green, and the edge routes to the live color's
+# containers (`<service>-${SAF_COLOR}`, see caddy/recipes.Caddyfile). A new
+# color must pass its healthcheck before routes switch to it.
+services:
+  recipes-monolith:
+    image: $CONTAINER_REGISTRY/sderickson-recipes-monolith:latest
+    container_name: recipes-monolith-${SAF_COLOR:-blue}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
+    memswap_limit: 2G
+    volumes:
+      - /opt/recipes/cron:/app/recipes/service/cron/data
+      - /opt/recipes/db:/app/recipes/service/db/data
+      - /opt/recipes/jobs:/app/recipes/service/jobs/data
+      - /opt/recipes/common/data:/app/recipes/service/common/data
+    env_file:
+      - ./env.recipes.config
+      - ./.env.recipes.secrets
+    # The old color gets SIGTERM; in-flight requests and jobs get time to finish.
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3002/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - edge
+
+  recipes-web:
+    image: $CONTAINER_REGISTRY/sderickson-recipes-deploy-web:latest
+    container_name: recipes-web-${SAF_COLOR:-blue}
+    restart: unless-stopped
+    env_file:
+      - ./env.web
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - edge
+
+networks:
+  edge:
+    name: sderickson-edge
+    external: true

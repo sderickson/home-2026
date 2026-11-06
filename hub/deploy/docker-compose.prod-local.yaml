@@ -17,15 +17,15 @@ services:
 
   hub-web:
     extends:
-      file: remote-assets/docker-compose.prod.yaml
+      file: remote-assets/docker-compose.blue-green.yaml
       service: hub-web
     env_file: !override
       - ./env.web.prod-local
 
-  monolith:
+  hub-monolith:
     extends:
-      file: remote-assets/docker-compose.prod.yaml
-      service: monolith
+      file: remote-assets/docker-compose.blue-green.yaml
+      service: hub-monolith
     volumes: !override []
     env_file: !override
       - ./env.monolith.prod-local
