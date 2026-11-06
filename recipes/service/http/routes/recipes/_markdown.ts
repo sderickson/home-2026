@@ -33,12 +33,14 @@ export function assertNoHtml(fields: Record<string, unknown>): void {
  * Reject HTML in ingredients and strip disallowed HTML from the instructions.
  * Returns the content to store and what was removed, for the response.
  */
-export function sanitizeVersionContent(content: VersionContent): {
+export async function sanitizeVersionContent(
+  content: VersionContent,
+): Promise<{
   content: VersionContent;
   removedHtml: RemovedHtml;
-} {
+}> {
   assertNoHtml({ ingredients: content.ingredients });
-  const { markdown, removed } = sanitizeMarkdownOnServer(
+  const { markdown, removed } = await sanitizeMarkdownOnServer(
     content.instructionsMarkdown ?? "",
   );
   return {

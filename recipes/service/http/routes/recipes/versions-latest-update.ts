@@ -24,7 +24,7 @@ export const versionsLatestUpdateRecipesHandler = createHandler(
       req.body ?? {};
     const { recipesDbKey } = recipesServiceStorage.getStore()!;
     await getRecipeAndRequireCollectionAuth(id, { requireMutate: true });
-    const { content, removedHtml } = sanitizeVersionContent(data);
+    const { content, removedHtml } = await sanitizeVersionContent(data);
 
     const { result, error } = await recipeQueries.updateLatestVersionRecipe(
       recipesDbKey,

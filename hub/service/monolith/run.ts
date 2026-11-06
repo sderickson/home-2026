@@ -18,7 +18,7 @@ setServiceName("hub");
 const { root, saflib } = getGitHashes();
 console.log("[hub] git hashes: root=%s saflib=%s", root, saflib);
 
-initSentry();
+await initSentry();
 
 configureSecretStore();
 const email = await configureEmail(getSecretStore());

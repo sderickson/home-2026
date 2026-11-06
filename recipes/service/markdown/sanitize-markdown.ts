@@ -180,6 +180,13 @@ function collectRemoved(purify: DOMPurify): HtmlRemoval[] {
   return found;
 }
 
+/** Whether `markdown` has any raw HTML (the only part that's sanitized). */
+export function hasRawHtml(markdown: string): boolean {
+  const visit = (tokens: Token[]): boolean =>
+    tokens.some((token) => token.type === "html" || visit(childTokens(token)));
+  return visit(Lexer.lex(markdown.replace(/\r\n?/g, "\n")));
+}
+
 /** Raw HTML tokens in `markdown` that sanitizing would still change. */
 function findDirtyHtml(markdown: string, purify: DOMPurify): string[] {
   const dirty: string[] = [];

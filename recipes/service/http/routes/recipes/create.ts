@@ -40,7 +40,7 @@ export const createRecipeHandler = createHandler(
 
     const rawContent = data.initialVersion?.content;
     if (rawContent) {
-      const { content, removedHtml } = sanitizeVersionContent({
+      const { content, removedHtml } = await sanitizeVersionContent({
         ingredients: rawContent.ingredients ?? [],
         instructionsMarkdown: rawContent.instructionsMarkdown ?? "",
       });
