@@ -11,7 +11,7 @@ import {
   getSecretStore,
 } from "@saflib/vendors-infisical";
 import { configureEmail } from "@saflib/vendors-brevo";
-import { enableHubPersistentLogs } from "@sderickson/hub-ops";
+import { enableHubPersistentLogs, installHubIssueCollector } from "@sderickson/hub-ops";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
@@ -22,6 +22,8 @@ const { root, saflib } = getGitHashes();
 console.log("[hub] git hashes: root=%s saflib=%s", root, saflib);
 
 await initSentry();
+// Grouped issues for GET /ops/issues, alongside Sentry.
+installHubIssueCollector();
 
 configureSecretStore();
 const email = await configureEmail(getSecretStore());

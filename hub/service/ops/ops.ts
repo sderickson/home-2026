@@ -1,7 +1,14 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createOnDiskDbKeyAccessor } from "@saflib/drizzle";
-import { addTransport } from "@saflib/node";
+import { addErrorCollector, addTransport } from "@saflib/node";
+import {
+  createIssueCollector,
+  createRedactionIssueRecorder,
+  currentVersion,
+  issuesDb,
+  startIssueRetention,
+} from "@saflib/errors-db";
 import { createPersistentLogTransport, logsDb } from "@saflib/node-log-db";
 import { opsDb } from "@saflib/ops-db";
 import {
@@ -33,12 +40,40 @@ const logsDbAccessor = createOnDiskDbKeyAccessor({
 /** Opaque key for `@saflib/node-log-db` (persisted, redacted logs). */
 export const getHubLogsDbKey = logsDbAccessor.getDbKey;
 
+const issuesDbAccessor = createOnDiskDbKeyAccessor({
+  packageUrl: import.meta.url,
+  filePrefix: "issues-db",
+  connect: issuesDb.connect,
+});
+
+/** Opaque key for `@saflib/errors-db` (grouped errors and warnings). */
+export const getHubIssuesDbKey = issuesDbAccessor.getDbKey;
+
+/**
+ * Record server errors and warnings as grouped issues (`GET /ops/issues`),
+ * alongside Sentry, which stays the hub's error service. Call once at
+ * startup.
+ */
+export function installHubIssueCollector() {
+  addErrorCollector(createIssueCollector({ getDbKey: getHubIssuesDbKey }));
+  startIssueRetention(getHubIssuesDbKey);
+}
+
 /**
  * Persist this process's logs (redacted, searchable, retained 14 days / 512 MB)
  * for `GET /ops/logs`. Call once at startup, after `setServiceName`.
  */
 export function enableHubPersistentLogs() {
-  addTransport(createPersistentLogTransport({ getDbKey: getHubLogsDbKey }));
+  addTransport(
+    createPersistentLogTransport({
+      getDbKey: getHubLogsDbKey,
+      // A log call that leaks a secret or PII becomes a warn issue to fix.
+      onRedaction: createRedactionIssueRecorder({
+        getDbKey: getHubIssuesDbKey,
+        version: currentVersion(),
+      }),
+    }),
+  );
 }
 
 export interface CreateHubOpsRouterOptions {
@@ -56,6 +91,7 @@ export function createHubOpsRouter(options: CreateHubOpsRouterOptions = {}) {
   return createOpsRouter({
     dbKey: getHubOpsDbKey(),
     logsDbKey: getHubLogsDbKey(),
+    issuesDbKey: getHubIssuesDbKey(),
     healthChecks: [diskCheck({ path: dataDir }), ...(options.healthChecks ?? [])],
   });
 }
