@@ -35,6 +35,10 @@ export const adminLinks: LinkMap = {
     subdomain,
     path: "/errors",
   },
+  opsTokens: {
+    subdomain,
+    path: "/ops-tokens",
+  },
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
   // END WORKFLOW AREA
 };

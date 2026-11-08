@@ -16,6 +16,9 @@
       "path": "../../../saflib/cron/cron-vue"
     },
     {
+      "path": "../../../saflib/ops/ops-vue"
+    },
+    {
       "path": "../../../saflib/errors/errors-vue"
     },
     {
