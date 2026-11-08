@@ -4,10 +4,16 @@
   ],
   "references": [
     {
+      "path": "../../../saflib/links"
+    },
+    {
       "path": "../../../saflib/ory-kratos/ory-kratos-sdk"
     },
     {
       "path": "../../../saflib/ory-kratos/ory-kratos-spa"
+    },
+    {
+      "path": "../../../saflib/sdk"
     },
     {
       "path": "../../../saflib/vendors/sentry-client"
