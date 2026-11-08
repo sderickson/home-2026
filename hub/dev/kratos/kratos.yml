@@ -33,7 +33,7 @@ selfservice:
       ui_url: http://auth.docker.localhost/recovery
 
     settings:
-      ui_url: http://auth.docker.localhost/settings
+      ui_url: http://account.docker.localhost/settings
       required_aal: highest_available
 
     logout:

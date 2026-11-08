@@ -14,11 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { SettingsSectionAsync } from "@saflib/ory-kratos-spa/settings";
 import type { SettingsTabQueryValue } from "@saflib/ory-kratos-spa/settings";
 import { useReverseT } from "@sderickson/hub-account-spa/i18n";
+import { rememberSettingsFlowSection } from "./settings-flow-return.ts";
 import { sessionHasSecondFactorAuthenticationMethod } from "./AccountSettingsSection.logic.ts";
 import { account_settings_section as strings } from "./AccountSettingsSection.strings.ts";
 
@@ -30,6 +32,18 @@ const props = defineProps<{
 }>();
 
 const { t } = useReverseT();
+const route = useRoute();
+
+// So account /settings (Kratos's ui_url) can return here after a re-auth.
+watch(
+  () => route.query.flow,
+  (flow) => {
+    if (typeof flow === "string" && flow) {
+      rememberSettingsFlowSection(flow, route.path);
+    }
+  },
+  { immediate: true },
+);
 const { data: session } = useKratosSession();
 
 const mfaLinked = computed(() =>

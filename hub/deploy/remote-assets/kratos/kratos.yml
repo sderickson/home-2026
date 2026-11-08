@@ -32,7 +32,7 @@ selfservice:
       ui_url: https://auth.scotterickson.info/recovery
 
     settings:
-      ui_url: https://auth.scotterickson.info/settings
+      ui_url: https://account.scotterickson.info/settings
 
     logout:
       after:
