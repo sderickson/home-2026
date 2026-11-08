@@ -30,10 +30,19 @@
 	reverse_proxy hub-web-{$SAF_COLOR}:80
 }
 
-# Hub API (forward_auth to Kratos whoami, then proxy to the hub service)
+# Hub API. CORS for the hub SPAs (admin calls /admin/ops-tokens). The ops API
+# authenticates by bearer token in Express, so it skips the Kratos whoami
+# check; everything else goes through forward_auth.
 
 {$PROTOCOL}://hub.{$DOMAIN} {
 	import transport-security
+	import cors {$CORS_ORIGINS}
+	@public_monolith path /health /ops/*
+	handle @public_monolith {
+		reverse_proxy hub-monolith-{$SAF_COLOR}:3001 {
+			import reverse_proxy_common
+		}
+	}
 	import kratos-api-proxy hub-monolith-{$SAF_COLOR}:3001
 }
 
