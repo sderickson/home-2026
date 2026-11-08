@@ -4,7 +4,7 @@ import {
   valueContainsDisallowedHtml,
 } from "@saflib/express";
 import type { RecipesServiceResponseBody } from "@sderickson/recipes-spec";
-import { sanitizeMarkdownOnServer } from "@sderickson/recipes-markdown/server";
+import { sanitizeMarkdown } from "@sderickson/recipes-markdown";
 
 type VersionContent = {
   ingredients: { name: string; quantity: string; unit: string }[];
@@ -38,7 +38,7 @@ export function sanitizeVersionContent(content: VersionContent): {
   removedHtml: RemovedHtml;
 } {
   assertNoHtml({ ingredients: content.ingredients });
-  const { markdown, removed } = sanitizeMarkdownOnServer(
+  const { markdown, removed } = sanitizeMarkdown(
     content.instructionsMarkdown ?? "",
   );
   return {

@@ -7,8 +7,7 @@
     "kind": "lib"
   },
   "exports": {
-    ".": "./index.ts",
-    "./server": "./server.ts"
+    ".": "./index.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -16,12 +15,13 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@saflib/html-sanitizer": "*",
     "dompurify": "^3.4.17",
-    "jsdom": "^30.0.1",
     "marked": "^18.0.0"
   },
   "devDependencies": {
     "@saflib/vitest": "*",
-    "@types/jsdom": "^30.0.0"
+    "@types/jsdom": "^30.0.0",
+    "jsdom": "^30.0.1"
   }
 }

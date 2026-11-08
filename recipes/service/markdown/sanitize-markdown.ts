@@ -1,8 +1,8 @@
 import { Lexer, type Token, type Tokens } from "marked";
-import type { DOMPurify } from "dompurify";
+import { sanitizeHtml, type HtmlRemoval } from "@saflib/html-sanitizer";
 import {
   ALLOWED_TAG_NAMES,
-  RECIPE_MARKDOWN_PURIFY_CONFIG,
+  RECIPE_MARKDOWN_HTML_POLICY,
 } from "./purify-config.ts";
 
 /**
@@ -10,10 +10,7 @@ import {
  * element was removed (its text is usually kept); with `attribute`, only that
  * attribute was removed from the element. HTML comments use `#comment`.
  */
-export interface HtmlRemoval {
-  tag: string;
-  attribute?: string;
-}
+export type { HtmlRemoval };
 
 export interface SanitizedMarkdown {
   /** The markdown with disallowed HTML removed. Identical to the input when nothing was removed. */
@@ -21,12 +18,6 @@ export interface SanitizedMarkdown {
   /** What was removed, deduplicated. Empty when the input was already clean. */
   removed: HtmlRemoval[];
 }
-
-/**
- * DOMPurify wraps fragments in these, and FORCE_BODY adds a `<remove>` marker;
- * they're not from the input.
- */
-const WRAPPER_NODES = new Set(["html", "head", "body", "remove"]);
 
 /**
  * Remove disallowed HTML from markdown while leaving the markdown itself
@@ -37,19 +28,15 @@ const WRAPPER_NODES = new Set(["html", "head", "body", "remove"]);
  * (`<b>`, `bold`, `</b>`), so allowed tags are kept (minus any disallowed
  * attributes) and disallowed tags are dropped, leaving the text between them.
  *
- * `purify` is a DOMPurify instance: the browser default, or one bound to a
- * jsdom window on the server (see `./server.ts`).
+ * HTML is sanitized with `@saflib/html-sanitizer`, so this runs without a DOM.
  */
-export function sanitizeMarkdown(
-  markdown: string,
-  purify: DOMPurify,
-): SanitizedMarkdown {
+export function sanitizeMarkdown(markdown: string): SanitizedMarkdown {
   const removed: HtmlRemoval[] = [];
   const src = markdown.replace(/\r\n?/g, "\n");
-  let result = rewrite(src, Lexer.lex(src), purify, removed);
+  let result = rewrite(src, Lexer.lex(src), removed);
 
   // Anything the token walk couldn't place gets escaped so it renders as text.
-  for (const raw of findDirtyHtml(result, purify)) {
+  for (const raw of findDirtyHtml(result)) {
     result = result.replaceAll(raw, raw.replaceAll("<", "&lt;"));
   }
 
@@ -60,36 +47,27 @@ export function sanitizeMarkdown(
 }
 
 /** Rewrite `raw`, replacing each child token (in source order) with its sanitized form. */
-function rewrite(
-  raw: string,
-  tokens: Token[],
-  purify: DOMPurify,
-  removed: HtmlRemoval[],
-): string {
+function rewrite(raw: string, tokens: Token[], removed: HtmlRemoval[]): string {
   let out = "";
   let cursor = 0;
   for (const token of tokens) {
     const at = raw.indexOf(token.raw, cursor);
     if (at === -1) continue;
-    out += raw.slice(cursor, at) + rewriteToken(token, purify, removed);
+    out += raw.slice(cursor, at) + rewriteToken(token, removed);
     cursor = at + token.raw.length;
   }
   return out + raw.slice(cursor);
 }
 
-function rewriteToken(
-  token: Token,
-  purify: DOMPurify,
-  removed: HtmlRemoval[],
-): string {
+function rewriteToken(token: Token, removed: HtmlRemoval[]): string {
   if (token.type === "html") {
     return (token as Tokens.HTML).block
-      ? sanitizeBlock(token.raw, purify, removed)
-      : sanitizeTag(token.raw, purify, removed);
+      ? sanitizeBlock(token.raw, removed)
+      : sanitizeTag(token.raw, removed);
   }
   const children = childTokens(token);
   return children.length > 0
-    ? rewrite(token.raw, children, purify, removed)
+    ? rewrite(token.raw, children, removed)
     : token.raw;
 }
 
@@ -111,30 +89,21 @@ function childTokens(token: Token): Token[] {
   return [];
 }
 
-function sanitizeBlock(
-  raw: string,
-  purify: DOMPurify,
-  removed: HtmlRemoval[],
-): string {
+function sanitizeBlock(raw: string, removed: HtmlRemoval[]): string {
   const body = raw.replace(/\s+$/, "");
   const trailing = raw.slice(body.length);
-  const clean = purify.sanitize(body, RECIPE_MARKDOWN_PURIFY_CONFIG);
-  const found = collectRemoved(purify);
-  // Keep the author's exact text when nothing was removed, rather than
-  // DOMPurify's re-serialization (e.g. Milkdown's `<br />` stays as is).
-  if (found.length === 0) return raw;
-  removed.push(...found);
-  return clean + trailing;
+  // The sanitizer rebuilds the HTML, so its output is used even when nothing
+  // was removed; it keeps the author's text otherwise (e.g. Milkdown's
+  // `<br />`), apart from normalizing attribute quoting.
+  const clean = sanitizeHtml(body, RECIPE_MARKDOWN_HTML_POLICY);
+  removed.push(...clean.removed);
+  return clean.html + trailing;
 }
 
 const CLOSING_TAG = /^<\/\s*([a-zA-Z][\w-]*)\s*>$/;
 const OPENING_TAG = /^<([a-zA-Z][\w-]*)/;
 
-function sanitizeTag(
-  raw: string,
-  purify: DOMPurify,
-  removed: HtmlRemoval[],
-): string {
+function sanitizeTag(raw: string, removed: HtmlRemoval[]): string {
   const closing = CLOSING_TAG.exec(raw);
   if (closing) {
     // The matching opening tag is what gets reported.
@@ -154,42 +123,23 @@ function sanitizeTag(
     return "";
   }
 
-  // DOMPurify closes the lone tag (`<a href="…"></a>`); keep just the opening.
-  const clean = purify.sanitize(raw, RECIPE_MARKDOWN_PURIFY_CONFIG);
-  const found = collectRemoved(purify);
-  if (found.length === 0) return raw;
-  removed.push(...found);
-  const kept = new RegExp(`^<${name}\\b[^>]*>`, "i").exec(clean);
-  // Some tags (e.g. a lone `<td>`) don't survive parsing out of context.
-  return kept ? kept[0] : `<${name}>`;
-}
-
-function collectRemoved(purify: DOMPurify): HtmlRemoval[] {
-  const found: HtmlRemoval[] = [];
-  for (const entry of purify.removed) {
-    if ("attribute" in entry && entry.attribute) {
-      found.push({
-        tag: entry.from.nodeName.toLowerCase(),
-        attribute: entry.attribute.name,
-      });
-    } else if ("element" in entry) {
-      const tag = entry.element.nodeName.toLowerCase();
-      if (!WRAPPER_NODES.has(tag)) found.push({ tag });
-    }
-  }
-  return found;
+  // The sanitizer doesn't close the lone tag, so its output is just the
+  // opening tag, rebuilt.
+  const clean = sanitizeHtml(raw, RECIPE_MARKDOWN_HTML_POLICY);
+  removed.push(...clean.removed);
+  return clean.html;
 }
 
 /** Raw HTML tokens in `markdown` that sanitizing would still change. */
-function findDirtyHtml(markdown: string, purify: DOMPurify): string[] {
+function findDirtyHtml(markdown: string): string[] {
   const dirty: string[] = [];
   const visit = (tokens: Token[]) => {
     for (const token of tokens) {
       if (token.type === "html") {
         const scratch: HtmlRemoval[] = [];
         const out = (token as Tokens.HTML).block
-          ? sanitizeBlock(token.raw, purify, scratch)
-          : sanitizeTag(token.raw, purify, scratch);
+          ? sanitizeBlock(token.raw, scratch)
+          : sanitizeTag(token.raw, scratch);
         if (out !== token.raw) dirty.push(token.raw);
       }
       visit(childTokens(token));

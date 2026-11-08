@@ -17,7 +17,7 @@ const { root, saflib } = getGitHashes();
 console.log("[recipes] git hashes: root=%s saflib=%s", root, saflib);
 
 configureMockErrors();
-initSentry();
+await initSentry();
 
 await initializeDependencies();
 startOryKratosService({ callbacks: createCourierCallbacks(getEmailClient()) });

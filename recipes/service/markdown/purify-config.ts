@@ -1,4 +1,5 @@
 import type { Config } from "dompurify";
+import type { HtmlSanitizerPolicy } from "@saflib/html-sanitizer";
 
 /**
  * Elements and attributes allowed in recipe markdown, both as raw HTML in the
@@ -49,6 +50,15 @@ export const RECIPE_MARKDOWN_PURIFY_CONFIG: Config = {
   // Without this, a leading <script>/<style>/<meta> is parsed into <head> and
   // dropped without appearing in `removed`, so it would go unreported.
   FORCE_BODY: true,
+};
+
+/**
+ * The same allowlist for `@saflib/html-sanitizer`, which sanitizes raw HTML
+ * in markdown on the server (DOMPurify needs a browser-grade DOM).
+ */
+export const RECIPE_MARKDOWN_HTML_POLICY: HtmlSanitizerPolicy = {
+  allowedTags: RECIPE_MARKDOWN_PURIFY_CONFIG.ALLOWED_TAGS as string[],
+  allowedAttributes: RECIPE_MARKDOWN_PURIFY_CONFIG.ALLOWED_ATTR as string[],
 };
 
 /** Tag names from {@link RECIPE_MARKDOWN_PURIFY_CONFIG}, for quick lookup. */

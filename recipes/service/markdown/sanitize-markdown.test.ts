@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { sanitizeMarkdownOnServer as sanitize } from "./server.ts";
-import { getServerPurify } from "./server.ts";
+import { JSDOM } from "jsdom";
+import createDOMPurify, { type WindowLike } from "dompurify";
+import { sanitizeMarkdown as sanitize } from "./sanitize-markdown.ts";
 import { renderMarkdownToSafeHtml } from "./render.ts";
+import { ALLOWED_TAG_NAMES } from "./purify-config.ts";
 
 describe("sanitizeMarkdown", () => {
   it("leaves markdown without HTML untouched", () => {
@@ -36,7 +38,9 @@ describe("sanitizeMarkdown", () => {
   });
 
   it("removes script blocks entirely", () => {
-    expect(sanitize("Before\n\n<script>\nalert(1)\n</script>\n\nAfter")).toEqual({
+    expect(
+      sanitize("Before\n\n<script>\nalert(1)\n</script>\n\nAfter"),
+    ).toEqual({
       markdown: "Before\n\n\n\nAfter",
       removed: [{ tag: "script" }],
     });
@@ -64,9 +68,34 @@ describe("sanitizeMarkdown", () => {
   });
 
   it("reports each kind of removal once", () => {
-    expect(sanitize("<i>a</i> <font>b</font> <font>c</font>").removed).toEqual(
-      [{ tag: "font" }],
-    );
+    expect(sanitize("<i>a</i> <font>b</font> <font>c</font>").removed).toEqual([
+      { tag: "font" },
+    ]);
+  });
+});
+
+describe("sanitizeMarkdown against parser tricks", () => {
+  // What a browser would make of the result: only allowed elements, and no
+  // event handlers or javascript: links, however the input tried to sneak
+  // them in.
+  const window = new JSDOM("").window;
+  it.each([
+    'Before\n\n<noscript><p title="</noscript><img src=x onerror=alert(1)>">\n\nAfter',
+    "Before\n\n<svg><style><img src=x onerror=alert(1)></style></svg>\n\nAfter",
+    'Text <a href="jav&#x09;ascript:alert(1)">x</a> more',
+  ])("%s", (markdown) => {
+    const template = window.document.createElement("template");
+    template.innerHTML = sanitize(markdown).markdown;
+    const elements = [...template.content.querySelectorAll("*")];
+    for (const element of elements) {
+      expect(ALLOWED_TAG_NAMES.has(element.localName)).toBe(true);
+    }
+    for (const element of elements) {
+      for (const { name, value } of element.attributes) {
+        expect(name).not.toMatch(/^on/);
+        expect(value).not.toMatch(/^\s*javascript:/i);
+      }
+    }
   });
 });
 
@@ -74,7 +103,8 @@ describe("renderMarkdownToSafeHtml", () => {
   it("renders markdown and strips anything disallowed", () => {
     const html = renderMarkdownToSafeHtml(
       "**Hi** <img src=x onerror=alert(1)> [x](javascript:alert(1))",
-      getServerPurify(),
+      // The browser renders with its own DOMPurify; jsdom stands in here.
+      createDOMPurify(new JSDOM("").window as unknown as WindowLike),
     );
     expect(html).toContain("<strong>Hi</strong>");
     expect(html).not.toContain("onerror");

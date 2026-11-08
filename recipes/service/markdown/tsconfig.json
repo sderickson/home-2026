@@ -1,6 +1,10 @@
 {
   "extends": "@saflib/monorepo/tsconfig.json",
-  "references": [],
+  "references": [
+    {
+      "path": "../../../saflib/html-sanitizer"
+    }
+  ],
   "exclude": [
     "node_modules",
     "dist/types",
