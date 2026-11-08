@@ -14,11 +14,16 @@
   "dependencies": {
     "@saflib/express": "*",
     "@saflib/monorepo": "*",
+    "@saflib/ops-http": "*",
     "@sderickson/hub-db": "*",
+    "@sderickson/hub-ops": "*",
     "@sderickson/hub-service-common": "*",
     "@sderickson/hub-spec": "*"
   },
   "devDependencies": {
-    "@saflib/vitest": "*"
+    "@saflib/ops-db": "*",
+    "@saflib/utils": "*",
+    "@saflib/vitest": "*",
+    "supertest": "^7.0.0"
   }
 }

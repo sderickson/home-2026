@@ -19,6 +19,7 @@ services:
       - /opt/hub/db:/app/hub/service/db/data
       - /opt/hub/identity:/app/hub/service/identity/data
       - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
+      - /opt/hub/ops:/app/hub/service/ops/data
     env_file:
       - ./env.hub.config
       - ./.env.hub.secrets

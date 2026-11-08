@@ -1,6 +1,9 @@
 import { createErrorMiddleware, createGlobalMiddleware } from "@saflib/express";
 import express from "express";
 import { hubDb } from "@sderickson/hub-db";
+import { hubDbManager } from "@sderickson/hub-db/instances";
+import { createHubOpsRouter } from "@sderickson/hub-ops";
+import { probeCheck } from "@saflib/ops-http";
 import {
   hubServiceStorage,
   type HubServiceContextOptions,
@@ -37,6 +40,18 @@ export function createHubHttpApp(options: HubServiceContextOptions) {
   // BEGIN WORKFLOW AREA app-use-routes FOR express/add-handler
 
   // END WORKFLOW AREA
+
+  // Ops API (/ops/*, by ops token) and token admin (/admin/ops-tokens).
+  // The hub has no global session gate, so nothing needs deferring.
+  app.use(
+    createHubOpsRouter({
+      healthChecks: [
+        probeCheck("hub-db", async () => {
+          hubDbManager.get(dbKey)!.$client.prepare("select 1").get();
+        }),
+      ],
+    }),
+  );
 
   app.use(createErrorMiddleware());
 
