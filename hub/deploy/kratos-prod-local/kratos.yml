@@ -46,6 +46,18 @@ selfservice:
   methods:
     password:
       enabled: true
+    passkey:
+      enabled: true
+      config:
+        rp:
+          id: docker.localhost
+          display_name: "Hub Prod-Local"
+          origins:
+            - http://auth.docker.localhost
+    totp:
+      enabled: true
+      config:
+        issuer: Scott's Home Page (Hub Prod-Local)
 
 session:
   cookie:

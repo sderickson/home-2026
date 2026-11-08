@@ -46,6 +46,18 @@ selfservice:
   methods:
     password:
       enabled: true
+    passkey:
+      enabled: true
+      config:
+        rp:
+          id: scotterickson.info
+          display_name: "Scott's Home Page"
+          origins:
+            - https://auth.scotterickson.info
+    totp:
+      enabled: true
+      config:
+        issuer: Scott's Home Page
 
 session:
   cookie:
