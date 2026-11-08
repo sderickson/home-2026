@@ -11,9 +11,12 @@ import {
   getSecretStore,
 } from "@saflib/vendors-infisical";
 import { configureEmail } from "@saflib/vendors-brevo";
+import { enableHubPersistentLogs } from "@sderickson/hub-ops";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
+// Redacted, searchable logs for GET /ops/logs (see @saflib/node-log-db).
+enableHubPersistentLogs();
 
 const { root, saflib } = getGitHashes();
 console.log("[hub] git hashes: root=%s saflib=%s", root, saflib);

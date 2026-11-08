@@ -5,6 +5,7 @@
     { "path": "../../../saflib/monorepo" },
     { "path": "../../../saflib/node" },
     { "path": "../../../saflib/ops/ops-db" },
+    { "path": "../../../saflib/node-log/node-log-db" },
     { "path": "../../../saflib/ops/ops-http" }
   ],
   "compilerOptions": {
