@@ -11,8 +11,6 @@ const loggedIn = computed(() => !!sessionQuery.data.value?.identity);
 const adminSidebarLinks = [
   { ...adminLinks.home, name: "Home" },
   { ...adminLinks.users, name: "Users" },
-  { ...adminLinks.cronJobs, name: "Cron" },
-  { ...adminLinks.jobs, name: "Jobs" },
   { ...adminLinks.opsTokens, name: "Ops tokens" },
 ];
 

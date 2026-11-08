@@ -7,8 +7,6 @@ import {
 import { adminLinks } from "@sderickson/hub-links";
 import { PageNotFound } from "@saflib/vue/components";
 import { isDevelopmentDeployment } from "@saflib/vue";
-import { CronJobsAsync } from "@saflib/cron-vue";
-import { JobsAsync } from "@saflib/jobs-vue";
 import { ProductEventsAsync } from "@saflib/analytics-vue";
 import { MetricsAsync } from "@saflib/node-metrics-vue";
 import { ErrorsAsync } from "@saflib/errors-vue";
@@ -50,14 +48,6 @@ export const createAdminRouter = (options?: { history?: RouterHistory }) => {
     {
       path: adminLinks.users.path,
       component: UsersAsync,
-    },
-    {
-      path: adminLinks.cronJobs.path,
-      component: CronJobsAsync,
-    },
-    {
-      path: adminLinks.jobs.path,
-      component: JobsAsync,
     },
     {
       path: adminLinks.opsTokens.path,

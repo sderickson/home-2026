@@ -11,14 +11,6 @@ export const adminLinks: LinkMap = {
     subdomain,
     path: "/users",
   },
-  cronJobs: {
-    subdomain,
-    path: "/cron-jobs",
-  },
-  jobs: {
-    subdomain,
-    path: "/jobs",
-  },
   logs: {
     subdomain,
     path: "/logs",
