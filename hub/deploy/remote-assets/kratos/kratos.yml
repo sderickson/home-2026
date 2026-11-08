@@ -46,20 +46,16 @@ selfservice:
   methods:
     password:
       enabled: true
+    # Off: passkeys are a second factor here (webauthn below), not a
+    # password replacement. Both methods drive the same browser prompt.
     passkey:
-      enabled: true
-      config:
-        rp:
-          id: scotterickson.info
-          display_name: "Scott's Home Page"
-          origins:
-            - https://auth.scotterickson.info
+      enabled: false
     totp:
       enabled: true
       config:
         issuer: Scott's Home Page
     # Security key / passkey as a second factor (AAL2). Separate from the
-    # `passkey` method above, which is a first factor (sign in without a password).
+    # `passkey` method, which is a first factor (sign in without a password).
     webauthn:
       enabled: true
       config:
