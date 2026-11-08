@@ -15,7 +15,6 @@ services:
           memory: 192M
     memswap_limit: 2G
     volumes:
-      - /opt/hub/cron:/app/hub/service/cron/data
       - /opt/hub/db:/app/hub/service/db/data
       - /opt/hub/identity:/app/hub/service/identity/data
       - /opt/hub/identity-http:/app/saflib/identity/identity-http/data
