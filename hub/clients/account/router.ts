@@ -46,7 +46,8 @@ export const createAccountRouter = (options?: {
         {
           path: accountPathSegment(accountLinks.mfa.path),
           component: AccountSettingsSection,
-          props: { section: "totp" },
+          // Authenticator app and security key / passkey (WebAuthn) together.
+          props: { section: "mfa" },
         },
         {
           path: accountPathSegment(accountLinks.sessions.path),

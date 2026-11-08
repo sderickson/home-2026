@@ -60,6 +60,18 @@ selfservice:
       enabled: true
       config:
         issuer: Scott's Home Page (Hub Dev)
+    # Security key / passkey as a second factor (AAL2). Separate from the
+    # `passkey` method above, which is a first factor (sign in without a password).
+    webauthn:
+      enabled: true
+      config:
+        passwordless: false
+        rp:
+          id: docker.localhost
+          display_name: "Hub Dev"
+          origins:
+            - http://auth.docker.localhost
+            - http://account.docker.localhost
 
 session:
   whoami:
