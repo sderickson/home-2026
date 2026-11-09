@@ -16,6 +16,7 @@ const adminSidebarLinks = [
   { ...adminLinks.opsIssues, name: "Issues" },
   { ...adminLinks.opsAlerts, name: "Alerts" },
   { ...adminLinks.opsMetrics, name: "Metrics" },
+  { ...adminLinks.opsDependencies, name: "Dependencies" },
   { ...adminLinks.opsLogs, name: "Logs" },
   { ...adminLinks.opsTokens, name: "Ops tokens" },
 ];
