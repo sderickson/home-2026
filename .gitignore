@@ -47,3 +47,6 @@ lerna-debug.log*
 # Database
 *.sqlite
 **/.saf-deploy
+
+# saf-deploy release stamp (written into the upload; prod-local creates it empty)
+**/remote-assets/release/

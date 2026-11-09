@@ -6,6 +6,9 @@ services:
   hub-monolith:
     image: $CONTAINER_REGISTRY/sderickson-hub-monolith:latest
     container_name: hub-monolith-${SAF_COLOR:-blue}
+    environment:
+      # Recorded on each boot (ops API deploys), so restarts show their color.
+      - SAF_COLOR=${SAF_COLOR:-blue}
     restart: unless-stopped
     deploy:
       resources:
@@ -15,6 +18,8 @@ services:
           memory: 192M
     memswap_limit: 2G
     volumes:
+      # The deploy's release stamp (saf-deploy), recorded on each boot.
+      - ./release:/etc/saf/release:ro
       - /opt/hub/db:/app/hub/service/db/data
       - /opt/hub/identity:/app/hub/service/identity/data
       - /opt/hub/identity-http:/app/saflib/identity/identity-http/data

@@ -3,7 +3,7 @@ import express from "express";
 import { hubDb } from "@sderickson/hub-db";
 import { hubDbManager } from "@sderickson/hub-db/instances";
 import { createHubOpsRouter } from "@sderickson/hub-ops";
-import { probeCheck } from "@saflib/ops-http";
+import { kratosCheck, probeCheck } from "@saflib/ops-http";
 import {
   hubServiceStorage,
   type HubServiceContextOptions,
@@ -49,6 +49,7 @@ export function createHubHttpApp(options: HubServiceContextOptions) {
         probeCheck("hub-db", async () => {
           hubDbManager.get(dbKey)!.$client.prepare("select 1").get();
         }),
+        kratosCheck(),
       ],
     }),
   );
