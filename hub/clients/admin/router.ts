@@ -10,7 +10,7 @@ import { isDevelopmentDeployment } from "@saflib/vue";
 import { ProductEventsAsync } from "@saflib/analytics-vue";
 import { MetricsAsync } from "@saflib/node-metrics-vue";
 import { ErrorsAsync } from "@saflib/errors-vue";
-import { AlertsAsync, IssuesAsync, LogsAsync, OpsTokensAsync } from "@saflib/ops-vue";
+import { AlertsAsync, IssuesAsync, LogsAsync, OpsMetricsAsync, OpsTokensAsync } from "@saflib/ops-vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import UsersAsync from "./pages/users/UsersAsync.vue";
 import DevLogsAsync from "./pages/logs/DevLogsAsync.vue";
@@ -60,6 +60,10 @@ export const createAdminRouter = (options?: { history?: RouterHistory }) => {
     {
       path: adminLinks.opsAlerts.path,
       component: AlertsAsync,
+    },
+    {
+      path: adminLinks.opsMetrics.path,
+      component: OpsMetricsAsync,
     },
     {
       path: adminLinks.opsTokens.path,
