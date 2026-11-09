@@ -9,12 +9,16 @@
         {{ t(mfaLinked ? strings.mfa_intro_linked : strings.mfa_intro_setup) }}
       </p>
     </div>
-    <SettingsSectionAsync :section="section" />
+    <SettingsSectionAsync
+      :section="section"
+      @totp-linked="flowShowsLinkedFactor = true"
+      @webauthn-linked="flowShowsLinkedFactor = true"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { SettingsSectionAsync } from "@saflib/ory-kratos-spa/settings";
@@ -46,8 +50,14 @@ watch(
 );
 const { data: session } = useKratosSession();
 
-const mfaLinked = computed(() =>
-  sessionHasSecondFactorAuthenticationMethod(session.value),
+// The settings flow lists saved factors (unlink / remove controls), so it is
+// the source of truth. The session only shows what this sign-in used: a
+// password-only sign-in lists no second factor even when some are saved.
+const flowShowsLinkedFactor = ref(false);
+const mfaLinked = computed(
+  () =>
+    flowShowsLinkedFactor.value ||
+    sessionHasSecondFactorAuthenticationMethod(session.value),
 );
 
 const pageTitle = computed(() => {
