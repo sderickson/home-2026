@@ -21,6 +21,14 @@ route:
       group_wait: 0s
       group_interval: 1m
       repeat_interval: 1m
+      continue: true
+    # Also to hub's webhook every 5 minutes, proving delivery and its token
+    # work (the digest's pipeline_last_seen_at); never to Slack.
+    - matchers: ['alertname="Watchdog"']
+      receiver: hub-watchdog
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
     # Hub is the platform app, so host alerts go to it too. Products on this
     # host get their own route and receiver (their /ops/alerts/webhook).
     - matchers: ['saf_app=~"hub|host"']
@@ -55,6 +63,13 @@ receivers:
     #     auth_username: you@example.com
     #     auth_password_file: /etc/alertmanager/secrets/smtp-password
     #     send_resolved: true
+  - name: hub-watchdog
+    webhook_configs:
+      - url: http://hub-monolith:3001/ops/alerts/webhook
+        send_resolved: false
+        http_config:
+          authorization:
+            credentials_file: /etc/alertmanager/secrets/hub-ops-token
   - name: heartbeat
     webhook_configs:
       - url_file: /etc/alertmanager/secrets/heartbeat-url
