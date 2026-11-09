@@ -93,5 +93,8 @@ export function createHubOpsRouter(options: CreateHubOpsRouterOptions = {}) {
     logsDbKey: getHubLogsDbKey(),
     issuesDbKey: getHubIssuesDbKey(),
     healthChecks: [diskCheck({ path: dataDir }), ...(options.healthChecks ?? [])],
+    // PromQL via the host's prom-label-proxy, confined to saf_app="hub"
+    // (set by this app's scrape config) plus host metrics.
+    metrics: { app: "hub" },
   });
 }
