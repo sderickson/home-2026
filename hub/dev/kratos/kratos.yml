@@ -33,7 +33,7 @@ selfservice:
       ui_url: http://auth.docker.localhost/recovery
 
     settings:
-      ui_url: http://auth.docker.localhost/settings
+      ui_url: http://account.docker.localhost/settings
       required_aal: highest_available
 
     logout:
@@ -48,18 +48,26 @@ selfservice:
   methods:
     password:
       enabled: true
+    # Off: passkeys are a second factor here (webauthn below), not a
+    # password replacement. Both methods drive the same browser prompt.
     passkey:
+      enabled: false
+    totp:
       enabled: true
       config:
+        issuer: Scott's Home Page (Hub Dev)
+    # Security key / passkey as a second factor (AAL2). Separate from the
+    # `passkey` method, which is a first factor (sign in without a password).
+    webauthn:
+      enabled: true
+      config:
+        passwordless: false
         rp:
           id: docker.localhost
           display_name: "Hub Dev"
           origins:
             - http://auth.docker.localhost
-    totp:
-      enabled: true
-      config:
-        issuer: Scott's Home Page (Hub Dev)
+            - http://account.docker.localhost
 
 session:
   whoami:

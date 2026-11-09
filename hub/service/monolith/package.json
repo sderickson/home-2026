@@ -16,6 +16,7 @@
     "@sderickson/hub-db": "*",
     "@sderickson/hub-http": "*",
     "@sderickson/hub-kratos-courier": "*",
+    "@sderickson/hub-ops": "*",
     "@sderickson/hub-service": "*",
     "@sderickson/hub-service-common": "*"
   }

@@ -11,14 +11,6 @@ export const adminLinks: LinkMap = {
     subdomain,
     path: "/users",
   },
-  cronJobs: {
-    subdomain,
-    path: "/cron-jobs",
-  },
-  jobs: {
-    subdomain,
-    path: "/jobs",
-  },
   logs: {
     subdomain,
     path: "/logs",
@@ -34,6 +26,26 @@ export const adminLinks: LinkMap = {
   errors: {
     subdomain,
     path: "/errors",
+  },
+  opsTokens: {
+    subdomain,
+    path: "/ops-tokens",
+  },
+  opsLogs: {
+    subdomain,
+    path: "/ops-logs",
+  },
+  opsIssues: {
+    subdomain,
+    path: "/ops-issues",
+  },
+  opsAlerts: {
+    subdomain,
+    path: "/ops-alerts",
+  },
+  opsMetrics: {
+    subdomain,
+    path: "/ops-metrics",
   },
   // BEGIN WORKFLOW AREA page-links FOR vue/add-view
   // END WORKFLOW AREA

@@ -39,6 +39,15 @@
     },
     {
       "path": "../jobs"
+    },
+    {
+      "path": "../../../saflib/ops/ops-http"
+    },
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../ops"
     }
   ],
   "exclude": [

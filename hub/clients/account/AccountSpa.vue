@@ -3,7 +3,14 @@ import { computed } from "vue";
 import { HubLayout } from "@sderickson/hub-clients-common";
 import { useKratosSession } from "@saflib/ory-kratos-sdk";
 import { linkToHrefWithHost } from "@saflib/links";
-import { authLinks } from "@sderickson/hub-links";
+import { appLinks, authLinks } from "@sderickson/hub-links";
+import { configureAuthApp } from "@saflib/ory-kratos-spa";
+
+// Without this, the library default derives the app URL by stripping "auth."
+// from the host, which on account.<domain> gives app.account.<domain>.
+configureAuthApp({
+  postAuthFallbackHref: computed(() => linkToHrefWithHost(appLinks.home)),
+});
 
 const { data: session, isPending } = useKratosSession();
 const loggedIn = computed(() => !!session.value?.identity);

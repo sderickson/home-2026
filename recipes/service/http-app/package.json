@@ -24,8 +24,11 @@
     "@saflib/monorepo": "*",
     "@saflib/node-log-http": "*",
     "@saflib/node-metrics-http": "*",
+    "@saflib/ops-http": "*",
     "@sderickson/recipes-cron": "*",
+    "@sderickson/recipes-db": "*",
     "@sderickson/recipes-jobs": "*",
+    "@sderickson/recipes-ops": "*",
     "@sderickson/recipes-service-common": "*"
   },
   "devDependencies": {

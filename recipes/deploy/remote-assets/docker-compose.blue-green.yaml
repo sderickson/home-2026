@@ -6,6 +6,9 @@ services:
   recipes-monolith:
     image: $CONTAINER_REGISTRY/sderickson-recipes-monolith:latest
     container_name: recipes-monolith-${SAF_COLOR:-blue}
+    environment:
+      # Recorded on each boot (ops API deploys), so restarts show their color.
+      - SAF_COLOR=${SAF_COLOR:-blue}
     restart: unless-stopped
     deploy:
       resources:
@@ -15,6 +18,10 @@ services:
           memory: 192M
     memswap_limit: 2G
     volumes:
+      # The deploy's release stamp (saf-deploy), recorded on each boot.
+      - ./release:/etc/saf/release:ro
+      # Ops tokens, persisted logs and issues (the ops API).
+      - /opt/recipes/ops:/app/recipes/service/ops/data
       - /opt/recipes/cron:/app/recipes/service/cron/data
       - /opt/recipes/db:/app/recipes/service/db/data
       - /opt/recipes/jobs:/app/recipes/service/jobs/data

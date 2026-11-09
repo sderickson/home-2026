@@ -13,13 +13,10 @@
       "path": "../../../saflib/base/product/service/sdk"
     },
     {
-      "path": "../../../saflib/cron/cron-vue"
+      "path": "../../../saflib/ops/ops-vue"
     },
     {
       "path": "../../../saflib/errors/errors-vue"
-    },
-    {
-      "path": "../../../saflib/jobs/jobs-vue"
     },
     {
       "path": "../../../saflib/links"

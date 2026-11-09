@@ -35,6 +35,10 @@
     "@sderickson/recipes-unsplash": "*"
   },
   "devDependencies": {
-    "@saflib/vitest": "*"
+    "@saflib/ops-db": "*",
+    "@saflib/utils": "*",
+    "@saflib/vitest": "*",
+    "@sderickson/recipes-ops": "*",
+    "supertest": "^7.0.0"
   }
 }

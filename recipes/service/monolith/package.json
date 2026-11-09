@@ -13,6 +13,7 @@
     "@saflib/ory-kratos-http": "*",
     "@saflib/vendors-sentry-node": "*",
     "@sderickson/hub-kratos-courier": "*",
+    "@sderickson/recipes-ops": "*",
     "@sderickson/recipes-service": "*",
     "@sderickson/recipes-service-common": "*"
   },

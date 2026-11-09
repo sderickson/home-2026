@@ -55,6 +55,83 @@ services:
       - edge
     restart: unless-stopped
 
+  # ---- Metrics (per host). Not published: apps query Prometheus through
+  # prom-label-proxy, which confines each app to its own series.
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --storage.tsdb.retention.size=2GB
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    # On the edge network to scrape product services (<product>-monolith).
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    restart: unless-stopped
+
+  # Routes alerts (alertmanager/alertmanager.yml) to each app's
+  # /ops/alerts/webhook, Slack, and the external heartbeat. Secrets are files
+  # in /opt/alertmanager/secrets, readable by uid 65534 (nobody).
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    command:
+      - --config.file=/etc/alertmanager/conf/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager/conf:ro
+      - /opt/alertmanager/secrets:/etc/alertmanager/secrets:ro
+      - alertmanager_data:/alertmanager
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    # On the edge network to reach each app's webhook (<product>-monolith).
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
+  # Apps send X-Saf-App: <app>,host; every query gets saf_app=~"<app>|host"
+  # injected, and only read endpoints are proxied (no admin APIs).
+  prom-label-proxy:
+    image: quay.io/prometheuscommunity/prom-label-proxy:v0.11.1
+    command:
+      - -insecure-listen-address=0.0.0.0:8080
+      - -upstream=http://prometheus:9090
+      - -label=saf_app
+      - -header-name=X-Saf-App
+      - -header-uses-list-syntax
+      - -enable-label-apis
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
 networks:
   edge:
     name: sderickson-edge
@@ -68,3 +145,7 @@ volumes:
   # Product routes (<product>.Caddyfile), registered by each product's deploy.
   caddy_sites:
     name: sderickson-caddy-sites
+  prometheus_data:
+    name: sderickson-prometheus-data
+  alertmanager_data:
+    name: sderickson-alertmanager-data

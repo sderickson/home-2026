@@ -7,11 +7,10 @@ import {
 import { adminLinks } from "@sderickson/hub-links";
 import { PageNotFound } from "@saflib/vue/components";
 import { isDevelopmentDeployment } from "@saflib/vue";
-import { CronJobsAsync } from "@saflib/cron-vue";
-import { JobsAsync } from "@saflib/jobs-vue";
 import { ProductEventsAsync } from "@saflib/analytics-vue";
 import { MetricsAsync } from "@saflib/node-metrics-vue";
 import { ErrorsAsync } from "@saflib/errors-vue";
+import { AlertsAsync, IssuesAsync, LogsAsync, OpsMetricsAsync, OpsTokensAsync } from "@saflib/ops-vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import UsersAsync from "./pages/users/UsersAsync.vue";
 import DevLogsAsync from "./pages/logs/DevLogsAsync.vue";
@@ -51,12 +50,24 @@ export const createAdminRouter = (options?: { history?: RouterHistory }) => {
       component: UsersAsync,
     },
     {
-      path: adminLinks.cronJobs.path,
-      component: CronJobsAsync,
+      path: adminLinks.opsLogs.path,
+      component: LogsAsync,
     },
     {
-      path: adminLinks.jobs.path,
-      component: JobsAsync,
+      path: adminLinks.opsIssues.path,
+      component: IssuesAsync,
+    },
+    {
+      path: adminLinks.opsAlerts.path,
+      component: AlertsAsync,
+    },
+    {
+      path: adminLinks.opsMetrics.path,
+      component: OpsMetricsAsync,
+    },
+    {
+      path: adminLinks.opsTokens.path,
+      component: OpsTokensAsync,
     },
     ...devObservabilityRoutes,
     // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
