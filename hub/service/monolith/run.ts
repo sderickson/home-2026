@@ -1,5 +1,5 @@
 import { startHubService } from "./index.ts";
-import { setServiceName } from "@saflib/node";
+import { collectSystemMetrics, setServiceName } from "@saflib/node";
 import { getGitHashes } from "@saflib/node/git-hashes";
 import { validateEnv } from "@saflib/env";
 import envSchema from "./env.schema.combined.json" with { type: "json" };
@@ -15,6 +15,8 @@ import { enableHubPersistentLogs, installHubIssueCollector } from "@sderickson/h
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
+// Process metrics (RSS, heap, event loop, GC) for Prometheus.
+collectSystemMetrics();
 // Redacted, searchable logs for GET /ops/logs (see @saflib/node-log-db).
 enableHubPersistentLogs();
 
