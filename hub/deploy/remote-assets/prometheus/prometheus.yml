@@ -1,0 +1,26 @@
+# Per-host Prometheus (platform deploy). Never exposed publicly: apps query it
+# through prom-label-proxy, which confines each app to its own series
+# (saf_app="<app>") plus host metrics (saf_app="host").
+global:
+  # 60s: fine histogram buckets matter more than fine time resolution. Use
+  # rate()/increase() windows of at least [4m] (standard queries use [5m]).
+  scrape_interval: 60s
+  scrape_timeout: 10s
+  evaluation_interval: 60s
+
+# Each product deploy adds its own scrape config here (one file per app),
+# labelling its targets saf_app="<app>".
+scrape_config_files:
+  - /etc/prometheus/scrape.d/*.yml
+
+scrape_configs:
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          saf_app: host
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          saf_app: host
