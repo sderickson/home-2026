@@ -81,13 +81,38 @@ services:
     image: prom/node-exporter:v1.9.1
     command:
       - --path.rootfs=/host
+      - --collector.textfile.directory=/textfile
     pid: host
     volumes:
       - /:/host:ro,rslave
+      - host_apt_metrics:/textfile:ro
     deploy:
       resources:
         limits:
           memory: 64M
+    restart: unless-stopped
+
+  # Host package updates for node-exporter's textfile collector: runs the
+  # host's own `apt-get -s` (a simulation: no locks, no writes) against its
+  # read-only root every hour. See host-apt/host-apt-metrics.sh.
+  host-apt:
+    image: busybox:1.37
+    command: ["sh", "/host-apt-metrics.sh"]
+    volumes:
+      - /:/host:ro
+      - ./host-apt/host-apt-metrics.sh:/host-apt-metrics.sh:ro
+      - host_apt_metrics:/textfile
+    # apt writes temp files while reading signed package lists; give it a
+    # private tmpfs over the read-only host root's /tmp.
+    tmpfs:
+      - /host/tmp
+    network_mode: none
+    cap_drop: [ALL]
+    cap_add: [SYS_CHROOT]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     restart: unless-stopped
 
   # Routes alerts (alertmanager/alertmanager.yml) to each app's
@@ -149,3 +174,5 @@ volumes:
     name: sderickson-prometheus-data
   alertmanager_data:
     name: sderickson-alertmanager-data
+  host_apt_metrics:
+    name: sderickson-host-apt-metrics
