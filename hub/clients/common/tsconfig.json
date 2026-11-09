@@ -23,6 +23,9 @@
     },
     {
       "path": "../../service/spec"
+    },
+    {
+      "path": "../../../saflib/ops/ops-vue"
     }
   ],
   "exclude": [

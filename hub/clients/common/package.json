@@ -19,6 +19,7 @@
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "@saflib/links": "*",
+    "@saflib/ops-vue": "*",
     "@saflib/ory-kratos-sdk": "*",
     "@saflib/ory-kratos-spa": "*",
     "@saflib/sdk": "*",

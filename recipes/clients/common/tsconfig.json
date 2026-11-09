@@ -26,6 +26,12 @@
     },
     {
       "path": "../links"
+    },
+    {
+      "path": "../../../saflib/sdk"
+    },
+    {
+      "path": "../../../saflib/ops/ops-vue"
     }
   ],
   "exclude": [
