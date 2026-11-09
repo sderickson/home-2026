@@ -11,7 +11,11 @@ import {
   getSecretStore,
 } from "@saflib/vendors-infisical";
 import { configureEmail } from "@saflib/vendors-brevo";
-import { enableHubPersistentLogs, installHubIssueCollector } from "@sderickson/hub-ops";
+import {
+  enableHubPersistentLogs,
+  installHubIssueCollector,
+  startHubOpsNotifier,
+} from "@sderickson/hub-ops";
 
 validateEnv(process.env, envSchema);
 setServiceName("hub");
@@ -29,5 +33,7 @@ installHubIssueCollector();
 
 configureSecretStore();
 const email = await configureEmail(getSecretStore());
+// Batched, rate-limited email to site admins for new alerts and errors.
+startHubOpsNotifier(email, "scotterickson.info alerts <noreply@scotterickson.info>");
 startOryKratosService({ callbacks: createCourierCallbacks(email) });
 startHubService();
