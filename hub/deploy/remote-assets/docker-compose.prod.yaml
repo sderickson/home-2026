@@ -90,6 +90,28 @@ services:
           memory: 64M
     restart: unless-stopped
 
+  # Routes alerts (alertmanager/alertmanager.yml) to each app's
+  # /ops/alerts/webhook, Slack, and the external heartbeat. Secrets are files
+  # in /opt/alertmanager/secrets, readable by uid 65534 (nobody).
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    command:
+      - --config.file=/etc/alertmanager/conf/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager/conf:ro
+      - /opt/alertmanager/secrets:/etc/alertmanager/secrets:ro
+      - alertmanager_data:/alertmanager
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    # On the edge network to reach each app's webhook (<product>-monolith).
+    networks:
+      - default
+      - edge
+    restart: unless-stopped
+
   # Apps send X-Saf-App: <app>,host; every query gets saf_app=~"<app>|host"
   # injected, and only read endpoints are proxied (no admin APIs).
   prom-label-proxy:
@@ -125,3 +147,5 @@ volumes:
     name: sderickson-caddy-sites
   prometheus_data:
     name: sderickson-prometheus-data
+  alertmanager_data:
+    name: sderickson-alertmanager-data

@@ -1,0 +1,61 @@
+# Per-host Alertmanager (platform deploy). Prometheus sends it alerts from
+# prometheus/rules/; it routes on saf_app (the app, or "host").
+#
+# Secrets are files on the server in /opt/alertmanager/secrets/ (mounted
+# read-only), never in this repo. A missing file only makes that one
+# integration fail to send; the rest still deliver.
+#   hub-ops-token      ops token with only the ops:alerts-ingest scope
+#                      (mint on hub's admin Ops tokens page)
+#   slack-webhook-url  Slack incoming webhook URL
+#   heartbeat-url      external heartbeat ping URL (healthchecks.io-style)
+route:
+  receiver: hub
+  group_by: [saf_app, alertname]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    # Pinged every minute; if pings stop, the heartbeat service alerts.
+    - matchers: ['alertname="Watchdog"']
+      receiver: heartbeat
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 1m
+    # Hub is the platform app, so host alerts go to it too. Products on this
+    # host get their own route and receiver (their /ops/alerts/webhook).
+    - matchers: ['saf_app=~"hub|host"']
+      receiver: hub
+
+# A critical alert silences the matching warning (e.g. disk 90% over 80%).
+inhibit_rules:
+  - source_matchers: ['severity="critical"']
+    target_matchers: ['severity="warning"']
+    equal: [saf_app, alertname]
+
+receivers:
+  - name: hub
+    webhook_configs:
+      # Straight to the monolith over the edge network (no Caddy hop).
+      - url: http://hub-monolith:3001/ops/alerts/webhook
+        send_resolved: true
+        http_config:
+          authorization:
+            credentials_file: /etc/alertmanager/secrets/hub-ops-token
+    slack_configs:
+      - api_url_file: /etc/alertmanager/secrets/slack-webhook-url
+        send_resolved: true
+        title: '{{ if eq .Status "firing" }}[{{ .CommonLabels.severity | toUpper }}]{{ else }}[RESOLVED]{{ end }} {{ .CommonLabels.alertname }} ({{ .CommonLabels.saf_app }})'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ "\n" }}{{ end }}'
+    # Email: fill in and uncomment once there are SMTP credentials (e.g.
+    # Brevo's SMTP relay; password in secrets/smtp-password).
+    # email_configs:
+    #   - to: you@example.com
+    #     from: alerts@scotterickson.info
+    #     smarthost: smtp-relay.brevo.com:587
+    #     auth_username: you@example.com
+    #     auth_password_file: /etc/alertmanager/secrets/smtp-password
+    #     send_resolved: true
+  - name: heartbeat
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/heartbeat-url
+        send_resolved: false
