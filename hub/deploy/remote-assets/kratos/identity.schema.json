@@ -41,11 +41,12 @@
               "type": "string"
             }
           },
-          "required": ["first", "last"],
           "additionalProperties": false
         }
       },
-      "required": ["email", "name"],
+      "required": [
+        "email"
+      ],
       "additionalProperties": false
     }
   }
