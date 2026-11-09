@@ -6,6 +6,7 @@
 # integration fail to send; the rest still deliver.
 #   hub-ops-token      ops token with only the ops:alerts-ingest scope
 #                      (mint on hub's admin Ops tokens page)
+#   recipes-ops-token  the same, minted on recipes' admin Ops tokens page
 #   slack-webhook-url  Slack incoming webhook URL
 #
 # Email to site admins is sent by each app (batched, rate limited), not here.
@@ -19,10 +20,16 @@ route:
   group_interval: 5m
   repeat_interval: 4h
   routes:
-    # The Watchdog goes to hub's webhook every 5 minutes, proving delivery and its token
+    # The Watchdog goes to each app's webhook every 5 minutes, proving delivery and its token
     # work (the digest's pipeline_last_seen_at); never to Slack.
     - matchers: ['alertname="Watchdog"']
       receiver: hub-watchdog
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+      continue: true
+    - matchers: ['alertname="Watchdog"']
+      receiver: recipes-watchdog
       group_wait: 0s
       group_interval: 1m
       repeat_interval: 5m
@@ -30,6 +37,8 @@ route:
     # host get their own route and receiver (their /ops/alerts/webhook).
     - matchers: ['saf_app=~"hub|host"']
       receiver: hub
+    - matchers: ['saf_app="recipes"']
+      receiver: recipes
 
 # A critical alert silences the matching warning (e.g. disk 90% over 80%).
 inhibit_rules:
@@ -51,6 +60,25 @@ receivers:
         send_resolved: true
         title: '{{ if eq .Status "firing" }}[{{ .CommonLabels.severity | toUpper }}]{{ else }}[RESOLVED]{{ end }} {{ .CommonLabels.alertname }} ({{ .CommonLabels.saf_app }})'
         text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ "\n" }}{{ end }}'
+  - name: recipes
+    webhook_configs:
+      - url: http://recipes-monolith:3002/ops/alerts/webhook
+        send_resolved: true
+        http_config:
+          authorization:
+            credentials_file: /etc/alertmanager/secrets/recipes-ops-token
+    slack_configs:
+      - api_url_file: /etc/alertmanager/secrets/slack-webhook-url
+        send_resolved: true
+        title: '{{ if eq .Status "firing" }}[{{ .CommonLabels.severity | toUpper }}]{{ else }}[RESOLVED]{{ end }} {{ .CommonLabels.alertname }} ({{ .CommonLabels.saf_app }})'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ "\n" }}{{ end }}'
+  - name: recipes-watchdog
+    webhook_configs:
+      - url: http://recipes-monolith:3002/ops/alerts/webhook
+        send_resolved: false
+        http_config:
+          authorization:
+            credentials_file: /etc/alertmanager/secrets/recipes-ops-token
   - name: hub-watchdog
     webhook_configs:
       - url: http://hub-monolith:3001/ops/alerts/webhook

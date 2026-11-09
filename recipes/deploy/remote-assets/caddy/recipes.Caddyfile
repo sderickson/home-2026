@@ -25,7 +25,9 @@
 {$PROTOCOL}://api.recipes.{$DOMAIN} {
 	import transport-security
 	import cors {$CORS_ORIGIN_ALLOWLIST}
-	@public_monolith path /health /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors /recipes/*/shared /recipes/*/shared/files/*/blob /menus/*/shared
+	# /ops/* checks its own security (an ops token, or a site admin's session
+	# looked up from the Kratos cookie), so it skips forward_auth.
+	@public_monolith path /health /ops/* /csp-violations /errors/record /product-events/record /dev/logs /dev/logs/stream /admin/metrics/snapshot /admin/product-events /admin/errors /recipes/*/shared /recipes/*/shared/files/*/blob /menus/*/shared
 	handle @public_monolith {
 		reverse_proxy recipes-monolith-{$SAF_COLOR}:3002 {
 			import reverse_proxy_common

@@ -12,6 +12,13 @@ import { JobsAsync } from "@saflib/jobs-vue";
 import { ProductEventsAsync } from "@saflib/analytics-vue";
 import { MetricsAsync } from "@saflib/node-metrics-vue";
 import { ErrorsAsync } from "@saflib/errors-vue";
+import {
+  AlertsAsync,
+  IssuesAsync,
+  LogsAsync,
+  OpsMetricsAsync,
+  OpsTokensAsync,
+} from "@saflib/ops-vue";
 import HomeAsync from "./pages/home/HomeAsync.vue";
 import UsersAsync from "./pages/users/UsersAsync.vue";
 import DevLogsAsync from "./pages/logs/DevLogsAsync.vue";
@@ -58,6 +65,11 @@ export const createAdminRouter = (options?: { history?: RouterHistory }) => {
       path: adminLinks.jobs.path,
       component: JobsAsync,
     },
+    { path: adminLinks.opsIssues.path, component: IssuesAsync },
+    { path: adminLinks.opsAlerts.path, component: AlertsAsync },
+    { path: adminLinks.opsMetrics.path, component: OpsMetricsAsync },
+    { path: adminLinks.opsLogs.path, component: LogsAsync },
+    { path: adminLinks.opsTokens.path, component: OpsTokensAsync },
     ...devObservabilityRoutes,
     // BEGIN WORKFLOW AREA page-routes FOR vue/add-view
     // END WORKFLOW AREA

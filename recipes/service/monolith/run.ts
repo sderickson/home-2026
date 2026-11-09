@@ -1,5 +1,5 @@
 import { startRecipesService } from "./index.ts";
-import { setServiceName } from "@saflib/node";
+import { collectSystemMetrics, setServiceName } from "@saflib/node";
 import { getGitHashes } from "@saflib/node/git-hashes";
 import { validateEnv } from "@saflib/env";
 import { configureMockErrors } from "@saflib/errors-service";
@@ -9,16 +9,29 @@ import { startOryKratosService } from "@saflib/ory-kratos-http";
 import { createCourierCallbacks } from "@sderickson/hub-kratos-courier";
 import { initializeDependencies } from "@sderickson/recipes-service";
 import { getEmailClient } from "@sderickson/recipes-service-common";
+import {
+  enableRecipesPersistentLogs,
+  installRecipesIssueCollector,
+  startRecipesOpsNotifier,
+} from "@sderickson/recipes-ops";
 
 validateEnv(process.env, envSchema);
 setServiceName("recipes");
+// Process metrics (RSS, heap, event loop, GC) for Prometheus.
+collectSystemMetrics();
+// Redacted, searchable logs for GET /ops/logs (see @saflib/node-log-db).
+enableRecipesPersistentLogs();
 
 const { root, saflib } = getGitHashes();
 console.log("[recipes] git hashes: root=%s saflib=%s", root, saflib);
 
 configureMockErrors();
 await initSentry();
+// Grouped issues for GET /ops/issues, alongside Sentry.
+installRecipesIssueCollector();
 
 await initializeDependencies();
+// Batched, rate-limited email to site admins for new alerts and errors.
+startRecipesOpsNotifier(getEmailClient(), "scotterickson.info alerts <noreply@scotterickson.info>");
 startOryKratosService({ callbacks: createCourierCallbacks(getEmailClient()) });
 startRecipesService();

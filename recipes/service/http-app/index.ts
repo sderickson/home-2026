@@ -1,10 +1,13 @@
 import { createDevAnalyticsRouter } from "@saflib/analytics-http";
-import { createCronRouter } from "@saflib/cron-http";
+import { createCronHealthCheck, createCronRouter } from "@saflib/cron-http";
 import type { DbKey } from "@saflib/drizzle";
 import { isDevelopmentDeployment } from "@saflib/env";
 import { createDevErrorsRouter, createErrorsRouter } from "@saflib/errors-http";
 import { createProductHttpApp, type HttpRouterMount } from "@saflib/express";
-import { createJobsRouter } from "@saflib/jobs-http";
+import { createJobsHealthCheck, createJobsRouter } from "@saflib/jobs-http";
+import { kratosCheck, probeCheck } from "@saflib/ops-http";
+import { recipesDbManager } from "@sderickson/recipes-db/instances";
+import { createRecipesOpsRouter, isOpsApiRequest } from "@sderickson/recipes-ops";
 import { createDevLogsRouter } from "@saflib/node-log-http";
 import { createMetricsRouter } from "@saflib/node-metrics-http";
 import type express from "express";
@@ -69,8 +72,21 @@ export function buildRecipesHttpApp(
         : []),
     ],
     isPublicRoute,
+    // The ops API (/ops/*) checks its own security: an ops token, or a site
+    // admin's session.
+    deferAuth: isOpsApiRequest,
     mounts,
     platformRouters: [
+      createRecipesOpsRouter({
+        healthChecks: [
+          probeCheck("recipes-db", async () => {
+            recipesDbManager.get(context.recipesDbKey)!.$client.prepare("select 1").get();
+          }),
+          createJobsHealthCheck({ getDbKey: getRecipesJobsDbKey }),
+          createCronHealthCheck({ getDbKey: getRecipesCronDbKey }),
+          kratosCheck(),
+        ],
+      }),
       createJobsRouter({ dbKey: getRecipesJobsDbKey() }),
       createCronRouter({
         dbKey: getRecipesCronDbKey(),
