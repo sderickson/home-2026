@@ -41,6 +41,9 @@
       "path": "./hub/service/monolith"
     },
     {
+      "path": "./hub/service/ops"
+    },
+    {
       "path": "./hub/service/sdk"
     },
     {
@@ -156,6 +159,9 @@
     },
     {
       "path": "./recipes/service/monolith"
+    },
+    {
+      "path": "./recipes/service/ops"
     },
     {
       "path": "./recipes/service/recipes-service"
