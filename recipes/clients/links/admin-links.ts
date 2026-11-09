@@ -47,6 +47,10 @@ export const adminLinks: LinkMap = {
     subdomain,
     path: "/ops-metrics",
   },
+  opsDependencies: {
+    subdomain,
+    path: "/ops-dependencies",
+  },
   opsLogs: {
     subdomain,
     path: "/ops-logs",

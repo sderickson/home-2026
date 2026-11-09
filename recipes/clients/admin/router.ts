@@ -16,6 +16,7 @@ import {
   AlertsAsync,
   IssuesAsync,
   LogsAsync,
+  DependenciesAsync,
   OpsMetricsAsync,
   OpsTokensAsync,
 } from "@saflib/ops-vue";
@@ -68,6 +69,7 @@ export const createAdminRouter = (options?: { history?: RouterHistory }) => {
     { path: adminLinks.opsIssues.path, component: IssuesAsync },
     { path: adminLinks.opsAlerts.path, component: AlertsAsync },
     { path: adminLinks.opsMetrics.path, component: OpsMetricsAsync },
+    { path: adminLinks.opsDependencies.path, component: DependenciesAsync },
     { path: adminLinks.opsLogs.path, component: LogsAsync },
     { path: adminLinks.opsTokens.path, component: OpsTokensAsync },
     ...devObservabilityRoutes,
