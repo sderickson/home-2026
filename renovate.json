@@ -1,24 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    "group:allNonMajor"
-  ],
-  "minimumReleaseAge": "3 days",
-  "internalChecksFilter": "strict",
-  "osvVulnerabilityAlerts": true,
-  "vulnerabilityAlerts": {
-    "labels": [
-      "security"
-    ],
-    "minimumReleaseAge": null
-  },
-  "packageRules": [
-    {
-      "enabled": false,
-      "matchPackageNames": [
-        "@saflib/{/,}**"
-      ]
-    }
-  ]
+  "description": "Product-only updates. saflib's preset turns off everything saflib owns; those versions arrive with `npx saf-monorepo saflib-bump` (see saflib/monorepo/docs/03-dependency-updates.md).",
+  "extends": ["config:recommended", "github>sderickson/saflib//renovate/product"]
 }
