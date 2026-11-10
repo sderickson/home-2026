@@ -1,6 +1,6 @@
 # Edge reverse proxy (platform deploy). Hub and the products serve their sites
 # from their own containers and register routes into /etc/caddy/sites (see
 # remote-assets/config/Caddyfile); this deploy registers hub's and Kratos's.
-FROM caddy:2.11.2
+FROM caddy:2.11.9
 
 COPY ./hub/deploy/remote-assets/config /etc/caddy/

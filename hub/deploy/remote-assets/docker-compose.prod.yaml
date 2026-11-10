@@ -58,7 +58,7 @@ services:
   # ---- Metrics (per host). Not published: apps query Prometheus through
   # prom-label-proxy, which confines each app to its own series.
   prometheus:
-    image: prom/prometheus:v3.5.0
+    image: prom/prometheus:v3.16.0
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -78,7 +78,7 @@ services:
     restart: unless-stopped
 
   node-exporter:
-    image: prom/node-exporter:v1.9.1
+    image: prom/node-exporter:v1.12.1
     command:
       - --path.rootfs=/host
       - --collector.textfile.directory=/textfile
@@ -96,7 +96,7 @@ services:
   # host's own `apt-get -s` (a simulation: no locks, no writes) against its
   # read-only root every hour. See host-apt/host-apt-metrics.sh.
   host-apt:
-    image: busybox:1.37
+    image: busybox:1.38
     command: ["sh", "/host-apt-metrics.sh"]
     volumes:
       - /:/host:ro
@@ -119,7 +119,7 @@ services:
   # /ops/alerts/webhook, Slack, and the external heartbeat. Secrets are files
   # in /opt/alertmanager/secrets, readable by uid 65534 (nobody).
   alertmanager:
-    image: prom/alertmanager:v0.28.1
+    image: prom/alertmanager:v0.34.2
     command:
       - --config.file=/etc/alertmanager/conf/alertmanager.yml
       - --storage.path=/alertmanager
