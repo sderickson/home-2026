@@ -3,5 +3,5 @@
 FROM #{ image @sderickson/resume-client }# AS build
 RUN npm run build
 
-FROM busybox:1.37
+FROM busybox:1.38
 COPY --from=build /app/clients/resume/.vitepress/dist /dist
