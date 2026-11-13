@@ -1,6 +1,6 @@
 # Hub's SPAs (root, auth, app, admin, account). The edge proxies hub's hosts
 # here (see remote-assets/caddy/hub.Caddyfile).
-FROM caddy:2.11.2
+FROM caddy:2.11.8
 
 COPY --from=#{ image @sderickson/hub-deploy/builds/hub-clients }# /dist /srv/hub-clients
 
