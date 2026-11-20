@@ -10,7 +10,7 @@ RUN npm run build
 
 # END WORKFLOW AREA
 
-FROM caddy:2.11.3
+FROM caddy:2.11.9
 COPY --from=static-root-builder /app/notebook/clients/root/.vitepress/dist /srv/notebook-static-root
 # BEGIN WORKFLOW AREA static-site-assets FOR vue/add-static-site
 
