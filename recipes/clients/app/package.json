@@ -21,7 +21,7 @@
     "typecheck": "vue-tsc -b"
   },
   "dependencies": {
-    "@milkdown/crepe": "7.22.2",
+    "@milkdown/crepe": "7.23.0",
     "@saflib/links": "*",
     "@saflib/ory-kratos-sdk": "*",
     "@saflib/sdk": "*",
