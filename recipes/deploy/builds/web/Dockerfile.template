@@ -1,6 +1,6 @@
 # Recipes' static sites: the marketing site and the SPAs. The platform's edge
 # proxies recipes hosts here (see remote-assets/caddy/recipes.Caddyfile).
-FROM caddy:2.11.2
+FROM caddy:2.11.9
 
 COPY --from=#{ image @sderickson/recipes-deploy/builds/recipes-static-root }# /dist /srv/recipes-static-root
 COPY --from=#{ image @sderickson/recipes-deploy/builds/recipes-clients }# /dist /srv/recipes-clients
